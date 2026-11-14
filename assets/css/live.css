@@ -164,7 +164,7 @@
 /* ---------- ليالينا mega panel, and room for five menus ---------- */
 @media (min-width: 980px) {
 	.mega-nights .mega-in { grid-template-columns: 1fr 280px; }
-	.mg-kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+	.mg-kinds { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 	.mg-kind { display: grid; align-content: end; gap: 2px; min-height: 160px; padding: 16px; border-radius: 18px; color: #fff; text-decoration: none; background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 50%, #0d2633)); transition: transform 0.3s var(--ease-pop); }
 	.mg-kind:hover, .mg-kind[aria-current='page'] { transform: translateY(-4px) rotate(-1.5deg); }
 	.mg-kind-e { font-size: 2.4rem; line-height: 1; margin-bottom: auto; }
