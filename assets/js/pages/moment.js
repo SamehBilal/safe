@@ -1,4 +1,4 @@
-import { L, T, esc, img, fmtDate, longDate, yearsAgo, pageHead, related, qs, App } from '../shell.js';
+import { L, T, esc, img, fmtDate, longDate, yearsAgo, pageHead, related, qs, App, linksOut } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { farthestMap, drawFarthest } from './distances.js';
 
@@ -25,6 +25,7 @@ export default {
 		<article class="sec sec--top"><div class="wrap narrow">
 			<div class="moment-hero reveal"><span class="moment-hero__ic">${doodle(x.icon, 56)}</span><time datetime="${esc(x.date)}">${fmtDate(x.date)}</time></div>
 			${x.text ? `<p class="lede reveal">${T(x.text)}</p>` : ''}
+			${linksOut(x)}
 			${story ? story.split(/\n{2,}/).map((p) => `<p class="prose reveal">${esc(p)}</p>`).join('') : ''}
 			${photos.length ? `<div class="frames ${photos.length === 1 ? 'frames--single' : ''}">${photos.map((p, n) => `<figure class="frame reveal" data-media-box style="--tilt:${n % 2 ? 2 : -2}deg">${img(p.photo, App.t(p.caption), 'zoom')}${p.caption ? `<figcaption>${T(p.caption)}</figcaption>` : ''}</figure>`).join('')}</div>` : ''}
 			${isFar(s, x) ? `<div class="moment-far">${farthestMap(s)}</div>` : ''}

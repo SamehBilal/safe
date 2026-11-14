@@ -1,4 +1,4 @@
-import { L, T, esc, img, longDate, yearsAgo, pageHead, related, qs, rand, App } from '../shell.js';
+import { L, T, esc, img, longDate, yearsAgo, pageHead, related, qs, rand, App, linksOut } from '../shell.js';
 import { doodle } from '../doodles.js';
 
 export default {
@@ -19,6 +19,7 @@ export default {
 		</section>
 		<article class="sec sec--top"><div class="wrap narrow">
 			${App.t(c.text).split(/\n{2,}/).filter(Boolean).map((p, n) => `<p class="${n ? 'prose' : 'lede'} reveal">${esc(p)}</p>`).join('')}
+			${linksOut(c)}
 		</div>
 		${photos.length ? `<div class="wrap"><div class="frames ${photos.length === 1 ? 'frames--single' : ''}">${photos.map((p, n) => `<figure class="frame reveal" data-media-box style="--tilt:${[-2, 1.5, -1, 2][n % 4]}deg;--delay:${(n % 3) * 0.1}s">${img(p.photo, App.t(p.caption), 'zoom')}${p.caption ? `<figcaption>${T(p.caption)}</figcaption>` : ''}</figure>`).join('')}</div></div>`
 			: `<div class="wrap narrow"><p class="empty reveal">${L('الصور جاية قريب ♥', 'Photos coming soon ♥')}</p></div>`}

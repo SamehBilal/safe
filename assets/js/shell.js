@@ -147,6 +147,9 @@ export function mediaURL(ref) {
 	return media.get(ref);
 }
 
+/* links out of the site (a full video kept in Google Drive, say): story.json "links": [{ href, ar, en }] */
+export const linksOut = (o) => (o?.links || []).filter((l) => String(l.href || '').startsWith('https://')).map((l) => `<a class="btn btn--coral reveal" href="${esc(l.href)}" target="_blank" rel="noopener noreferrer" style="margin:8px 0 18px">▶ ${esc(L(l.ar, l.en))}</a>`).join(' ');
+
 /** Markup for a photo/video, filled in by hydrate(). `box` marks the element to remove if it fails. */
 export function img(ref, alt = '', cls = '') {
 	if (!ref) return '';
