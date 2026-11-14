@@ -712,3 +712,9 @@ body:not(.is-locked) .hearts { opacity: 0.45; }
 .burst i:nth-child(3n + 1) { color: var(--hl-yellow, #fdc830); font-size: 0.9rem; }
 @keyframes burst { from { opacity: 1; transform: translate(0, 0) scale(0.3); } 70% { opacity: 1; } to { opacity: 0; transform: translate(var(--x), var(--y)) scale(var(--s)); } }
 @media (prefers-reduced-motion: reduce) { .dusk, .burst { display: none; } .just-in * { animation-delay: 0s !important; animation-duration: 0.01s !important; } }
+/* «on this day» with a photo: a square of the memory, its doodle badge in the corner */
+.otd--photo { padding: 10px 18px 10px 10px; }
+:root[dir='rtl'] .otd--photo { padding: 10px 10px 10px 18px; }
+.otd__ph { position: relative; flex: 0 0 auto; width: 76px; height: 76px; }
+.otd__img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; border: 2px solid #fff; background: rgba(255, 255, 255, 0.25); display: block; }
+.otd__ph .otd__ic { position: absolute; inset-inline-end: -8px; bottom: -8px; width: 34px; height: 34px; font-size: 1.1rem; display: grid; place-items: center; background: #fff; color: var(--coral-deep); border-radius: 50%; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); }

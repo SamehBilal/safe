@@ -1,4 +1,4 @@
-import { App, L, Y, T, t, esc, img, num, parseDate, yearsBetween, daysBetween, age, isToday, yearsAgo, fmtDate, icon, PAGES, occasions, DRAW_KINDS } from '../shell.js';
+import { App, L, Y, T, t, esc, img, isVideo, num, parseDate, yearsBetween, daysBetween, age, isToday, yearsAgo, fmtDate, icon, PAGES, occasions, DRAW_KINDS } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOVERNORATES } from '../egypt.js';
@@ -14,6 +14,17 @@ const ago = (ms) => {
 	if (d === 1) return L('امبارح', 'yesterday');
 	return L(`من ${num(d)} يوم`, `${d} days ago`);
 };
+
+/* the photo for an «on this day» card: the moment's own, else the nearest moment in time that has one, so the card never goes without */
+const still = (p) => (typeof p === 'string' ? p : p?.photo) || '';
+const photosOf = (x) => [x.photo, ...(x.photos || [])].map(still).filter((p) => p && !isVideo(p));
+function otdPhoto(s, x) {
+	const own = photosOf(x)[0];
+	if (own) return own;
+	const at = parseDate(x.date)?.getTime() || 0;
+	const near = (s.timeline || []).filter((m) => photosOf(m).length).sort((a, b) => Math.abs((parseDate(a.date)?.getTime() || 0) - at) - Math.abs((parseDate(b.date)?.getTime() || 0) - at))[0];
+	return near ? photosOf(near)[0] : (s.gallery || []).map((g) => g.photo).find((p) => p && !isVideo(p)) || '';
+}
 
 export default {
 	title: { ar: 'الرئيسية', en: 'Home' },
@@ -57,7 +68,7 @@ export default {
 		</section>
 
 		<section class="sec sec--tight" id="now"><div class="wrap">
-			${today.map((x) => `<a class="otd reveal" href="moment.html?id=${esc(x.id)}"><span class="otd__ic">${doodle(x.icon, 28)}</span><span><small>${L('النهارده', 'On this day')} · ${yearsAgo(x.date)}</small><b>${T(x.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>`).join('')}
+			${today.map((x) => `<a class="otd otd--photo reveal" href="moment.html?id=${esc(x.id)}"><span class="otd__ph">${img(otdPhoto(s, x), '', 'otd__img')}<span class="otd__ic">${doodle(x.icon, 22)}</span></span><span><small>${L('النهارده', 'On this day')} · ${yearsAgo(x.date)}</small><b>${T(x.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>`).join('')}
 			<h2 class="sec__title reveal" style="margin-top:24px">${Y('ضيف للنهارده', 'ضيفي للنهارده', 'Add to today')}</h2>
 			<div class="quick">${quick.map(([href, e, label]) => `<a class="quick__btn reveal" href="${href}"><span aria-hidden="true">${doodle(e, 22)}</span>${esc(label)}</a>`).join('')}</div>
 		</div></section>
