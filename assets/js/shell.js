@@ -614,7 +614,7 @@ function megaHTML(s) {
 	const here = currentFile();
 	const cur = (href) => (href === here ? ' aria-current="page"' : '');
 	const item = (p) => `<a class="mg-item" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span></a>`;
-	const row = (p) => `<a class="mg-row" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<b>${esc(L(p.ar, p.en))}</b><span class="mg-arr" aria-hidden="true">${App.arrow}</span></a>`;
+	const row = (p) => `<a class="mg-row" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span><span class="mg-arr" aria-hidden="true">${App.arrow}</span></a>`;
 	const panel = (id, label, inner) => `<div class="mega mega-${id}" id="mega-${id}" role="group" aria-label="${esc(label)}"><div class="mega-in">${inner}</div></div>`;
 	const top = (id, label) => `<button class="mnav-btn${groupOf(pageId()) === id ? ' is-here' : ''}" type="button" aria-expanded="false" aria-controls="mega-${id}" data-mega="${id}">${esc(label)}<svg class="mnav-chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 	const pages = (g) => PAGES.filter((p) => p.group === g);

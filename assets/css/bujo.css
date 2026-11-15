@@ -388,37 +388,48 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .ft__lines path { stroke-width: 1.6; opacity: 0.6; }
 .ft__row--kids { justify-content: center; gap: 56px; }
 
-/* ---------- the mega menus, kept short now that each group has many pages: the pictures stay in one row on top,
-   and the page links run across the panel in columns instead of down one narrow side ---------- */
+
+/* ---------- the mega menus as a journal's contents page: the pages as a numbered index in two columns
+   (number, title, a dotted leader, a one-line note), and the pictures in a small side panel beside it ---------- */
 @media (min-width: 980px) {
-	.mega-in { padding: 18px 0 20px; gap: 14px; }
-	.mega-story .mega-in, .mega-family .mega-in, .mega-nights .mega-in { grid-template-columns: 1fr; align-items: start; }
-	.mg-more { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 10px; }
-	.mg-more .mg-h { grid-column: 1 / -1; margin-bottom: 2px; }
-	.mg-more .mg-row { padding: 7px 10px; }
-	/* حكايتنا: the three big days as a short strip */
-	.mega-story .mg-card { aspect-ratio: auto; height: 120px; }
-	.mega-story .mg-band { padding: 10px 18px; }
-	/* عيلتنا: the four of us in one short row */
-	.mega-family .mg-figs { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
-	.mega-family .mg-fig { grid-template-columns: auto 1fr; justify-items: start; align-items: center; padding: 8px 10px; }
-	.mega-family .mg-fig-box { width: 52px; height: 52px; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c); }
-	.mega-family .mg-fig-t { text-align: start; }
-	/* ليالينا: the draws as a short row of cards */
-	.mega-nights .mg-kind { min-height: 104px; padding: 12px 14px; }
-	.mega-nights .mg-kind-e { font-size: 1.8rem; }
-	/* ذكرياتنا and مناسباتنا: the pages in a few columns, each with a one-line note */
-	.mega-memories .mega-in { grid-template-columns: 1fr 340px; }
-	.mega-memories .mg-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
-	.mg-photo { min-height: 0; }
-	.mega-you .mega-in { grid-template-columns: 1fr 280px; }
-	.mega-you .mg-list { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 12px; }
-	.mega-memories .mg-item, .mega-you .mg-item { padding: 7px 10px; gap: 10px; }
-	.mega-memories .mg-item .ic, .mega-you .mg-item .ic { width: 32px; height: 32px; }
-	.mega-memories .mg-item small, .mega-you .mg-item small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.mega-memories .mg-tx, .mega-you .mg-tx { min-width: 0; }
+	.mega-in { padding: 20px 0 22px; gap: 22px 34px; grid-template-columns: minmax(0, 1fr) 300px !important; align-items: start !important; }
+	.mega-in > :not(.mg-list):not(.mg-more) { grid-column: 2; }
+	.mg-list, .mg-more { grid-column: 1; grid-row: 1 / span 4; counter-reset: mg; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px; align-content: start; }
+	.mg-more .mg-h, .mg-list::before { grid-column: 1 / -1; }
+	.mg-h { margin: 0 0 6px; padding-inline: .3em; width: fit-content; font: 400 1.35rem var(--f-label); letter-spacing: .06em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
+	/* one line of the index */
+	.mg-item, .mg-row { counter-increment: mg; position: relative; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 0 10px; padding: 7px 8px; border-bottom: 1.5px dashed color-mix(in srgb, var(--ink) 28%, transparent) !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+	.mg-item::before, .mg-row::before { content: counter(mg, decimal-leading-zero); font: 400 1.25rem/1 var(--f-label); color: var(--coral-deep); min-width: 1.6em; }
+	.mg-item .ic, .mg-row .ic { width: 30px; height: 30px; display: grid; place-items: center; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 50%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+	.mg-item:nth-child(3n + 2) .ic, .mg-row:nth-child(3n + 2) .ic { background: color-mix(in srgb, var(--hl-lime) 55%, var(--card)); color: var(--text); }
+	.mg-item:nth-child(3n) .ic, .mg-row:nth-child(3n) .ic { background: color-mix(in srgb, var(--hl-yellow) 60%, var(--card)); color: var(--text); }
+	.mg-item .mg-tx, .mg-row .mg-tx { display: grid; min-width: 0; line-height: 1.35; }
+	.mg-item b, .mg-row b { font-size: .98rem; }
+	.mg-item small, .mg-row small { display: block; color: var(--muted); font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.mg-item .mg-arr, .mg-row .mg-arr { opacity: 0; transition: opacity .15s, transform .2s; }
+	.mg-item:hover, .mg-row:hover, .mg-item[aria-current='page'], .mg-row[aria-current='page'] { background: linear-gradient(transparent 12%, color-mix(in srgb, var(--hl-yellow) 70%, transparent) 12% 88%, transparent 88%) !important; }
+	.mg-item:hover .mg-arr, .mg-row:hover .mg-arr { opacity: 1; }
+	.mega-you .mg-list { grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 22px; }
+	.mega-story .mg-card:nth-child(n + 3) { display: none; }
+
+	/* the side panel: small and tidy */
+	.mega-story .mg-cards { grid-template-columns: 1fr; gap: 10px; }
+	.mega-story .mg-card { aspect-ratio: auto; height: 74px; }
+	.mega-story .mg-card-t { padding: 8px 12px; }
+	.mega-story .mg-card-t b { font-size: 1.15rem; }
+	.mg-band { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 16px; }
+	.mg-photo { min-height: 260px; }
+	.mg-photo-tx q { font-size: 1.5rem; }
+	.mega-family .mg-figs { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+	.mega-family .mg-fig { padding: 8px 4px; gap: 4px; }
+	.mega-family .mg-fig-box { width: 56px; height: 56px; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--c); }
+	.mega-family .mg-fig-t small { font-size: .75rem; }
+	.mega-nights .mg-kinds { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+	.mega-nights .mg-kind { min-height: 0; padding: 10px 12px; grid-template-columns: auto 1fr; align-items: center; gap: 0 8px; }
+	.mega-nights .mg-kind-e { margin: 0; font-size: 1.6rem; grid-row: span 2; }
+	.mega-nights .mg-kind small { display: none; }
+	.mega-nights .mg-kind b { font-size: 1.05rem; }
 	.mg-data { min-height: 0; padding: 16px; }
-	.mg-data .mg-bars { height: 60px; }
-	/* never taller than the screen: anything left scrolls inside the panel */
+	.mg-data .mg-bars { height: 70px; }
 	.mega { max-height: calc(100vh - var(--hd, 70px)); overflow-y: auto; }
 }
