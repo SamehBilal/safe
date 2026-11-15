@@ -41,6 +41,7 @@ export default {
 					<li>${L('وبعدين', 'then')} <code dir="ltr">node tools/build.mjs</code> ${Y('وانشر. لما الموقع يتحدث، الموبايلات بتمسح نسختها لوحدها.', 'وانشري. لما الموقع يتحدث، الموبايلات بتمسح نسختها لوحدها.', 'and publish. Once the site has it, the phones drop their own copy by themselves.')}</li>
 				</ol></details>
 			</div>
+			<p style="text-align:center;margin-top:28px"><a class="link muted" href="secret.html" aria-label="${L('أوضتنا', 'Our room')}" style="opacity:.55">${doodle('lock', 18)}</a></p>
 		</div></section>`;
 	},
 	after(main) {

@@ -25,6 +25,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { library, intoStory, intoMusic } from './library.mjs';
 import { shrinkBig } from './shrink.mjs';
+import { sealSecret } from './secret.mjs';
 import { ITERATIONS, deriveKek, importMaster, seal, open, randomBytes, toB64, fromB64 } from '../assets/js/core.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -124,6 +125,7 @@ async function main() {
 	const sealedStory = await walk(story);
 	// The shared lists and their sketches (a list can name a file in private/media too, like a song's own recording).
 	const live = await sealLive(key, walk, lib);
+	const secretPhotos = await sealSecret(key);
 	sealedStory.$media = [...used.values()];
 
 	// Remove encrypted files no longer referenced.
@@ -176,6 +178,7 @@ async function main() {
 
 	console.log(`✓ ${qs.length} question(s), ${used.size} media file(s) (${(size / 1048576).toFixed(1)} MB), vault ${(JSON.stringify(vault).length / 1024).toFixed(0)} KB`);
 	console.log(`✓ shared lists: ${live.lists} list(s), ${live.sketches} sketch(es)${live.changed ? `, ${live.changed} updated` : ''}`);
+	if (secretPhotos) console.log(`✓ the PIN page: sealed, ${secretPhotos} photo(s)`);
 	if (missing.size) console.warn('! Not found in private/media (left as-is): ' + [...missing].join(', '));
 	const unused = files.filter((f) => !used.has(f) && !/(^|\/)\./.test(f) && !/(^|\/)(info\.json|readme\.md|desktop\.ini|thumbs\.db)$/i.test(f));
 	if (unused.length) console.log('  (not used by story.json: ' + unused.join(', ') + ')');
