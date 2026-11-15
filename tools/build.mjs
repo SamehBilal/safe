@@ -19,7 +19,7 @@
    Run:  node tools/build.mjs */
 
 import { readFile, writeFile, mkdir, readdir, stat, rm } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { createHash, createHmac } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,7 +105,8 @@ async function main() {
 		const bytes = await readFile(copy || path.join(mediaDir, real));
 		const id = createHmac('sha256', Buffer.from(raw)).update(bytes).digest('hex').slice(0, 20);
 		const out = path.join(MEDIA_OUT, id + '.bin');
-		if (!existsSync(out)) await writeFile(out, await seal(key, bytes));
+		// an empty file is left over from a build that stopped partway (a full disk): write it again
+		if (!existsSync(out) || statSync(out).size === 0) await writeFile(out, await seal(key, bytes));
 		const ref = `media:${id}${ext}`;
 		used.set(real, ref);
 		return ref;
