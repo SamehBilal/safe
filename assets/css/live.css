@@ -914,6 +914,7 @@ button.cal-d.is-on { box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--k); 
 .ft1-item { position: relative; margin-bottom: 18px; }
 .ft1-item__dot { position: absolute; top: 18px; inset-inline-start: -29px; width: 16px; height: 16px; border-radius: 50%; background: var(--c); border: 1.5px solid var(--ink, #37353f); }
 .ft1-card { padding: 14px 16px; border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); background: var(--card); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 70%, transparent); }
+.ft1-card img.ft1-more { rotate: -3deg; margin-top: -4px; }
 .ft1-card img { float: inline-end; width: 120px; aspect-ratio: 1; object-fit: cover; margin-inline-start: 12px; padding: 5px 5px 14px; background: #fbf8f1; rotate: 2deg; box-shadow: 0 4px 10px rgba(30, 20, 10, 0.2); }
 .ft1-card__k { margin: 0; font-weight: 800; color: var(--c); font-size: 0.85rem; }
 .ft1-card h3 { margin: 2px 0; font: 400 1.7rem/1.15 var(--f-hand); }

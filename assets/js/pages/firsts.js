@@ -94,7 +94,7 @@ export default {
 				<li class="ft1-item reveal is-in" style="--c:${color(x.kid)}">
 					<span class="ft1-item__dot" aria-hidden="true"></span>
 					<article class="ft1-card">
-						${x.photo ? `<img data-sketch="${esc(x.photo)}" alt="" loading="lazy">` : ''}
+						${(x.photos?.length ? x.photos : x.photo ? [x.photo] : []).map((p, i) => `<img class="zoom${i ? ' ft1-more' : ''}" data-sketch="${esc(p)}" alt="" loading="lazy">`).join('')}
 						<p class="ft1-card__k">${esc(App.t(kidOf(x.kid)?.name || ''))}${kidOf(x.kid)?.born ? ` · ${esc(age(kidOf(x.kid).born, new Date(x.date)))}` : ''}</p>
 						<h3 dir="auto">${esc(x.what)}</h3>
 						<p class="ft1-card__d">${esc(longDate(x.date))}</p>
