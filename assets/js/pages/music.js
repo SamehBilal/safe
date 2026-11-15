@@ -327,7 +327,7 @@ export default {
 
 /* ---- the disc shelf in the header (after Paul Troshkin's «Disc Shelf», codepen.io/Maseone): our songs as CD cases in 3D
    on a glossy floor. Spines stand in a row to one side of the chosen case and covers fan out to the other; a glint
-   sweeps the chosen case, and the room behind takes the colour of its cover. Drag, the arrows or a click move along
+   sweeps the chosen case. Drag, the arrows or a click move along
    the shelf; a click on the chosen case opens it — the cover swings open on its note, the disc slides out and spins,
    and the song plays on the turntable below. The pen drives it all from CSS with Reactive CSS; here a few lines of JS
    set --sel (the chosen case) and --open, and the CSS (discshelf.css) does the rest. */
@@ -335,7 +335,6 @@ const hueOf = (x) => { let h = 0; for (const c of String(x.id || x.title)) h = (
 
 function shelfBand() {
 	return `<div class="lp-band ds" id="ds" style="--sel:0;--open:0">
-		<div class="ds-room" aria-hidden="true"><i id="ds-room"></i></div>
 		<div class="ds-top"><p class="ds-brand"><i aria-hidden="true"></i>${L('رف الأسطوانات', 'The disc shelf')}</p><p class="ds-count"><b id="ds-n">·</b> / <span id="ds-of">·</span></p></div>
 		<div class="ds-shelf" id="ds-shelf" tabindex="0" aria-label="${L('رف الأغاني: الأسهم تتنقل، وEnter يفتح الأسطوانة ويشغّلها', 'Song shelf: arrows browse, Enter opens and plays')}">
 			<ol class="ds-cases" id="ds-cases"></ol>
@@ -369,14 +368,7 @@ function discShelf(main, list, s, onPlay) {
 	$('#ds-of', box).textContent = num(list.length);
 
 	let sel = 0, open = false;
-	const covers = new Map();
-	const room = () => {
-		const x = list[sel], url = x.cover && covers.get(x.cover);
-		const r = $('#ds-room', box);
-		r.style.setProperty('--h', hueOf(x));
-		r.style.backgroundImage = url ? `url("${url}")` : 'none';
-	};
-	for (const im of $$('img[data-cover]', box)) mediaURL(im.dataset.cover).then((url) => { im.src = url; covers.set(im.dataset.cover, url); if (list[sel]?.cover === im.dataset.cover) room(); }).catch(() => im.remove());
+	for (const im of $$('img[data-cover]', box)) mediaURL(im.dataset.cover).then((url) => { im.src = url; }).catch(() => im.remove());
 	const set = (i, o = false) => {
 		sel = Math.max(0, Math.min(list.length - 1, i));
 		open = o;
@@ -388,7 +380,6 @@ function discShelf(main, list, s, onPlay) {
 		$('#ds-n', box).textContent = num(sel + 1);
 		$('#ds-t', box).textContent = x.title;
 		$('#ds-a', box).textContent = [x.artist, `${L('اختيار', 'Picked by')} ${name(x.by)}`].filter(Boolean).join(' · ');
-		room();
 	};
 	const toggle = () => { const o = !open; set(sel, o); if (o) onPlay(list[sel]); };
 
