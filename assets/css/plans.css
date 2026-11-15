@@ -401,3 +401,15 @@
 @media (prefers-reduced-motion: reduce) { .ftr-med, .ftr-heart { animation: none; } }
 .ftr-med b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .ftr-med--kid b { font-size: clamp(0.7rem, 1vw, 0.95rem); }
+/* every relative has a face: a round portrait above their ribbon, the two moving as one */
+.ftr-person { position: absolute; left: var(--x); top: var(--y); z-index: 2; display: grid; justify-items: center; gap: 0; padding: 0; border: 0; background: none; cursor: pointer; translate: -50% -66%; transition: scale 0.2s var(--ease-pop, ease); font: inherit; color: inherit; }
+.ftr-person:hover, .ftr-person:focus-visible { scale: 1.07; }
+.ftr-person:disabled { cursor: default; }
+.ftr-person .ftr-rib { position: static; translate: none; margin-top: -6px; pointer-events: none; }
+.ftr-person:hover .ftr-rib, .ftr-person:focus-visible .ftr-rib { rotate: 0deg; }
+.ftr-person__pic { position: relative; z-index: 1; display: grid; place-items: center; width: clamp(44px, 5.4vw, 60px); aspect-ratio: 1; overflow: hidden; border-radius: 50%; border: 2px solid var(--ink, #37353f); background: color-mix(in srgb, var(--c) 18%, #fffdf8); color: var(--c); box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--ink, #37353f); }
+.ftr-person__pic img, .ftr-person__pic .ft__face { width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; background: none; }
+.ftr-person.is-empty .ftr-person__pic { border-style: dashed; opacity: 0.75; box-shadow: none; }
+.ftr-person.is-gone .ftr-person__pic { filter: grayscale(1); }
+.ftr-person--flat { position: static; translate: none; }
+.ft-card__photo { cursor: pointer; }

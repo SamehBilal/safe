@@ -9,6 +9,7 @@
 import { L, Y, T, esc, img, App, $, $$, hydrate, age } from './shell.js';
 import { doodle } from './doodles.js';
 import * as live from './live.js';
+import { shrinkPhoto } from './pages/trips.js';
 
 const RELS = [
 	{ id: 'father', ar: 'الأب', en: 'Father', of: ['أبو', 'father'], gone: 'الله يرحمه' },
@@ -33,10 +34,14 @@ const initials = (name) => [...String(name).trim()][0] || '♥';
 /** "Sameh's father" / «أبو سامح» */
 const relOf = (r, s, side) => { const x = rel(r); const n = App.t(side === 'her' ? s.her : s.him); return L(`${x.of[0]} ${n}`, `${n}’s ${x.of[1]}`); };
 
+/* a face for everyone: the four of us from story.json; a relative's own photo (added from a phone, kept encrypted)
+   or, until there is one, a drawn face — a man for fathers and brothers, a woman for mothers and sisters */
+const isWoman = (r) => r === 'mother' || r === 'sister';
 function face(p, member, size = 34) {
 	if (p.photo) return img(p.photo, '', '');
+	if (p.pic) return `<img data-sketch="${esc(p.pic)}" alt="">`;
 	if (member) return `<span class="ft__face">${doodle(p.emoji || 'heart', size)}</span>`;
-	return `<span class="ft__face"><span class="ft__init" aria-hidden="true">${esc(initials(p.name))}</span></span>`;
+	return `<span class="ft__face">${doodle(isWoman(p.rel) ? 'princess' : 'groom', size)}</span>`;
 }
 
 /* ---------- the drawing: two trees in a 1000 × 700 box ---------- */
@@ -80,16 +85,18 @@ function art(left, right) {
 	</svg>`;
 }
 
-/** A relative's ribbon on a branch. */
+/** A relative on a branch: their round portrait, with their ribbon underneath. */
 function ribbon(s, p, side, [x, y, r]) {
-	return `<button type="button" class="ftr-rib${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" data-side="${side}" style="--x:${x / 10}%;--y:${y / 7}%;--r:${r}deg">
-		<b dir="auto">${esc(p.name)}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></button>`;
+	return `<button type="button" class="ftr-person${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" data-side="${side}" style="--x:${x / 10}%;--y:${y / 7}%;--r:${r}deg;--c:${colour(side)}">
+		<span class="ftr-person__pic">${face(p, false, 26)}</span>
+		<span class="ftr-rib"><b dir="auto">${esc(p.name)}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></span></button>`;
 }
-/** A ribbon still waiting for a name: tap it to fill it in. */
+/** A spot still waiting for a name: tap it to fill it in. */
 function emptyRibbon(s, side, r, [x, y, rot]) {
 	const ok = live.canWrite();
-	return `<button type="button" class="ftr-rib is-empty" data-slot="${side}|${r}" data-side="${side}" style="--x:${x / 10}%;--y:${y / 7}%;--r:${rot}deg"${ok ? '' : ' disabled'}>
-		<b>${esc(relOf(r, s, side))}</b><small>${ok ? Y('دوس واكتب الاسم', 'دوسي واكتبي الاسم', 'Tap to add the name') : L('لسه من غير اسم', 'No name yet')}</small></button>`;
+	return `<button type="button" class="ftr-person is-empty" data-slot="${side}|${r}" data-side="${side}" style="--x:${x / 10}%;--y:${y / 7}%;--r:${rot}deg;--c:${colour(side)}"${ok ? '' : ' disabled'}>
+		<span class="ftr-person__pic"><span class="ft__face">${doodle(isWoman(r) ? 'princess' : 'groom', 26)}</span></span>
+		<span class="ftr-rib is-empty"><b>${esc(relOf(r, s, side))}</b><small>${ok ? Y('دوس واكتب الاسم', 'دوسي واكتبي الاسم', 'Tap to add the name') : L('لسه من غير اسم', 'No name yet')}</small></span></button>`;
 }
 /** One of us (or the boys) in an oval portrait hanging from the tree. */
 function medallion(m, side, cls, x, y) {
@@ -117,6 +124,7 @@ export function treeHTML(s) {
 					<label class="f"><span>${L('سنة الميلاد (اختياري)', 'Year born (optional)')}</span><input name="born" type="number" inputmode="numeric" min="1900" max="2100"></label>
 				</div>
 				<label class="f"><span>${L('كلمة عنه أو عنها (اختياري)', 'A line about them (optional)')}</span><input name="note" dir="auto" maxlength="200"></label>
+				<label class="f"><span>${L('صورة (اختياري)', 'A photo (optional)')}</span><input name="pic" type="file" accept="image/*"></label>
 				<label class="check"><input type="checkbox" name="gone"> ${L('الله يرحمه / يرحمها', 'In loving memory')}</label>
 				<p class="form-msg" id="ft-msg" role="status"></p>
 				<div class="f-actions"><button type="submit" class="btn btn--coral">${L('على الشجرة ♥', 'Onto the tree ♥')}</button></div>
@@ -165,8 +173,10 @@ export async function wireTree(main, s) {
 		rows.innerHTML = out.join('');
 		// anyone beyond the tree's spots gets a ribbon underneath
 		more.hidden = !extra.length;
-		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-rib ftr-rib--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}"><b dir="auto">${esc(p.name)}</b><small dir="auto">${esc(relOf(p.rel, s, p.side))}</small></button>`).join('');
+		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-person ftr-person--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" style="--c:${colour(p.side)}"><span class="ftr-person__pic">${face(p, false, 26)}</span><span class="ftr-rib"><b dir="auto">${esc(p.name)}</b><small dir="auto">${esc(relOf(p.rel, s, p.side))}</small></span></button>`).join('');
 		hydrate(rows);
+		live.hydrateSketches(rows);
+		live.hydrateSketches(more);
 	};
 
 	/* the person's card, like the pen's modal: a big arch portrait, the name, who they are, and a line about them */
@@ -192,10 +202,13 @@ export async function wireTree(main, s) {
 			${p.note ? `<p class="ft-card__note" dir="auto">${esc(p.note)}</p>` : ''}
 			<div class="ft-card__acts">
 				${member ? `<a class="btn btn--sm btn--coral" href="member.html?id=${esc(p.id)}">${L('صفحته', 'Their page')} ${App.arrow}</a>` : ''}
+				${!member && live.canWrite() ? `<label class="btn btn--sm ft-card__photo">${doodle('camera', 16)} ${p.pic ? L('غيّر الصورة', 'Change the photo') : L('ضيف صورة', 'Add a photo')}<input type="file" accept="image/*" data-pic="${esc(p.id)}" hidden></label>` : ''}
 				${mine ? `<button class="link link--danger" type="button" data-untree="${esc(p.id)}">${Y('شيله من الشجرة', 'شيليه من الشجرة', 'Take off the tree')}</button>` : ''}
 			</div>
+			<p class="form-msg" id="ft-card-msg" role="status"></p>
 		</div>`;
 		hydrate(card);
+		live.hydrateSketches(card);
 		card.hidden = false;
 		$('.ft-card__x', card).focus({ preventScroll: true });
 	}
@@ -206,6 +219,20 @@ export async function wireTree(main, s) {
 		try { data = await live.save('tree', (d) => { d.items = (d.items || []).filter((p) => p.id !== b.dataset.untree); }); closeCard(); draw(); } catch (err) { alert(live.why(err)); }
 	});
 	card.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCard(); });
+	/* a photo for someone already on the tree */
+	card.addEventListener('change', async (e) => {
+		const input = e.target.closest('[data-pic]');
+		const file = input?.files[0];
+		if (!file) return;
+		const msg = $('#ft-card-msg', card);
+		try {
+			msg.textContent = L('بنحفظ الصورة…', 'Saving the photo…');
+			const pic = await live.putSketch(await shrinkPhoto(file, 800));
+			data = await live.save('tree', (d) => { const p = (d.items || []).find((x) => x.id === input.dataset.pic); if (p) p.pic = pic; });
+			draw();
+			openCard(input.dataset.pic, back);
+		} catch (err) { msg.textContent = live.why(err); }
+	});
 
 	const form = $('#ft-form', main);
 	more.addEventListener('click', (e) => { const o = e.target.closest('[data-open]'); if (o) openCard(o.dataset.open, o); });
@@ -228,7 +255,10 @@ export async function wireTree(main, s) {
 		const msg = $('#ft-msg', main);
 		const p = { id: live.newId(), name: form.name.value.trim(), rel: form.rel.value, side: form.side.value, born: +form.born.value || undefined, note: form.note.value.trim() || undefined, gone: form.gone.checked || undefined, by: live.me(), at: Date.now() };
 		if (!p.name) return;
-		try { data = await live.save('tree', (d) => { (d.items = d.items || []).push(p); }); form.reset(); msg.textContent = L('اتضاف للشجرة ♥', 'On the tree ♥'); draw(); }
+		try {
+			if (form.pic.files[0]) { msg.textContent = L('بنحفظ الصورة…', 'Saving the photo…'); p.pic = await live.putSketch(await shrinkPhoto(form.pic.files[0], 800)); }
+			data = await live.save('tree', (d) => { (d.items = d.items || []).push(p); }); form.reset(); msg.textContent = L('اتضاف للشجرة ♥', 'On the tree ♥'); draw();
+		}
 		catch (err) { msg.textContent = live.why(err); }
 	};
 
