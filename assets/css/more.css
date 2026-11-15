@@ -311,3 +311,29 @@
 .snap:hover, .snap:focus-within { z-index: 3; rotate: 0deg; translate: 0 -6px; scale: 1.12; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral), 0 18px 34px rgba(30, 20, 10, .22); }
 @keyframes snap-drop { from { opacity: 0; transform: translateY(-40px) rotate(calc(var(--r) * 3)) scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .snap { animation: none; transition: none; } }
+
+/* ---- a moment's opening: the stack of polaroids (after Codrops' «Polaroid Stack to Grid») ---- */
+.mo-intro { position: relative; display: grid; justify-items: center; gap: 4px; padding: clamp(16px, 3vw, 30px) var(--gutter) 6px; text-align: center; }
+.mo-intro__titles { display: grid; justify-items: center; }
+.mo-intro .ph__title { margin-bottom: 4px; }
+.mo-intro__date { margin: 0; padding: 0 10px; font: 400 1.3rem var(--f-label); letter-spacing: .04em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
+.mo-intro__lede { max-width: 56ch; margin: 14px auto 0; font-size: 1.12rem; line-height: 1.8; color: var(--text); }
+.mo-badge { display: grid; justify-items: center; gap: 6px; margin-top: 18px; }
+.mo-badge time { font: 2rem var(--f-label); color: var(--blue); letter-spacing: .04em; }
+/* while the stack is out: the opening fills the screen, the badge sits at its foot with the photos fanned behind it */
+.mo-intro.is-stack { min-height: calc(100svh - 70px); align-content: start; padding-top: clamp(20px, 7vh, 70px); }
+.mo-intro.is-stack .mo-badge { position: absolute; left: 50%; bottom: 96px; z-index: 8; margin: 0; translate: -50% 0; }
+.mo-intro.is-stack .mo-badge time { padding: 0 10px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); font-size: 1.5rem; }
+.mo-intro.is-done .mo-badge { display: none; }
+.mo-down { position: absolute; left: 50%; bottom: 14px; z-index: 9; translate: -50% 0; display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; font: 800 .95rem var(--f-body); color: var(--text); cursor: pointer; background: var(--hl-yellow); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--ink); }
+.mo-down i { font-style: normal; animation: mo-bob 1.4s ease-in-out infinite; }
+@keyframes mo-bob { 50% { transform: translateY(4px); } }
+.mo-down:active { transform: translate(calc(var(--bujo-x) * 3px), 3px); box-shadow: none; }
+.mo-body { padding-top: 10px; }
+/* the wall while the six are up in the fan: the rest wait, the six don't wobble or lift */
+.mo-stacked { overflow-x: clip; }
+.mo-stacked .snap { animation: none; }
+.mo-stacked .snap:nth-child(n + 7), .mo-stacked .scatter__h { opacity: 0; }
+.mo-stacked .snap:nth-child(-n + 6) { z-index: 7; }
+.mo-stacked .snap:hover, .mo-stacked .snap:focus-within { rotate: var(--r); translate: var(--dx) var(--dy); scale: 1; }
+.mo-grid .snap { animation: none; }
