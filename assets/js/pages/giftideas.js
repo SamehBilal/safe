@@ -21,7 +21,7 @@ export default listPage({
 	keep: (x) => x.by === live.me(),
 	toggle: { n: 'given' },
 	sort: (a, b) => (a.given ? 1 : 0) - (b.given ? 1 : 0) || (b.at || 0) - (a.at || 0),
-	band: (items) => `<div class="gi-band">${[0, 1, 2, 3].map((i) => `<span class="gi-box" style="--i:${i}"><i class="gi-lid"></i><b>?</b></span>`).join('')}<p class="gi-n">${L(`${items.filter((x) => !x.given).length} فكرة مستنية`, `${items.filter((x) => !x.given).length} ideas waiting`)}</p></div>`,
+	band: (items) => `<div class="gi-band">${[0, 1, 2, 3].map((i) => `<span class="gi-box" style="--i:${i}"><i class="gi-lid"></i><b>?</b></span>`).join('')}<p class="gi-n"><span>${L(`${items.filter((x) => !x.given).length} فكرة مستنية`, `${items.filter((x) => !x.given).length} ideas waiting`)}</span></p></div>`,
 	card: (x, c) => `<article class="lp-card gi-card${x.given ? ' is-done' : ''}">
 		<p class="lp-k">${x.for === 'other' || !x.for ? L('للتاني', 'For my other half') : esc(c.kidName(x.for))}${x.occ && x.occ !== 'any' ? ` · ${esc({ birthday: L('عيد الميلاد', 'Birthday'), anniversary: L('عيد الجواز', 'Anniversary'), eid: L('العيد', 'Eid'), valentine: L('عيد الحب', 'Valentine’s') }[x.occ] || '')}` : ''}${x.price ? ` · ${esc(x.price)} ${L('ج', 'EGP')}` : ''}</p>
 		<h3 dir="auto">${esc(x.idea)}</h3>

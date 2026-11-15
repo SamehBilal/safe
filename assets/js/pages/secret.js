@@ -50,19 +50,19 @@ export default {
 	title: { ar: 'أوضتنا', en: 'Our room' },
 	render() {
 		return `${pageHead(L('أوضتنا', 'Our room'), L('لينا إحنا الاتنين بس', 'Just for the two of us'), [{ href: 'secret.html', ar: 'أوضتنا', en: 'Our room' }], { band: BAND })}
-		<section class="sx" id="sx">
-			<div class="sx-lock" id="sx-lock">
-				<span class="sx-lock__e" aria-hidden="true">${doodle('lock', 56)}</span>
-				<h1>${L('أوضتنا', 'Our room')}</h1>
-				<p>${L('لينا إحنا الاتنين بس — اكتبوا الرقم السري', 'Just for the two of us — enter the PIN')}</p>
-				<form id="sx-form" autocomplete="off">
-					<input id="sx-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" aria-label="${L('الرقم السري', 'PIN')}" dir="ltr" required>
-					<button class="btn btn--coral" type="submit">${L('افتح', 'Open')}</button>
+		<section class="sec sec--top sx" id="sx"><div class="wrap">
+			<div class="panel sx-lock" id="sx-lock">
+				<span class="sx-lock__e" aria-hidden="true">${doodle('lock', 44)}</span>
+				<h2>${L('اكتبوا الرقم السري', 'Enter the PIN')}</h2>
+				<form id="sx-form" class="sx-pinform" autocomplete="off">
+					<input id="sx-pin" class="sx-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off" aria-label="${L('الرقم السري', 'PIN')}" dir="ltr" required>
+					<button class="btn btn--coral" type="submit">${L('افتح ♥', 'Open ♥')}</button>
 				</form>
 				<p class="form-msg" id="sx-msg" role="status"></p>
 				<a class="link" href="settings.html">${L('رجوع', 'Back')}</a>
 			</div>
 			<div id="sx-room" hidden></div>
+		</div>
 		</section>`;
 	},
 
@@ -125,14 +125,11 @@ async function room(main, s, data, lock) {
 
 	const tab = qs('t') || 'pos';
 	box.innerHTML = `
-		<header class="sx-head">
-			<h1>${doodle('love', 34)} ${L('أوضتنا', 'Our room')}</h1>
-			<button type="button" class="btn btn--sm btn--ghost" id="sx-close">${doodle('lock', 18)} ${L('اقفل', 'Lock')}</button>
-		</header>
+		<div class="sx-head"><span class="sx-head__t">${doodle('love', 26)} ${L('جوه أوضتنا', 'Inside our room')}</span><button type="button" class="btn btn--sm btn--ghost" id="sx-close">${doodle('lock', 16)} ${L('اقفل', 'Lock')}</button></div>
 		<nav class="chips kinds-tabs sx-tabs" role="tablist">
-			<button type="button" class="chip" data-tab="pos" style="--c:#c2185b">${doodle('heart', 18)} ${L('الأوضاع', 'Positions')} <small>${P.length}</small></button>
-			${LISTS.map((k) => `<button type="button" class="chip" data-tab="${k.id}" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))} <small>${(lists[k.id] || []).length}</small></button>`).join('')}
-			<button type="button" class="chip" data-tab="nights" style="--c:#8e5bd1">${doodle('moon', 18)} ${L('ليالينا', 'Our nights')} <small id="sx-nn"></small></button>
+			<button type="button" class="chip" data-tab="pos">${doodle('heart', 18)} ${L('الأوضاع', 'Positions')} <small>${P.length}</small></button>
+			${LISTS.map((k) => `<button type="button" class="chip" data-tab="${k.id}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))} <small>${(lists[k.id] || []).length}</small></button>`).join('')}
+			<button type="button" class="chip" data-tab="nights">${doodle('moon', 18)} ${L('ليالينا', 'Our nights')} <small id="sx-nn"></small></button>
 		</nav>
 		<div class="sx-pane" id="sx-pane"></div>`;
 	$('#sx-close', box).onclick = lock;
@@ -212,7 +209,7 @@ async function room(main, s, data, lock) {
 				<a class="sx-card__img" href="https://sexpositions.club/positions/${p.n}.html" target="_blank" rel="noopener noreferrer"><img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" referrerpolicy="no-referrer"></a>
 				<div class="sx-card__b">
 					<b dir="ltr">${p.n}. ${esc(p.name)}</b>
-					${lv ? `<span class="sx-lvl" style="--c:${lv[2]}">${esc(L(lv[0], lv[1]))}</span>` : ''}
+					${lv ? `<span class="sx-lvl sx-lvl--${p.level}">${esc(L(lv[0], lv[1]))}</span>` : ''}
 					<small>${p.tags.filter((g) => TAGS[g]).slice(0, 4).map((g) => esc(L(...TAGS[g]))).join(' · ')}</small>
 					<div class="sx-marks">
 						<button type="button" data-mk="want" class="${m.want ? 'is-on' : ''}" title="${L('عايزين نجربها', 'Want to try')}">🔖</button>

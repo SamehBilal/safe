@@ -25,8 +25,8 @@ export default listPage({
 	top: (items, ctx) => {
 		const n = years(ctx.s), w = wedding(ctx.s);
 		const missing = Array.from({ length: n }, (_, i) => i + 1).filter((k) => !items.some((x) => x.n === k));
-		return `${missing.length ? `<p class="an-miss">${L('سنين لسه مستنية تتكتب:', 'Years still waiting to be written:')} ${missing.map((k) => `<b>${num(k)}</b>`).join(' ')}</p>` : ''}
-			<p class="muted an-next">${L('عيد الجواز الجاي:', 'Next anniversary:')} ${num(n + 1)} — ${esc(new Date(new Date(w).setFullYear(new Date(w).getFullYear() + n + 1)).toLocaleDateString(L('ar-EG', 'en-GB'), { day: 'numeric', month: 'long', year: 'numeric' }))}</p>`;
+		return `${missing.length ? `<p class="lp-note an-miss">${L('سنين لسه مستنية تتكتب:', 'Years still waiting to be written:')} ${missing.map((k) => `<b>${num(k)}</b>`).join(' ')}</p>` : ''}
+			<p class="lp-note an-next">${L('عيد الجواز الجاي:', 'Next anniversary:')} ${num(n + 1)} — ${esc(new Date(new Date(w).setFullYear(new Date(w).getFullYear() + n + 1)).toLocaleDateString(L('ar-EG', 'en-GB'), { day: 'numeric', month: 'long', year: 'numeric' }))}</p>`;
 	},
 	card: (x, c) => `<article class="lp-card an-card">
 		<span class="an-badge">${num(x.n)}</span>

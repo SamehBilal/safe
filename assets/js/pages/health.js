@@ -25,7 +25,7 @@ export default listPage({
 	top: (items, c) => {
 		const today = new Date().toISOString().slice(0, 10);
 		const due = items.filter((x) => x.next && x.next >= today).sort((a, b) => a.next.localeCompare(b.next));
-		return due.length ? `<div class="hl-due"><h2>${L('الجاي', 'Coming up')}</h2>${due.map((x) => `<p>${ICON[x.type] || '📋'} <b>${esc(c.kidName(x.kid))}</b> — ${esc(x.what)} · ${esc(longDate(x.next))}</p>`).join('')}</div>` : '';
+		return due.length ? `<div class="lp-note"><h2>${L('الجاي', 'Coming up')}</h2>${due.map((x) => `<p>${ICON[x.type] || '📋'} <b>${esc(c.kidName(x.kid))}</b> — ${esc(x.what)} · ${esc(longDate(x.next))}</p>`).join('')}</div>` : '';
 	},
 	card: (x, c) => `<article class="lp-card hl-card">
 		<p class="lp-k">${ICON[x.type] || '📋'} ${esc(L(type(x.type)[1], type(x.type)[2]))} · ${esc(c.kidName(x.kid))}</p>

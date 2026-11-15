@@ -28,7 +28,7 @@ export default listPage({
 		const by = new Map();
 		for (const x of items) { const k = x.who.trim(); const v = by.get(k) || { in: 0, out: 0 }; v[x.dir === 'out' ? 'out' : 'in']++; by.set(k, v); }
 		const owe = [...by].filter(([, v]) => v.in > v.out).map(([k]) => k);
-		return owe.length ? `<p class="hs-owe">${L('عليهم زيارة ردّ:', 'We owe a visit to:')} ${owe.map((k) => `<b dir="auto">${esc(k)}</b>`).join('، ')}</p>` : '';
+		return owe.length ? `<p class="lp-note">${L('عليهم زيارة ردّ:', 'We owe a visit to:')} ${owe.map((k) => `<b dir="auto">${esc(k)}</b>`).join('، ')}</p>` : '';
 	},
 	card: (x, c) => `<article class="lp-card">
 		${c.photo(x)}
