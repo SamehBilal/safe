@@ -1,4 +1,4 @@
-import { L, Y, T, esc, pageHead, related, App, $, $$, longDate, store, REDUCE, mediaURL } from '../shell.js';
+import { L, Y, T, esc, pageHead, related, App, $, $$, longDate, store, REDUCE, mediaURL, num } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
@@ -64,7 +64,7 @@ export default {
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('أغانينا', 'Our songs'), Y('حط أي أسطوانة على الجرامافون — كل أغنية هنا ليها حكاية معانا', 'حطي أي أسطوانة على الجرامافون — كل أغنية هنا ليها حكاية معانا', 'Put any record on the player — every song here has a story with us'), [{ href: 'music.html', ar: 'أغانينا', en: 'Our songs' }])}
+		${pageHead(L('أغانينا', 'Our songs'), Y('حط أي أسطوانة على الجرامافون — كل أغنية هنا ليها حكاية معانا', 'حطي أي أسطوانة على الجرامافون — كل أغنية هنا ليها حكاية معانا', 'Put any record on the player — every song here has a story with us'), [{ href: 'music.html', ar: 'أغانينا', en: 'Our songs' }], { band: shelfBand() })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="deck reveal" id="deck">
 				<div class="deck__stage">${deckSVG()}</div>
@@ -287,6 +287,12 @@ export default {
 
 		data = await live.load('music');
 		paint();
+		// the shelf in the header: the same songs as CD cases; opening one plays it
+		const shelf = discShelf(main, items(), s, (x) => radio.play(x, shown()));
+		let shelfId = '';
+		const quietShelf = radio.on((what, r = radio.state()) => { if (what !== 'time' && r.item && r.item.id !== shelfId) { shelfId = r.item.id; shelf.show(r.item.id); } });
+		const leave0 = this.leave;
+		this.leave = () => { leave0(); quietShelf(); shelf.stop(); };
 		// a song already playing stays on the platter; else today's record waits there (the same one on both phones),
 		// unless a song is in the address
 		const all = items();
@@ -318,3 +324,108 @@ export default {
 		};
 	}
 };
+
+/* ---- the disc shelf in the header (after Paul Troshkin's «Disc Shelf», codepen.io/Maseone): our songs as CD cases in 3D
+   on a glossy floor. Spines stand in a row to one side of the chosen case and covers fan out to the other; a glint
+   sweeps the chosen case, and the room behind takes the colour of its cover. Drag, the arrows or a click move along
+   the shelf; a click on the chosen case opens it — the cover swings open on its note, the disc slides out and spins,
+   and the song plays on the turntable below. The pen drives it all from CSS with Reactive CSS; here a few lines of JS
+   set --sel (the chosen case) and --open, and the CSS (discshelf.css) does the rest. */
+const hueOf = (x) => { let h = 0; for (const c of String(x.id || x.title)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+
+function shelfBand() {
+	return `<div class="lp-band ds" id="ds" style="--sel:0;--open:0">
+		<div class="ds-room" aria-hidden="true"><i id="ds-room"></i></div>
+		<div class="ds-top"><p class="ds-brand"><i aria-hidden="true"></i>${L('رف الأسطوانات', 'The disc shelf')}</p><p class="ds-count"><b id="ds-n">·</b> / <span id="ds-of">·</span></p></div>
+		<div class="ds-shelf" id="ds-shelf" tabindex="0" aria-label="${L('رف الأغاني: الأسهم تتنقل، وEnter يفتح الأسطوانة ويشغّلها', 'Song shelf: arrows browse, Enter opens and plays')}">
+			<ol class="ds-cases" id="ds-cases"></ol>
+			<div class="ds-mirror" aria-hidden="true"><ol class="ds-cases ds-reflect" id="ds-reflect"></ol></div>
+		</div>
+		<div class="ds-title"><b id="ds-t" dir="auto">${L('بنجيب الأسطوانات…', 'Fetching the records…')}</b><small id="ds-a" dir="auto"></small></div>
+		<p class="ds-keys"><span><kbd>←</kbd><kbd>→</kbd> ${L('اتنقّل', 'Browse')}</span><span><kbd>Enter</kbd> ${L('افتح وشغّل', 'Open & play')}</span></p>
+	</div>`;
+}
+
+function discShelf(main, list, s, onPlay) {
+	const box = $('#ds', main);
+	const none = { show() {}, stop() {} };
+	if (!box) return none;
+	if (!list.length) { $('#ds-t', box).textContent = L('الرف فاضي لسه', 'The shelf is empty for now'); return none; }
+	const name = (w) => App.t(w === 'him' ? s.him : s.her);
+	const one = (x, i) => `<li class="ds-case" style="--i:${i};--h:${hueOf(x)}" data-i="${i}">
+		<div class="ds-box">
+			<div class="ds-cover">
+				<div class="ds-out">${x.cover ? `<img data-cover="${esc(x.cover)}" alt="" draggable="false">` : `<span class="ds-blank">${doodle('music', 54)}</span>`}<i class="ds-hinge"></i><p class="ds-art"><b dir="auto">${esc(x.title)}</b><span dir="auto">${esc(x.artist || '')}</span></p></div>
+				<div class="ds-in"><p class="ds-in__t" dir="auto">${esc(x.title)}</p>${x.note ? `<p class="ds-in__n" dir="auto">${esc(x.note)}</p>` : ''}<p class="ds-in__f">${esc(L('اختيار', 'Picked by'))} ${esc(name(x.by))}${x.artist ? ` · <span dir="auto">${esc(x.artist)}</span>` : ''}</p></div>
+			</div>
+			<div class="ds-spine"><b dir="auto">${esc(x.title)}</b></div>
+			<div class="ds-edge"></div><div class="ds-lid"></div><div class="ds-base"></div>
+			<div class="ds-tray"><div class="ds-disc">${x.cover ? `<img data-cover="${esc(x.cover)}" alt="" draggable="false">` : ''}<i></i></div></div>
+		</div>
+	</li>`;
+	const html = list.map(one).join('');
+	$('#ds-cases', box).innerHTML = html;
+	$('#ds-reflect', box).innerHTML = html;
+	$('#ds-of', box).textContent = num(list.length);
+
+	let sel = 0, open = false;
+	const covers = new Map();
+	const room = () => {
+		const x = list[sel], url = x.cover && covers.get(x.cover);
+		const r = $('#ds-room', box);
+		r.style.setProperty('--h', hueOf(x));
+		r.style.backgroundImage = url ? `url("${url}")` : 'none';
+	};
+	for (const im of $$('img[data-cover]', box)) mediaURL(im.dataset.cover).then((url) => { im.src = url; covers.set(im.dataset.cover, url); if (list[sel]?.cover === im.dataset.cover) room(); }).catch(() => im.remove());
+	const set = (i, o = false) => {
+		sel = Math.max(0, Math.min(list.length - 1, i));
+		open = o;
+		box.style.setProperty('--sel', sel);
+		box.style.setProperty('--open', open ? 1 : 0);
+		box.classList.toggle('is-open', open);
+		$$('.ds-case', box).forEach((el) => el.classList.toggle('is-sel', +el.dataset.i === sel));
+		const x = list[sel];
+		$('#ds-n', box).textContent = num(sel + 1);
+		$('#ds-t', box).textContent = x.title;
+		$('#ds-a', box).textContent = [x.artist, `${L('اختيار', 'Picked by')} ${name(x.by)}`].filter(Boolean).join(' · ');
+		room();
+	};
+	const toggle = () => { const o = !open; set(sel, o); if (o) onPlay(list[sel]); };
+
+	// drag along the shelf; a press that hardly moves is a click on a case
+	const shelf = $('#ds-shelf', box);
+	const W = () => $('.ds-case', box)?.offsetWidth || 160;
+	let x0 = null, s0 = 0, moved = false;
+	shelf.addEventListener('pointerdown', (e) => { x0 = e.clientX; s0 = sel; moved = false; shelf.setPointerCapture(e.pointerId); });
+	shelf.addEventListener('pointermove', (e) => {
+		if (x0 === null) return;
+		const dx = e.clientX - x0;
+		if (Math.abs(dx) > 6) moved = true;
+		if (!moved) return;
+		const i = Math.round(s0 - dx / (W() * 0.35));
+		if (i !== sel) set(i);
+	});
+	shelf.addEventListener('pointerup', (e) => {
+		if (x0 === null) return;
+		x0 = null;
+		if (moved) return;
+		// a click: the case under the pointer (the shelf holds the capture, so look it up by position)
+		const hit = document.elementsFromPoint(e.clientX, e.clientY).map((el) => el.closest?.('#ds-cases .ds-case')).find(Boolean);
+		if (!hit) return;
+		const i = +hit.dataset.i;
+		if (i === sel) toggle(); else set(i);
+	});
+	shelf.addEventListener('pointercancel', () => { x0 = null; });
+	shelf.onkeydown = (e) => {
+		if (e.key === 'ArrowRight') { e.preventDefault(); set(sel + 1); }
+		else if (e.key === 'ArrowLeft') { e.preventDefault(); set(sel - 1); }
+		else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+		else if (e.key === 'Escape' && open) set(sel);
+	};
+	set(0);
+	return {
+		// the song now playing comes forward (and its case opens) wherever it was started
+		show(id) { const i = list.findIndex((x) => x.id === id); if (i >= 0 && (i !== sel || !open)) set(i, true); },
+		stop() {}
+	};
+}

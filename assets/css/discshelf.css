@@ -1,0 +1,111 @@
+/* «أغانينا»'s header band: the disc shelf (after Paul Troshkin's «Disc Shelf»). A dark listening room framed in the
+   journal's ink; inside, the songs as CD cases in 3D on a glossy floor. JS sets --sel (the chosen case, by its --i)
+   and --open; every place, turn and fade below is worked out from those two. */
+
+.ds { --W: clamp(118px, min(24vw, 30vh), 200px); --H: var(--W); --S: calc(var(--W) * .075); --sp: calc(var(--S) + 5px); --sh: calc(var(--H) * 1.5);
+	--floor: calc(var(--sh) / 2 + var(--H) / 2);
+	width: min(1100px, 100% - 2 * var(--gutter, 16px)); margin: clamp(10px, 2vw, 22px) auto clamp(14px, 3vw, 28px);
+	position: relative; isolation: isolate; display: grid; grid-template-rows: auto var(--sh) auto auto; gap: 6px; place-items: stretch;
+	padding: 14px 18px 14px; overflow: hidden; direction: ltr; color: #fff; background: #17161c;
+	border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-pink);
+	user-select: none; -webkit-user-select: none; }
+
+/* the room: the chosen cover, blurred and tinted, and a few streaks of light drifting */
+.ds-room { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #17161c; }
+.ds-room i { position: absolute; inset: -40px; background: center / cover no-repeat; filter: blur(34px) saturate(1.3); opacity: .55; transition: background-image .6s; }
+.ds-room::after { content: ''; position: absolute; inset: 0;
+	background: radial-gradient(60% 55% at 50% 40%, hsl(var(--h, 330) 60% 50% / .35), transparent 70%), linear-gradient(rgb(14 12 20 / .35), rgb(10 9 14 / .85)); }
+.ds-room { --h: 330; }
+
+.ds-top { display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: rgb(255 255 255 / .82); }
+.ds-brand { margin: 0; display: inline-flex; align-items: center; gap: 9px; font: 400 1.25rem var(--f-label); letter-spacing: .06em; }
+:lang(ar) .ds-brand { font: 800 .95rem var(--f-body); letter-spacing: 0; }
+.ds-brand i { width: 18px; aspect-ratio: 1; border-radius: 50%; background: conic-gradient(from 30deg, #8fd3e8, #f3a6d8, #f7e08a, #8fd3e8); -webkit-mask: radial-gradient(circle, transparent 2.5px, #000 3px); mask: radial-gradient(circle, transparent 2.5px, #000 3px); }
+.ds-count { margin: 0; font-variant-numeric: tabular-nums; color: rgb(255 255 255 / .6); }
+.ds-count b { color: #fff; }
+
+/* ---- the shelf ---- */
+.ds-shelf { position: relative; outline: none; touch-action: pan-y; cursor: grab; }
+.ds-shelf:active { cursor: grabbing; }
+.ds-shelf:focus-visible { box-shadow: inset 0 0 0 2px rgb(255 255 255 / .35); border-radius: 12px; }
+.ds-cases { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; perspective: 1400px; transform-style: preserve-3d; }
+
+/* a case: its place from its distance to the chosen one (--d) — before it (--L) spine-on in a row, after it (--R) a fan
+   of covers, the chosen one (--C) forward; opened, it steps aside so the cover and the disc sit centred */
+.ds-case { --d: calc(var(--i) - var(--sel)); --ad: max(var(--d), -1 * var(--d));
+	--L: clamp(0, -1 * var(--d), 1); --R: clamp(0, var(--d), 1); --C: calc(1 - var(--L) - var(--R));
+	--x: calc(var(--R) * (var(--W) * .52 + 50px + (var(--d) - 1) * var(--W) * .3) - var(--L) * (var(--W) * .5 + 44px + (var(--ad) - 1) * var(--sp)) + var(--C) * var(--open) * var(--W) * .24);
+	--fade: calc((1 - var(--open) * (1 - var(--C))) * clamp(0, 12 - var(--ad), 1));
+	position: absolute; inset: 50% auto auto 50%; width: var(--W); height: var(--H); margin: calc(var(--H) / -2) 0 0 calc(var(--W) / -2);
+	transform-style: preserve-3d;
+	transform: translateX(var(--x)) translateZ(calc(var(--C) * (60px + var(--open) * 80px))) rotateY(calc(var(--L) * 90deg - var(--R) * 58deg)) scale(calc(1 - (1 - var(--C)) * .1));
+	transition: transform .65s cubic-bezier(.2, .85, .25, 1); cursor: pointer; }
+.ds-box { position: absolute; inset: 0; transform-style: preserve-3d; }
+.ds-box > * { position: absolute; }
+.ds-box > :not(.ds-cover), .ds-out, .ds-in { opacity: var(--fade); transition: opacity .4s; }
+
+/* the cover: hinged on its left edge, the art outside and the song's note inside */
+.ds-cover { inset: 0; transform-style: preserve-3d; transform-origin: 0 50%; transform: translateZ(calc(var(--S) / 2)) rotateY(calc(var(--C) * var(--open) * -158deg)); transition: transform .8s cubic-bezier(.3, .9, .3, 1); }
+.ds.is-open .ds-cover { transition-delay: .12s; }
+.ds-out, .ds-in { position: absolute; inset: 0; overflow: hidden; border-radius: 3px; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+.ds-out { background: hsl(var(--h) 45% 22%); box-shadow: 0 26px 50px -20px rgb(0 0 0 / .7); }
+.ds-out img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.ds-blank { position: absolute; inset: 0; display: grid; place-items: center; padding-bottom: 22%; color: hsl(var(--h) 70% 82%); background: radial-gradient(circle at 30% 25%, hsl(var(--h) 60% 45%), hsl(var(--h) 55% 22%)); }
+.ds-hinge { position: absolute; inset: 0 auto 0 0; width: 7%; background: repeating-linear-gradient(rgb(255 255 255 / .18) 0 1px, rgb(0 0 0 / .25) 1px 3px); box-shadow: inset -1px 0 0 rgb(255 255 255 / .35); }
+.ds-out::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, rgb(255 255 255 / .22), transparent 30% 62%, rgb(255 255 255 / .1)); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .25); }
+/* the glint: a band of light across the chosen case, every few seconds */
+.ds-out::before { content: ''; position: absolute; inset: -30% -60%; z-index: 3; pointer-events: none; background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / .2) 45%, rgb(255 255 255 / .8) 50%, rgb(255 255 255 / .2) 55%, transparent 60%); mix-blend-mode: screen; translate: -70% 0; }
+.ds-case.is-sel .ds-out::before { animation: ds-glint 4.8s cubic-bezier(.45, .05, .35, 1) -1.4s infinite; }
+@keyframes ds-glint { 0%, 48% { translate: -70% 0; } 80%, 100% { translate: 70% 0; } }
+.ds-art { position: absolute; inset: auto 0 0 7%; margin: 0; display: grid; gap: 2px; padding: 9% 8% 7%; background: linear-gradient(transparent, rgb(12 10 18 / .82)); }
+.ds-art b { font: 800 calc(var(--W) * .085)/1.1 var(--f-body); }
+.ds-art span { font: 600 calc(var(--W) * .055)/1.3 var(--f-body); opacity: .8; }
+
+.ds-in { transform: rotateY(180deg); display: grid; align-content: start; gap: 6%; padding: 10% 10%; background: #fbf6ea; color: #2b2b33; font-size: calc(var(--W) * .06); visibility: hidden; }
+.ds-in::before { content: ''; position: absolute; inset: 8px; border: 2px dotted rgb(0 48 73 / .35); border-radius: 2px; pointer-events: none; }
+.ds-in__t { margin: 0; font: 800 1.35em/1.25 var(--f-body); color: var(--coral-deep, #d9534f); }
+.ds-in__n { margin: 0; font: 600 1em/1.55 var(--f-body); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; }
+.ds-in__f { margin: 0; font-size: .82em; opacity: .65; }
+
+/* the other faces: the spine with the title, the edges, and the tray with its disc */
+.ds-spine { inset: 0 auto 0 calc(var(--S) / -2); width: var(--S); transform: rotateY(-90deg); display: flex; justify-content: center; align-items: center; padding: 8px 0;
+	background: linear-gradient(90deg, hsl(var(--h) 45% 20%), hsl(var(--h) 50% 32%) 50%, hsl(var(--h) 45% 18%)); box-shadow: inset 0 0 0 1px rgb(255 255 255 / .14); }
+.ds-spine b { writing-mode: vertical-rl; font: 700 clamp(8px, calc(var(--S) * .55), 11px)/1 var(--f-body); white-space: nowrap; overflow: hidden; max-height: 88%; }
+.ds-edge { inset: 0 auto 0 calc(var(--W) - var(--S) / 2); width: var(--S); transform: rotateY(90deg); background: hsl(var(--h) 8% 78%); }
+.ds-lid { inset: calc(var(--S) / -2) 0 auto; height: var(--S); transform: rotateX(90deg); background: hsl(var(--h) 8% 86%); }
+.ds-base { inset: auto 0 calc(var(--S) / -2); height: var(--S); transform: rotateX(-90deg); background: hsl(var(--h) 8% 58%); }
+.ds-tray { inset: 0; transform: translateZ(calc(var(--S) / -2 + 1px)); transform-style: preserve-3d; border-radius: 3px; visibility: hidden;
+	background: radial-gradient(circle, #3a3a42 12%, #222228 13% 46%, #2e2e35 47%), #1d1d22; }
+.ds-disc { position: absolute; inset: 6%; border-radius: 50%; overflow: hidden; background: conic-gradient(from 0deg, #d8d8de, #b8c0d8, #e2d6e8, #c9d8d2, #d8d8de);
+	transform: translateX(calc(var(--C) * var(--open) * var(--W) * .5)) translateZ(calc(var(--C) * var(--open) * (var(--S) + 4px)));
+	transition: transform .9s cubic-bezier(.3, .9, .3, 1);
+	-webkit-mask: radial-gradient(circle, transparent 7%, #000 7.5%); mask: radial-gradient(circle, transparent 7%, #000 7.5%); box-shadow: 0 0 0 1px rgb(255 255 255 / .25); }
+.ds.is-open .ds-disc { transition-delay: .45s; }
+.ds-disc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ds-disc i { position: absolute; inset: 0; border-radius: 50%; mix-blend-mode: screen;
+	background: radial-gradient(circle, #ebebeb 14%, transparent 14.5% 46%, rgb(255 255 255 / .1) 47%),
+		conic-gradient(from 20deg, transparent, rgb(150 220 240 / .35), transparent 25%, rgb(240 160 220 / .35), transparent 50%, rgb(250 230 140 / .3), transparent 75%, rgb(150 220 240 / .35)); }
+.ds.is-open .ds-case.is-sel .ds-disc img, .ds.is-open .ds-case.is-sel .ds-disc i { animation: ds-spin 5s linear infinite; }
+@keyframes ds-spin { to { rotate: 1turn; } }
+/* the inside and the tray are drawn on the chosen case only — the others are shut */
+.ds-case.is-sel .ds-in, .ds-case.is-sel .ds-tray { visibility: visible; }
+
+/* ---- the glossy floor: the shelf again, mirrored about the line the cases stand on, fading as it goes down ---- */
+.ds-mirror { position: absolute; inset: var(--floor) 0 auto; height: calc(var(--H) * .6); overflow: hidden; pointer-events: none; opacity: .45;
+	-webkit-mask: linear-gradient(#000, rgb(0 0 0 / .35) 35%, transparent 85%); mask: linear-gradient(#000, rgb(0 0 0 / .35) 35%, transparent 85%); }
+.ds-mirror::before { content: ''; position: absolute; inset: 0 8% auto; height: 1px; z-index: 1; background: linear-gradient(90deg, transparent, rgb(255 255 255 / .35) 30% 70%, transparent); }
+.ds-reflect { inset: calc(-1 * var(--floor)) 0 auto; height: var(--sh); transform-origin: 50% var(--floor); transform: scaleY(-1); }
+
+/* ---- the chosen song's title, and the keys ---- */
+.ds-title { display: grid; justify-items: center; text-align: center; min-height: 3.2em; }
+.ds-title b { font: 800 clamp(1.15rem, 2.6vw, 1.6rem)/1.3 var(--f-body); }
+.ds-title small { color: rgb(255 255 255 / .65); font-size: .85rem; }
+.ds-keys { margin: 0; display: flex; justify-content: center; gap: 18px; font-size: .78rem; color: rgb(255 255 255 / .65); }
+.ds-keys span { display: inline-flex; align-items: center; gap: 5px; }
+.ds-keys kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding-inline: 5px; border-radius: 6px; font: 600 11px/1 system-ui, sans-serif; color: #fff; background: rgb(255 255 255 / .12); border: 1px solid rgb(255 255 255 / .22); box-shadow: 0 2px 0 rgb(0 0 0 / .4); }
+@media (hover: none) { .ds-keys { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+	.ds-case, .ds-cover, .ds-disc, .ds-box > *, .ds-out, .ds-in { transition: none; }
+	.ds-out::before, .ds .ds-disc img, .ds .ds-disc i { animation: none !important; }
+}
