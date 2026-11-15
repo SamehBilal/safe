@@ -398,12 +398,15 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mg-list, .mg-more { grid-column: 2; grid-row: 1 / span 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; align-content: start; }
 	.mg-more .mg-h { grid-column: 1 / -1; }
 	.mg-h { margin: 0 0 6px; padding-inline: .3em; width: fit-content; font: 400 1.35rem var(--f-label); letter-spacing: .06em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
-	/* the links: small, one line each */
-	.mg-item, .mg-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; }
+	/* the links: the name, and a small one-line description under it */
+	.mg-item, .mg-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; }
 	.mg-item .ic, .mg-row .ic { flex: none; width: 28px; height: 28px; display: grid; place-items: center; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 50%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
-	.mg-item .mg-tx, .mg-row .mg-tx { min-width: 0; }
+	.mg-item .mg-tx, .mg-row .mg-tx { min-width: 0; flex: 1; line-height: 1.25; }
 	.mg-item b, .mg-row b { display: block; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.mg-item small, .mg-row small, .mg-item .mg-arr, .mg-row .mg-arr { display: none; }
+	.mg-item small, .mg-row small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: .7rem; line-height: 1.35; color: var(--muted); }
+	:lang(en) .mg-item small, :lang(en) .mg-row small { font-size: .74rem; }
+	.mg-item:hover small, .mg-row:hover small, .mg-item[aria-current='page'] small { color: color-mix(in srgb, var(--ink) 75%, transparent); }
+	.mg-item .mg-arr, .mg-row .mg-arr { display: none; }
 
 	/* ---- the pictures: the polaroid / journal-card look, with tape, a tilt, a lift on hover ---- */
 	.mg-card, .mg-photo, .mg-fig, .mg-kind, .mg-data, .mg-band { position: relative; transition: transform .25s var(--ease-pop, ease), box-shadow .2s, rotate .25s; }
