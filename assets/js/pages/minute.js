@@ -36,7 +36,7 @@ export default {
 		const stage = $('#mn-stage', main), slide = $('#mn-slide', main), bar = $('#mn-bar', main), play = $('#mn-play', main);
 		const show = () => {
 			const x = list[i];
-			slide.innerHTML = `<figure class="mn-fig">${img(x.photo, t(x.title), 'mn-img')}<figcaption><small>${esc(longDate(x.date))}</small><b dir="auto">${esc(t(x.title))}</b></figcaption></figure>`;
+			slide.innerHTML = `<figure class="mn-fig">${img(x.photo, t(x.title), 'mn-img')}<figcaption><small>${x.when ? esc(t(x.when)) : esc(longDate(x.date))}</small><b dir="auto">${esc(t(x.title))}</b></figcaption></figure>`;
 			hydrate(slide);
 			bar.style.width = `${((i + 1) / list.length) * 100}%`;
 		};

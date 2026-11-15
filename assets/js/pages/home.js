@@ -42,7 +42,7 @@ export default {
 	render(s) {
 		const met = parseDate(s.met);
 		const kids = (s.family?.members || []).filter((m) => m.kid);
-		const today = (s.timeline || []).filter((x) => isToday(x.date));
+		const today = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
 		const latest = (s.timeline || []).slice(-3).reverse();
 		const occ = occasions(s);
 		const next = occ[0];

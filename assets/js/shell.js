@@ -621,7 +621,7 @@ function megaHTML(s) {
 
 	// حكايتنا — the big days as photo cards, then the story pages, then "on this day".
 	const chapters = (s.chapters || []).slice(0, 3);
-	const today = (s.timeline || []).find((x) => isToday(x.date));
+	const today = (s.timeline || []).find((x) => !x.when && isToday(x.date));
 	const story = panel('story', L('حكايتنا', 'Our story'),
 		`<div class="mg-cards">${chapters.map((c) => `
 			<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>

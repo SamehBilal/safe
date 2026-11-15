@@ -15,7 +15,7 @@ const isFar = (s, x) => (s.farthest?.moments || []).includes(x?.id);
 /* steady pseudo-random numbers, so a moment's photos fall the same way every visit */
 const rnd = (i, salt) => { const v = Math.sin((i + 1) * 9301 + salt * 49297) * 233280; return v - Math.floor(v); };
 /* a polaroid without its own caption gets the moment's date, like ink on the white strip */
-const capOf = (x, n) => (n === 0 ? App.t(x.title) : String(x.date || '').split('-').reverse().join('.'));
+const capOf = (x, n) => (n === 0 ? App.t(x.title) : x.when ? App.t(x.when) : String(x.date || '').split('-').reverse().join('.'));
 /* where the first six sit in the fan: offsets in the photo's width, scale, rotation (the demo's own values) */
 const FAN = [{ tx: -0.6, ty: -0.3, s: 1.1, r: -20 }, { tx: 0.2, ty: -0.7, s: 1.4, r: 1 }, { tx: 0.5, ty: -0.5, s: 1.3, r: 15 }, { tx: -0.2, ty: -0.4, s: 1.4, r: -17 }, { tx: -0.15, ty: -0.4, s: 1.2, r: -5 }, { tx: 0.7, ty: -0.2, s: 1.1, r: 15 }];
 const EASE_OUT = 'cubic-bezier(0.2, 1, 0.3, 1)';
@@ -43,10 +43,10 @@ export default {
 				<nav class="crumbs" aria-label="${L('أنت هنا', 'You are here')}"><a href="index.html">${L('الرئيسية', 'Home')}</a><span aria-hidden="true">/</span><a href="story.html">${L('حكايتنا', 'Our story')}</a><span aria-hidden="true">/</span><a href="#">${T(x.title)}</a></nav>
 				<p class="ph__eyebrow">${L('حكايتنا', 'Our story')}</p>
 				<h1 class="ph__title">${T(x.title)}</h1>
-				<p class="mo-intro__date">${esc([longDate(x.date), yearsAgo(x.date)].filter(Boolean).join(' · '))}</p>
+				<p class="mo-intro__date">${x.when ? T(x.when) : esc([longDate(x.date), yearsAgo(x.date)].filter(Boolean).join(' · '))}</p>
 				${x.text ? `<p class="mo-intro__lede">${T(x.text)}</p>` : ''}
 			</div>
-			<div class="mo-badge" id="mo-badge"><span class="moment-hero__ic">${doodle(x.icon, 56)}</span><time datetime="${esc(x.date)}">${fmtDate(x.date)}</time></div>
+			<div class="mo-badge" id="mo-badge"><span class="moment-hero__ic">${doodle(x.icon, 56)}</span>${x.when ? `<time>${T(x.when)}</time>` : `<time datetime="${esc(x.date)}">${fmtDate(x.date)}</time>`}</div>
 			${stack ? `<button class="mo-down" type="button" id="mo-down" aria-label="${Y('شوف الصور', 'شوفي الصور', 'See the photos')}"><span>${Y('شوف الصور', 'شوفي الصور', 'See the photos')}</span><i aria-hidden="true">↓</i></button>` : ''}
 		</header>
 		<article class="sec mo-body">

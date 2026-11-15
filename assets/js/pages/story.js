@@ -20,13 +20,13 @@ export default {
 				<ol class="tl">
 					${tl.map((x, k) => {
 						const first = tl.findIndex((y) => y.date.slice(0, 4) === x.date.slice(0, 4)) === k;
-						const today = isToday(x.date);
+						const today = !x.when && isToday(x.date);
 						return `<li class="tl__item reveal" id="t-${esc(x.id)}"${first ? ` data-year="${x.date.slice(0, 4)}"` : ''}>
 							${first ? `<span class="tl__year" id="y-${x.date.slice(0, 4)}">${x.date.slice(0, 4)}</span>` : ''}
 							<span class="tl__icon" aria-hidden="true">${doodle(x.icon, 28)}</span>
 							<a class="tl__card${x.journal ? ' tl__card--journal' : ''}" href="${x.href ? esc(x.href) : `moment.html?id=${esc(x.id)}`}">
-								<div class="tl__date"><time datetime="${esc(x.date)}">${fmtDate(x.date)}</time>
-									${today ? `<span class="tl__today">${L('النهارده', 'Today')}، ${yearsAgo(x.date)} ♥</span>` : `<span class="tl__ago">${yearsAgo(x.date)}</span>`}
+								<div class="tl__date">${x.when ? `<time>${T(x.when)}</time>` : `<time datetime="${esc(x.date)}">${fmtDate(x.date)}</time>`}
+									${today ? `<span class="tl__today">${L('النهارده', 'Today')}، ${yearsAgo(x.date)} ♥</span>` : (x.when ? '' : `<span class="tl__ago">${yearsAgo(x.date)}</span>`)}
 								</div>
 								<h3>${T(x.title)}</h3>
 								${x.text ? `<p>${T(x.text)}</p>` : ''}

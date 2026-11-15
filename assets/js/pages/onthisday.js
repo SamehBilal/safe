@@ -26,7 +26,7 @@ export default {
 			const key = `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 			const lang = App.lang === 'ar' ? 'ar' : 'en';
 			$('#od-day', main).textContent = `${num(d.getDate())} ${MONTHS[lang][d.getMonth()]}`;
-			const moments = (s.timeline || []).filter((x) => md(x.date) === key).map((x) => ({ y: +x.date.slice(0, 4), html: `<a class="od-item" href="moment.html?id=${encodeURIComponent(x.id)}">${x.photo ? img(x.photo, '', 'od-img') : `<span class="od-ic">${doodle(x.icon || 'heart', 36)}</span>`}<span><small>${L('حكايتنا', 'Our story')}</small><b dir="auto">${esc(t(x.title))}</b>${x.text ? `<em dir="auto">${esc(t(x.text)).slice(0, 160)}</em>` : ''}</span></a>` }));
+			const moments = (s.timeline || []).filter((x) => !x.when && md(x.date) === key).map((x) => ({ y: +x.date.slice(0, 4), html: `<a class="od-item" href="moment.html?id=${encodeURIComponent(x.id)}">${x.photo ? img(x.photo, '', 'od-img') : `<span class="od-ic">${doodle(x.icon || 'heart', 36)}</span>`}<span><small>${L('حكايتنا', 'Our story')}</small><b dir="auto">${esc(t(x.title))}</b>${x.text ? `<em dir="auto">${esc(t(x.text)).slice(0, 160)}</em>` : ''}</span></a>` }));
 			const pages = (journal.items || []).filter((x) => md(x.date) === key).map((x) => ({ y: +x.date.slice(0, 4), html: `<a class="od-item" href="journal.html"><span class="od-ic">${doodle('pen', 36)}</span><span><small>${L('دفترنا', 'Our journal')}</small><b dir="auto">${esc(x.title || L('صفحة من الدفتر', 'A journal page'))}</b>${x.text ? `<em dir="auto">${esc(x.text.slice(0, 160))}</em>` : ''}</span></a>` }));
 			const all = [...moments, ...pages].sort((a, b) => b.y - a.y);
 			const years = [...new Set(all.map((x) => x.y))];
