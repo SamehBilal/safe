@@ -106,6 +106,19 @@
 					"type": "image/png"
 				}
 			]
+		},
+		{
+			"name": "دوّر",
+			"short_name": "دوّر",
+			"description": "Search",
+			"url": "./search.html?source=pwa",
+			"icons": [
+				{
+					"src": "assets/icons/icon-192.png",
+					"sizes": "192x192",
+					"type": "image/png"
+				}
+			]
 		}
 	],
 	"screenshots": [

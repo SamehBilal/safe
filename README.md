@@ -19,6 +19,7 @@ Questions only she can answer → loader → intro → the site. Installable as 
 | `draw.html?k=outfit\|dining\|delivery\|movie` | **Tonight's draw** — a wheel picks from your list, you log the night (note, hearts, sketch), and recent picks are skipped |
 | `trips.html` → `trip.html?id=…` | **Anniversary trips** — the map of Egypt's 27 governorates, coloured where your anniversaries took you, with year pins; a draw for next year's governorate; every trip hangs as a polaroid on strings of lights, and each trip has its own photos, notes and sketches |
 | `movies.html` | **What we've watched** — a binge-stats board: one coloured block per film or series, with your totals |
+| `search.html` | **دوّر / Search** — one search over the pages, the story and every list from the phones (the 🔍 in the header, or press `/` or Ctrl+K). Arabic letter forms and tashkeel don't matter; results come grouped by page and open scrolled to the right card. It all runs on the phone after unlocking. «أوضتنا», the gift ideas and the time-capsule letters are left out, and letters are searched by title only |
 | `settings.html` | Whose phone this is, and sending what's new on it to the other phone or the PC |
 
 ## Writing from your phones
@@ -49,6 +50,14 @@ changes nothing. You can also edit `private/live/*.json` by hand (`node tools/ad
 
 Every page shares the header (mega menus on desktop, a “الفهرس” contents menu on phones), the footer,
 and the language switch. The code: `assets/js/shell.js` (shared), `assets/js/pages/<page>.js` (one per page).
+
+Each page's `<head>` (title, description, link-preview tags, stylesheets, script preloads) is written by one tool,
+so they stay alike. After adding a page (an entry in `PAGES` in `shell.js`, a `<page>.html` with
+`<body data-page="<page>">`, and `assets/js/pages/<page>.js`) or changing what a page imports, run
+
+```bash
+node tools/heads.mjs
+```
 
 ## How it stays private
 Everything readable lives in `private/` (git-ignored). `node tools/build.mjs` encrypts it into `content/`

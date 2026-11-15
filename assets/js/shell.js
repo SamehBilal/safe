@@ -158,13 +158,27 @@ export function img(ref, alt = '', cls = '') {
 		: `<img class="${cls}" data-m="${esc(ref)}" alt="${esc(alt)}" decoding="async">`;
 }
 
-export function hydrate(root = document) {
+/* When a page is first drawn (lazy = true), its photos are fetched and decrypted only as they come near the screen
+   (a screen and a half ahead), so a page with hundreds of them opens as fast as one with three. A page asking for
+   photos itself (a slide it's about to show, say) gets them straight away, and so do ones marked data-eager. */
+const fill = (el) => {
+	if (el.dataset.done) return;
+	el.dataset.done = '1';
+	mediaURL(el.dataset.m)
+		.then((url) => { el.src = url; })
+		.catch(() => { (el.closest('[data-media-box]') || el).remove(); });
+};
+const nearby = 'IntersectionObserver' in window
+	? new IntersectionObserver((entries) => {
+		for (const e of entries) if (e.isIntersecting) { nearby.unobserve(e.target); fill(e.target); }
+	}, { rootMargin: '150% 100% 150% 100%' })
+	: null;
+export function hydrate(root = document, lazy = false) {
 	for (const el of $$('[data-m]', root)) {
 		if (el.dataset.done) continue;
-		el.dataset.done = '1';
-		mediaURL(el.dataset.m)
-			.then((url) => { el.src = url; })
-			.catch(() => { (el.closest('[data-media-box]') || el).remove(); });
+		if (el.dataset.watch) { if (!lazy) { nearby.unobserve(el); fill(el); } continue; }
+		if (!lazy || !nearby || 'eager' in el.dataset) fill(el);
+		else { el.dataset.watch = '1'; nearby.observe(el); }
 	}
 }
 
@@ -558,6 +572,7 @@ export const PAGES = [
 	{ href: 'giftideas.html', id: 'giftideas', ic: 'gift', ar: 'أفكار هدايا', en: 'Gift ideas', dar: 'قايمة سرية لكل واحد فينا', den: 'A secret list for each of us', group: 'you' },
 	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'كل سنة جواز، وعملنا فيها إيه', den: 'Every year married, and how we marked it', group: 'you' },
 	{ href: 'hosting.html', id: 'hosting', ic: 'home', ar: 'عزايمنا', en: 'Hosting & visits', dar: 'مين جالنا، ورحنا لمين', den: 'Who came over, and who we visited', group: 'you' },
+	{ href: 'search.html', id: 'search', ic: 'search', ar: 'دوّر', en: 'Search', dar: 'دوّر في كل حاجة كتبناها', den: 'Look through everything we’ve written', group: 'app' },
 	{ href: 'settings.html', id: 'settings', ic: 'gear', ar: 'الإعدادات', en: 'Settings', dar: 'مين ماسك الموبايل، وإزاي الجديد يتبعت', den: 'Whose phone, and sharing what’s new', group: 'app' }
 ];
 
@@ -602,6 +617,7 @@ const ICONS = {
 	flag: '<path d="M5.5 21V4M5.5 4.5h11l-2.5 4 2.5 4h-11"/>',
 	food: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10"/><path d="M17 21V3c-2 1.5-3 4-3 7 0 2 1 3 3 3"/>',
 	phone: '<rect x="6.5" y="3" width="11" height="18" rx="2.5"/><path d="M10.5 18h3"/><path d="M12 13.2c-2-1.3-3-2.4-3-3.6a1.5 1.5 0 0 1 3-.4 1.5 1.5 0 0 1 3 .4c0 1.2-1 2.3-3 3.6Z"/>',
+	search: '<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/><path d="M8 9.2a2.6 2.6 0 0 1 2.4-1.6"/>',
 	baby: '<circle cx="12" cy="11" r="6.5"/><circle cx="9.8" cy="10.5" r=".8"/><circle cx="14.2" cy="10.5" r=".8"/><path d="M10 13.6c1.2 1 2.8 1 4 0M12 4.5c1-1 2.2-.8 2.6 0"/>'
 };
 export const icon = (k, size = 18) => `<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[k] || ICONS.heart}</svg></span>`;
@@ -745,6 +761,18 @@ function wireMega(header) {
 	document.addEventListener('click', (ev) => {
 		if (!header.contains(ev.target)) { header._mega.set(''); header._menu?.(false); }
 	});
+	// «/» or Ctrl/⌘+K: search, from anywhere (not while typing in a box)
+	document.addEventListener('keydown', (ev) => {
+		const typing = ev.target.closest?.('input, textarea, select, [contenteditable=""], [contenteditable="true"]');
+		const slash = ev.key === '/' && !typing && !ev.ctrlKey && !ev.metaKey && !ev.altKey;
+		const k = (ev.ctrlKey || ev.metaKey) && !ev.altKey && ev.key.toLowerCase() === 'k';
+		if (!slash && !k) return;
+		ev.preventDefault();
+		const box = $('#sr-q');
+		if (box) { box.focus(); box.select(); return; }
+		const a = $('.search-btn', header);
+		if (a) a.click();
+	});
 	matchMedia('(max-width: 979px)').addEventListener('change', () => { header._mega.set(''); header._menu?.(false); });
 }
 
@@ -763,7 +791,7 @@ function renderChrome() {
 				${PAGES.map((p, k) => `<a href="${p.href}" style="--i:${k}"${p.href === here ? ' aria-current="page"' : ''}>${icon(p.ic)}<span>${esc(L(p.ar, p.en))}</span><em aria-hidden="true">${num(k + 1)}</em></a>`).join('')}
 			</nav>
 			${megaHTML(s)}
-			<div class="tools">${themeBtn()}${langBtn()}</div>
+			<div class="tools"><a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
 	const setMenu = (on) => {
 		header.classList.toggle('menu-open', on);
@@ -975,7 +1003,19 @@ function owl() {
    another page of ours doesn't load it afresh: it swaps the page's module, redraws the header and footer and renders
    the new page into <main>, and the address and the back button work as usual. With nothing playing, links load
    pages the ordinary way. */
-const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'trips', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food']);
+const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'trips', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
+/* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
+const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more' };
+function ownCSS(id) {
+	const name = OWN_CSS[id];
+	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
+	const l = document.createElement('link');
+	l.rel = 'stylesheet';
+	l.href = `assets/css/${name}.css`;
+	const done = new Promise((r) => { l.onload = l.onerror = r; });
+	document.head.append(l);
+	return done;
+}
 const dirOf = (p) => p.slice(0, p.lastIndexOf('/') + 1);
 function pageOf(url) {
 	if (url.origin !== location.origin || dirOf(url.pathname) !== dirOf(location.pathname)) return '';
@@ -991,7 +1031,7 @@ async function go(url, { push = true } = {}) {
 	if (!id) { location.href = url.href; return; }
 	const ask = ++going;
 	let mod;
-	try { mod = (await import(`./pages/${id}.js`)).default; } catch { location.href = url.href; return; }
+	try { [mod] = await Promise.all([import(`./pages/${id}.js`).then((m) => m.default), ownCSS(id)]); } catch { location.href = url.href; return; }
 	if (ask !== going) return;
 	if (push) history.pushState({ soft: ++softCount }, '', url.href);
 	document.body.dataset.page = id;
@@ -1040,12 +1080,46 @@ async function renderPage() {
 	if (page.load) { try { await page.load(s); } catch { /* render without it */ } }
 	main.innerHTML = page.render(s) || '';
 	document.title = `${t(page.title) || L('حكايتنا', 'Our story')} — ${t(s.him)} ♥ ${t(s.her)}`;
-	hydrate(main);
+	hydrate(main, true);
 	reveal(main);
 	lightbox(main);
 	composers(main);
 	page.after?.(main, s);
-	if (location.hash) $(location.hash.replace(/[^\w#-]/g, ''))?.scrollIntoView();
+	// a page about one thing (a moment, a big day, one of us, a trip) is named after it in the tab
+	const own = DETAIL_OF[pageId()] && $('h1', main)?.textContent.trim();
+	if (own) document.title = `${own} — ${t(s.him)} ♥ ${t(s.her)}`;
+	if (location.hash.startsWith('#find=')) findOnPage(main, decodeURIComponent(location.hash.slice(6)));
+	else if (location.hash) $(location.hash.replace(/[^\w#-]/g, ''))?.scrollIntoView();
+}
+
+/* Coming from a search result (page.html#find=<its title>): scroll to the first card on the page that holds that
+   text and give it a highlighter glow for a moment. Lists fill in after their data arrives, so it keeps looking
+   for a few seconds. */
+function findOnPage(main, text) {
+	const fold = (x) => String(x || '').normalize('NFKC').toLowerCase().replace(/[ً-ٰٟـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/\s+/g, ' ').trim();
+	const want = fold(text).slice(0, 40);
+	if (!want) return;
+	const box = 'article, figure, li, .card, [class*="card"], [class*="item"], details, section';
+	const look = () => {
+		const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+		for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+			const el = n.parentElement;
+			if (!el || el.closest('.ph, .related, [hidden], .cmodal') || !fold(el.textContent).includes(want)) continue;
+			const target = el.closest(box) || el;
+			if (target === main || target.offsetParent === null) continue;
+			target.scrollIntoView({ block: 'center', behavior: REDUCE ? 'auto' : 'smooth' });
+			target.classList.add('is-found');
+			setTimeout(() => target.classList.remove('is-found'), 2600);
+			history.replaceState(history.state, '', location.pathname + location.search);
+			return true;
+		}
+		return false;
+	};
+	if (look()) return;
+	const mo = new MutationObserver(() => { if (look()) stop(); });
+	const stop = () => { mo.disconnect(); clearTimeout(timer); };
+	const timer = setTimeout(stop, 6000);
+	mo.observe(main, { childList: true, subtree: true });
 }
 
 /* Every add-something form (a <details class="composer">) is a small button that opens it in a window. The <details>
@@ -1113,7 +1187,8 @@ const BAND = {
 	member: [['family', 'عيلتنا', 'Family'], ['heart', 'حبيبنا', 'Our dear'], ['star', 'نجم', 'A star']],
 	birthday: [['gift', 'هدية', 'A gift'], ['cake', 'تورتة', 'Cake'], ['party', 'هيييه', 'Hooray'], ['sparkle', 'سنة حلوة', 'Happy year']],
 	wishes: [['star', 'أمنية', 'A wish'], ['bottle', 'البرطمان', 'The jar'], ['sparkle', 'هتتحقق', 'It’ll come true'], ['moon', 'بالليل', 'At night']],
-	settings: [['phone', 'موبايلي', 'My phone'], ['gear', 'ظبط', 'Set up'], ['lock', 'في أمان', 'Safe']]
+	settings: [['phone', 'موبايلي', 'My phone'], ['gear', 'ظبط', 'Set up'], ['lock', 'في أمان', 'Safe']],
+	search: [['eyes', 'فين؟', 'Where?'], ['book', 'في الحكاية', 'In our story'], ['music', 'أغنية', 'A song'], ['pen', 'في الدفتر', 'In the journal']]
 };
 const EYEBROW = {
 	story: ['حكايتنا', 'Our story'], nights: ['سهراتنا', 'Our nights'], memories: ['ذكرياتنا', 'Our memories'],

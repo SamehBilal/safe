@@ -49,6 +49,9 @@
 	.mnav-btn[aria-expanded='true'] .mnav-chev { transform: rotate(180deg); }
 	.mnav-cta { background: var(--blush); color: var(--coral-deep); margin-inline-start: 6px; }
 	.mnav-cta:hover { background: var(--coral); color: #fff; }
+	/* the brand keeps its width, the menu gives way */
+	.brand { flex: none; }
+	.mnav { min-width: 0; }
 
 	/* the panels */
 	.mega { position: absolute; inset-inline: 0; top: 100%; background: var(--card); border-bottom: 1px solid var(--line); box-shadow: 0 30px 60px rgba(19, 52, 71, 0.18); opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 0.2s, transform 0.25s var(--ease-out), visibility 0s 0.25s; }
@@ -159,6 +162,27 @@
 	.site-header .lang-long { display: none; }
 	.site-header .lang-short { display: inline; }
 	.brand-names { font-size: 1.3rem; }
+}
+/* just wide enough for the full menu: tighter tabs, a smaller brand, the language button as «ع/EN» */
+@media (min-width: 980px) and (max-width: 1180px) {
+	.hd-wrap { gap: 8px; }
+	.mnav-link, .mnav-btn { padding: 10px 9px; font-size: 0.92rem; gap: 4px; }
+	.mnav-link[aria-current='page']::after, .mnav-btn.is-here::after { inset-inline: 9px; }
+	.brand-names { font-size: 1.35rem; }
+	.site-header .lang-long { display: none; }
+	.site-header .lang-short { display: inline; }
+	.site-header .lang-toggle { padding: 6px 0; width: 44px; }
+}
+/* small phones, or the installed app with its back and install buttons too: everything a size down, the names
+   trimmed with «…» rather than pushing the buttons off the edge */
+@media (max-width: 360px) {
+	.hd-wrap { gap: 5px; }
+	.site-header .icon-btn { width: 36px; height: 36px; border-radius: 11px; }
+	.site-header .icon-btn svg { width: 18px; height: 18px; }
+	.site-header .lang-toggle { width: 38px; min-height: 36px; }
+	.brand-names { font-size: 1.12rem; overflow: hidden; text-overflow: ellipsis; }
+	.brand-sub { font-size: 0.66rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.tools { gap: 5px; }
 }
 /* inside the installed app: no page bounce or tap flash, and the chrome isn't selectable like text */
 .is-app body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; }

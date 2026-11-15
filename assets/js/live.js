@@ -51,7 +51,8 @@ const mem = new Map();
 async function published(kind) {
 	let text = null;
 	try {
-		const r = await fetch(`content/live/${kind}.bin`, { cache: 'no-store' });
+		// always checked, but an unchanged list comes back as a short «not modified» instead of the whole file
+		const r = await fetch(`content/live/${kind}.bin`, { cache: 'no-cache' });
 		text = r.ok ? await r.text() : r.status === 404 ? '' : null;
 	} catch { text = null; }
 	if (text === null) text = store.get(cacheKey(kind)); // offline: the last copy we saw

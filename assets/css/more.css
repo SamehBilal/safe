@@ -242,6 +242,7 @@
 @keyframes od-flip { 0%, 30% { transform: rotateX(0); opacity: 1; } 45%, 100% { transform: rotateX(-100deg); opacity: 0; } }
 .od-nav { display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 20px; }
 .od-nav b { min-width: 150px; padding: 0 10px; text-align: center; font: 400 1.6rem var(--f-label); letter-spacing: .04em; background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
+@media (max-width: 380px) { .od-nav { gap: 6px; flex-wrap: wrap; } .od-nav b { min-width: 0; flex: 1 1 120px; } }
 .od-year h2 { margin: 22px 0 10px; font: 400 2rem var(--f-label); color: var(--blue); }
 .od-year h2 small { font: 600 1.3rem var(--f-hand); color: var(--muted); }
 .od-item { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; padding: 10px; color: inherit; text-decoration: none; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); transition: transform .12s, box-shadow .12s; }
