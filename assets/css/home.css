@@ -1,0 +1,114 @@
+/* The home page (index.html), in the journal's hand like every page (bujo.css):
+   polaroids taped at angles, ink outlines, hand-drawn corners, hard offset shadows in pink, lime and yellow. */
+
+/* ---- a polaroid ---- */
+.hm-snap { position: relative; display: grid; gap: 6px; width: 100%; padding: 8px 8px 10px; background: #fffdf8; color: #2b2b33; text-decoration: none; border: 1.5px solid var(--ink); border-radius: 4px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); rotate: var(--r, -2deg); transition: rotate .2s, translate .2s, box-shadow .2s; }
+.hm-snap::before { content: ''; position: absolute; top: -10px; left: 50%; width: 54px; height: 18px; translate: -50% 0; rotate: -4deg; background: var(--hl-yellow); border: 1px solid rgba(0, 0, 0, .12); opacity: .9; }
+.hm-snap:hover { rotate: 0deg; translate: 0 -4px; z-index: 3; }
+.hm-snap__img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid rgba(0, 0, 0, .15); background: #eee; }
+.hm-snap__cap { display: grid; text-align: center; line-height: 1.15; }
+.hm-snap__cap small { font: 400 .95rem var(--f-label); letter-spacing: .04em; color: #6b6772; }
+.hm-snap__cap b { font: 400 1.25rem/1.15 var(--f-hand); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+:lang(ar) .hm-snap__cap b { font: 700 .95rem/1.5 var(--f-body); }
+
+/* ---- the hero: the title with our photos scattered round it ---- */
+.hm-hero { position: relative; overflow: hidden; isolation: isolate; }
+.hm-hero > :not(.hm-hero__snaps) { position: relative; z-index: 2; }
+.hm-hero__since { margin: 14px 0 0; padding: 0 10px; font-weight: 800; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-lime) 45% 92%, transparent 92%); }
+.hm-hero__snaps { display: contents; }
+.hm-hero .hm-snap { position: absolute; z-index: 1; width: clamp(130px, 13vw, 190px); pointer-events: auto; }
+.hm-hero .hm-snap__cap b { -webkit-line-clamp: 1; }
+.hm-snap--0 { top: 9%; inset-inline-start: 4%; --r: -8deg; }
+.hm-snap--1 { bottom: 10%; inset-inline-start: 9%; --r: 6deg; }
+.hm-snap--2 { top: 7%; inset-inline-end: 5%; --r: 7deg; }
+.hm-snap--3 { bottom: 8%; inset-inline-end: 10%; --r: -5deg; }
+.hm-snap--4 { top: 40%; inset-inline-end: 1%; --r: -11deg; }
+.hm-hero .hm-snap:nth-child(2n) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
+.hm-hero .hm-snap:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
+/* the title stays readable over them */
+.hm-hero .hero__title { text-shadow: 0 0 18px var(--paper), 4px 4px 0 var(--blush); }
+@media (max-width: 1100px) { .hm-snap--4 { display: none; } }
+/* phones: a fanned row under the names instead */
+@media (max-width: 760px) {
+	.hm-hero { padding-bottom: 40px; }
+	.hm-hero__snaps { display: flex; justify-content: center; order: 10; margin-top: 26px; padding-inline: 16px; }
+	.hm-hero .hm-snap { position: relative; inset: auto; width: 31%; max-width: 140px; margin-inline: -4%; padding: 5px 5px 7px; }
+	.hm-hero .hm-snap:nth-child(n + 4) { display: none; }
+	.hm-hero .hm-snap--1 { z-index: 2; translate: 0 -10px; }
+	.hm-hero .hm-snap__cap small { display: none; }
+	.hm-hero .hm-snap__cap b { font-size: 1rem; }
+	:lang(ar) .hm-hero .hm-snap__cap b { font-size: .75rem; }
+}
+
+/* ---- today ---- */
+.hm-today { display: grid; gap: 12px; }
+
+/* ---- a memory from the drawer ---- */
+.hm-rand { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(22px, 4vw, 46px); align-items: center; max-width: 920px; margin: 0 auto; }
+.hm-snap--big { --r: -3deg; padding: 12px 12px 14px; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-pink); }
+.hm-snap--big .hm-snap__img { aspect-ratio: 4 / 5; }
+.hm-snap--big .hm-snap__cap b { font-size: 1.6rem; }
+:lang(ar) .hm-snap--big .hm-snap__cap b { font-size: 1.1rem; }
+.hm-rand__tx { display: grid; gap: 8px; justify-items: start; padding: 22px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); }
+.hm-rand__ic { display: grid; place-items: center; width: 58px; height: 58px; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 55%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+.hm-rand__tx small { padding: 0 8px; font: 400 1.15rem var(--f-label); letter-spacing: .04em; color: var(--blue-ink, var(--blue)); background: var(--hl-yellow); border-radius: var(--sketch-sm); }
+.hm-rand__tx b { font: 400 2rem/1.2 var(--f-hand); color: var(--text); }
+:lang(ar) .hm-rand__tx b { font: 800 1.35rem/1.6 var(--f-body); }
+.hm-rand__tx p { margin: 0; color: var(--muted); }
+.hm-rand__acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+@media (max-width: 700px) { .hm-rand { grid-template-columns: 1fr; justify-items: center; } .hm-snap--big { max-width: 300px; } }
+
+/* ---- the years of us: a strip of taped photos ---- */
+.hm-years { display: flex; gap: 18px; overflow-x: auto; padding: 16px 6px 22px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.hm-year { flex: 0 0 150px; scroll-snap-align: start; display: grid; gap: 4px; padding: 8px 8px 10px; text-align: center; color: var(--text); text-decoration: none; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); rotate: -1.5deg; transition: rotate .15s, translate .15s; }
+.hm-year:nth-child(2n) { rotate: 1.5deg; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
+.hm-year:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
+.hm-year:hover { rotate: 0deg; translate: 0 -4px; }
+.hm-year__img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink); }
+.hm-year__img--none { display: grid; place-items: center; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 40%, var(--card)); }
+.hm-year b { font: 400 2rem/1 var(--f-label); color: var(--blue); text-shadow: calc(var(--bujo-x) * 2px) 2px 0 var(--hl-pink); margin-top: 4px; }
+.hm-year small { color: var(--muted); font-size: .8rem; font-weight: 700; }
+
+/* ---- the newest moments, with their photo ---- */
+.hm-latest .mini { overflow: hidden; }
+.hm-latest__img { display: block; width: calc(100% + 40px); max-width: none; margin: -18px -20px 10px; aspect-ratio: 16 / 10; object-fit: cover; border-bottom: 1.5px solid var(--ink); }
+.hm-latest .mini p { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+/* ---- the boys' corner ---- */
+.hm-kids { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 22px; }
+.hm-kid { display: grid; gap: 12px; padding: 16px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
+.hm-kid:nth-child(2n) { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); }
+.hm-kid__top { display: flex; align-items: center; gap: 14px; color: var(--text); text-decoration: none; }
+.hm-kid__img { flex: 0 0 auto; width: 84px; height: 84px; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+.hm-kid__img--none { display: grid; place-items: center; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 45%, var(--card)); }
+.hm-kid__top b { display: block; font: 400 2rem/1.1 var(--f-hand); background: linear-gradient(transparent 50%, var(--hl-pink) 50% 92%, transparent 92%); width: fit-content; padding-inline: 4px; }
+:lang(ar) .hm-kid__top b { font: 800 1.4rem/1.5 var(--f-body); }
+.hm-kid__top small { color: var(--muted); font-weight: 700; }
+.hm-kid__first { display: flex; align-items: center; gap: 12px; padding: 10px; color: var(--text); text-decoration: none; border: 1.5px dashed var(--ink); border-radius: var(--sketch-sm); }
+.hm-kid__first:hover { background: color-mix(in srgb, var(--hl-yellow) 40%, transparent); }
+.hm-kid__first img { flex: 0 0 auto; width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink); rotate: -3deg; }
+.hm-kid__first span { display: grid; }
+.hm-kid__first small { color: var(--muted); font-size: .82rem; }
+.hm-kid__first b { font-size: 1.05rem; }
+.hm-kid__first--empty { justify-content: center; text-align: center; }
+
+/* ---- numbers: one tidy row ---- */
+.hm-counters { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+
+/* ---- the house: one card per menu ---- */
+.hm-rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 22px; }
+.hm-room { padding: 16px 16px 12px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
+.hm-room:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); }
+.hm-room:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
+.hm-room h3 { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0 0 10px; padding-inline: 4px; font: 400 1.9rem/1.2 var(--f-hand); color: var(--text); background: linear-gradient(transparent 50%, var(--hl-yellow) 50% 92%, transparent 92%); }
+:lang(ar) .hm-room h3 { font: 800 1.3rem/1.6 var(--f-body); }
+.hm-room ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.hm-room li a { display: flex; align-items: flex-start; gap: 10px; padding: 8px 6px; color: var(--text); text-decoration: none; border-radius: var(--sketch-sm); }
+.hm-room li a:hover { background: color-mix(in srgb, var(--hl-pink) 35%, transparent); }
+.hm-room li .ic { margin-top: 3px; color: var(--coral-deep); }
+.hm-room li span { display: grid; }
+.hm-room li b { font-size: 1rem; }
+.hm-room li small { color: var(--muted); font-size: .82rem; }
+.hm-room__more { margin: 8px 0 0; padding-top: 8px; font-size: .82rem; color: var(--muted); border-top: 1.5px dashed var(--ink); }
+
+@media (prefers-reduced-motion: reduce) { .hm-snap, .hm-year { transition: none; } }
