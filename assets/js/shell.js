@@ -529,6 +529,7 @@ export const PAGES = [
 	{ href: 'recipes.html', id: 'recipes', ic: 'food', ar: 'نطبخ إيه', en: 'Our recipes', dar: 'أكلاتنا، ومين بيعملها أحسن', den: 'Our dishes, and who makes them best', group: 'nights' },
 	{ href: 'bucket.html', id: 'bucket', ic: 'star', ar: 'قايمة الأحلام', en: 'Bucket list', dar: 'حاجات نفسنا نعملها سوا', den: 'Things we want to do together', group: 'nights' },
 	{ href: 'offline.html', id: 'offline', ic: 'moon', ar: 'سهرة من غير موبايل', en: 'Offline nights', dar: 'كروت أسئلة، والموبايلات في السلة', den: 'Question cards, phones in the basket', group: 'nights' },
+	{ href: 'secret.html', id: 'secret', ic: 'heart', ar: 'أوضتنا', en: 'Our room', dar: 'لينا إحنا الاتنين بس — بالرقم السري', den: 'Just for the two of us — behind a PIN', group: 'nights' },
 	{ href: 'gallery.html', id: 'gallery', ic: 'image', ar: 'ألبوم الصور', en: 'Photo album', dar: 'إحنا بالصور، سنة بسنة', den: 'Us in pictures, year by year', group: 'memories' },
 	{ href: 'notes.html', id: 'notes', ic: 'note', ar: 'رسايل حب', en: 'Love notes', dar: 'كلام كتبناه لبعض', den: 'Little things we wrote', group: 'memories' },
 	{ href: 'letters.html', id: 'letters', ic: 'mail', ar: 'جوابات', en: 'Letters', dar: 'جوابات لبعض، مستنية تتفتح', den: 'Letters for you — open them', group: 'memories' },

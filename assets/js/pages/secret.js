@@ -1,9 +1,10 @@
-import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey } from '../shell.js';
+import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey, pageHead } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
 
-/* Our room: the page behind a PIN. Not in any menu — Settings has the door.
+/* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
+   Header band: a closed door with a «ممنوع الإزعاج» sign swinging on its handle, two candles flickering and petals falling.
    content/secret.bin is sealed with the site's key; inside, the list is sealed again with a key that only the PIN unwraps
    (tools/secret.mjs). The PIN is asked every time the page opens, and the page locks itself when the phone sleeps.
    What we mark (tried, want to try, favourite) and the nights we log go in the shared list «secret» as ids only. */
@@ -24,7 +25,14 @@ const LISTS = [
 	{ id: 'outfit', emoji: 'dress', color: '#c2185b', ar: 'لبس الليلة', en: 'Tonight’s outfit' },
 	{ id: 'games', emoji: 'dice', color: '#8e1f4f', ar: 'لعبة الليلة', en: 'Tonight’s game' }
 ];
-const PAGE = 60;
+const PAGE = Infinity; // every position shows at once (the images load as they scroll into view)
+
+const BAND = `<div class="sx-band" aria-hidden="true">
+	${Array.from({ length: 10 }, (_, i) => `<span class="sx-petal" style="--i:${i};--x:${(i * 97) % 100}%"></span>`).join('')}
+	<span class="sx-candle sx-candle--1"><i></i></span>
+	<div class="sx-door"><span class="sx-knob"></span><span class="sx-hanger"><b>ممنوع الإزعاج</b><small>Do not disturb</small></span></div>
+	<span class="sx-candle sx-candle--2"><i></i></span>
+</div>`;
 
 let skey = null; // the secret key, only while the page is open and unlocked
 const urls = new Map();
@@ -41,7 +49,8 @@ const hydrate = (root) => $$('img[data-secret]:not([src])', root).forEach((el) =
 export default {
 	title: { ar: 'أوضتنا', en: 'Our room' },
 	render() {
-		return `<section class="sx" id="sx">
+		return `${pageHead(L('أوضتنا', 'Our room'), L('لينا إحنا الاتنين بس', 'Just for the two of us'), [{ href: 'secret.html', ar: 'أوضتنا', en: 'Our room' }], { band: BAND })}
+		<section class="sx" id="sx">
 			<div class="sx-lock" id="sx-lock">
 				<span class="sx-lock__e" aria-hidden="true">${doodle('lock', 56)}</span>
 				<h1>${L('أوضتنا', 'Our room')}</h1>
