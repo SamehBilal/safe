@@ -439,8 +439,19 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-nights .mg-kind:hover { rotate: 0deg; transform: translateY(-5px); }
 	.mega-nights .mg-kind-e { font-size: 2.4rem; }
 	/* مناسباتنا: the numbers card as the big picture */
-	.mega-you .mg-list { grid-auto-flow: row; grid-template-rows: none; }
-	.mg-data { min-height: 300px; rotate: -1deg; }
+	/* مناسباتنا: the pages in four columns, the numbers as a small card beside them */
+	.mega-you .mega-in { grid-template-columns: minmax(0, 1fr) 210px !important; }
+	.mega-you .mega-in > .mg-list { grid-column: 1; grid-row: 1; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+	.mega-you .mega-in > .mg-data.mg-data { grid-column: 2; grid-row: 1; align-self: start; min-height: 0; gap: 2px; padding: 34px 14px 14px; rotate: -1deg; }
+	.mega-you .mg-data .mg-new { top: 10px; font-size: 1.05rem; }
+	:lang(ar) .mega-you .mg-data .mg-new { font-size: .8rem; }
+	.mega-you .mg-data .mg-bars { height: 46px; margin-top: 6px; gap: 2px; }
+	.mega-you .mg-data b { font-size: 1.2rem; }
+	:lang(ar) .mega-you .mg-data b { font-size: .9rem; }
+	.mega-you .mg-data small { font-size: .95rem; }
+	:lang(ar) .mega-you .mg-data small { font-size: .75rem; }
+	.mega-you .mg-data .mg-go { font-size: .85rem; }
+	.mega-you .mg-data::before { width: 64px; height: 18px; }
 	.mg-data:hover { rotate: 0deg; }
 	.mega { max-height: calc(100vh - var(--hd, 70px)); overflow-y: auto; }
 }
