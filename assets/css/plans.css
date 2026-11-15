@@ -353,3 +353,51 @@
 .fm.no-anim, .fm.no-anim * { transition: none !important; }
 @media (prefers-reduced-motion: reduce) { .fm__wrap, .fm__wrap > div, .fm__card { transition: none !important; } }
 .moment-far { margin: 34px 0 10px; }
+
+/* ---------- the family tree: two hand-drawn trees making a heart (tree.js) — no box of its own, on the page ---------- */
+.ftr { position: relative; width: 100%; min-width: 760px; max-width: 1100px; margin: 0 auto; aspect-ratio: 1000 / 700; }
+.ftr__art-box, .ftr__layer { position: absolute; inset: 0; }
+.ftr__art, .ftr__kidstrings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ftr-ink, .ftr-wood { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ftr-ink { stroke: var(--ink, #37353f); }
+.ftr-bark { fill: none; stroke: #e7a06d; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 9 15; opacity: 0.75; }
+.ftr-leaf path { fill: #2a6f69; stroke: var(--ink, #37353f); stroke-width: 0.8; }
+.ftr-leaf path:nth-child(2) { fill: #6cc0b5; }
+.ftr-flower > path:not(.ftr-petal) { fill: #ef6a45; stroke: var(--ink, #37353f); stroke-width: 1.2; }
+.ftr-flower .ftr-leaf { fill: #2a6f69; stroke-width: 0.8; stroke: var(--ink, #37353f); }
+.ftr-petal { fill: none; stroke: #b9411f; stroke-width: 1.4; stroke-linecap: round; }
+.ftr-string { fill: none; stroke: var(--ink, #37353f); stroke-width: 1.6; }
+.ftr-bow { fill: none; stroke: var(--ink, #37353f); stroke-width: 1.4; stroke-linejoin: round; }
+.ftr-ground { fill: none; stroke: var(--ink, #37353f); stroke-width: 2; stroke-dasharray: 3 8; stroke-linecap: round; opacity: 0.5; }
+/* everything on the tree sits at its spot, centred */
+.ftr-rib, .ftr-med, .ftr-heart { position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; }
+/* a ribbon on a branch, ends cut like the illustration's */
+.ftr-rib { z-index: 2; display: grid; justify-items: center; min-width: 108px; padding: 5px 26px 6px; border: 0; cursor: pointer; color: #2b2b33; background: #f6b3a5; clip-path: polygon(0 0, 100% 0, 91% 50%, 100% 100%, 0 100%, 9% 50%); rotate: var(--r, 0deg); filter: drop-shadow(calc(var(--bujo-x, 1) * 2px) 2px 0 rgba(55, 53, 63, 0.55)); transition: scale 0.2s var(--ease-pop, ease), rotate 0.3s; font: inherit; }
+.ftr-rib:hover, .ftr-rib:focus-visible { scale: 1.08; rotate: 0deg; }
+.ftr-rib b { font: 600 1.4rem/1.1 var(--f-hand); white-space: nowrap; }
+:lang(ar) .ftr-rib b { font: 800 0.95rem/1.5 var(--f-body); }
+.ftr-rib small { font-size: 0.68rem; font-weight: 700; color: #6f4a44; white-space: nowrap; }
+.ftr-rib.is-empty { background: repeating-linear-gradient(-45deg, #fbe3dc 0 6px, #f6cfc4 6px 12px); color: #8a6f69; }
+.ftr-rib.is-empty b { font-weight: 700; font-size: 0.85rem; font-family: var(--f-body); }
+.ftr-rib.is-empty:disabled { cursor: default; }
+.ftr-rib.is-gone { background: #d8d2ca; color: #555; }
+.ftr-rib.is-gone b { font-style: italic; }
+/* the two of us (and the boys), oval portraits hanging on strings */
+.ftr-med { z-index: 2; display: grid; justify-items: center; align-content: start; gap: 2px; width: 10%; aspect-ratio: 4 / 5; padding: 0.7em 0.4em 0; border: 2px solid var(--ink, #37353f); border-radius: 50%; background: var(--coral, #f2726f); color: #fff; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--ink, #37353f); cursor: pointer; font: inherit; translate: -50% -4%; transition: rotate 0.4s var(--ease-pop, ease); transform-origin: 50% -30%; animation: ftr-sway 4.5s ease-in-out infinite alternate; }
+.ftr-med:nth-of-type(2n) { animation-delay: -2.2s; }
+.ftr-med:hover, .ftr-med:focus-visible { animation-play-state: paused; }
+@keyframes ftr-sway { from { rotate: -3deg; } to { rotate: 3deg; } }
+.ftr-med b { font: 600 clamp(0.95rem, 1.6vw, 1.35rem)/1.1 var(--f-hand); white-space: nowrap; }
+:lang(ar) .ftr-med b { font: 800 clamp(0.75rem, 1.1vw, 0.95rem)/1.4 var(--f-body); }
+.ftr-med__pic { display: grid; place-items: center; width: 74%; aspect-ratio: 1; overflow: hidden; border-radius: 50%; background: color-mix(in srgb, var(--c) 25%, #fffdf8); border: 1.5px solid var(--ink, #37353f); }
+.ftr-med__pic img, .ftr-med__pic .ft__face { width: 100%; height: 100%; object-fit: cover; border: 0; border-radius: 0; }
+.ftr-med small { font-size: 0.65rem; font-weight: 700; opacity: 0.9; }
+.ftr-med--kid { width: 7.4%; padding-top: 0.5em; background: #6cc0b5; color: #133447; }
+.ftr-med--kid b { font-size: clamp(0.8rem, 1.2vw, 1.05rem); }
+:lang(ar) .ftr-med--kid b { font-size: clamp(0.65rem, 0.9vw, 0.8rem); }
+.ftr-heart { left: 50%; top: 45%; z-index: 1; color: var(--coral); font-size: 1.8rem; animation: beat 1.4s ease-in-out infinite; }
+.ftr-more { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 8px 0 18px; }
+.ftr-more .ftr-rib { position: static; translate: none; rotate: 0deg; }
+@media (prefers-reduced-motion: reduce) { .ftr-med, .ftr-heart { animation: none; } }
+.ftr-med b { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.ftr-med--kid b { font-size: clamp(0.7rem, 1vw, 0.95rem); }
