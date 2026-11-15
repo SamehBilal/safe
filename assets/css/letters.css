@@ -1,0 +1,90 @@
+/* Letters for you (letters.html): a floating pink envelope, its card peeking out and hearts rising (after Lena Stanley),
+   a heart that opens it and a stack of pages that come out of it (after Frills) — in the journal's ink. */
+
+.lv-block { margin-bottom: clamp(56px, 10vw, 96px); }
+.lv { --w: min(340px, 86vw); position: relative; width: var(--w); margin: 70px auto 0; padding-bottom: 46px; }
+
+/* ---- the envelope, floating ---- */
+.lv-float { position: relative; animation: lv-up 3s ease-in-out infinite; }
+@keyframes lv-up { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+.lv-shadow { position: absolute; left: 6%; right: 6%; bottom: 0; height: 22px; border-radius: 50%; background: rgba(0, 0, 0, .22); animation: lv-shade 3s ease-in-out infinite; }
+@keyframes lv-shade { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(.82); opacity: .7; } }
+
+.lv-env { position: relative; width: 100%; aspect-ratio: 3 / 2; perspective: 900px; }
+.lv-back { position: absolute; inset: 0; background: #f08080; border: 1.5px solid var(--ink); border-radius: 6px; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-yellow); }
+
+/* the card inside, peeking out */
+.lv-card { position: absolute; inset: 4% 5% 6%; z-index: 2; display: grid; place-items: center; align-content: center; gap: 6px; padding: 18px 12px; text-align: center; background: #eae2b7; border: 1.5px solid var(--ink); border-radius: 3px; transition: transform .7s cubic-bezier(.3, 1.3, .5, 1); }
+.lv-card::before { content: ''; position: absolute; inset: 9px; border: 3px dotted #003049; border-radius: 2px; pointer-events: none; }
+.lv-card span { position: relative; max-width: 90%; font: 400 1.7rem/1.1 var(--f-hand); color: #003049; }
+:lang(ar) .lv-card span { font: 700 1.15rem/1.5 var(--f-body); }
+.lv-card i { font-style: normal; font-size: 1.8rem; line-height: 1; color: #d62828; }
+.lv-env:hover .lv-card, .lv-heart:focus-visible ~ .lv-card { transform: translateY(-38%); }
+
+/* the folds in front of it */
+.lv-fold { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.lv-fold--l { background: #f8ad9d; clip-path: polygon(0 0, 52% 54%, 0 100%); }
+.lv-fold--r { background: #f8ad9d; clip-path: polygon(100% 0, 48% 54%, 100% 100%); }
+.lv-fold--b { background: #f4978e; clip-path: polygon(0 100%, 50% 46%, 100% 100%); border-bottom: 1.5px solid var(--ink); }
+/* the flap: closed it lies over the folds; open it folds back behind the card */
+.lv-flap { position: absolute; inset: 0 0 auto; height: 58%; z-index: 4; background: #e9776f; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; transition: transform .6s ease-in, z-index 0s .3s; }
+
+/* the heart that opens it */
+.lv-heart { position: absolute; z-index: 5; left: 50%; top: 56%; width: 92px; aspect-ratio: 1; translate: -50% -50%; padding: 0; border: 0; cursor: pointer; color: #fff;
+	background: radial-gradient(circle at 60% 65%, var(--coral-deep, #d62828) 64%, #0000 65%) top left / 50% 50%,
+		radial-gradient(circle at 40% 65%, var(--coral-deep, #d62828) 64%, #0000 65%) top right / 50% 50%,
+		conic-gradient(from -45deg at 50% 85.5%, var(--coral-deep, #d62828) 90deg, #0000 0) bottom / 100% 50%;
+	background-repeat: no-repeat; filter: drop-shadow(calc(var(--bujo-x) * 3px) 3px 0 rgba(43, 43, 51, .55)); transition: scale .2s; }
+.lv-heart span { display: block; translate: 0 -6px; font: 400 1.6rem var(--f-hand); }
+:lang(ar) .lv-heart span { font: 800 1.05rem var(--f-body); }
+.lv-heart:hover, .lv-heart:focus-visible { scale: 1.1; outline: none; }
+.lv-heart::after { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, .8); opacity: 0; animation: lv-ping 2.2s ease-out infinite; }
+@keyframes lv-ping { 0% { scale: .6; opacity: .9; } 100% { scale: 1.25; opacity: 0; } }
+
+/* hearts rising from it */
+.lv-hearts { position: absolute; z-index: 0; left: 18%; right: 18%; top: 10%; display: flex; justify-content: space-between; pointer-events: none; }
+.lv-hearts i { font-style: normal; font-size: 1.1rem; color: #e63946; opacity: 0; animation: lv-heart 2s ease-out infinite; }
+.lv-hearts i:nth-child(2) { animation-duration: 2.6s; animation-delay: .4s; }
+.lv-hearts i:nth-child(3) { animation-duration: 1.8s; animation-delay: .9s; }
+.lv-hearts i:nth-child(4) { animation-duration: 2.4s; animation-delay: .2s; }
+.lv-hearts i:nth-child(5) { animation-duration: 2.1s; animation-delay: 1.2s; }
+@keyframes lv-heart { 0% { transform: translateY(0) scale(.4); opacity: 1; } 100% { transform: translateY(-110px) scale(1.4); opacity: 0; } }
+
+/* opened: the heart goes, the flap folds back, the card rises out and fades into the pages below */
+.lv.is-open .lv-heart { scale: 0; pointer-events: none; transition: scale .3s; }
+.lv.is-open .lv-flap { transform: rotateX(180deg); z-index: 1; }
+.lv.is-open .lv-card { transform: translateY(-70%); transition: transform .8s .5s cubic-bezier(.3, 1.3, .5, 1); }
+.lv.is-open .lv-hearts i { animation-duration: .9s; }
+
+/* ---- the pages ---- */
+.lv-pages { margin-top: 26px; }
+.lv-pages.is-in { animation: lv-out .7s cubic-bezier(.2, 1, .3, 1); }
+@keyframes lv-out { from { transform: translateY(-80px) scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+.lv-stack { display: grid; width: min(560px, 100%); margin: 0 auto; }
+.lv-page { grid-area: 1 / 1; position: relative; margin: 0; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-height: 300px; padding: 54px clamp(20px, 5vw, 40px) 34px; text-align: center; color: #2b2b33; background: #faebd7; border: 1.5px solid var(--ink); border-radius: 4px; box-shadow: inset 0 0 22px -6px #deb887, calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+	transform: skew(2deg) translateY(4px) rotate(calc(var(--n) * 1.2deg)); transition: transform .5s cubic-bezier(.3, 1.2, .5, 1), translate .45s cubic-bezier(.3, 1.2, .5, 1), opacity .4s; }
+.lv-page:nth-child(even) { transform: skew(-2deg) translateY(-4px) rotate(calc(var(--n) * -1.2deg)); box-shadow: inset 0 0 22px -6px #deb887, calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
+/* faint ruled lines, like writing paper */
+.lv-page::before { content: ''; position: absolute; inset: 44px 18px 18px; background: repeating-linear-gradient(transparent 0 37px, rgba(0, 48, 73, .12) 37px 38px); pointer-events: none; }
+.lv-page.is-drag { cursor: grabbing; transition: none; }
+.lv-page.is-away { translate: var(--out, 130%) -30px; rotate: 18deg; opacity: 0; pointer-events: none; }
+.lv-page:focus-visible { outline: 2px dashed var(--coral-deep); outline-offset: 6px; }
+.lv-page h3 { position: relative; margin: 0; font: 700 2.2rem/1.2 var(--f-hand); color: var(--coral-deep, #d62828); }
+:lang(ar) .lv-page h3 { font: 800 1.5rem/1.6 var(--f-body); }
+.lv-page p { position: relative; margin: 0; font: 500 1.6rem/38px var(--f-hand); white-space: pre-line; }
+:lang(ar) .lv-page p { font: 600 1.1rem/38px var(--f-body); }
+.lv-page cite { position: relative; align-self: flex-end; font: 700 1.6rem/1.2 var(--f-hand); font-style: normal; color: #003049; }
+:lang(ar) .lv-page cite { font: 800 1.05rem/1.6 var(--f-body); }
+.lv-page__x { position: absolute; top: 12px; left: 50%; translate: -50% 0; padding: 2px 10px; font: 400 1.35rem var(--f-hand); color: #8b0000; background: none; border: 0; cursor: pointer; }
+.lv-page__x:hover span, .lv-page__x:focus-visible span { display: none; }
+.lv-page__x:hover::after, .lv-page__x:focus-visible::after { content: 'xXx'; }
+.lv-page__n { position: absolute; bottom: 10px; inset-inline-start: 16px; font: 400 1rem var(--f-label); letter-spacing: .05em; color: #8a7a66; }
+.lv-pages:not([hidden]) { display: grid; }
+.lv-pages > .lv-stack, .lv-pages > .lv-again { grid-area: 1 / 1; }
+.lv-again { align-self: center; margin: 0; text-align: center; z-index: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+	.lv-float, .lv-shadow, .lv-hearts i, .lv-heart::after { animation: none; }
+	.lv-hearts { display: none; }
+	.lv-card, .lv-flap, .lv-page, .lv-pages.is-in { transition: none; animation: none; }
+}
