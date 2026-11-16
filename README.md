@@ -85,7 +85,7 @@ node tools/build.mjs
 ```
 
 Starting fresh? Copy `tools/example/*.json` into `private/`.
-Tips: shrink photos to ~1600px wide; keep videos short; make at least one answer something nobody could guess.
+Tips: add photos as they are (the build makes the small AVIF copies); keep videos short; make at least one answer something nobody could guess.
 
 ## Testing
 ```bash
@@ -96,6 +96,39 @@ Open http://localhost:5174 (add `?intro` to replay the intro).
 ## Publishing (GitHub Pages)
 Commit everything except `private/` (already ignored), push, enable Pages on `main`.
 Back up `private/` — it's the only readable copy of the story.
+
+The build makes the site light on its own: photos go up as AVIF at 1600px (`tools/avif.mjs`), and songs go up as
+128k AAC to their own site, [safe-songs](https://github.com/SamehBilal/safe-songs) (`tools/songs.mjs`), served at
+`samehbilal.github.io/safe-songs/` — sealed with the same key, so it holds nothing anyone else can play. Each file is
+converted once and kept in `private/.cache/`. After a build, push **both**:
+
+```bash
+git add -A && git commit -m "Update" && git push
+```
+```bash
+cd ../safe-songs && git add -A && git commit -m "Songs" && git push
+```
+
+## Building on another computer (the laptop)
+`private/` never goes to GitHub, so a fresh `git clone` can't build the site. Everything lives in OneDrive
+(`Documents\GitHub\`), which carries `private/` across instead.
+
+| Needed | Where it comes from |
+| --- | --- |
+| `SAFE/` and `safe-songs/`, side by side | OneDrive, signed in with the same Microsoft account |
+| `private/` — the story, the original photos/videos/songs and **`private/.master-key`** (~1.2 GB) | OneDrive, inside `SAFE/` |
+| `private/.cache/` — the AVIF photos and AAC songs already made, so nothing is converted again | OneDrive, inside `SAFE/` |
+| Node 22 | nodejs.org — there are no npm packages to install |
+| Git, signed in to GitHub | git-scm.com; it asks to sign in on the first push |
+| ffmpeg with AV1 (libaom) — only for **new** photos and songs | `winget install Gyan.FFmpeg`, or point `FFMPEG` at any ffmpeg.exe |
+| Edge or Chrome | already on Windows (`tools/shrink.mjs` uses it) |
+
+1. Sign in to OneDrive, open `Documents\GitHub\SAFE`, right-click → **Always keep on this device**, and wait for the sync to finish.
+2. Check `private/.master-key` is there **before the first build** — without it the build makes a new key, which locks her out and breaks what the phones saved.
+3. Install Node, Git and ffmpeg, then `node tools/build.mjs`, `node tools/serve.mjs` to look, and push both repos as above.
+
+Use one computer at a time: finish, let OneDrive catch up, then switch — git's folders don't like two machines changing
+them at once. Keep a copy of `private/.master-key` somewhere safe outside OneDrive too.
 
 ## Credits
 - Record player idea: [Codrops — Interactive Record Player](https://tympanus.net/codrops/?p=27200). Needle crackle: Vinyl Noise SFX by Chia (99Sounds), free to use.
