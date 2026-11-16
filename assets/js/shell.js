@@ -548,6 +548,7 @@ export const PAGES = [
 	{ href: 'gallery.html', id: 'gallery', ic: 'image', ar: 'ألبوم الصور', en: 'Photo album', dar: 'إحنا بالصور، سنة بسنة', den: 'Us in pictures, year by year', group: 'memories' },
 	{ href: 'notes.html', id: 'notes', ic: 'note', ar: 'رسايل حب', en: 'Love notes', dar: 'كلام كتبناه لبعض', den: 'Little things we wrote', group: 'memories' },
 	{ href: 'letters.html', id: 'letters', ic: 'mail', ar: 'جوابات', en: 'Letters', dar: 'جوابات لبعض، مستنية تتفتح', den: 'Letters for you — open them', group: 'memories' },
+	{ href: 'guestbook.html', id: 'guestbook', ic: 'mail', ar: 'دفتر المعازيم', en: 'Wedding guestbook', dar: 'اللي كتبه حبايبنا يوم فرحنا', den: 'What our loved ones wrote for our wedding', group: 'memories' },
 	{ href: 'posts.html', id: 'posts', ic: 'phone', ar: 'بوستاتنا', en: 'Our posts', dar: 'اللي كتبناه لبعض على السوشيال ميديا', den: 'What we posted about each other', group: 'memories' },
 	{ href: 'onthisday.html', id: 'onthisday', ic: 'calendar', ar: 'في اليوم ده', en: 'On this day', dar: 'اللي حصل النهارده في السنين اللي فاتت', den: 'What happened on this date in past years', group: 'memories' },
 	{ href: 'soundtrack.html', id: 'soundtrack', ic: 'music', ar: 'أغنية كل سنة', en: 'Our soundtrack', dar: 'أغنية لكل سنة من حكايتنا', den: 'A song for every year of us', group: 'memories' },

@@ -338,3 +338,60 @@
 .mo-stacked .snap:nth-child(-n + 6) { z-index: 7; }
 .mo-stacked .snap:hover, .mo-stacked .snap:focus-within { rotate: var(--r); translate: var(--dx) var(--dy); scale: 1; }
 .mo-grid .snap { animation: none; }
+
+/* ---------- «دفتر المعازيم» — the wedding guestbook (guestbook.html) ----------
+   The top is the wedding night: warm palace light, candle sparks drifting, our photo in a gold arch like the ones
+   at the palace, our names in Ruqaa. Below, each wish on a cream card with a gold edge and a wax-seal initial. */
+:root { --gb-gold: #b48a43; --gb-gold-2: #e6c88a; --gb-card: #fffaf1; --gb-ink: #4a3726; --gb-muted: #7d6650; }
+:root[data-theme='dark'] { --gb-gold: #d7b46f; --gb-gold-2: #f1dba6; --gb-card: #221d18; --gb-ink: #efe3d1; --gb-muted: #bba68b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --gb-gold: #d7b46f; --gb-gold-2: #f1dba6; --gb-card: #221d18; --gb-ink: #efe3d1; --gb-muted: #bba68b; } }
+
+.gb-hero { position: relative; overflow: hidden; isolation: isolate; color: #fbf1df; padding: calc(var(--hd) + 28px) 0 64px;
+	background: radial-gradient(60% 55% at 72% 38%, rgba(255, 196, 110, 0.38), transparent 70%), radial-gradient(45% 50% at 18% 80%, rgba(214, 140, 72, 0.25), transparent 70%), linear-gradient(170deg, #20140c 0%, #3d2614 45%, #6b4421 100%); }
+.gb-hero::after { content: ''; position: absolute; inset: auto 0 0; height: 70px; background: linear-gradient(transparent, var(--paper)); z-index: -1; }
+.gb-hero .fairy i { background: #ffe3a6; }
+.gb-hero__in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.gb-hero__text { text-align: center; display: grid; justify-items: center; gap: 10px; }
+.gb-hero .crumbs, .gb-hero .crumbs a { color: rgba(251, 241, 223, 0.7); }
+.gb-hero .crumbs a:hover { color: #fff; }
+.gb-eyebrow { margin: 6px 0 0; font: 1.05rem/1 var(--f-label); letter-spacing: 0.22em; color: var(--gb-gold-2); text-transform: uppercase; }
+.gb-names { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0.15em 0.35em; font: 700 clamp(2.8rem, 8vw, 5.2rem)/1.15 'Aref Ruqaa', var(--f-script); color: #fff6e6; text-shadow: 0 2px 30px rgba(255, 190, 100, 0.45); }
+:lang(en) .gb-names { font-family: var(--f-script); font-weight: 400; }
+.gb-names i { font-style: normal; font-size: 0.55em; color: var(--gb-gold-2); animation: gb-beat 2.4s ease-in-out infinite; }
+@keyframes gb-beat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.2); } 24% { transform: scale(1); } 36% { transform: scale(1.12); } }
+.gb-flourish { width: min(240px, 70%); height: 24px; fill: none; stroke: var(--gb-gold-2); stroke-width: 1.4; }
+.gb-flourish circle { fill: var(--gb-gold-2); stroke: none; }
+.gb-date { margin: 0; font-size: 1rem; color: rgba(251, 241, 223, 0.85); }
+.gb-lede { margin: 6px 0 4px; max-width: 34em; font-size: 1.08rem; line-height: 1.85; color: rgba(251, 241, 223, 0.92); }
+.gb-stats { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.gb-stats li { display: grid; justify-items: center; min-width: 92px; padding: 10px 16px 8px; border: 1px solid rgba(230, 200, 138, 0.5); border-radius: 999px 999px 14px 14px; background: rgba(255, 236, 200, 0.07); }
+.gb-stats b { font: 1.9rem/1 var(--f-label); color: var(--gb-gold-2); letter-spacing: 0.04em; }
+.gb-stats span { font-size: 0.85rem; color: rgba(251, 241, 223, 0.8); }
+
+/* the arch: our photo inside the palace's arch shape, a gold line around it and a second one standing off */
+.gb-arch { position: relative; margin: 0 auto; width: min(100%, 440px); aspect-ratio: 4 / 5.2; border-radius: 999px 999px 22px 22px; padding: 10px; background: linear-gradient(160deg, #f6dfa8, #b48a43 45%, #f3d899 70%, #8c6326); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), 0 0 80px rgba(255, 196, 110, 0.25); }
+.gb-arch img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; border-radius: 999px 999px 14px 14px; background: #3d2614; cursor: zoom-in; }
+.gb-arch__frame { position: absolute; inset: -16px; border: 1.5px solid rgba(230, 200, 138, 0.55); border-radius: 999px 999px 30px 30px; pointer-events: none; }
+.gb-arch__frame::before { content: '✦'; position: absolute; top: -13px; left: 50%; translate: -50% 0; color: var(--gb-gold-2); font-size: 18px; text-shadow: 0 0 10px rgba(255, 210, 130, 0.8); }
+
+/* the wall of wishes */
+.gb-wall-sec { padding-top: 26px; }
+.gb-wall { columns: 3 300px; column-gap: 26px; }
+.gb-card { break-inside: avoid; display: inline-block; width: 100%; box-sizing: border-box; position: relative; margin: 20px 0 14px; padding: 34px 24px 22px; text-align: center; color: var(--gb-ink); background: var(--gb-card); border-radius: 18px; border: 1px solid color-mix(in srgb, var(--gb-gold) 45%, transparent); box-shadow: var(--shadow); rotate: var(--tilt); transition: rotate 0.35s var(--ease-out), translate 0.35s var(--ease-out), box-shadow 0.35s; }
+.gb-card::before { content: ''; position: absolute; inset: 7px; border: 1px dashed color-mix(in srgb, var(--gb-gold) 40%, transparent); border-radius: 13px; pointer-events: none; }
+.gb-card:hover { rotate: 0deg; translate: 0 -4px; box-shadow: var(--shadow-lg); }
+.gb-seal { position: absolute; top: -18px; left: 50%; translate: -50% 0; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: #fff7e8; font: 700 1.15rem/1 'Aref Ruqaa', var(--f-script); background: radial-gradient(circle at 35% 30%, #e7c27b, #a9762f 60%, #7c5420); box-shadow: 0 3px 8px rgba(80, 50, 20, 0.35), inset 0 0 0 3px rgba(255, 240, 210, 0.35); }
+.gb-card__name { margin: 0 0 10px; font: 400 1.55rem/1.2 var(--f-script); color: var(--gb-gold); }
+.gb-card__text { margin: 0; font-size: 1rem; line-height: 1.85; color: var(--gb-ink); white-space: pre-line; overflow-wrap: anywhere; }
+.gb-card__text.is-ar { font-family: 'Cairo', var(--f-body); }
+.gb-end { display: grid; justify-items: center; gap: 8px; margin: 8px 0 10px; color: var(--gb-muted); font-size: 0.92rem; text-align: center; }
+.gb-end .gb-flourish { stroke: var(--gb-gold); }
+.gb-end .gb-flourish circle { fill: var(--gb-gold); }
+
+@media (max-width: 760px) {
+	.gb-hero { padding-top: calc(var(--hd) + 12px); }
+	.gb-hero__in { grid-template-columns: 1fr; }
+	.gb-arch { width: min(78%, 330px); }
+	.gb-card { rotate: 0deg; }
+}
+@media (prefers-reduced-motion: reduce) { .gb-names i { animation: none; } .gb-card { transition: none; } }
