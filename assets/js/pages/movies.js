@@ -92,6 +92,22 @@ export default {
 				<p class="empty" id="mv-empty">${L('بنجيب السهرات…', 'Fetching our evenings…')}</p>
 				<div class="binge__field" id="mv-field"></div>
 			</div>
+
+			<section class="tw" id="mv-next" aria-labelledby="mv-next-t">
+				<h2 class="binge__title tw__title" id="mv-next-t">${L('نتفرج على إيه', 'Up next')} <span>${L('بعد كده؟', 'for us')}</span><small>${L('أفلام مستنيانا — ', 'Films waiting for us — ')}<span id="mv-next-n"></span></small></h2>
+				<div class="tw__bar">
+					<div class="chips" id="mv-next-kinds" role="group" aria-label="${L('النوع', 'Kind')}"></div>
+					<button class="btn btn--coral tw__pick" type="button" id="mv-next-pick">${doodle('dice', 20)} ${L('اختارولنا واحد', 'Pick one for us')}</button>
+				</div>
+				<p class="tw__picked" id="mv-next-picked" role="status" hidden></p>
+				<ul class="tw__grid" id="mv-next-list"></ul>
+				<p class="tw__more"><button class="btn btn--ghost" type="button" id="mv-next-more" hidden></button></p>
+				<form class="tw__add" id="mv-next-form" autocomplete="off"${ok ? '' : ' hidden'}>
+					<label class="f"><span>${Y('عايز تتفرج على إيه؟', 'عايزة تتفرجي على إيه؟', 'Something to watch?')}</span><input name="title" dir="auto" maxlength="80" required placeholder="${L('اسم الفيلم أو المسلسل', 'A film or series')}"></label>
+					<label class="f"><span>${L('نوعه', 'Kind')}</span><select name="kind">${KINDS.map((k) => `<option value="${k.id}"${k.id === 'foreign' ? ' selected' : ''}>${esc(L(k.ar, k.en))}</option>`).join('')}</select></label>
+					<button class="btn" type="submit">${L('ضيفه للقايمة', 'Add to the list')}</button>
+				</form>
+			</section>
 		</div></section>
 		${related(['draw', 'music', 'journal'])}`;
 	},
@@ -154,6 +170,7 @@ export default {
 			].map(([n, l]) => `<div class="counter"><b>${n}</b><span>${l}</span></div>`).join('');
 		};
 		paint();
+		watchlist(main, () => data, (d) => { data = d; paint(); });
 
 		board.onclick = async (e) => {
 			const del = e.target.closest('[data-del]');
@@ -181,6 +198,104 @@ export default {
 		};
 	}
 };
+
+/* «Up next»: the films we've been meaning to watch (movies.json → towatch), as a poster wall under the board. Filter
+   by kind, let the dice pick tonight's, and tick one off when we've seen it: it moves up onto the board. */
+const FIRST = 12;
+function watchlist(main, get, set) {
+	const box = $('#mv-next', main);
+	if (!box) return;
+	let kind = '', all = false, picked = '';
+	// opened from a search result for one of the films further down: show them all so it can be found
+	const find = decodeURIComponent((location.hash.match(/find=([^&]*)/) || [])[1] || '').trim().toLowerCase();
+	if (find && (get().towatch || []).slice(FIRST).some((x) => String(x.title).toLowerCase().includes(find))) all = true;
+	const list = () => (get().towatch || []).filter((x) => !kind || (x.kind || 'other') === kind);
+	const meta = (x) => {
+		const yr = (y) => num(y).replace(/[٬,]/g, '');
+		const bits = [x.yearTo && x.yearTo !== x.year ? `${yr(x.year)}–${yr(x.yearTo)}` : x.year ? yr(x.year) : '', x.series ? L('مسلسل', 'Series') : x.mins ? L(`${num(x.mins)} دقيقة`, `${x.mins} min`) : ''];
+		return bits.filter(Boolean).join(' · ');
+	};
+	const card = (x, k) => `
+		<li class="tw__card mv--${esc(x.kind || 'other')}${x.cover ? ' has-cover' : ''}${x.id === picked ? ' is-picked' : ''}" id="${esc(x.id)}" style="--i:${k % FIRST}">
+			<span class="tw__poster">${x.cover ? `<img data-cover="${esc(x.cover)}" alt="" decoding="async">` : `<span class="tw__doodle" aria-hidden="true">${doodle('popcorn', 40)}</span>`}</span>
+			<span class="tw__tx"><b dir="auto">${esc(x.title)}</b><small>${esc(meta(x))}</small>${x.note ? `<small class="tw__note" dir="auto">${esc(x.note)}</small>` : ''}</span>
+			${live.canWrite() ? `<button class="tw__seen" type="button" data-seen="${esc(x.id)}" title="${L('اتفرجنا عليه', 'We watched it')}" aria-label="${esc(L(`اتفرجنا على ${x.title}`, `We watched ${x.title}`))}"><span aria-hidden="true">✓</span> ${L('اتفرجنا عليه', 'Watched it')}</button>` : ''}
+		</li>`;
+
+	// posters are decrypted only as they scroll near
+	const seen = new IntersectionObserver((es) => {
+		for (const e of es) if (e.isIntersecting) {
+			seen.unobserve(e.target);
+			mediaURL(e.target.dataset.cover).then((u) => { e.target.src = u; }).catch(() => { e.target.closest('.has-cover')?.classList.remove('has-cover'); e.target.remove(); });
+		}
+	}, { rootMargin: '300px' });
+
+	const draw = () => {
+		const every = get().towatch || [];
+		box.hidden = !every.length && !live.canWrite();
+		$('#mv-next-n', box).textContent = L(`${num(every.length)} ${every.length > 10 || every.length < 3 ? 'فيلم' : 'أفلام'}`, `${every.length} of them`);
+		const count = (id) => every.filter((x) => (x.kind || 'other') === id).length;
+		$('#mv-next-kinds', box).innerHTML = [['', L('الكل', 'All'), every.length], ...KINDS.map((k) => [k.id, L(k.ar, k.en), count(k.id)]).filter((k) => k[2])]
+			.map(([id, label, n]) => `<button class="chip${id === kind ? ' is-on' : ''}" type="button" data-kind="${id}" aria-pressed="${id === kind}">${esc(label)} <small>${num(n)}</small></button>`).join('');
+		const items = list();
+		const shown = all ? items : items.slice(0, FIRST);
+		$('#mv-next-list', box).innerHTML = shown.map(card).join('') || `<li class="empty">${L('القايمة فاضية — ضيفوا حاجة نفسكم تتفرجوا عليها ♥', 'Nothing here yet — add something you’d like to watch ♥')}</li>`;
+		const more = $('#mv-next-more', box);
+		more.hidden = items.length <= FIRST;
+		more.textContent = all ? L('أقل', 'Show fewer') : L(`شوف الكل (${num(items.length)})`, `Show all ${items.length}`);
+		$('#mv-next-pick', box).disabled = !items.length;
+		for (const im of $$('img[data-cover]:not([src])', box)) seen.observe(im);
+	};
+	draw();
+
+	box.addEventListener('click', async (e) => {
+		const chip = e.target.closest('[data-kind]');
+		if (chip) { kind = chip.dataset.kind; all = false; picked = ''; $('#mv-next-picked', box).hidden = true; return draw(); }
+		if (e.target.closest('#mv-next-more')) {
+			all = !all; draw();
+			if (!all) $('#mv-next-t', box).scrollIntoView({ behavior: 'smooth', block: 'start' });
+			return;
+		}
+		if (e.target.closest('#mv-next-pick')) {
+			const items = list();
+			if (!items.length) return;
+			let x = items[Math.floor(Math.random() * items.length)];
+			if (items.length > 1 && x.id === picked) x = items[(items.indexOf(x) + 1) % items.length];
+			picked = x.id;
+			if (items.indexOf(x) >= FIRST) all = true;
+			draw();
+			const out = $('#mv-next-picked', box);
+			out.hidden = false;
+			out.innerHTML = `${L('الليلة:', 'Tonight:')} <b dir="auto">${esc(x.title)}</b> ${doodle('popcorn', 22)}`;
+			$('#' + CSS.escape(x.id), box)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			return;
+		}
+		const done = e.target.closest('[data-seen]');
+		if (done) {
+			const x = (get().towatch || []).find((y) => y.id === done.dataset.seen);
+			if (!x || !confirm(L(`اتفرجتوا على «${x.title}»؟ هيتنقل للوحة اللي فوق.`, `Watched “${x.title}”? It moves up onto the board.`))) return;
+			try {
+				const item = { id: live.newId(), title: x.title, year: x.year, yearTo: x.yearTo, kind: x.kind, series: !!x.series, mins: x.mins, cover: x.cover, by: live.me(), at: Date.now() };
+				for (const k of Object.keys(item)) if (item[k] === undefined) delete item[k];
+				const d = await live.save('movies', (d) => { d.towatch = (d.towatch || []).filter((y) => y.id !== x.id); (d.items = d.items || []).push(item); });
+				if (picked === x.id) { picked = ''; $('#mv-next-picked', box).hidden = true; }
+				set(d); draw();
+				$('#' + CSS.escape(item.id), main)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			} catch (err) { alert(live.why(err)); }
+		}
+	});
+
+	const form = $('#mv-next-form', box);
+	form.onsubmit = async (e) => {
+		e.preventDefault();
+		const title = form.title.value.trim();
+		if (!title) return;
+		try {
+			const d = await live.save('movies', (d) => { (d.towatch = d.towatch || []).unshift({ id: live.newId(), title, kind: form.kind.value, by: live.me(), at: Date.now() }); });
+			form.reset(); kind = ''; set(d); draw();
+		} catch (err) { alert(live.why(err)); }
+	};
+}
 
 /* The Top 10 drifts on its own in an endless loop (the list is there twice; past the first copy it jumps back one
    copy's width, which looks the same). It pauses while a finger or the mouse is on it, and the scrollbar only shows

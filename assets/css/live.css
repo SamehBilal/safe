@@ -369,6 +369,48 @@
 .binge__poster { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .binge__box.has-cover::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 28%, color-mix(in srgb, currentColor 0%, var(--mv-bg, #31bfda)) 72%); }
 .mv--arabic { --mv-bg: #f4f482; } .mv--foreign { --mv-bg: #31bfda; } .mv--kids { --mv-bg: #15e6cd; } .mv--other { --mv-bg: #bdf195; }
+/* «Up next»: our watchlist under the board — a wall of poster tickets, each with a strip in its kind's colour */
+.tw { margin-top: 56px; padding-top: 36px; border-top: 2px dashed color-mix(in srgb, var(--ink, #37353f) 35%, transparent); }
+.tw__title { font-size: clamp(2rem, 6vw, 3.4rem) !important; writing-mode: horizontal-tb !important; transform: none !important; }
+.tw__title > span { display: inline-block; padding-inline: .15em; background: linear-gradient(transparent 55%, var(--hl-yellow, #fdc830) 55% 92%, transparent 92%); }
+.tw__title small { display: block !important; }
+.tw__title small span { font: 700 1.5rem var(--f-hand); color: var(--coral-deep, #d6544f); }
+.tw__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin: 18px 0 12px; }
+.tw__bar .chips { justify-content: flex-start; margin: 0; }
+.tw__pick { flex: none; }
+.tw__pick .doodle, .tw__pick svg { vertical-align: -4px; }
+.tw__picked { margin: 0 0 14px; padding: 10px 16px; width: fit-content; max-width: 100%; font: 700 1.05rem/1.4 var(--f-body); background: var(--hl-yellow, #fdc830); color: #2b2b33; border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 8px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink, #37353f); rotate: -1deg; animation: tw-pop .4s var(--ease-pop, ease) both; }
+.tw__picked b { font: 400 1.4rem var(--f-hand); }
+.tw__grid { list-style: none; margin: 0; padding: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 22px 18px; }
+@media (max-width: 459px) { .tw__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; } }
+.tw__card { position: relative; display: flex; flex-direction: column; min-width: 0; background: var(--card); color: var(--text); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 8px); overflow: hidden; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--ink, #37353f); transition: transform .25s var(--ease-pop, ease), box-shadow .2s; animation: tw-in .45s var(--ease-out, ease) both; animation-delay: calc(var(--i, 0) * 35ms); }
+.tw__card:nth-child(3n + 1) { box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-pink, #fc8b93); }
+.tw__card:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-lime, #c5e86c); }
+.tw__card:nth-child(3n) { box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-yellow, #fdc830); }
+.tw__card:nth-child(odd) { rotate: -.6deg; } .tw__card:nth-child(even) { rotate: .6deg; }
+.tw__card:hover, .tw__card:focus-within { rotate: 0deg; transform: translateY(-5px); z-index: 2; }
+.tw__card.is-picked { rotate: 0deg; outline: 3px solid var(--coral, #f2726f); outline-offset: 4px; animation: tw-wiggle .6s var(--ease-pop, ease) 2; }
+.tw__poster { position: relative; display: grid; place-items: center; aspect-ratio: 2 / 3; background: var(--mv-bg, #31bfda); border-bottom: 1.5px solid var(--ink, #37353f); overflow: hidden; }
+.tw__poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.tw__poster img[src] { opacity: 1; }
+.tw__doodle { color: #2b2b33; opacity: .8; }
+.tw__tx { display: grid; gap: 2px; padding: 8px 10px 10px; border-top: 6px solid var(--mv-bg, #31bfda); }
+.tw__tx b { font: 800 .92rem/1.25 var(--f-body); text-transform: uppercase; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tw__tx small { color: var(--muted); font-size: .76rem; }
+.tw__note { font: 1rem/1.25 var(--f-hand) !important; color: var(--text) !important; }
+.tw__seen { margin: 0 10px 10px; padding: 5px 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 700 .78rem var(--f-body); color: var(--text); background: transparent; border: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 60%, transparent); border-radius: var(--sketch-sm, 8px); cursor: pointer; transition: background .2s, border-color .2s; }
+.tw__seen span { display: inline-grid; place-items: center; width: 1.1rem; height: 1.1rem; border: 1.5px solid var(--ink, #37353f); border-radius: 3px; font-size: .75rem; color: transparent; transition: color .2s; }
+.tw__seen:hover, .tw__seen:focus-visible { background: var(--hl-lime, #c5e86c); border-style: solid; border-color: var(--ink, #37353f); color: #2b2b33; }
+.tw__seen:hover span, .tw__seen:focus-visible span { color: #2b2b33; }
+.tw__more { margin: 22px 0 0; text-align: center; }
+.tw__add { margin-top: 26px; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; padding: 16px; background: var(--card); border: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 50%, transparent); border-radius: var(--sketch, 12px); }
+.tw__add .f { margin: 0; }
+@media (max-width: 620px) { .tw__add { grid-template-columns: 1fr; } }
+@keyframes tw-in { from { opacity: 0; transform: translateY(14px); } }
+@keyframes tw-pop { from { opacity: 0; transform: scale(.85); } }
+@keyframes tw-wiggle { 25% { rotate: -2deg; } 75% { rotate: 2deg; } }
+@media (prefers-reduced-motion: reduce) { .tw__card, .tw__picked { animation: none; } }
+
 /* box art on the game cards */
 .game__cover { width: min(150px, 70%); aspect-ratio: 3 / 4; object-fit: cover; border: 1.5px solid var(--ink, #37353f); border-radius: 4px; box-shadow: 3px 3px 0 0 var(--ink, #37353f); rotate: -2deg; margin-bottom: 6px; background: var(--line); }
 .game:nth-child(even) .game__cover { rotate: 2deg; }
