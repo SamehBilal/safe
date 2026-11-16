@@ -26,6 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { library, intoStory, intoMusic } from './library.mjs';
 import { shrinkBig } from './shrink.mjs';
 import { toAvif } from './avif.mjs';
+import { SONGS_URL, AUDIO, songsOut, songBytes } from './songs.mjs';
 import { sealSecret } from './secret.mjs';
 import { ITERATIONS, deriveKek, importMaster, seal, open, randomBytes, toB64, fromB64 } from '../assets/js/core.js';
 
@@ -33,6 +34,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PRIV = path.join(ROOT, 'private');
 const OUT = path.join(ROOT, 'content');
 const MEDIA_OUT = path.join(OUT, 'm');
+const SONGS_OUT = songsOut(ROOT); // ../safe-songs/m when that repo is checked out (tools/songs.mjs)
 const MAX_COMBOS = 512;
 
 const MIME = {
@@ -81,6 +83,7 @@ async function main() {
 	const raw = await masterKey();
 	const key = await importMaster(raw);
 	await mkdir(MEDIA_OUT, { recursive: true });
+	if (SONGS_OUT) await mkdir(SONGS_OUT, { recursive: true });
 
 	// 1) Media: every string in story.json that names a file in private/media becomes "media:<id>.<ext>".
 	const mediaDir = path.join(PRIV, 'media');
@@ -103,6 +106,16 @@ async function main() {
 		const real = byName.get(name.toLowerCase());
 		if (!real) { missing.add(name); return name; }
 		if (used.has(real)) return used.get(real);
+		// a recording goes to the songs site (tools/songs.mjs), as AAC
+		if (SONGS_OUT && AUDIO.test(real)) {
+			const { bytes, ext } = await songBytes(path.join(mediaDir, real), path.join(PRIV, '.cache', 'aac'));
+			const id = createHmac('sha256', Buffer.from(raw)).update(bytes).digest('hex').slice(0, 20);
+			const out = path.join(SONGS_OUT, id + '.bin');
+			if (!existsSync(out) || statSync(out).size === 0) await writeFile(out, await seal(key, bytes));
+			const ref = `song:${id}${ext}`;
+			used.set(real, ref);
+			return ref;
+		}
 		const copy = avifs.get(real) || smaller.get(real);
 		const ext = avifs.has(real) ? '.avif' : copy ? '.jpg' : path.extname(real).toLowerCase();
 		const bytes = await readFile(copy || path.join(mediaDir, real));
@@ -122,7 +135,7 @@ async function main() {
 			for (const [k, v] of Object.entries(node)) out[k] = await walk(v);
 			return out;
 		}
-		if (typeof node === 'string' && MIME[path.extname(node).toLowerCase()] && !/^(https?|media|data):|^\/|:\/\//.test(node)) return encodeMedia(node);
+		if (typeof node === 'string' && MIME[path.extname(node).toLowerCase()] && !/^(https?|media|song|data):|^\/|:\/\//.test(node)) return encodeMedia(node);
 		return node;
 	}
 
@@ -132,11 +145,20 @@ async function main() {
 	const secretPhotos = await sealSecret(key);
 	sealedStory.$media = [...used.values()];
 
-	// Remove encrypted files no longer referenced.
-	const keep = new Set([...used.values()].map((r) => r.slice(6).replace(/\.[^.]+$/, '') + '.bin'));
+	if (SONGS_OUT) sealedStory.$songs = SONGS_URL;
+
+	// Remove encrypted files no longer referenced (here, and in the songs site).
+	const binOf = (r) => r.replace(/^\w+:/, '').replace(/\.[^.]+$/, '') + '.bin';
+	const refs = [...used.values()];
+	const keep = new Set(refs.filter((r) => r.startsWith('media:')).map(binOf));
+	const keepSongs = new Set(refs.filter((r) => r.startsWith('song:')).map(binOf));
 	for (const f of await readdir(MEDIA_OUT)) if (!keep.has(f)) await rm(path.join(MEDIA_OUT, f));
-	const size = (await Promise.all([...keep].map((f) => stat(path.join(MEDIA_OUT, f)).then((s) => s.size)))).reduce((a, b) => a + b, 0);
-	sealedStory.$mediaMB = Math.max(1, Math.round(size / 1048576)); // for «Save for offline»
+	if (SONGS_OUT) for (const f of await readdir(SONGS_OUT)) if (f.endsWith('.bin') && !keepSongs.has(f)) await rm(path.join(SONGS_OUT, f));
+	const sizeOf = (dir, set) => Promise.all([...set].map((f) => stat(path.join(dir, f)).then((s) => s.size))).then((a) => a.reduce((x, y) => x + y, 0));
+	const size = await sizeOf(MEDIA_OUT, keep);
+	const songsSize = SONGS_OUT ? await sizeOf(SONGS_OUT, keepSongs) : 0;
+	sealedStory.$mediaMB = Math.max(1, Math.round((size + songsSize) / 1048576)); // for «Save for offline»
+	if (SONGS_OUT) console.log(`✓ ${keepSongs.size} song(s) for the songs site (${(songsSize / 1048576).toFixed(1)} MB) — then: cd ${path.dirname(SONGS_OUT)} && git add -A && git commit -m "Songs" && git push`);
 
 	// 2) Story.
 	const data = await seal(key, new TextEncoder().encode(JSON.stringify(sealedStory)));

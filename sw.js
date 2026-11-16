@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-62ed226ce5';
+var VERSION = 'us-aeb09b60c7';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -230,7 +230,8 @@ self.addEventListener('fetch', function (e) {
 	}
 	if (url.origin !== location.origin) return;
 
-	if (url.pathname.indexOf('/content/m/') !== -1) {
+	// photos and videos here, and our songs on the songs site (same address, its own folder): kept once seen
+	if (url.pathname.indexOf('/content/m/') !== -1 || url.pathname.indexOf('/safe-songs/m/') === 0) {
 		e.respondWith(cacheFirst(req, MEDIA_CACHE));
 		return;
 	}

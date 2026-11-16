@@ -3,7 +3,7 @@
    drops or comes back; "Save for offline", which keeps every photo and video (still encrypted) on the phone; and, after a
    few minutes of reading, a card offering whichever of those is still to do. The browser bar follows our theme, and the
    installed app gets a back button, since it has no browser bar of its own. */
-import { App, L, Y, $, store, esc } from './shell.js';
+import { App, L, Y, $, store, esc, binURL } from './shell.js';
 
 const html = document.documentElement;
 export let standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
@@ -72,7 +72,7 @@ const canSave = () => 'caches' in window && 'serviceWorker' in navigator && !sto
 let saving = false;
 async function saveOffline() {
 	if (saving || !('caches' in window)) return;
-	const list = [...new Set((App.story?.$media || []).map((r) => (/^media:([a-f0-9]+)\./.exec(r) || [])[1]).filter(Boolean))].map((id) => `content/m/${id}.bin`);
+	const list = [...new Set((App.story?.$media || []).map(binURL).filter(Boolean))];
 	if (!list.length) return;
 	const mb = App.story.$mediaMB;
 	if (!confirm(L(`هنحفظ ${list.length} صورة وفيديو${mb ? ` (حوالي ${mb} ميجا)` : ''} على الموبايل ده، عشان حكايتنا تفتح من غير نت. نكمل؟`,

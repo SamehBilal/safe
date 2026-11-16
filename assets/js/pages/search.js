@@ -25,7 +25,7 @@ const SKIP = /^(id|at|by|who|photo|photos|cover|audio|sketch|color|icon|emoji|hr
 function texts(v, out = [], depth = 0) {
 	if (v == null || depth > 5) return out;
 	if (typeof v === 'string') {
-		if (v.length > 1 && !/^(media:|https?:|data:|#[0-9a-f]{3,8}$|\d{4}-\d{2}(-\d{2})?$)/i.test(v)) out.push(v);
+		if (v.length > 1 && !/^(media:|song:|https?:|data:|#[0-9a-f]{3,8}$|\d{4}-\d{2}(-\d{2})?$)/i.test(v)) out.push(v);
 	} else if (typeof v === 'number') return out;
 	else if (Array.isArray(v)) v.forEach((x) => texts(x, out, depth + 1));
 	else if (typeof v === 'object') for (const [k, x] of Object.entries(v)) if (!SKIP.test(k)) texts(x, out, depth + 1);

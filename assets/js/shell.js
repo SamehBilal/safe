@@ -133,13 +133,21 @@ export const getKey = () => masterKey;
 export const mimeOf = (ref) => MIME[(String(ref).match(/\.(\w+)$/) || [])[1]?.toLowerCase()] || 'application/octet-stream';
 export const isVideo = (ref) => /^video\//.test(mimeOf(ref));
 
+/* where a sealed file lives: photos and videos here (content/m), songs on our songs site (tools/songs.mjs) */
+const SONGS_URL = 'https://samehbilal.github.io/safe-songs/';
+export function binURL(ref) {
+	const m = /^(media|song):([a-f0-9]+)\.\w+$/.exec(ref || '');
+	if (!m) return '';
+	return m[1] === 'song' ? `${App.story?.$songs || SONGS_URL}m/${m[2]}.bin` : `content/m/${m[2]}.bin`;
+}
+
 export function mediaURL(ref) {
 	if (!ref) return Promise.reject(new Error('none'));
 	if (/^https?:\/\//.test(ref)) return Promise.resolve(ref);
-	const m = /^media:([a-f0-9]+)\.(\w+)$/.exec(ref);
-	if (!m) return Promise.reject(new Error('not built: ' + ref));
+	const url = binURL(ref);
+	if (!url) return Promise.reject(new Error('not built: ' + ref));
 	if (!media.has(ref)) {
-		media.set(ref, fetch(`content/m/${m[1]}.bin`)
+		media.set(ref, fetch(url)
 			.then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
 			.then((buf) => open(masterKey, buf))
 			.then((bytes) => URL.createObjectURL(new Blob([bytes], { type: mimeOf(ref) }))));

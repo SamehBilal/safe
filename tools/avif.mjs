@@ -18,7 +18,7 @@ const SIDE = 1600, CRF = 30;
 const WANT = (f) => /\.jpe?g$/i.test(f) && !/(^|\/)[^/]*-cover\.jpe?g$/i.test(f);
 const CANDIDATES = [process.env.FFMPEG, 'ffmpeg', 'C:/Program Files/PixiEditor/ThirdParty/Windows/ffmpeg/ffmpeg.exe', 'C:/ffmpeg/bin/ffmpeg.exe'].filter(Boolean);
 
-async function findFfmpeg() {
+export async function findFfmpeg() {
 	for (const exe of CANDIDATES) {
 		try {
 			const { stdout } = await run(exe, ['-hide_banner', '-encoders'], { maxBuffer: 4 << 20 });
