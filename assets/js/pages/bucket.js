@@ -29,5 +29,5 @@ export default listPage({
 		${c.del(x)}
 	</article>`,
 	empty: ['أول حلم يتكتب هنا ♥', 'The first dream goes here ♥'],
-	related: ['wishes', 'goals', 'trips']
+	related: ['adventures', 'wishes', 'goals']
 });
