@@ -60,6 +60,7 @@ export default {
 			<div class="wrap narrow">
 				${linksOut(x)}
 				${story ? story.split(/\n{2,}/).map((p) => `<p class="prose reveal">${esc(p)}</p>`).join('') : ''}
+				${x.code?.text ? `<figure class="mo-code reveal">${x.code.caption ? `<figcaption>${T(x.code.caption)}</figcaption>` : ''}<pre dir="ltr" tabindex="0"><code>${esc(x.code.text)}</code></pre></figure>` : ''}
 				${isFar(s, x) ? `<div class="moment-far">${farthestMap(s)}</div>` : ''}
 				${chapter ? `<a class="otd reveal" href="chapter.html?id=${esc(chapter.id)}"><span class="otd__ic">${doodle(chapter.icon, 28)}</span><span><small>${L('الحكاية كاملة', 'The full chapter')}</small><b>${T(chapter.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : ''}
 				<nav class="pager" aria-label="${L('ذكريات تانية', 'Other moments')}">

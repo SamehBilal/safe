@@ -294,6 +294,10 @@ body:not(.is-locked) .hearts { opacity: 0.45; }
 .crumbs a:last-child { color: var(--blue); font-weight: 700; pointer-events: none; }
 .lede { font-size: 1.25rem; line-height: 1.8; text-align: center; margin: 0 0 20px; }
 .prose { font-size: 1.08rem; line-height: 1.9; }
+/* a moment's code (story.json "timeline[].code"): kept exactly as written, left to right, scrolling sideways on a phone */
+.mo-code { margin: 26px 0; }
+.mo-code figcaption { font: 1.15rem var(--f-label); color: var(--blue); margin-bottom: 8px; }
+.mo-code pre { margin: 0; padding: 16px 18px; overflow-x: auto; border-radius: 1em; background: #10202a; color: #d8f1e4; box-shadow: var(--shadow); font: 0.86rem/1.55 ui-monospace, Consolas, monospace; tab-size: 4; text-align: left; unicode-bidi: isolate; }
 
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); transition-delay: var(--delay, 0s); }
 .reveal.is-in { opacity: 1; transform: none; }
