@@ -297,6 +297,18 @@ body:not(.is-locked) .hearts { opacity: 0.45; }
 /* a moment's code (story.json "timeline[].code"): kept exactly as written, left to right, scrolling sideways on a phone */
 .mo-code { margin: 26px 0; }
 .mo-code figcaption { font: 1.15rem var(--f-label); color: var(--blue); margin-bottom: 8px; }
+.mo-code__run { margin-top: 14px; }
+/* the console a program runs in (assets/js/cppconsole.js), after the Windows one */
+.cpp { margin-top: 14px; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow-lg); background: #0c0c0c; border: 1px solid #3a3a3a; text-align: left; unicode-bidi: isolate; }
+.cpp__bar { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; background: #f3f3f3; color: #111; font: 0.78rem/1.2 'Segoe UI', system-ui, sans-serif; }
+.cpp__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cpp__x { border: 0; background: none; font: inherit; font-size: 0.9rem; padding: 4px 10px; cursor: pointer; color: inherit; }
+.cpp__x:hover { background: #e81123; color: #fff; }
+.cpp__screen { height: min(56vh, 380px); overflow: auto; padding: 8px 10px; color: #cccccc; font: 0.86rem/1.35 Consolas, ui-monospace, 'Courier New', monospace; white-space: pre-wrap; word-break: break-word; cursor: text; }
+.cpp__in { display: inline; width: 60%; min-width: 8ch; border: 0; outline: 0; padding: 0; margin: 0; background: transparent; color: #f2f2f2; font: inherit; caret-color: #f2f2f2; }
+.cpp__in[hidden] { display: none; }
+.cpp__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; background: #1b1b1b; color: #9a9a9a; font-size: 0.8rem; }
+.cpp__foot:has(.cpp__hint:empty):has(.cpp__again[hidden]) { display: none; }
 .mo-code pre { margin: 0; padding: 16px 18px; overflow-x: auto; border-radius: 1em; background: #10202a; color: #d8f1e4; box-shadow: var(--shadow); font: 0.86rem/1.55 ui-monospace, Consolas, monospace; tab-size: 4; text-align: left; unicode-bidi: isolate; }
 
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out); transition-delay: var(--delay, 0s); }

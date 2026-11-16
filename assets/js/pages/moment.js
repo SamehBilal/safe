@@ -60,7 +60,7 @@ export default {
 			<div class="wrap narrow">
 				${linksOut(x)}
 				${story ? story.split(/\n{2,}/).map((p) => `<p class="prose reveal">${esc(p)}</p>`).join('') : ''}
-				${x.code?.text ? `<figure class="mo-code reveal">${x.code.caption ? `<figcaption>${T(x.code.caption)}</figcaption>` : ''}<pre dir="ltr" tabindex="0"><code>${esc(x.code.text)}</code></pre></figure>` : ''}
+				${x.code?.text ? `<figure class="mo-code reveal">${x.code.caption ? `<figcaption>${T(x.code.caption)}</figcaption>` : ''}<pre dir="ltr" tabindex="0"><code>${esc(x.code.text)}</code></pre>${x.code.run ? `<button class="btn mo-code__run" type="button" id="mo-run">▶ ${Y('شغّل البرنامج', 'شغّلي البرنامج', 'Run the program')}</button><div id="mo-console"></div>` : ''}</figure>` : ''}
 				${isFar(s, x) ? `<div class="moment-far">${farthestMap(s)}</div>` : ''}
 				${chapter ? `<a class="otd reveal" href="chapter.html?id=${esc(chapter.id)}"><span class="otd__ic">${doodle(chapter.icon, 28)}</span><span><small>${L('الحكاية كاملة', 'The full chapter')}</small><b>${T(chapter.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : ''}
 				<nav class="pager" aria-label="${L('ذكريات تانية', 'Other moments')}">
@@ -75,6 +75,16 @@ export default {
 	after(main, s) {
 		const x = (s.timeline || []).find((m) => m.id === qs('id'));
 		if (isFar(s, x)) drawFarthest(main, s);
+		/* a program that can run: the button opens a console under the code and runs it there */
+		$('#mo-run', main)?.addEventListener('click', async (e) => {
+			e.currentTarget.hidden = true;
+			const { runCpp } = await import('../cppconsole.js');
+			runCpp($('#mo-console', main), x.code.text, {
+				title: x.code.title || 'C:\\Users\\sameh\\OneDrive\\Documents\\Untitled1.exe',
+				hint: Y('اكتب ردّك واضغط Enter — زي ما جاوبت ساعتها', 'اكتبي ردّك واضغطي Enter — زي ما جاوب ساعتها', 'Type your answer and press Enter — as I did that night'),
+				again: L('شغّله تاني', 'Run it again'),
+			});
+		});
 		const intro = $('#mo-intro', main);
 		if (!intro?.classList.contains('is-stack')) return;
 		stackToGrid(main, intro);
