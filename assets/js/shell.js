@@ -664,9 +664,9 @@ function megaHTML(s) {
 			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
 		</a>`);
 
-	// ذكرياتنا — like حكايتنا: three taped polaroids (a photo from the album, a love note, the wedding guestbook), the
-	// memory pages beside them, and a band with a moment from our story. The photo, the note and the moment change
-	// every time it opens.
+	// ذكرياتنا — حكايتنا in a mirror: the memory pages on the other side, three taped polaroids tilting the other way
+	// (a photo from the album, a love note, the wedding guestbook), and instead of a band, a strip of film with five
+	// moments from our story. The photo, the note and the five frames change every time it opens.
 	const gb = s.guestbook;
 	const memories = panel('memories', L('ذكرياتنا', 'Memories'),
 		`<div class="mg-cards">
@@ -681,7 +681,7 @@ function megaHTML(s) {
 			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
 		</div>
 		<div class="mg-more"><p class="mg-h">${L('ذكرياتنا', 'Our memories')}</p>${pages('memories').map(row).join('')}</div>
-		<a class="mg-band has-photo" id="mg-mem" href="story.html">${memoryHTML(s)}</a>`);
+		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`);
 
 	// عيلتنا — one card per person.
 	const members = s.family?.members || [];
@@ -734,16 +734,14 @@ function albumHTML(s) {
 		<span class="mg-card-t"><b>${L('ألبوم الصور', 'Photo album')}</b><small>${L('إحنا بالصور', 'Us in pictures')}</small></span>`;
 }
 
-/* the band in ذكرياتنا: a moment from our story with its photo — not today's (حكايتنا shows that), any other */
-function memoryHTML(s, a) {
+/* the film strip in ذكرياتنا: five moments from our story with photos (never today's — حكايتنا shows that one),
+   five different ones each time it opens, laid out oldest first like a reel */
+function filmHTML(s) {
 	const all = (s.timeline || []).filter((x) => !x.when && firstPhoto(x) && !isVideo(firstPhoto(x)) && !isToday(x.date));
-	if (!all.length) return `<b>${L('ذكرى من حكايتنا', 'A memory from our story')}</b><small>${App.arrow}</small>`;
-	const m = pick(all);
-	if (a) a.href = `moment.html?id=${encodeURIComponent(m.id)}`;
-	else queueMicrotask(() => { const el = document.getElementById('mg-mem'); if (el) el.href = `moment.html?id=${encodeURIComponent(m.id)}`; });
-	return `<span class="mg-band-pic" data-media-box>${img(firstPhoto(m), '', 'mg-band-img')}</span>
-		<b>${L('ذكرى من حكايتنا', 'A memory from our story')}</b>
-		<small>${T(m.title)} · ${fmtDate(m.date)} ${App.arrow}</small>`;
+	const five = [];
+	while (five.length < 5 && five.length < all.length) { const m = pick(all); if (!five.includes(m)) five.push(m); }
+	return five.sort((a, b) => String(a.date).localeCompare(String(b.date))).map((m) => `
+		<a class="mg-frame" href="moment.html?id=${esc(m.id)}" title="${T(m.title)}" data-media-box>${img(firstPhoto(m), App.t(m.title), 'mg-frame-img')}<small>${fmtDate(m.date)}</small></a>`).join('');
 }
 
 let lastNote = -1;
@@ -771,7 +769,7 @@ function wireMega(header) {
 			// a new love note, album photo and moment every time ذكرياتنا opens
 			const tx = $('#mg-note', nav); if (tx) tx.innerHTML = noteHTML(App.story);
 			const al = $('#mg-album', nav); if (al) al.innerHTML = albumHTML(App.story);
-			const mm = $('#mg-mem', nav); if (mm) mm.innerHTML = memoryHTML(App.story, mm);
+			const fm = $('#mg-film', nav); if (fm) fm.innerHTML = filmHTML(App.story);
 		}
 		if (id) hydrate(nav);
 		openId = id;
