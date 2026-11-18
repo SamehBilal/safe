@@ -812,20 +812,20 @@ function calendarHTML(s) {
 	</a>`;
 }
 
-/* مناسباتنا, under the calendar: the occasions after the next one, as gift tags on a string — what it is, the date,
-   and how long is left */
+/* مناسباتنا, under the calendar: «وبعدها», a page of the planner with the occasions after the next one two to a row —
+   each a torn-off calendar leaf (month and day), what it is, and how long is left */
 function nextTagsHTML(s) {
 	const after = occasions(s).slice(1, 5);
 	if (!after.length) return '';
 	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-	const day = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return new Intl.DateTimeFormat(loc, { day: 'numeric', month: 'short' }).format(d); };
+	const dateOf = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return d; };
+	const month = (o) => new Intl.DateTimeFormat(loc, { month: 'short' }).format(dateOf(o));
 	const href = (o) => (o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html');
 	return `<div class="mg-tags">
 		<p class="mg-tags-h">${L('وبعدها', 'And after that')}</p>
 		<div class="mg-tags-row">${after.map((o, i) => `<a class="mg-tag" href="${href(o)}" style="--i:${i}">
-			<span class="mg-tag-e" aria-hidden="true">${doodle(o.emoji, 20)}</span>
-			<b>${esc(o.title)}</b>
-			<small>${day(o)} · ${L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`)}</small>
+			<span class="mg-tag-leaf" aria-hidden="true"><i>${esc(month(o))}</i><b>${num(dateOf(o).getDate())}</b></span>
+			<span class="mg-tag-tx"><b>${esc(o.title)}</b><small><span class="mg-tag-e" aria-hidden="true">${doodle(o.emoji, 14)}</span>${L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`)}</small></span>
 		</a>`).join('')}</div>
 	</div>`;
 }
