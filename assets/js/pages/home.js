@@ -249,10 +249,11 @@ export default {
 			<p class="sec__sub reveal">${L(`الأسبوع ده (حوالين ${dayMonth(now)}) في السنين اللي فاتت`, `This same week (around ${dayMonth(now)}) in the years before`)}</p>
 			<div class="hm-week">${weekYears.map((y, i) => `
 				<div class="hm-week__yr reveal" style="--i:${i}">
+					<span class="hm-week__pin" aria-hidden="true"></span>
 					<span class="hm-week__tab"><b>${yr(y)}</b><small>${esc(yearsAgo(`${y}-${now.slice(5, 10)}`))}</small></span>
 					${thisWeek.get(y).sort((a, b) => String(a.date).localeCompare(String(b.date))).map((x) => `
 					<a class="hm-week__m" href="moment.html?id=${esc(x.id)}">
-						${photosOf(x).length ? img(photosOf(x)[0], '', 'hm-week__img') : `<span class="hm-week__ic">${doodle(x.icon, 30)}</span>`}
+						<span class="hm-week__pic">${photosOf(x).length ? img(photosOf(x)[0], '', 'hm-week__img') : doodle(x.icon, 26)}</span>
 						<span class="hm-week__tx"><small>${esc(dayMonth(x.date))}</small><b dir="auto">${T(x.title)}</b></span>
 					</a>`).join('')}
 				</div>`).join('')}
@@ -335,8 +336,11 @@ export default {
 				const mine = tl.filter((x) => (x.who || []).includes(k.id) && photosOf(x).length).sort((a, b) => String(b.date).localeCompare(String(a.date)));
 				const ph = k.photo || (mine[0] && photosOf(mine[0])[0]);
 				return `<div class="hm-kid reveal">
-					<a class="hm-kid__top" href="member.html?id=${esc(k.id)}">${ph ? img(ph, '', 'hm-kid__img') : `<span class="hm-kid__img hm-kid__img--none">${doodle(k.emoji || 'baby', 44)}</span>`}
-						<span><b>${T(k.name)}</b><small>${esc(age(k.born))}</small></span></a>
+					<span class="hm-kid__tape" aria-hidden="true"></span>
+					<a class="hm-kid__top" href="member.html?id=${esc(k.id)}">
+						<span class="hm-kid__pic">${ph ? img(ph, '', 'hm-kid__img') : `<span class="hm-kid__img hm-kid__img--none">${doodle(k.emoji || 'baby', 44)}</span>`}</span>
+						<span class="hm-kid__tx"><b>${T(k.name)}</b><small>${esc(age(k.born))}</small><span class="hm-kid__go">${L('صفحته', 'His page')} ${App.arrow}</span></span>
+					</a>
 					${f ? `<a class="hm-kid__first" href="firsts.html">${f.photo ? `<img data-sketch="${esc(f.photo)}" alt="" loading="lazy">` : ''}<span><small>${L('آخر أول مرة', 'Latest first')} · ${fmtDate(f.date)}</small><b dir="auto">${esc(f.what)}</b></span></a>`
 						: `<a class="hm-kid__first hm-kid__first--empty" href="firsts.html"><span><small>${L('أول مرة', 'Firsts')}</small><b>${Y('سجّل أول حاجة عملها', 'سجّلي أول حاجة عملها', 'Log his first first')} +</b></span></a>`}
 				</div>`;

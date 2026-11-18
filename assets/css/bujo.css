@@ -174,16 +174,9 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .pnav a[aria-current='page'] .ic { background: rgba(255, 255, 255, 0.2); color: #fff; }
 .pnav a em { font-size: 1.05rem; }
 
-/* ---------- the footer: the link lists are journal cards too, laid out tidily on phones ---------- */
-.ft-links { padding: 14px 16px 12px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); }
-.ft-links:nth-of-type(2) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
-.ft-links:nth-of-type(3) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
-.ft-links h2 { width: fit-content; padding-inline: 0.2em; background: linear-gradient(to left, color-mix(in srgb, var(--hl-yellow) 55%, transparent), var(--hl-yellow)) no-repeat 0 85% / 100% 45%; color: var(--text); }
-[dir='ltr'] .ft-links h2 { background-image: linear-gradient(to right, color-mix(in srgb, var(--hl-yellow) 55%, transparent), var(--hl-yellow)); }
-.ft-links a { padding: 4px 0; }
-.ft-links a::before { content: '✦'; margin-inline-end: 6px; font-size: 0.7em; color: var(--coral); vertical-align: 0.15em; }
+/* ---------- the footer, laid out tidily on phones (the contents page itself is drawn at the end of this file) ---------- */
 @media (max-width: 719px) {
-	.ft-wrap { grid-template-columns: 1fr 1fr; gap: 14px; }
+	.ft-wrap { grid-template-columns: 1fr; gap: 14px; }
 	.ft-brand, .ft-maker { grid-column: 1 / -1; }
 	.ft-brand { display: grid; justify-items: center; text-align: center; }
 	.ft-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 14px; }
@@ -191,9 +184,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.ft-tools .btn[hidden] { display: none; }
 	.ft-tools .btn:first-child:not([hidden]) { grid-column: 1 / -1; }
 	.ft-tools #lock-btn { grid-column: 1 / -1; justify-self: center; width: auto; min-width: 50%; }
-	.ft-links { padding: 12px 12px 10px; }
-	.ft-links h2 { font-size: 1.05rem; }
-	.ft-links a { font-size: 0.92rem; padding: 3px 0; }
 	.ft-maker { text-align: center; }
 	.ft-copy { justify-content: center; }
 	.ft-end { font-size: 1.4rem; padding-top: 18px; }
@@ -357,18 +347,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .grow__tile--soon { opacity: 0.55; box-shadow: none; border-style: dashed; }
 .grow__tile--soon .grow__blank { border-color: transparent; }
 @media (max-width: 459px) { .grow__grid { grid-template-columns: repeat(2, 1fr); gap: 20px 14px; } }
-
-/* footer: the four link cards two to a row, their links in two columns, so the block is half as tall */
-@media (min-width: 720px) {
-	.ft-wrap, .ft-wrap:has(.ft-links) { grid-template-columns: 1fr 1fr; }
-	.ft-brand, .ft-maker { grid-column: 1 / -1; }
-	.ft-links { grid-template-columns: 1fr 1fr; column-gap: 18px; }
-	.ft-links h2 { grid-column: 1 / -1; }
-}
-@media (min-width: 1040px) {
-	.ft-wrap, .ft-wrap:has(.ft-links) { grid-template-columns: 1.1fr 1.5fr 1.5fr; }
-	.ft-brand { grid-column: 1; grid-row: 1 / span 2; }
-}
 
 /* family tree: straight on the page (no card around it), with room to breathe */
 .ftree { margin: 36px 0 56px; }
@@ -645,3 +623,43 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 	100% { box-shadow: 0 0 0 0 transparent; }
 }
 @media (prefers-reduced-motion: reduce) { .sr-card, .mg-sky-stars i { animation: none; } }
+
+/* ---------- the footer's links: the contents page of our diary — spiral holes along the top, «Contents» written in,
+   and each group a chapter under a coloured divider tab with its number, its pages on the ruled lines ---------- */
+.ft-wrap { grid-template-columns: 1fr; gap: 26px; }
+@media (min-width: 720px) {
+	.ft-brand { display: flex; flex-wrap: wrap; align-items: center; column-gap: 14px; }
+	.ft-tools { margin: 0; margin-inline-start: auto; }
+}
+.ft-book { position: relative; padding: 46px clamp(16px, 3vw, 30px) 22px; color: #2b2b33; background: #fffdf8;
+	border: 1.5px solid var(--ink); border-radius: 6px 6px 14px 14px; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-pink); }
+.ft-book__holes { position: absolute; top: 12px; inset-inline: 22px; height: 14px; background: radial-gradient(circle at 7px 7px, var(--paper, #f7f4ee) 0 5px, #37353f 5.5px 6.8px, transparent 7.2px) 0 0 / 30px 14px repeat-x; }
+.ft-book__h { margin: 0 0 18px; font: 700 2.1rem/1 var(--f-hand); color: #0e6990; width: fit-content; text-decoration: underline wavy #f2726f 1.5px; text-underline-offset: 8px; }
+:lang(ar) .ft-book__h { font: 700 1.6rem/1.3 'Aref Ruqaa', var(--f-body); }
+.ft-book__ch { display: grid; gap: 26px 30px; grid-template-columns: 1fr; }
+.ft-links { --tab: #fcc5c9; min-width: 0; }
+.ft-links:nth-child(2) { --tab: #e3ec9c; }
+.ft-links:nth-child(3) { --tab: #fde49a; }
+.ft-links:nth-child(4) { --tab: #bfe0ef; }
+.ft-links h2 { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0; padding: 4px 14px 3px 6px; font: 400 1.15rem/1.2 var(--f-label); letter-spacing: .08em; color: #2b2b33; background: var(--tab); border: 1.5px solid #37353f; border-bottom: 0; border-radius: 9px 9px 0 0; }
+[dir='rtl'] .ft-links h2 { padding: 4px 6px 3px 14px; }
+:lang(ar) .ft-links h2 { font: 800 .95rem/1.5 var(--f-body); letter-spacing: 0; }
+.ft-links h2 i { display: grid; place-items: center; width: 24px; height: 24px; font: 400 .85rem/1 var(--f-label); font-style: normal; letter-spacing: 0; color: #fff; background: #37353f; border-radius: 50%; }
+.ft-links__list { columns: 2; column-gap: 18px; padding-top: 6px; border-top: 2px solid #37353f; background: repeating-linear-gradient(transparent 0 29px, rgba(14, 105, 144, .14) 29px 30px) 0 6px; }
+.ft-links a { display: block; width: fit-content; max-width: 100%; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .92rem; line-height: 30px; color: #45434d; text-decoration: none; break-inside: avoid; }
+.ft-links a::before { content: '✦'; margin-inline-end: 7px; font-size: .7em; color: #f2726f; vertical-align: .15em; }
+.ft-links a:hover { color: #0e6990; text-decoration: underline wavy #f2726f 1px; text-underline-offset: 5px; }
+/* on a phone the two columns are narrow: a long name wraps instead of being cut, and the ruled lines go */
+@media (max-width: 639px) {
+	.ft-links__list { background: none; }
+	.ft-links a { white-space: normal; overflow: visible; line-height: 1.35; padding: 5px 0; font-size: .9rem; }
+}
+@media (min-width: 640px) { .ft-book__ch { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) {
+	/* our story and memories stacked in the first column, the two long chapters beside them */
+	.ft-book__ch { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+	.ft-links:nth-child(1) { grid-area: 1 / 1; }
+	.ft-links:nth-child(2) { grid-area: 2 / 1; }
+	.ft-links:nth-child(3) { grid-area: 1 / 2 / span 2; }
+	.ft-links:nth-child(4) { grid-area: 1 / 3 / span 2; }
+}

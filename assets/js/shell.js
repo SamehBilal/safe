@@ -1110,7 +1110,8 @@ function familyScene(s) {
 }
 
 function footerHTML(s) {
-	const col = (title, list) => `<nav class="ft-links" aria-label="${esc(title)}"><h2>${esc(title)}</h2>${list.map((p) => `<a href="${p.href}">${esc(L(p.ar, p.en))}</a>`).join('')}</nav>`;
+	// each group a chapter of the diary's contents page: a coloured divider tab with its number, the pages under it
+	const col = (n, title, list) => `<nav class="ft-links" style="--n:${n}" aria-label="${esc(title)}"><h2><i aria-hidden="true">${String(n).padStart(2, '0')}</i>${esc(title)}</h2><div class="ft-links__list">${list.map((p) => `<a href="${p.href}">${esc(L(p.ar, p.en))}</a>`).join('')}</div></nav>`;
 	const g = (id) => PAGES.filter((p) => p.group === id);
 	return `
 	<div class="ft-scene">${familyScene(s)}</div>
@@ -1125,10 +1126,16 @@ function footerHTML(s) {
 				<button class="btn btn--ghost btn--sm" type="button" id="lock-btn">${doodle('lock', 16)} ${Y('اقفل', 'اقفلي', 'Lock')}</button>
 			</div>
 		</div>
-		${col(L('حكايتنا', 'Our story'), [PAGES[0], ...g('story')])}
-		${col(L('ذكرياتنا', 'Memories'), g('memories'))}
-		${col(L('ليالينا', 'Our nights'), [...g('nights'), ...DRAW_KINDS.map((k) => ({ href: `draw.html?k=${k.id}`, ar: k.ar, en: k.en }))])}
-		${col(L('عيلتنا ومناسباتنا', 'Family & occasions'), [...g('family'), ...g('you'), ...g('app')])}
+		<div class="ft-book">
+			<span class="ft-book__holes" aria-hidden="true"></span>
+			<p class="ft-book__h">${L('الفهرس', 'Contents')}</p>
+			<div class="ft-book__ch">
+				${col(1, L('حكايتنا', 'Our story'), [PAGES[0], ...g('story')])}
+				${col(2, L('ذكرياتنا', 'Memories'), g('memories'))}
+				${col(3, L('ليالينا', 'Our nights'), [...g('nights'), ...DRAW_KINDS.map((k) => ({ href: `draw.html?k=${k.id}`, ar: k.ar, en: k.en }))])}
+				${col(4, L('عيلتنا ومناسباتنا', 'Family & occasions'), [...g('family'), ...g('you'), ...g('app')])}
+			</div>
+		</div>
 		<div class="ft-maker">
 			${App.lang === 'ar'
 				? `<p class="ft-copy" dir="rtl">حقوق النشر @${new Date().getFullYear()}، ${petHTML()}كل الحب محفوظ. <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`

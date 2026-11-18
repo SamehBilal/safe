@@ -173,7 +173,6 @@
 	.mnav-link, .mnav-btn { padding: 10px 11px; }
 }
 @media (min-width: 980px) and (max-width: 1199px) { .mnav-cta { display: none; } }
-@media (min-width: 1040px) { .ft-wrap { grid-template-columns: 1.4fr repeat(4, 1fr); } }
 
 /* the real pebble portrait, framed on the family page */
 .portrait { margin: 0 auto 40px; max-width: 760px; display: grid; gap: 14px; justify-items: center; text-align: center; }

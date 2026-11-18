@@ -127,16 +127,10 @@
 .site-footer { color: var(--text); margin-top: 24px; }
 .ft-body { padding: 8px 0 0; }
 .ft-wrap { width: min(1180px, 100% - 2 * var(--gutter)); margin-inline: auto; display: grid; gap: 28px; grid-template-columns: 1fr; }
-@media (min-width: 720px) { .ft-wrap { grid-template-columns: 1fr 1fr 1fr; } .ft-brand, .ft-maker { grid-column: 1 / -1; } }
-@media (min-width: 1040px) { .ft-wrap { grid-template-columns: 1.6fr 1fr 1fr 1fr; } .ft-brand { grid-column: auto; } }
 .ft-names { font: 400 2.2rem/1.3 var(--f-script); color: var(--blue); }
 .ft-names i { color: var(--coral); font-style: normal; }
 .ft-dates { font: 1.2rem var(--f-label); letter-spacing: 0.15em; color: var(--muted); }
 .ft-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-.ft-links { display: grid; align-content: start; gap: 2px; }
-.ft-links h2 { font: 1.15rem var(--f-label); letter-spacing: 0.08em; color: var(--coral-deep); margin: 0 0 6px; }
-.ft-links a { color: var(--muted); text-decoration: none; padding: 5px 0; width: fit-content; }
-.ft-links a:hover { color: var(--text); text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 6px; }
 .ft-maker { border-top: 2px dashed var(--line); padding-top: 16px; }
 .ft-copy { margin: 0; font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .owl { display: inline-block; white-space: pre; font: 0.62rem/1.05 ui-monospace, Consolas, monospace; color: var(--coral-deep); direction: ltr; unicode-bidi: isolate; }
