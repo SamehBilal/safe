@@ -560,6 +560,7 @@ export const PAGES = [
 	{ href: 'posts.html', id: 'posts', ic: 'phone', ar: 'بوستاتنا', en: 'Our posts', dar: 'اللي كتبناه لبعض على السوشيال ميديا', den: 'What we posted about each other', group: 'memories' },
 	{ href: 'tickets.html', id: 'tickets', ic: 'film', ar: 'تذاكر وفواتير', en: 'Tickets & receipts', dar: 'كشكول كل تذكرة وفاتورة احتفظنا بيها', den: 'A scrapbook of every ticket we kept', group: 'memories' },
 	{ href: 'onthisday.html', id: 'onthisday', ic: 'calendar', ar: 'في اليوم ده', en: 'On this day', dar: 'اللي حصل النهارده في السنين اللي فاتت', den: 'What happened on this date in past years', group: 'memories' },
+	{ href: 'remember.html', id: 'remember', ic: 'dice', ar: 'فاكر؟', en: 'Do you remember?', dar: 'لعبة من صورنا وحكايتنا: مين فاكر أكتر؟', den: 'A game made of our photos: who remembers more?', group: 'memories' },
 	{ href: 'soundtrack.html', id: 'soundtrack', ic: 'music', ar: 'أغنية كل سنة', en: 'Our soundtrack', dar: 'أغنية لكل سنة من حكايتنا', den: 'A song for every year of us', group: 'memories' },
 	{ href: 'chats.html', id: 'chats', ic: 'chat', ar: 'محادثاتنا', en: 'Our chats', dar: 'أحلى رسايلنا باسكرينشوت', den: 'Our best messages, screenshotted', group: 'memories' },
 	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'فهد وعبد الرحمن وإحنا', den: 'Fahd, Abdulrahman and us', group: 'family' },
@@ -1192,7 +1193,7 @@ function owl() {
    pages the ordinary way. */
 const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'trips', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more' };
+const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more', remember: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
