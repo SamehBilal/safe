@@ -76,7 +76,9 @@
 
 /* ---- the years of us: a stage — one big polaroid for the year, two more fanned behind, a ruler of years
    sliding underneath (home.js yearStage, after Noel Delgado's «Mobiltelefonens Evolution») ---- */
-.hm-yrs { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; padding: 18px 0 8px; outline: none; }
+/* the cards slide sideways from one year to the next: kept inside the page's edges (to the gutter), so a card on its
+   way out can't make the page wider than the phone — iPhones let a page that's too wide drag sideways */
+.hm-yrs { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; padding: 18px 0 8px; outline: none; overflow-x: clip; overflow-clip-margin: var(--gutter, 16px); }
 .hm-yrs:focus-visible .hm-ruler { box-shadow: 0 0 0 3px var(--hl-yellow); border-radius: 10px; }
 .hm-yrs__stage { position: relative; width: min(340px, 78vw); aspect-ratio: 1 / 1.08; display: grid; place-items: center; }
 .hm-yrs__front, .hm-yrs__back { position: absolute; inset: 0; display: block; padding: 12px 12px 54px; background: #fffdf8; border: 1.5px solid var(--ink-0, #37353f); border-radius: 4px; }

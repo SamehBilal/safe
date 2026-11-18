@@ -944,6 +944,26 @@ function wireMega(header) {
 	matchMedia('(max-width: 979px)').addEventListener('change', () => { header._mega.set(''); header._menu?.(false); });
 }
 
+/* The phone menu: the diary's contents page, as in the footer. Home on its own line at the top, then a chapter per
+   menu under a coloured divider tab with its number and how many pages it holds — tap a tab to open it (one at a
+   time), the chapter of the page you're on already open — its pages two to a row, and search and settings at the foot. */
+const PN_CHAPTERS = [['story', 'حكايتنا', 'Our story'], ['memories', 'ذكرياتنا', 'Memories'], ['family', 'عيلتنا', 'Our family'], ['nights', 'ليالينا', 'Our nights'], ['you', 'مناسباتنا', 'Occasions']];
+function pnavHTML(here) {
+	const cur = (p) => (p.href === here ? ' aria-current="page"' : '');
+	const mine = groupOf(pageId());
+	const link = (p, k) => `<a href="${p.href}" style="--i:${k}"${cur(p)}>${icon(p.ic)}<span>${esc(L(p.ar, p.en))}</span></a>`;
+	const home = PAGES[0];
+	return `<a class="pn-home" href="${home.href}"${cur(home)}>${icon(home.ic)}<span>${esc(L(home.ar, home.en))}</span></a>
+		${PN_CHAPTERS.map(([g, ar, en], n) => {
+			const ps = PAGES.filter((p) => p.group === g);
+			return `<details class="pn-ch" name="pn" style="--n:${n}"${g === mine ? ' open' : ''}>
+				<summary><i aria-hidden="true">${num(n + 1)}</i><b>${esc(L(ar, en))}</b><small>${num(ps.length)} ${L('صفحة', ps.length === 1 ? 'page' : 'pages')}</small></summary>
+				<div class="pn-list">${ps.map(link).join('')}</div>
+			</details>`;
+		}).join('')}
+		<div class="pn-app">${PAGES.filter((p) => p.group === 'app').map(link).join('')}</div>`;
+}
+
 function renderChrome() {
 	const s = App.story;
 	let header = $('#site-header');
@@ -955,9 +975,7 @@ function renderChrome() {
 		<div class="hd-wrap">
 			<button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="${L('القائمة', 'Menu')}"><span class="stack" aria-hidden="true"><i></i><i></i><i></i></span></button>
 			<a class="brand" href="index.html"><span class="brand-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span><span class="brand-sub">${L('حكاية حب', 'A love story')} · ${(s.met || '2009').slice(0, 4)}</span></a>
-			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">
-				${PAGES.map((p, k) => `<a href="${p.href}" style="--i:${k}"${p.href === here ? ' aria-current="page"' : ''}>${icon(p.ic)}<span>${esc(L(p.ar, p.en))}</span><em aria-hidden="true">${num(k + 1)}</em></a>`).join('')}
-			</nav>
+			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">${pnavHTML(here)}</nav>
 			${megaHTML(s)}
 			<div class="tools"><a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
@@ -1161,7 +1179,9 @@ function footerHTML(s) {
 let PET = Math.random() < 0.75 ? 'orca' : 'owl';
 let orcaEl = null;
 const OWL_HTML = '<span class="ascii owl" aria-hidden="true">,___,\n[o,o]\n/)__)\n~"--"~</span>';
-const petHTML = () => (PET === 'orca' ? '<span class="ascii orca" data-len="34" aria-hidden="true"></span>' : OWL_HTML);
+// the pet sits on a line of its own, in the middle, above the copyright line (its wrapper keeps it there when the orca
+// gives way to the owl)
+const petHTML = () => `<span class="ft-pet">${PET === 'orca' ? '<span class="ascii orca" data-len="34" aria-hidden="true"></span>' : OWL_HTML}</span>`;
 function pet(footer) {
 	if (PET === 'owl') return owl();
 	const spot = $('.orca', footer);

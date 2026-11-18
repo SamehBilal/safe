@@ -163,16 +163,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 }
 
 /* ---------- the phone menu: the same cards — ink outline, hand-drawn corners, offset shadows in pink, lime, yellow ---------- */
-.pnav::before { justify-self: center; width: fit-content; padding-inline: 0.3em; background: linear-gradient(to left, color-mix(in srgb, var(--hl-yellow) 55%, transparent), var(--hl-yellow)) no-repeat 0 82% / 100% 42%; border-radius: 10px 0 / 100px 20px; }
-.pnav a { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); transition: transform 0.12s, box-shadow 0.12s, background 0.2s; }
-.pnav a:nth-of-type(3n + 2) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
-.pnav a:nth-of-type(3n) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
-.pnav a:nth-of-type(3n + 2) .ic { background: color-mix(in srgb, var(--hl-lime) 60%, var(--card)); color: var(--text); }
-.pnav a:nth-of-type(3n) .ic { background: color-mix(in srgb, var(--hl-yellow) 60%, var(--card)); color: var(--text); }
-.pnav a:active { transform: translate(calc(var(--bujo-x) * 4px), 4px); box-shadow: none; border-color: var(--ink); background-color: var(--card); }
-.pnav a[aria-current='page'] { background: var(--blue); border-color: var(--ink); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--ink); }
-.pnav a[aria-current='page'] .ic { background: rgba(255, 255, 255, 0.2); color: #fff; }
-.pnav a em { font-size: 1.05rem; }
 
 /* ---------- the footer, laid out tidily on phones (the contents page itself is drawn at the end of this file) ---------- */
 @media (max-width: 719px) {
