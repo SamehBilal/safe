@@ -142,7 +142,7 @@ export default {
 		const kids = (s.family?.members || []).filter((m) => m.kid);
 		const withPhoto = tl.filter((x) => photosOf(x).length);
 		const today = tl.filter((x) => !x.when && isToday(x.date));
-		const latest = tl.filter((x) => String(x.date) <= now).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 3);
+		const latest = tl.filter((x) => String(x.date) <= now).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 5);
 		const occ = occasions(s);
 		const next = occ[0];
 		const occHref = (o) => (o.kind === 'birthday' ? `birthday.html?id=${o.id}` : o.kind === 'anniversary' ? 'trips.html' : 'story.html');
@@ -254,15 +254,31 @@ export default {
 
 		<section class="sec"><div class="wrap">
 			<h2 class="sec__title reveal">${L('آخر الحكاية', 'Latest in our story')}</h2>
-			<div class="cards3 hm-latest">${latest.map((x) => `
-				<a class="mini reveal" href="moment.html?id=${esc(x.id)}">
-					${photosOf(x).length ? img(photosOf(x)[0], '', 'hm-latest__img') : ''}
-					<span class="mini__ic">${doodle(x.icon, 30)}</span>
-					<time>${esc(dateOf(x))}</time>
-					<b>${T(x.title)}</b>
-					<p>${T(x.text)}</p>
-				</a>`).join('')}
-			</div>
+			${latest.length ? (() => {
+				// the newest page of the diary, open — its photo taped on, the text in full — and the pages before it
+				// strung on a thread beside it, newest first
+				const [top, ...rest] = latest, ph = photosOf(top)[0];
+				return `<div class="hm-diary">
+				<a class="hm-page reveal" href="moment.html?id=${esc(top.id)}">
+					<span class="hm-page__holes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+					<span class="hm-page__tab">${L("آخر صفحة", "Latest page")}</span>
+					<span class="hm-page__pic${ph ? "" : " is-empty"}">${ph ? img(ph, "", "hm-page__img") : doodle(top.icon, 64)}</span>
+					<span class="hm-page__tx">
+						<time>${esc(dateOf(top))}</time>
+						<b>${T(top.title)}</b>
+						${top.text ? `<p>${T(top.text)}</p>` : ""}
+						<span class="hm-page__go">${L("افتح الصفحة", "Open the page")} ${App.arrow}</span>
+					</span>
+				</a>
+				${rest.length ? `<div class="hm-thread reveal">
+					<p class="hm-thread__h">${L("واللي قبلها", "And before that")}</p>
+					<ol>${rest.map((x, k) => { const p = photosOf(x)[0]; return `<li style="--k:${k}"><a href="moment.html?id=${esc(x.id)}">
+						<span class="hm-thread__pic">${p ? img(p, "", "hm-thread__img") : doodle(x.icon, 26)}</span>
+						<span class="hm-thread__tx"><time>${esc(dateOf(x))}</time><b>${T(x.title)}</b></span>
+					</a></li>`; }).join("")}</ol>
+				</div>` : ""}
+			</div>`;
+			})() : ""}
 			<p class="center"><a class="btn" href="story.html">${L('الحكاية كاملة', 'The whole story')} ${App.arrow}</a> <a class="btn btn--ghost" href="minute.html">${doodle('clapper', 18)} ${L('الحكاية في دقيقة', 'Our story in a minute')}</a></p>
 		</div></section>
 
