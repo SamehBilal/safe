@@ -188,7 +188,7 @@
 .quick__btn span { font-size: 1.3rem; }
 .quick__btn:hover { transform: translateY(-3px); border-color: var(--coral); }
 .home-cols { display: grid; gap: 28px; }
-@media (min-width: 900px) { .home-cols { grid-template-columns: 1.4fr 1fr; align-items: start; } }
+@media (min-width: 900px) { .home-cols { grid-template-columns: 1fr 1.4fr; align-items: start; } .home-cols > :first-child { order: 2; } }
 .home-cols .sec__title { text-align: start; font-size: clamp(1.8rem, 5vw, 2.6rem); }
 .feed, .coming { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .feed a, .coming a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); text-decoration: none; color: var(--text); }
