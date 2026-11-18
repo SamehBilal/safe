@@ -763,15 +763,22 @@ function moonTonight(now = new Date()) {
 	const SYN = 29.530588853, NEW = Date.UTC(2000, 0, 6, 18, 14);
 	const days = (((now - NEW) / 864e5) % SYN + SYN) % SYN;
 	const f = days / SYN, lit = (1 - Math.cos(2 * Math.PI * f)) / 2;
-	const PH = [['محاق', 'New moon'], ['هلال', 'Crescent'], ['تربيع أول', 'First quarter'], ['أحدب', 'Gibbous'], ['بدر', 'Full moon'], ['أحدب', 'Gibbous'], ['تربيع تاني', 'Last quarter'], ['هلال', 'Crescent']];
-	const name = PH[Math.floor((f * 8 + 0.5) % 8)];
+	// named by how much of it is lit (not by rounding to the nearest of eight): a quarter only when it's about half lit
+	const waxing = f < 0.5;
+	const name = lit < 0.03 ? ['محاق', 'New moon'] : lit > 0.97 ? ['بدر', 'Full moon']
+		: Math.abs(lit - 0.5) < 0.06 ? (waxing ? ['تربيع أول', 'First quarter'] : ['تربيع تاني', 'Last quarter'])
+		: lit < 0.5 ? ['هلال', waxing ? 'Waxing crescent' : 'Waning crescent'] : ['أحدب', waxing ? 'Waxing gibbous' : 'Waning gibbous'];
+	// in plain words: how much of it is lit, and whether it's growing or shrinking
+	const pct = Math.round(lit * 100);
+	const how = lit < 0.03 ? L('مش باين الليلة', 'Not visible tonight') : lit > 0.97 ? L('منوّر كله', 'Fully lit')
+		: `${L(`منوّر ${num(pct)}٪`, `${pct}% lit`)} · ${waxing ? L('وبيكبر', 'growing') : L('وبيصغر', 'shrinking')}`;
 	// the lit part: a half disc on the lit side (right while it grows, left while it wanes) closed by the terminator,
 	// an ellipse whose width follows the phase
-	const r = 18, k = Math.cos(2 * Math.PI * f), rx = Math.abs(k) * r, waxing = f < 0.5;
+	const r = 18, k = Math.cos(2 * Math.PI * f), rx = Math.abs(k) * r;
 	const half = waxing ? `M0 ${-r} A${r} ${r} 0 0 1 0 ${r}` : `M0 ${-r} A${r} ${r} 0 0 0 0 ${r}`;
 	const term = `A${rx.toFixed(2)} ${r} 0 0 ${waxing ? (k > 0 ? 0 : 1) : (k > 0 ? 1 : 0)} 0 ${-r}`;
 	const svg = `<svg class="mg-moon" viewBox="-22 -22 44 44" aria-hidden="true"><circle r="${r}" class="mg-moon-dark"/>${lit > 0.01 ? `<path d="${half} ${term}Z" class="mg-moon-lit"/>` : ''}<circle r="${r}" class="mg-moon-rim"/></svg>`;
-	return { svg, name: L(...name), lit: Math.round(lit * 100) };
+	return { svg, name: L(...name), how };
 }
 function skyHTML(a) {
 	const moon = moonTonight();
@@ -782,8 +789,10 @@ function skyHTML(a) {
 	return `<span class="mg-sky-stars" aria-hidden="true">${stars}</span>
 		${moon.svg}
 		<span class="mg-sky-tx">
-			<b>${L('الليلة', 'Tonight')}: ${esc(moon.name)} <em>${num(moon.lit)}٪</em></b>
-			<small>${L('سهرة الليلة؟', 'And tonight?')} <span class="mg-sky-k" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))}</span> ${App.arrow}</small>
+			<span class="mg-sky-h">${L('قمر الليلة', 'Tonight’s moon')}</span>
+			<b>${esc(moon.name)}</b>
+			<span class="mg-sky-how">${esc(moon.how)}</span>
+			<small>${L('ونسهر على إيه الليلة؟', 'What shall we do tonight?')} <span class="mg-sky-k" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))}</span> ${App.arrow}</small>
 		</span>`;
 }
 

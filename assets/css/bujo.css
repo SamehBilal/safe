@@ -375,6 +375,9 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-in > :not(.mg-list):not(.mg-more) { grid-column: 1; }
 	.mg-list, .mg-more { grid-column: 2; grid-row: 1 / span 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; align-content: start; }
 	.mg-more .mg-h, .mg-list .mg-h { grid-column: 1 / -1; }
+	/* in Arabic the one-line descriptions make each link shorter than in English (where they wrap to two lines), so the
+	   links get more room between them to keep the same rhythm — as much as مناسباتنا has */
+	:lang(ar) .mg-more { row-gap: 12px; }
 	.mg-h { margin: 0 0 6px; padding-inline: .3em; width: fit-content; font: 400 1.35rem var(--f-label); letter-spacing: .06em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
 	/* the links: the name, and a small one-line description under it */
 	.mg-item, .mg-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; }
@@ -518,7 +521,13 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mg-sky-tx { position: relative; display: grid; gap: 4px; }
 	.mg-sky-tx b { font: 400 1.5rem/1.1 var(--f-hand); }
 	:lang(ar) .mg-sky-tx b { font: 800 1.05rem/1.4 var(--f-body); }
-	.mg-sky-tx b em { font-style: normal; font: 400 1rem var(--f-label); letter-spacing: .05em; color: #f5d54e; margin-inline-start: 4px; }
+	/* «قمر الليلة»: a small label, the phase's name, and in plain words how lit it is and whether it's growing */
+	.mg-sky-tx { gap: 2px; }
+	.mg-sky-h { font: 400 .85rem var(--f-label); letter-spacing: .1em; color: rgba(244, 238, 222, .7); }
+	:lang(ar) .mg-sky-h { font: 700 .75rem/1.4 var(--f-body); letter-spacing: 0; }
+	.mg-sky-how { font-size: .82rem; font-weight: 800; color: #f5d54e; }
+	/* tonight's suggestion is its own line, set apart from the moon */
+	.mg-sky-tx small { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(244, 238, 222, .3); }
 	.mg-sky-tx small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .85rem; color: rgba(244, 238, 222, .8); }
 	.mg-sky-k { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 7px; border-radius: 999px; background: var(--c); color: #fff; font-weight: 800; }
 
