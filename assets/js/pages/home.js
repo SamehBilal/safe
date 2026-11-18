@@ -1,4 +1,4 @@
-import { App, L, Y, T, t, esc, img, isVideo, num, parseDate, yearsBetween, daysBetween, age, isToday, yearsAgo, fmtDate, icon, PAGES, occasions, DRAW_KINDS, hydrate, $ } from '../shell.js';
+import { App, L, Y, T, t, esc, img, isVideo, num, parseDate, yearsBetween, daysBetween, age, isToday, yearsAgo, fmtDate, icon, PAGES, occasions, DRAW_KINDS, hydrate, REDUCE, $ } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOVERNORATES } from '../egypt.js';
@@ -30,6 +30,56 @@ function otdPhoto(s, x) {
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const dateOf = (x) => (x.when ? App.t(x.when) : fmtDate(x.date));
+
+/* «حكايتنا بالسنين» as a stage (after Noel Delgado's «Mobiltelefonens Evolution»): one big polaroid for the year, two
+   more of that year's photos fanned behind it, and a ruler of years underneath that slides to keep the year in the
+   middle, fading out at both ends. It plays through the years on its own and stops while you're looking (hover, touch,
+   focus) or when it's off screen; ‹ ›, the arrow keys, a swipe or a tap on any year moves it by hand. */
+function yearStage(main, years) {
+	const box = $('#hm-yrs', main);
+	if (!box || !years.length) return;
+	const stage = $('#hm-yrs-stage', box), cap = $('#hm-yrs-cap', box), track = $('#hm-ruler', box);
+	const yr = (y) => new Intl.NumberFormat(App.lang === 'ar' ? 'ar-EG' : 'en', { useGrouping: false }).format(+y);
+	const marks = [...track.querySelectorAll('.hm-ruler__y')];
+	let i = 0, timer = 0, hold = false, seen = false, dir = 1;
+	const show = (n, by) => {
+		i = (n + years.length) % years.length;
+		const Yr = years[i];
+		dir = by || 1;
+		const tilt = ((i * 37) % 7) - 3;
+		stage.innerHTML = Yr.best
+			? `${Yr.behind.map((p, k) => `<span class="hm-yrs__back" style="--k:${k}" data-media-box>${img(p, '', 'hm-yrs__img')}</span>`).join('')}
+				<a class="hm-yrs__front" href="moment.html?id=${esc(Yr.best.id)}" style="--t:${tilt}deg;--d:${dir}" data-media-box>${img(Yr.best.photo, Yr.best.title, 'hm-yrs__img')}<span class="hm-yrs__yr">${yr(Yr.y)}</span></a>`
+			: `<a class="hm-yrs__front hm-yrs__front--note" href="story.html#y-${Yr.y}" style="--t:${tilt}deg;--d:${dir}">
+				<span class="hm-yrs__note">${Yr.notes.map((x) => `<span>${doodle(x.icon, 20)} <b dir="auto">${esc(x.title)}</b></span>`).join('')}</span>
+				<span class="hm-yrs__yr">${yr(Yr.y)}</span></a>`;
+		cap.innerHTML = `<b class="hm-yrs__big">${yr(Yr.y)}</b>
+			<span>${L(`${num(Yr.count)} ذكرى`, `${Yr.count} moment${Yr.count === 1 ? '' : 's'}`)}${Yr.photos ? ` · ${L(`${num(Yr.photos)} صورة`, `${Yr.photos} photos`)}` : ''}</span>
+			<a href="story.html#y-${Yr.y}">${Yr.best ? esc(Yr.best.title) : L('السنة دي في حكايتنا', 'This year in our story')} ${App.arrow}</a>`;
+		marks.forEach((m, k) => { m.classList.toggle('is-on', k === i); m.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+		// slide the ruler so this year sits in the middle
+		const ruler = track.parentElement, m = marks[i];
+		track.style.transform = `translateX(${ruler.clientWidth / 2 - (m.offsetLeft + m.offsetWidth / 2)}px)`;
+		hydrate(stage);
+	};
+	const play = () => { clearInterval(timer); if (!REDUCE && !hold && seen) timer = setInterval(() => show(i + 1, 1), 3600); };
+	box.addEventListener('click', (e) => {
+		const b = e.target.closest('[data-step]'); if (b) { show(i + +b.dataset.step, +b.dataset.step); play(); return; }
+		const y = e.target.closest('.hm-ruler__y'); if (y) { const n = +y.dataset.i; show(n, n > i ? 1 : -1); play(); }
+	});
+	box.addEventListener('keydown', (e) => {
+		if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+		e.preventDefault(); const s = e.key === 'ArrowRight' ? 1 : -1; show(i + s, s); play();
+	});
+	let x0 = null;
+	box.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; hold = true; clearInterval(timer); }, { passive: true });
+	box.addEventListener('touchend', (e) => { if (x0 !== null) { const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); } x0 = null; hold = false; play(); });
+	for (const [ev, h] of [['mouseenter', true], ['mouseleave', false], ['focusin', true], ['focusout', false]]) box.addEventListener(ev, () => { hold = h; h ? clearInterval(timer) : play(); });
+	if ('IntersectionObserver' in window) new IntersectionObserver(([en]) => { seen = en.isIntersecting; seen ? play() : clearInterval(timer); }, { threshold: 0.35 }).observe(box);
+	else { seen = true; play(); }
+	addEventListener('resize', () => show(i, dir));
+	show(0, 1);
+}
 
 /* the house, one card per menu: its first pages, and how many more */
 const GROUPS = [
@@ -80,12 +130,34 @@ export default {
 
 		// the years of us: each year's photo is its most-photographed moment
 		const years = [...new Set(tl.map((x) => String(x.date).slice(0, 4)).filter((y) => /^\d{4}$/.test(y) && y <= now.slice(0, 4)))].sort();
-		const yearCard = (y) => {
+		// for the year stage: each year's best moment (the most photographed), two more photos from other moments to
+		// fan out behind it, and for a year without photos, its moments as a handwritten list
+		this.years = years.map((y) => {
 			const xs = tl.filter((x) => String(x.date).startsWith(y));
-			const best = xs.filter((x) => photosOf(x).length).sort((a, b) => photosOf(b).length - photosOf(a).length)[0];
-			const ph = xs.reduce((n, x) => n + photosOf(x).length, 0);
-			return `<a class="hm-year" href="story.html#y-${y}">${best ? img(photosOf(best)[0], '', 'hm-year__img') : `<span class="hm-year__img hm-year__img--none">${doodle('heart', 34)}</span>`}<b>${num(+y)}</b><small>${L(`${num(xs.length)} ذكرى`, `${xs.length} moment${xs.length === 1 ? '' : 's'}`)}${ph ? ` · ${L(`${num(ph)} صورة`, `${ph} photos`)}` : ''}</small></a>`;
-		};
+			const shot = xs.filter((x) => photosOf(x).length).sort((a, b) => photosOf(b).length - photosOf(a).length);
+			const best = shot[0];
+			return {
+				y, count: xs.length, photos: xs.reduce((n, x) => n + photosOf(x).length, 0),
+				best: best ? { id: best.id, title: t(best.title), photo: photosOf(best)[0] } : null,
+				behind: shot.slice(1).map((x) => photosOf(x)[0]).concat(best ? photosOf(best).slice(1) : []).slice(0, 2),
+				notes: xs.slice(0, 4).map((x) => ({ id: x.id, icon: x.icon, title: t(x.title) }))
+			};
+		});
+
+		// «كنا فين الأسبوع ده»: what was happening this same week (three days either side of today) in every past year
+		const md = (d) => { const p = parseDate(d); return p ? Date.UTC(2000, p.getMonth(), p.getDate()) : NaN; };
+		const todayMd = md(now);
+		const span = (d) => { const k = Math.abs(md(d) - todayMd) / 864e5; return Math.min(k, 366 - k); };
+		const thisWeek = new Map();
+		for (const x of tl) {
+			const y = String(x.date).slice(0, 4);
+			if (x.when || !/^\d{4}-\d{2}-\d{2}/.test(x.date) || y >= now.slice(0, 4) || span(x.date) > 3) continue;
+			if (!thisWeek.has(y)) thisWeek.set(y, []);
+			thisWeek.get(y).push(x);
+		}
+		const weekYears = [...thisWeek.keys()].sort((a, b) => b.localeCompare(a));
+		const yr = (y) => new Intl.NumberFormat(App.lang === 'ar' ? 'ar-EG' : 'en', { useGrouping: false }).format(+y);
+		const dayMonth = (d) => new Intl.DateTimeFormat(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'long' }).format(parseDate(d));
 
 		const stats = [
 			[num(daysBetween(met)), L('يوم من أول سلام', 'days since hello')],
@@ -127,8 +199,31 @@ export default {
 		<section class="sec"><div class="wrap">
 			<h2 class="sec__title reveal">${L('حكايتنا بالسنين', 'Our story, year by year')}</h2>
 			<p class="sec__sub reveal">${L(`${num(years.length)} سنة، كل سنة بصورتها`, `${years.length} years, each with its photo`)}</p>
-			<div class="hm-years">${years.map(yearCard).join('')}</div>
+			<div class="hm-yrs reveal" id="hm-yrs" tabindex="0" role="region" aria-roledescription="${L('سنين', 'years')}" aria-label="${L('حكايتنا بالسنين', 'Our story, year by year')}">
+				<div class="hm-yrs__stage" id="hm-yrs-stage"></div>
+				<div class="hm-yrs__cap" id="hm-yrs-cap" aria-live="polite"></div>
+				<div class="hm-yrs__nav" dir="ltr">
+					<button class="hm-yrs__btn" type="button" data-step="-1" aria-label="${L('السنة اللي قبلها', 'Previous year')}">‹</button>
+					<div class="hm-ruler"><div class="hm-ruler__track" id="hm-ruler">${years.map((y, i) => `<button class="hm-ruler__y" type="button" data-i="${i}" aria-label="${yr(y)}"><i aria-hidden="true"></i><b>${yr(y)}</b></button>${i < years.length - 1 ? '<span class="hm-ruler__m" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' : ''}`).join('')}</div></div>
+					<button class="hm-yrs__btn" type="button" data-step="1" aria-label="${L('السنة اللي بعدها', 'Next year')}">›</button>
+				</div>
+			</div>
 		</div></section>
+
+		${weekYears.length ? `<section class="sec"><div class="wrap">
+			<h2 class="sec__title reveal">${L('كنا فين الأسبوع ده', 'This week in our story')}</h2>
+			<p class="sec__sub reveal">${L(`الأسبوع ده (حوالين ${dayMonth(now)}) في السنين اللي فاتت`, `This same week (around ${dayMonth(now)}) in the years before`)}</p>
+			<div class="hm-week">${weekYears.map((y, i) => `
+				<div class="hm-week__yr reveal" style="--i:${i}">
+					<span class="hm-week__tab"><b>${yr(y)}</b><small>${esc(yearsAgo(`${y}-${now.slice(5, 10)}`))}</small></span>
+					${thisWeek.get(y).sort((a, b) => String(a.date).localeCompare(String(b.date))).map((x) => `
+					<a class="hm-week__m" href="moment.html?id=${esc(x.id)}">
+						${photosOf(x).length ? img(photosOf(x)[0], '', 'hm-week__img') : `<span class="hm-week__ic">${doodle(x.icon, 30)}</span>`}
+						<span class="hm-week__tx"><small>${esc(dayMonth(x.date))}</small><b dir="auto">${T(x.title)}</b></span>
+					</a>`).join('')}
+				</div>`).join('')}
+			</div>
+		</div></section>` : ''}
 
 		<section class="sec"><div class="wrap">
 			<h2 class="sec__title reveal">${L('آخر الحكاية', 'Latest in our story')}</h2>
@@ -203,6 +298,7 @@ export default {
 	},
 	after(main) {
 		live.hydrateSketches(main);
+		yearStage(main, this.years || []);
 		const box = $('#hm-rand', main);
 		const pool = this.withPhoto || [];
 		if (!box || !pool.length) return;
