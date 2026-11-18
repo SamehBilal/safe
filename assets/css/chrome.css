@@ -141,6 +141,10 @@
 .ft-copy { margin: 0; font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .owl { display: inline-block; white-space: pre; font: 0.62rem/1.05 ui-monospace, Consolas, monospace; color: var(--coral-deep); direction: ltr; unicode-bidi: isolate; }
 .ft-copy .orca { direction: ltr; unicode-bidi: isolate; }
+/* the orca in our colours: a blue body, pink patches, a coral saddle and a coral spout (and lighter ones at night) */
+.ft-copy .ascii.orca { --orca-body: var(--blue); --orca-patch: #f7959b; --orca-saddle: var(--coral); --orca-eye: #fffdf8; --orca-water: var(--coral); opacity: 1; }
+:root[data-theme="dark"] .ft-copy .ascii.orca { --orca-patch: #ffd3d6; --orca-saddle: var(--coral-deep); --orca-eye: #1b1f27; --orca-water: #fdc830; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ft-copy .ascii.orca { --orca-patch: #ffd3d6; --orca-saddle: var(--coral-deep); --orca-eye: #1b1f27; --orca-water: #fdc830; } }
 .ft-heart { color: #f9812e; display: inline-flex; vertical-align: middle; }
 .ft-end { text-align: center; margin: 0; padding: 22px var(--gutter) calc(22px + var(--safe-b)); font: 1.6rem/1.4 var(--f-hand); color: var(--blue); }
 .ft-end span { color: var(--coral); }
