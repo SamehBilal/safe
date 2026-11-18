@@ -22,6 +22,29 @@ const EASE_OUT = 'cubic-bezier(0.2, 1, 0.3, 1)';
 
 const photosOf = (x) => [...new Map([x.photo, ...(x.photos || [])].filter(Boolean).map((p) => (typeof p === 'string' ? { photo: p } : p)).map((p) => [p.photo, p])).values()];
 
+/* The band above the moment: the whole story as a strip of film along a ruler — a tick for every moment, the years
+   marked under it, this one pinned with a heart and its date — and the moments either side of it to step to. Every
+   tick is a link; the strip reads oldest to newest, left to right, in both languages. */
+function stripHTML(tl, x, prev, next) {
+	const dated = tl.filter((m) => /^\d{4}-\d{2}/.test(String(m.date || '')));
+	if (dated.length < 2) return '';
+	const ms = (d) => Date.parse(String(d).slice(0, 10).length === 7 ? `${d}-15` : String(d).slice(0, 10));
+	const y0 = +dated[0].date.slice(0, 4), y1 = +dated.at(-1).date.slice(0, 4) + 1;
+	const a = Date.UTC(y0, 0, 1), b = Date.UTC(y1, 0, 1);
+	const at = (d) => (((ms(d) - a) / (b - a)) * 100).toFixed(2);
+	const years = Array.from({ length: y1 - y0 + 1 }, (_, i) => y0 + i);
+	const step = (m, dir) => (m ? `<a class="mo-strip__step mo-strip__step--${dir}" href="moment.html?id=${encodeURIComponent(m.id)}"><small>${dir === 'prev' ? L('اللي قبلها', 'Before') : L('اللي بعدها', 'After')}</small><b dir="auto">${T(m.title)}</b></a>` : '<span></span>');
+	return `<nav class="mo-strip" aria-label="${L('مكانها في حكايتنا', 'Where it sits in our story')}">
+		<div class="mo-strip__rail" dir="ltr">
+			<div class="mo-strip__film" aria-hidden="true"></div>
+			${years.map((y, i) => `<span class="mo-strip__y${i % 2 ? ' is-odd' : ''}" style="left:${(((Date.UTC(y, 0, 1) - a) / (b - a)) * 100).toFixed(2)}%">${y}</span>`).join('')}
+			${dated.map((m) => `<a class="mo-strip__t${m.id === x.id ? ' is-here' : ''}" style="left:${at(m.date)}%" href="moment.html?id=${encodeURIComponent(m.id)}" title="${esc(`${App.t(m.title)} · ${fmtDate(m.date)}`)}" aria-label="${esc(App.t(m.title))}"></a>`).join('')}
+			${/^\d{4}-\d{2}/.test(String(x.date || '')) ? `<span class="mo-strip__pin" style="left:${at(x.date)}%" aria-hidden="true"><i>♥</i><small>${fmtDate(x.date)}</small></span>` : ''}
+		</div>
+		<div class="mo-strip__steps">${step(prev, 'prev')}${step(next, 'next')}</div>
+	</nav>`;
+}
+
 export default {
 	title: { ar: 'ذكرى', en: 'A moment' },
 	render(s) {
@@ -38,6 +61,7 @@ export default {
 		const stack = photos.length > 0 && !REDUCE;
 		return `
 		<header class="mo-intro${stack ? ' is-stack' : ''}" id="mo-intro">
+			${stripHTML(tl, x, prev, next)}
 			<div class="mo-intro__titles" id="mo-titles">
 				<nav class="crumbs" aria-label="${L('أنت هنا', 'You are here')}"><a href="index.html">${L('الرئيسية', 'Home')}</a><span aria-hidden="true">/</span><a href="story.html">${L('حكايتنا', 'Our story')}</a><span aria-hidden="true">/</span><a href="#">${T(x.title)}</a></nav>
 				<p class="ph__eyebrow">${L('حكايتنا', 'Our story')}</p>

@@ -964,6 +964,75 @@ function pnavHTML(here) {
 		<div class="pn-app">${PAGES.filter((p) => p.group === 'app').map(link).join('')}</div>`;
 }
 
+/* The morphing search, after Codrops' «Morphing Search»: the magnifier in the header grows into a whole page — the
+   box flies from the button to fill the screen, its words grow big, and three columns rise under it: pages, moments
+   from our story, and everything else (before typing: a few pages, the newest moments, and what was searched before).
+   Enter opens the full search page with the words; Esc or the ✕ shrinks it back into the button. */
+async function morphSearch(btn) {
+	if ($('.ms')) return;
+	const r = btn.getBoundingClientRect();
+	const ms = document.createElement('div');
+	ms.className = 'ms';
+	ms.setAttribute('role', 'dialog');
+	ms.setAttribute('aria-modal', 'true');
+	ms.setAttribute('aria-label', L('دوّر', 'Search'));
+	ms.style.cssText = `--x:${r.left}px;--y:${r.top}px;--w:${r.width}px;--h:${r.height}px`;
+	ms.innerHTML = `<form class="ms-form" role="search" action="search.html">
+			<input class="ms-input" name="q" type="search" autocomplete="off" spellcheck="false" dir="auto" enterkeyhint="search" placeholder="${esc(Y('بتدوّر على إيه؟', 'بتدوّري على إيه؟', 'Search…'))}" aria-label="${esc(L('دوّر', 'Search'))}">
+			<button class="ms-go" type="submit" aria-label="${esc(L('دوّر', 'Search'))}">${icon('search', 34)}</button>
+		</form>
+		<button class="ms-close" type="button" aria-label="${esc(L('اقفل', 'Close'))}"></button>
+		<div class="ms-cols" aria-live="polite">
+			<section class="ms-col"><h2>${L('صفحات', 'Pages')}</h2><div class="ms-list" data-c="1"></div></section>
+			<section class="ms-col"><h2>${L('من حكايتنا', 'From our story')}</h2><div class="ms-list" data-c="2"></div></section>
+			<section class="ms-col"><h2 data-h3>${L('دوّرت عليهم قبل كده', 'Searched before')}</h2><div class="ms-list" data-c="3"></div></section>
+		</div>`;
+	document.body.append(ms);
+	document.body.classList.add('menu-lock');
+	const input = $('.ms-input', ms);
+	let find = {};
+	const close = () => {
+		ms.classList.remove('is-open');
+		document.body.classList.remove('menu-lock');
+		removeEventListener('keydown', onKey);
+		setTimeout(() => { ms.remove(); btn.focus({ preventScroll: true }); }, REDUCE ? 0 : 520);
+	};
+	const onKey = (e) => { if (e.key === 'Escape') close(); };
+	addEventListener('keydown', onKey);
+	$('.ms-close', ms).onclick = close;
+	void ms.offsetWidth; // the box starts on the button, then grows
+	ms.classList.add('is-open');
+	setTimeout(() => input.focus({ preventScroll: true }), REDUCE ? 0 : 450);
+	ms.addEventListener('click', (e) => { if (e.target.closest('.ms-list a')) { find.rememberSearch?.(input.value); setTimeout(close, 60); } });
+	$('.ms-form', ms).onsubmit = (e) => { e.preventDefault(); const q = input.value.trim(); if (!q) return; find.rememberSearch?.(q); location.href = `search.html?q=${encodeURIComponent(q)}`; };
+
+	const card = (h) => `<a href="${esc(h.href)}">${icon(h.ic || 'heart', 22)}<span><b dir="auto">${esc(h.title)}</b>${h.date ? `<small>${fmtDate(h.date)}</small>` : h.sub ? `<small>${esc(h.sub)}</small>` : ''}</span></a>`;
+	const fill = (n, list, empty) => { $(`[data-c="${n}"]`, ms).innerHTML = list.length ? list.map(card).join('') : `<p class="ms-none">${empty}</p>`; };
+	find = await import('./pages/search.js');
+	const s = App.story;
+	await find.ensureIndex(s);
+	const start = () => {
+		$('[data-h3]', ms).textContent = L('دوّرت عليهم قبل كده', 'Searched before');
+		fill(1, ['story', 'gallery', 'places', 'cities', 'remember', 'calendar'].map((id) => PAGES.find((p) => p.id === id)).filter(Boolean).map((p) => ({ title: L(p.ar, p.en), sub: L(p.dar || '', p.den || ''), href: p.href, ic: p.ic })), '');
+		fill(2, (s.timeline || []).filter((x) => x.date && !x.when).slice(-5).reverse().map((x) => ({ title: App.t(x.title), date: x.date, href: `moment.html?id=${encodeURIComponent(x.id)}`, ic: 'book' })), '');
+		const rec = find.recentSearches();
+		$(`[data-c="3"]`, ms).innerHTML = rec.length ? rec.map((q) => `<a href="search.html?q=${encodeURIComponent(q)}">${icon('search', 20)}<span><b dir="auto">${esc(q)}</b></span></a>`).join('') : `<p class="ms-none">${Y('جرّب «رحلة» أو «2017» أو اسم أغنية', 'جرّبي «رحلة» أو «2017» أو اسم أغنية', 'Try “trip”, “2017” or a song’s name')}</p>`;
+	};
+	let timer = 0;
+	const draw = () => {
+		const q = input.value;
+		if (q.trim().length < 2) return start();
+		const hits = find.quick(q, 60);
+		$('[data-h3]', ms).textContent = L('وكمان', 'And more');
+		const none = L('مفيش هنا', 'Nothing here');
+		fill(1, hits.filter((h) => h.page === 'pages').slice(0, 6), none);
+		fill(2, hits.filter((h) => h.page === 'story' || h.page === 'chapters').slice(0, 6), none);
+		fill(3, hits.filter((h) => !['pages', 'story', 'chapters'].includes(h.page)).slice(0, 6).map((h) => ({ ...h, sub: h.group, date: '' })), none);
+	};
+	input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(draw, 120); });
+	start();
+}
+
 function renderChrome() {
 	const s = App.story;
 	let header = $('#site-header');
@@ -989,6 +1058,14 @@ function renderChrome() {
 	$('.pnav', header).onclick = (ev) => { if (ev.target.closest('a')) setMenu(false); };
 	$('.lang-toggle', header).onclick = () => setLang(App.lang === 'ar' ? 'en' : 'ar');
 	$('.theme-toggle', header).onclick = toggleTheme;
+	// the magnifier opens the morphing search over the page (on the search page itself it just goes to the box)
+	$('.search-btn', header).onclick = (e) => {
+		if (e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+		e.preventDefault();
+		const box = $('#gs-input') && $('#gs .gs-say');
+		if (pageId() === 'search') { if (box) box.click(); else $('#sr-q')?.focus(); return; }
+		morphSearch(e.currentTarget);
+	};
 	wireMega(header);
 
 	let main = $('#main');

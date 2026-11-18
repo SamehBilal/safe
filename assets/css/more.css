@@ -599,3 +599,29 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 	.fk-quote { justify-self: stretch; }
 }
 @media (prefers-reduced-motion: reduce) { .fk-pol--back, .fk-stamp { animation: none; } .fk-opt { transition: none; } }
+
+/* ---- a moment's band: the whole story as a strip of film on a ruler, this moment pinned with a heart ---- */
+.mo-strip { width: min(1000px, 100%); margin: 0 auto 18px; }
+.mo-strip__rail { position: relative; height: 62px; margin: 0 14px; }
+.mo-strip__film { position: absolute; top: 14px; left: -14px; right: -14px; height: 22px; background: #22262c radial-gradient(circle, var(--paper) 0 1.6px, transparent 2px) 0 3px / 9px 16px repeat-x; border-block: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow); }
+.mo-strip__film::after { content: ''; position: absolute; inset-inline: 0; bottom: 3px; height: 3px; background: radial-gradient(circle, var(--paper) 0 1.6px, transparent 2px) 0 0 / 9px 3px repeat-x; }
+.mo-strip__y { position: absolute; top: 40px; translate: -50% 0; font: 400 .85rem var(--f-label); letter-spacing: .05em; color: var(--muted); }
+.mo-strip__y::before { content: ''; position: absolute; top: -6px; left: 50%; width: 1.5px; height: 5px; background: var(--muted); }
+.mo-strip__t { position: absolute; top: 18px; width: 6px; height: 14px; translate: -50% 0; border-radius: 2px; background: #fdc830; opacity: .75; transition: transform .15s, opacity .15s; }
+.mo-strip__t:hover, .mo-strip__t:focus-visible { opacity: 1; transform: scaleY(1.5); outline: none; }
+.mo-strip__t.is-here { opacity: 0; }
+.mo-strip__pin { position: absolute; top: -8px; z-index: 2; display: grid; justify-items: center; translate: -50% 0; pointer-events: none; }
+.mo-strip__pin i { display: grid; place-items: center; width: 26px; height: 26px; font-style: normal; font-size: .9rem; color: #fff; background: #d9534f; border: 2px solid #37353f; border-radius: 50% 50% 50% 0; rotate: -45deg; box-shadow: 0 3px 0 rgba(0, 0, 0, .2); }
+.mo-strip__pin i { line-height: 1; }
+.mo-strip__pin small { margin-top: 22px; padding: 1px 8px; font: 400 .85rem var(--f-label); letter-spacing: .05em; color: #2b2b33; background: #fdc830; border: 1.5px solid #37353f; border-radius: 6px; white-space: nowrap; }
+.mo-strip__steps { display: flex; justify-content: space-between; gap: 16px; margin-top: 6px; }
+.mo-strip__step { display: grid; max-width: 44%; text-decoration: none; color: var(--text); }
+.mo-strip__step small { font-size: .72rem; font-weight: 800; color: var(--coral-deep); }
+.mo-strip__step b { font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mo-strip__step--prev b::before { content: '‹ '; color: var(--coral); }
+.mo-strip__step--next { text-align: end; }
+.mo-strip__step--next b::after { content: ' ›'; color: var(--coral); }
+[dir='rtl'] .mo-strip__step--prev b::before { content: '› '; }
+[dir='rtl'] .mo-strip__step--next b::after { content: ' ‹'; }
+.mo-strip__step:hover b { text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 4px; }
+@media (max-width: 640px) { .mo-strip__y.is-odd { display: none; } .mo-strip__pin small { display: none; } }

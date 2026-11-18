@@ -234,3 +234,41 @@
 @keyframes ns-in { from { opacity: 0; translate: 0 16px; } }
 @media (prefers-reduced-motion: reduce) { .ns { animation: none; transition: none; } }
 
+
+/* ---------- the morphing search (after Codrops' «Morphing Search»): the header's magnifier grows into the whole
+   screen — the box flies from the button, its words grow big, and three columns of finds rise under it ---------- */
+.ms { position: fixed; z-index: 2000; left: var(--x); top: var(--y); width: var(--w); height: var(--h); overflow: hidden; color: var(--text); background: var(--paper); border-radius: 12px;
+	transition: left .5s cubic-bezier(.7, 0, .3, 1), top .5s cubic-bezier(.7, 0, .3, 1), width .5s cubic-bezier(.7, 0, .3, 1), height .5s cubic-bezier(.7, 0, .3, 1), border-radius .5s; }
+.ms.is-open { left: 0; top: 0; width: 100vw; height: 100dvh; border-radius: 0; overflow-y: auto; overscroll-behavior: contain; }
+.ms-form { position: relative; width: min(1000px, 86%); margin: 0 auto; padding-top: clamp(40px, 9vh, 90px); opacity: 0; transform: translateY(30px); transition: opacity .3s, transform .5s cubic-bezier(.7, 0, .3, 1); }
+.ms.is-open .ms-form { opacity: 1; transform: none; transition-delay: .2s; }
+.ms-input { width: 100%; padding: 0 64px 8px 0; border: 0; border-bottom: 3px solid var(--ink); outline: 0; background: none; color: var(--coral-deep); font: 400 clamp(2.2rem, 8vw, 5.4rem)/1.3 var(--f-script); }
+[dir='rtl'] .ms-input { padding: 0 0 8px 64px; }
+.ms-input::placeholder { color: color-mix(in srgb, var(--muted) 60%, transparent); }
+.ms-input::-webkit-search-cancel-button { display: none; }
+.ms-go { position: absolute; bottom: 14px; inset-inline-end: 0; display: grid; place-items: center; width: 54px; height: 54px; padding: 0; color: var(--blue); background: none; border: 0; cursor: pointer; opacity: 0; scale: 0; transition: opacity .3s, scale .3s; }
+.ms.is-open .ms-go { opacity: 1; scale: 1; transition-delay: .5s; }
+.ms-close { position: absolute; top: 18px; inset-inline-end: 18px; width: 40px; height: 40px; padding: 0; background: none; border: 0; cursor: pointer; opacity: 0; scale: 0; transition: opacity .3s, scale .3s; }
+.ms.is-open .ms-close { opacity: 1; scale: 1; transition-delay: .5s; }
+.ms-close::before, .ms-close::after { content: ''; position: absolute; top: 0; left: 50%; width: 3px; height: 100%; border-radius: 3px; background: var(--ink); rotate: 45deg; }
+.ms-close::after { rotate: -45deg; }
+.ms-close:hover::before, .ms-close:hover::after { background: var(--coral-deep); }
+.ms-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px 4%; width: min(1000px, 86%); margin: 34px auto 60px; }
+.ms-col { opacity: 0; transform: translateY(80px); transition: opacity .5s, transform .5s; }
+.ms.is-open .ms-col { opacity: 1; transform: none; }
+.ms.is-open .ms-col:nth-child(1) { transition-delay: .4s; }
+.ms.is-open .ms-col:nth-child(2) { transition-delay: .45s; }
+.ms.is-open .ms-col:nth-child(3) { transition-delay: .5s; }
+.ms-col h2 { width: fit-content; margin: 0 0 12px; padding-inline: .3em; font: 400 1.3rem var(--f-label); letter-spacing: .08em; color: var(--text); background: linear-gradient(transparent 50%, var(--hl-yellow) 50% 92%, transparent 92%); }
+:lang(ar) .ms-col h2 { font: 800 1rem/1.6 var(--f-body); letter-spacing: 0; }
+.ms-list { display: grid; gap: 8px; }
+.ms-list a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; color: var(--text); text-decoration: none; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-pink); transition: translate .15s, box-shadow .15s; }
+.ms-list a:nth-child(2n) { box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-lime); }
+.ms-list a:hover { translate: calc(var(--bujo-x, 1) * -2px) -2px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--coral); }
+.ms-list .ic { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--coral-deep); background: var(--blush); }
+.ms-list span { display: grid; min-width: 0; }
+.ms-list b { font-size: .95rem; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-list small { font-size: .78rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-none { margin: 0; color: var(--muted); font-size: .9rem; }
+@media (max-width: 760px) { .ms-cols { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .ms, .ms-form, .ms-col, .ms-go, .ms-close { transition: none; } }

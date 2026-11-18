@@ -191,6 +191,24 @@ function snippet(r, q) {
 	return others.length ? marked(others.slice(0, 2).join(' · '), q, 120) : '';
 }
 
+/* For the gooey band and the header's morphing search: the index, built once, and the best few hits for a query
+   ({ title, href, page, date, group, ic }), dates understood too. */
+export async function ensureIndex(s) {
+	if (!index || indexOf !== s) { index = await build(s); indexOf = s; }
+	return index;
+}
+let indexOf = null;
+export function quick(q, n = 5) {
+	const query = String(q || '').trim();
+	if (!index || fold(query).replace(/\s/g, '').length < MIN) return [];
+	const dq = dateQuery(query);
+	const words = dq ? dq.rest.split(/\s+/).filter(Boolean) : [];
+	const hits = dq ? index.filter((r) => r.date && dq.test(r.date) && words.every((w) => r.hay.includes(w))).sort((a, b) => String(a.date).localeCompare(String(b.date))) : search(query);
+	return hits.slice(0, n).map((r) => ({ title: r.title.length > 60 ? r.title.slice(0, 58) + '…' : r.title, href: r.page === 'pages' ? r.href : hrefWith(r.href, r.title), page: r.page, date: r.date, group: groupName(r.page), ic: r.page === 'pages' ? r.ic : groupIcon(r.page) }));
+}
+export const recentSearches = () => recent();
+export const rememberSearch = (q) => remember(q);
+
 const recent = () => { try { return JSON.parse(store.get(RECENT) || '[]').slice(0, 8); } catch { return []; } };
 function remember(q) {
 	q = q.trim();
@@ -276,12 +294,65 @@ function startHTML() {
 	</div>`;
 }
 
+/* The band above the title, after Codrops' «Gooey Search»: an ink pill that says «دوّر»; tap it and it stretches into
+   a search box while a round bubble with the lens splits off its side, and as you type the best few finds drip out
+   underneath — every shape goes through one SVG «goo» filter, so they melt into each other as they part and land.
+   It types into the big search below too, so the full results follow. */
+function gooeyHTML() {
+	return `<div class="lp-band gs-band">
+		<svg class="gs-defs" width="0" height="0" aria-hidden="true" focusable="false"><filter id="gs-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="g"/><feComposite in="SourceGraphic" in2="g" operator="atop"/></filter></svg>
+		<div class="gs" id="gs">
+			<div class="gs-goo">
+				<div class="gs-drips" id="gs-drips"></div>
+				<div class="gs-pill" id="gs-pill">
+					<button class="gs-say" type="button" id="gs-say">${icon('search', 20)}<span>${Y('دوّر', 'دوّري', 'Search')}</span></button>
+					<input class="gs-input" id="gs-input" type="search" autocomplete="off" spellcheck="false" dir="auto" tabindex="-1" placeholder="${esc(Y('اكتب أي حاجة…', 'اكتبي أي حاجة…', 'Type anything…'))}" aria-label="${esc(L('دوّر', 'Search'))}">
+				</div>
+				<span class="gs-bubble" id="gs-bubble" aria-hidden="true">${icon('search', 20)}</span>
+			</div>
+		</div>
+	</div>`;
+}
+
+function gooey(main, big, draw) {
+	const gs = $('#gs', main);
+	if (!gs) return;
+	const input = $('#gs-input', gs), drips = $('#gs-drips', gs), bubble = $('#gs-bubble', gs);
+	const open = () => { if (gs.classList.contains('is-open')) return; gs.classList.add('is-open'); input.tabIndex = 0; setTimeout(() => input.focus({ preventScroll: true }), 120); };
+	$('#gs-say', gs).onclick = open;
+	let timer = 0, shown = '';
+	const drip = () => {
+		const q = input.value;
+		const hits = quick(q, 4);
+		const key = hits.map((h) => h.href).join('|');
+		bubble.classList.remove('is-busy');
+		if (key === shown) return;
+		shown = key;
+		// the old drops fall back into the pill first, then the new ones run out
+		drips.innerHTML = hits.map((h, i) => `<a class="gs-drop" href="${esc(h.href)}" style="--i:${i}">${icon(h.ic, 16)}<b dir="auto">${esc(h.title)}</b><small>${esc(h.group)}</small></a>`).join('');
+		void drips.offsetWidth; // lay the drops out where they start, so they run from the pill
+		drips.classList.add('is-out');
+	};
+	input.addEventListener('input', () => {
+		drips.classList.remove('is-out');
+		bubble.classList.add('is-busy');
+		clearTimeout(timer);
+		timer = setTimeout(drip, 350);
+		big.value = input.value;
+		big.dispatchEvent(new Event('input'));
+	});
+	input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); rememberSearch(input.value); draw(); big.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
+	big.addEventListener('input', () => { if (document.activeElement !== input) { input.value = big.value; if (big.value) open(); clearTimeout(timer); timer = setTimeout(drip, 350); } });
+	drips.addEventListener('click', (e) => { if (e.target.closest('.gs-drop')) rememberSearch(input.value); });
+	if (big.value) { input.value = big.value; gs.classList.add('is-open'); input.tabIndex = 0; setTimeout(drip, 400); }
+}
+
 export default {
 	title: { ar: 'دوّر', en: 'Search' },
 	render(s) {
 		const q = new URLSearchParams(location.search).get('q') || '';
 		return `
-		${pageHead(Y('دوّر', 'دوّري', 'Search'), Y('دوّر في كل حاجة كتبناها: الحكاية، الأماكن، الأغاني، الدفتر، والقوايم', 'دوّري في كل حاجة كتبناها: الحكاية، الأماكن، الأغاني، الدفتر، والقوايم', 'Look through everything we’ve written: the story, places, songs, the journal, our lists'), [{ href: 'search.html', ar: 'دوّر', en: 'Search' }])}
+		${pageHead(Y('دوّر', 'دوّري', 'Search'), Y('دوّر في كل حاجة كتبناها: الحكاية، الأماكن، الأغاني، الدفتر، والقوايم', 'دوّري في كل حاجة كتبناها: الحكاية، الأماكن، الأغاني، الدفتر، والقوايم', 'Look through everything we’ve written: the story, places, songs, the journal, our lists'), [{ href: 'search.html', ar: 'دوّر', en: 'Search' }], { band: gooeyHTML() })}
 		<section class="sec sec--top sr"><div class="wrap">
 			<form class="sr-form" role="search" action="search.html" method="get">
 				<label class="sr-field">
@@ -306,7 +377,7 @@ export default {
 			url.hash = '';
 			history.replaceState(history.state, '', url);
 		};
-		index = index && App.story === s ? index : await build(s);
+		await ensureIndex(s);
 		draw();
 		let timer = 0;
 		input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(draw, 120); });
@@ -319,6 +390,7 @@ export default {
 			if (e.target.closest('[data-clear]')) { store.del(RECENT); draw(); return; }
 			if (e.target.closest('.sr-card')) remember(input.value);
 		});
+		gooey(main, input, draw);
 		// straight to typing on a computer; on a phone only when nothing was searched yet
 		if (matchMedia('(hover: hover)').matches || !input.value) input.focus({ preventScroll: true });
 	}
