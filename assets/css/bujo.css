@@ -411,24 +411,32 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	/* ---- the pictures: the polaroid / journal-card look, with tape, a tilt, a lift on hover ---- */
 	.mg-card, .mg-photo, .mg-fig, .mg-kind, .mg-data, .mg-band { position: relative; transition: transform .25s var(--ease-pop, ease), box-shadow .2s, rotate .25s; }
 	/* حكايتنا: the three big days as big taped polaroids */
-	.mega-story .mg-cards { grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 8px 4px 4px; }
-	.mega-story .mg-card { aspect-ratio: 3 / 3.6; padding: 8px 8px 46px; background: #fffdf8; color: #2b2b33; overflow: visible; border: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
-	.mega-story .mg-card:nth-child(1) { rotate: -3deg; } .mega-story .mg-card:nth-child(2) { rotate: 2deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); } .mega-story .mg-card:nth-child(3) { rotate: -1.5deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
-	.mega-story .mg-card::after { display: none; }
-	.mega-story .mg-cover { position: relative; inset: auto; height: 100%; border: 1px solid rgba(55, 53, 63, .25); }
-	.mega-story .mg-card-t { position: absolute; inset-inline: 8px; bottom: 6px; padding: 0; text-align: center; }
-	.mega-story .mg-card-t b { font: 400 1.35rem/1.2 var(--f-hand); color: #2b2b33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	:lang(ar) .mega-story .mg-card-t b { font: 800 .95rem/1.4 var(--f-body); }
-	.mega-story .mg-card-t small { font: 400 .95rem var(--f-label); color: #6b6b75; }
-	.mega-story .mg-card::before, .mega-memories .mg-photo::before { content: ''; position: absolute; top: -11px; left: 50%; z-index: 2; width: 44%; height: 20px; translate: -50% 0; rotate: -4deg; opacity: .9; background: repeating-linear-gradient(45deg, rgba(252, 139, 147, .75) 0 6px, rgba(253, 210, 214, .75) 6px 12px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
-	.mega-story .mg-card:nth-child(2)::before { background: rgba(205, 220, 57, .7); rotate: 3deg; }
-	.mega-story .mg-card:nth-child(3)::before { background: rgba(253, 200, 48, .75); }
-	.mega-story .mg-card:hover { rotate: 0deg; transform: translateY(-6px) scale(1.04); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); z-index: 2; }
-	.mega-story .mg-band { margin-top: 6px; }
-	/* ذكرياتنا: the love note on a big photo, framed and taped */
-	.mega-memories .mg-photo { min-height: 300px; border: 8px solid #fffdf8; outline: 1.5px solid #37353f; border-radius: 3px; rotate: -1.2deg; overflow: visible; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-pink); }
-	.mega-memories .mg-photo-img { opacity: .7; }
-	.mega-memories .mg-photo:hover { rotate: 0deg; transform: translateY(-4px); box-shadow: calc(var(--bujo-x) * 8px) 8px 0 0 var(--coral); }
+	:is(.mega-story, .mega-memories) .mg-cards { grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 8px 4px 4px; }
+	:is(.mega-story, .mega-memories) .mg-card { aspect-ratio: 3 / 3.6; padding: 8px 8px 46px; background: #fffdf8; color: #2b2b33; overflow: visible; border: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
+	:is(.mega-story, .mega-memories) .mg-card:nth-child(1) { rotate: -3deg; } :is(.mega-story, .mega-memories) .mg-card:nth-child(2) { rotate: 2deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); } :is(.mega-story, .mega-memories) .mg-card:nth-child(3) { rotate: -1.5deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
+	:is(.mega-story, .mega-memories) .mg-card::after { display: none; }
+	:is(.mega-story, .mega-memories) .mg-cover { position: relative; inset: auto; height: 100%; border: 1px solid rgba(55, 53, 63, .25); }
+	:is(.mega-story, .mega-memories) .mg-card-t { position: absolute; inset-inline: 8px; bottom: 6px; padding: 0; text-align: center; }
+	:is(.mega-story, .mega-memories) .mg-card-t b { font: 400 1.35rem/1.2 var(--f-hand); color: #2b2b33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	:lang(ar) :is(.mega-story, .mega-memories) .mg-card-t b { font: 800 .95rem/1.4 var(--f-body); }
+	:is(.mega-story, .mega-memories) .mg-card-t small { font: 400 .95rem var(--f-label); color: #6b6b75; }
+	:is(.mega-story, .mega-memories) .mg-card::before { content: ''; position: absolute; top: -11px; left: 50%; z-index: 2; width: 44%; height: 20px; translate: -50% 0; rotate: -4deg; opacity: .9; background: repeating-linear-gradient(45deg, rgba(252, 139, 147, .75) 0 6px, rgba(253, 210, 214, .75) 6px 12px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+	:is(.mega-story, .mega-memories) .mg-card:nth-child(2)::before { background: rgba(205, 220, 57, .7); rotate: 3deg; }
+	:is(.mega-story, .mega-memories) .mg-card:nth-child(3)::before { background: rgba(253, 200, 48, .75); }
+	:is(.mega-story, .mega-memories) .mg-card:hover { rotate: 0deg; transform: translateY(-6px) scale(1.04); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); z-index: 2; }
+	:is(.mega-story, .mega-memories) .mg-band { margin-top: 6px; }
+	/* ذكرياتنا: the album photo (in its own box, so a photo that won't open leaves the card), and the love note
+	   written on lined paper inside the same polaroid frame */
+	.mega-memories .mg-pic { display: block; height: 100%; }
+	.mega-memories .mg-pic .mg-cover { width: 100%; object-fit: cover; }
+	.mega-memories .mg-note { display: grid; align-content: center; gap: 6px; height: 100%; padding: 10px 12px; overflow: hidden; text-align: center; border: 1px solid rgba(55, 53, 63, .25);
+		background: repeating-linear-gradient(transparent 0 23px, rgba(14, 105, 144, .16) 23px 24px), #fff7f2; }
+	.mega-memories .mg-note q { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; font: 600 1.15rem/1.3 var(--f-hand); color: #c2185b; quotes: '«' '»'; }
+	:lang(ar) .mega-memories .mg-note q { font: 700 .9rem/1.6 var(--f-body); }
+	:root[dir='ltr'] .mega-memories .mg-note q { quotes: '“' '”'; }
+	.mega-memories .mg-note small { font: 400 .9rem var(--f-label); color: #6b6b75; }
+	/* the line under each polaroid here is words («٣٠ تهنئة»), not a date: the label font's Arabic fallback is taller */
+	:lang(ar) .mega-memories .mg-card-t small { font: 600 .72rem/1.35 var(--f-body); }
 	/* عيلتنا: the four of us as big journal cards */
 	.mega-family .mg-figs { grid-template-columns: repeat(4, 1fr); gap: 16px; }
 	.mega-family .mg-fig { padding: 16px 8px 14px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 70%, transparent); }

@@ -664,10 +664,24 @@ function megaHTML(s) {
 			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
 		</a>`);
 
-	// ذكرياتنا — pages + a love note on a photo, a new one every time it opens.
+	// ذكرياتنا — like حكايتنا: three taped polaroids (a photo from the album, a love note, the wedding guestbook), the
+	// memory pages beside them, and a band with a moment from our story. The photo, the note and the moment change
+	// every time it opens.
+	const gb = s.guestbook;
 	const memories = panel('memories', L('ذكرياتنا', 'Memories'),
-		`<div class="mg-list">${pages('memories').map(item).join('')}</div>
-		<a class="mg-photo" href="notes.html" data-media-box>${img(firstPhoto((s.gallery || [])[0]) || s.poster, '', 'mg-photo-img')}<span class="mg-photo-tx" id="mg-note">${noteHTML(s)}</span></a>`);
+		`<div class="mg-cards">
+			<a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a>
+			<a class="mg-card mg-card--note" href="notes.html">
+				<span class="mg-note" id="mg-note">${noteHTML(s)}</span>
+				<span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span>
+			</a>
+			${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>
+				${img(gb.photo, '', 'mg-cover')}
+				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
+			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
+		</div>
+		<div class="mg-more"><p class="mg-h">${L('ذكرياتنا', 'Our memories')}</p>${pages('memories').map(row).join('')}</div>
+		<a class="mg-band has-photo" id="mg-mem" href="story.html">${memoryHTML(s)}</a>`);
 
 	// عيلتنا — one card per person.
 	const members = s.family?.members || [];
@@ -710,6 +724,28 @@ function megaHTML(s) {
 	</nav>`;
 }
 
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+/* the album polaroid in ذكرياتنا: any photo from the album, a different one each time */
+function albumHTML(s) {
+	const photos = (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
+	const p = photos.length ? pick(photos) : s.poster;
+	return `${p ? `<span class="mg-pic" data-media-box>${img(p, '', 'mg-cover')}</span>` : ''}
+		<span class="mg-card-t"><b>${L('ألبوم الصور', 'Photo album')}</b><small>${L('إحنا بالصور', 'Us in pictures')}</small></span>`;
+}
+
+/* the band in ذكرياتنا: a moment from our story with its photo — not today's (حكايتنا shows that), any other */
+function memoryHTML(s, a) {
+	const all = (s.timeline || []).filter((x) => !x.when && firstPhoto(x) && !isVideo(firstPhoto(x)) && !isToday(x.date));
+	if (!all.length) return `<b>${L('ذكرى من حكايتنا', 'A memory from our story')}</b><small>${App.arrow}</small>`;
+	const m = pick(all);
+	if (a) a.href = `moment.html?id=${encodeURIComponent(m.id)}`;
+	else queueMicrotask(() => { const el = document.getElementById('mg-mem'); if (el) el.href = `moment.html?id=${encodeURIComponent(m.id)}`; });
+	return `<span class="mg-band-pic" data-media-box>${img(firstPhoto(m), '', 'mg-band-img')}</span>
+		<b>${L('ذكرى من حكايتنا', 'A memory from our story')}</b>
+		<small>${T(m.title)} · ${fmtDate(m.date)} ${App.arrow}</small>`;
+}
+
 let lastNote = -1;
 function noteHTML(s) {
 	const notes = (s.notes || []).filter((n) => t(n.text).length <= 140);
@@ -731,7 +767,12 @@ function wireMega(header) {
 	let openedAt = 0;
 	const set = (id) => {
 		clearTimeout(timer);
-		if (id === 'memories' && openId !== 'memories') { const tx = $('#mg-note', nav); if (tx) tx.innerHTML = noteHTML(App.story); }
+		if (id === 'memories' && openId !== 'memories') {
+			// a new love note, album photo and moment every time ذكرياتنا opens
+			const tx = $('#mg-note', nav); if (tx) tx.innerHTML = noteHTML(App.story);
+			const al = $('#mg-album', nav); if (al) al.innerHTML = albumHTML(App.story);
+			const mm = $('#mg-mem', nav); if (mm) mm.innerHTML = memoryHTML(App.story, mm);
+		}
 		if (id) hydrate(nav);
 		openId = id;
 		for (const b of btns) {

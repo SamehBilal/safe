@@ -94,12 +94,6 @@
 	/* ذكرياتنا */
 	.mega-memories .mega-in { grid-template-columns: 1fr 1.1fr; align-items: stretch; }
 	.mg-list { display: grid; align-content: start; gap: 2px; }
-	.mg-photo { position: relative; border-radius: 20px; overflow: hidden; min-height: 240px; background: linear-gradient(135deg, #13394b, var(--blue)); text-decoration: none; color: #fff; display: flex; align-items: flex-end; }
-	.mg-photo-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
-	.mg-photo-tx { position: relative; padding: 22px; display: grid; gap: 6px; }
-	.mg-photo-tx q { font: 700 1.9rem/1.35 var(--f-hand); quotes: '«' '»'; }
-	:root[dir='ltr'] .mg-photo-tx q { quotes: '“' '”'; }
-	.mg-photo-tx small { opacity: 0.85; }
 
 	/* عيلتنا */
 	.mega-family .mega-in { grid-template-columns: 1fr 260px; align-items: center; }
