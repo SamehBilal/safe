@@ -647,7 +647,10 @@ function megaHTML(s) {
 
 	// حكايتنا — the big days as photo cards, then the story pages, then "on this day".
 	const chapters = (s.chapters || []).slice(0, 3);
-	const today = (s.timeline || []).find((x) => !x.when && isToday(x.date));
+	// today's moment: one with a photo when several fell on this date
+	const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
+	const today = todays.find((x) => firstPhoto(x)) || todays[0];
+	const todayPhoto = today && firstPhoto(today);
 	const story = panel('story', L('حكايتنا', 'Our story'),
 		`<div class="mg-cards">${chapters.map((c) => `
 			<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>
@@ -655,7 +658,8 @@ function megaHTML(s) {
 				<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span>
 			</a>`).join('')}</div>
 		<div class="mg-more"><p class="mg-h">${L('الحكاية', 'The story')}</p>${pages('story').map(row).join('')}</div>
-		<a class="mg-band" href="story.html${today ? '#t-' + esc(today.id) : ''}">
+		<a class="mg-band${todayPhoto ? ' has-photo' : ''}" href="${today ? `moment.html?id=${esc(today.id)}` : 'story.html'}">
+			${todayPhoto ? `<span class="mg-band-pic" data-media-box>${img(todayPhoto, '', 'mg-band-img')}</span>` : ''}
 			<b>${today ? L('النهارده في حكايتنا', 'Today in our story') : L('من أول رسالة لحد النهارده', 'From the first message until today')}</b>
 			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
 		</a>`);
