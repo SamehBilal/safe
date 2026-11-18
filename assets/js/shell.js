@@ -691,7 +691,8 @@ function megaHTML(s) {
 				<span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span>
 				<span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span>
 			</a>`).join('')}</div>
-		<div class="mg-more"><p class="mg-h">${L('البيت', 'Home')}</p>${pages('family').map(row).join('')}</div>`);
+		<div class="mg-more"><p class="mg-h">${L('البيت', 'Home')}</p>${pages('family').map(row).join('')}</div>
+		${tapeHTML(members)}`);
 
 	// لِكِ — birthday, wishes, and us in numbers.
 	const met = parseDate(s.met || '2009-06-10');
@@ -704,7 +705,8 @@ function megaHTML(s) {
 			<b>${num(daysBetween(met))} ${L('يوم من أول سلام', 'days since hello')}</b>
 			<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
 			<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
-		</a>`);
+		</a>
+		${calendarHTML(s)}`);
 
 	// ليالينا — the four draws as coloured cards, then the songs and the rest of the evenings.
 	const kind = qs('k');
@@ -713,7 +715,8 @@ function megaHTML(s) {
 			<a class="mg-kind" href="draw.html?k=${k.id}" style="--c:${k.color}"${here === 'draw.html' && kind === k.id ? ' aria-current="page"' : ''}>
 				<span class="mg-kind-e" aria-hidden="true">${doodle(k.emoji, 40)}</span><b>${esc(L(k.ar, k.en))}</b><small>${esc(L(k.dar, k.den))}</small>
 			</a>`).join('')}</div>
-		<div class="mg-more"><p class="mg-h">${L('سهراتنا', 'Our evenings')}</p>${pages('nights').map(row).join('')}</div>`);
+		<div class="mg-more"><p class="mg-h">${L('سهراتنا', 'Our evenings')}</p>${pages('nights').map(row).join('')}</div>
+		<a class="mg-sky" id="mg-sky" href="draw.html">${skyHTML()}</a>`);
 
 	const link = (href, ar, en) => `<a class="mnav-link" href="${href}"${cur(href)}>${esc(L(ar, en))}</a>`;
 	return `<nav class="mnav" aria-label="${L('القائمة الرئيسية', 'Main')}">
@@ -725,6 +728,80 @@ function megaHTML(s) {
 }
 
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+/* عيلتنا: a tailor's tape with the four of us standing on it at our ages — from the baby near nought to the two of
+   us in our thirties — every year a tick, every five a number. Takes you to the growth chart. */
+function tapeHTML(members) {
+	const now = new Date();
+	const ages = members.filter((m) => m.born && parseDate(m.born) <= now)
+		.map((m) => ({ m, a: (now - parseDate(m.born)) / (365.2425 * 864e5) })).sort((x, y) => x.a - y.a);
+	if (!ages.length) return '';
+	const max = Math.max(10, Math.ceil((ages.at(-1).a + 1) / 5) * 5);
+	const ticks = Array.from({ length: max + 1 }, (_, i) => `<i class="${i % 5 ? '' : 'is-5'}" style="--p:${(i / max) * 100}%">${i % 5 ? '' : `<b>${num(i)}</b>`}</i>`).join('');
+	const pins = ages.map(({ m, a }, i) => `
+		<span class="mg-tape-pin ${i % 2 ? 'is-up' : 'is-down'}" style="--p:${(a / max) * 100}%;--c:${esc(m.color || '#0e6990')}">
+			<span class="mg-tape-dot">${doodle(m.emoji, 22)}</span><small><b>${T(m.name)}</b> ${m.kid ? age(m.born, now) : `${num(Math.floor(a))} ${L('سنة', 'yrs')}`}</small>
+		</span>`).join('');
+	return `<a class="mg-tape" href="growth.html" aria-label="${L('مين كبر قد إيه', 'How much each of us has grown')}">
+		<span class="mg-tape-h">${L('مين كبر قد إيه', 'How tall we’ve grown')}</span>
+		<span class="mg-tape-track" aria-hidden="true">${ticks}${pins}</span>
+	</a>`;
+}
+
+/* ليالينا: tonight's sky — the real moon over Egypt tonight, drawn and named, a few stars, and one of the four draws
+   suggested for tonight (a different one each time it opens). */
+function moonTonight(now = new Date()) {
+	const SYN = 29.530588853, NEW = Date.UTC(2000, 0, 6, 18, 14);
+	const days = (((now - NEW) / 864e5) % SYN + SYN) % SYN;
+	const f = days / SYN, lit = (1 - Math.cos(2 * Math.PI * f)) / 2;
+	const PH = [['محاق', 'New moon'], ['هلال', 'Crescent'], ['تربيع أول', 'First quarter'], ['أحدب', 'Gibbous'], ['بدر', 'Full moon'], ['أحدب', 'Gibbous'], ['تربيع تاني', 'Last quarter'], ['هلال', 'Crescent']];
+	const name = PH[Math.floor((f * 8 + 0.5) % 8)];
+	// the lit part: a half disc on the lit side (right while it grows, left while it wanes) closed by the terminator,
+	// an ellipse whose width follows the phase
+	const r = 18, k = Math.cos(2 * Math.PI * f), rx = Math.abs(k) * r, waxing = f < 0.5;
+	const half = waxing ? `M0 ${-r} A${r} ${r} 0 0 1 0 ${r}` : `M0 ${-r} A${r} ${r} 0 0 0 0 ${r}`;
+	const term = `A${rx.toFixed(2)} ${r} 0 0 ${waxing ? (k > 0 ? 0 : 1) : (k > 0 ? 1 : 0)} 0 ${-r}`;
+	const svg = `<svg class="mg-moon" viewBox="-22 -22 44 44" aria-hidden="true"><circle r="${r}" class="mg-moon-dark"/>${lit > 0.01 ? `<path d="${half} ${term}Z" class="mg-moon-lit"/>` : ''}<circle r="${r}" class="mg-moon-rim"/></svg>`;
+	return { svg, name: L(...name), lit: Math.round(lit * 100) };
+}
+function skyHTML(a) {
+	const moon = moonTonight();
+	const k = pick(DRAW_KINDS);
+	if (a) a.href = `draw.html?k=${k.id}`;
+	else queueMicrotask(() => { const el = document.getElementById('mg-sky'); if (el) el.href = `draw.html?k=${k.id}`; });
+	const stars = Array.from({ length: 22 }, () => `<i style="--x:${rand(2, 98)}%;--y:${rand(6, 94)}%;--s:${rand(1.5, 3.2)}px;--d:${rand(1.8, 4.5)}s;--delay:-${rand(0, 4)}s"></i>`).join('');
+	return `<span class="mg-sky-stars" aria-hidden="true">${stars}</span>
+		${moon.svg}
+		<span class="mg-sky-tx">
+			<b>${L('الليلة', 'Tonight')}: ${esc(moon.name)} <em>${num(moon.lit)}٪</em></b>
+			<small>${L('سهرة الليلة؟', 'And tonight?')} <span class="mg-sky-k" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))}</span> ${App.arrow}</small>
+		</span>`;
+}
+
+/* مناسباتنا: a desk calendar torn to the next occasion — the day in big numbers, the month, what it is and how long
+   is left — with the two after it peeking out behind. */
+function calendarHTML(s) {
+	const next = occasions(s).slice(0, 3);
+	if (!next.length) return '';
+	const [o] = next;
+	const when = new Date(); when.setHours(12, 0, 0, 0); when.setDate(when.getDate() + o.days);
+	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	const month = new Intl.DateTimeFormat(loc, { month: 'long' }).format(when);
+	const wday = new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(when);
+	const left = o.days === 0 ? L('النهارده ♥', 'Today ♥') : o.days === 1 ? L('بكرة', 'Tomorrow') : L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`);
+	return `<a class="mg-cal" href="calendar.html" aria-label="${esc(`${o.title} — ${left}`)}">
+		${next.slice(1).map((x, i) => `<span class="mg-cal-back" style="--n:${i + 1}" aria-hidden="true"><small>${esc(x.title)}</small></span>`).join('')}
+		<span class="mg-cal-page">
+			<span class="mg-cal-rings" aria-hidden="true"><i></i><i></i></span>
+			<span class="mg-cal-month">${esc(month)}</span>
+			<span class="mg-cal-day">${num(when.getDate())}</span>
+			<span class="mg-cal-wday">${esc(wday)}</span>
+			<b>${esc(o.title)}</b>
+			<small>${esc(o.sub)}</small>
+			<span class="mg-cal-left${o.days === 0 ? ' is-today' : ''}">${left}</span>
+		</span>
+	</a>`;
+}
 
 /* the album polaroid in ذكرياتنا: any photo from the album, a different one each time */
 function albumHTML(s) {
@@ -771,6 +848,8 @@ function wireMega(header) {
 			const al = $('#mg-album', nav); if (al) al.innerHTML = albumHTML(App.story);
 			const fm = $('#mg-film', nav); if (fm) fm.innerHTML = filmHTML(App.story);
 		}
+		// a new suggestion under tonight's moon each time ليالينا opens
+		if (id === 'nights' && openId !== 'nights') { const sk = $('#mg-sky', nav); if (sk) sk.innerHTML = skyHTML(sk); }
 		if (id) hydrate(nav);
 		openId = id;
 		for (const b of btns) {

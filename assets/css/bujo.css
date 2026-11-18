@@ -297,7 +297,7 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .moment-hero__ic { border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
 .hero__bday { border: 1.5px solid #37353f; border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 #37353f; }
 
-@media (prefers-reduced-motion: reduce) { .fam, .mg-card, .mg-band, .mg-film, .mg-frame-img, .mg-data, .feed a, .coming a, .mini, .chapter-card, .tl__card, .related__card, .pnav a, .btn, .tile, .icon-btn, .lang-toggle, .chip, .quick__btn, .deck__btn, .mnav-link, .mnav-btn { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fam, .mg-card, .mg-band, .mg-film, .mg-frame-img, .mg-tape-track, .mg-sky, .mg-moon, .mg-cal-page, .mg-data, .feed a, .coming a, .mini, .chapter-card, .tl__card, .related__card, .pnav a, .btn, .tile, .icon-btn, .lang-toggle, .chip, .quick__btn, .deck__btn, .mnav-link, .mnav-btn { transition: none; } }
 
 /* ---------- «أماكننا» cards: journal cards; the photo moves with the mouse only while it's over the card ---------- */
 .places .moment { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); transition: transform 0.15s, box-shadow 0.15s; }
@@ -484,6 +484,65 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-you .mg-data::before { width: 64px; height: 18px; }
 	.mg-data:hover { rotate: 0deg; }
 	.mega { max-height: calc(100vh - var(--hd, 70px)); overflow-y: auto; }
+
+	/* عيلتنا: a tailor's tape, the four of us standing on it at our ages (shell.js tapeHTML) */
+	.mg-tape { position: relative; display: block; margin-top: 4px; padding: 30px 6px 30px; text-decoration: none; color: var(--text); }
+	.mg-tape-h { position: absolute; top: -2px; left: 50%; translate: -50% 0; white-space: nowrap; padding: 0 .35em; font: 400 1.2rem var(--f-label); letter-spacing: .05em; background: linear-gradient(transparent 45%, var(--hl-lime) 45% 92%, transparent 92%); }
+	:lang(ar) .mg-tape-h { font: 800 .85rem/1.6 var(--f-body); }
+	.mg-tape-track { position: relative; display: block; height: 34px; margin-top: 18px; background: #f5d54e; border: 1.5px solid #37353f; border-radius: 3px; rotate: -.8deg;
+		box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink), inset 0 -6px 0 rgba(0, 0, 0, .06); transition: rotate .25s, box-shadow .2s; }
+	.mg-tape:hover .mg-tape-track { rotate: 0deg; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral), inset 0 -6px 0 rgba(0, 0, 0, .06); }
+	.mg-tape-track > i { position: absolute; top: 0; inset-inline-start: var(--p); width: 1px; height: 9px; background: #37353f; }
+	.mg-tape-track > i.is-5 { height: 15px; width: 1.5px; }
+	.mg-tape-track > i b { position: absolute; top: 15px; left: 50%; translate: -50% 0; font: 400 .78rem var(--f-label); color: #37353f; }
+	.mg-tape-pin { position: absolute; inset-inline-start: var(--p); z-index: 1; display: flex; align-items: center; gap: 5px; translate: calc(var(--dir-x, 1) * -14px) 0; white-space: nowrap; }
+	:root[dir='rtl'] .mg-tape-pin { --dir-x: -1; }
+	.mg-tape-pin.is-up { bottom: calc(100% + 4px); }
+	.mg-tape-pin.is-down { top: calc(100% + 4px); }
+	.mg-tape-dot { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--c) 22%, var(--card)); border: 2px solid var(--c); box-shadow: 0 2px 0 #37353f; }
+	.mg-tape-pin small { font-size: .74rem; color: var(--muted); }
+	.mg-tape-pin small b { color: var(--c); font-size: .82rem; }
+	.mg-tape-pin::after { content: ''; position: absolute; inset-inline-start: 13px; width: 2px; height: 8px; background: var(--c); }
+	.mg-tape-pin.is-up::after { top: 100%; } .mg-tape-pin.is-down::after { bottom: 100%; }
+
+	/* ليالينا: tonight's sky, with tonight's real moon (shell.js skyHTML) */
+	.mg-sky { position: relative; display: flex; align-items: center; gap: 18px; min-height: 92px; margin-top: 6px; padding: 14px 22px; overflow: hidden; text-decoration: none; color: #f4eede;
+		background: radial-gradient(120% 140% at 85% 10%, #2c3d6b 0%, #18213f 45%, #0d1226 100%); border: 1.5px solid #37353f; border-radius: var(--sketch); rotate: .5deg;
+		box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); transition: rotate .25s, box-shadow .2s, transform .25s; }
+	.mg-sky:hover { rotate: 0deg; transform: translateY(-3px); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); }
+	.mg-sky-stars { position: absolute; inset: 0; pointer-events: none; }
+	.mg-sky-stars i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #fff7d6; box-shadow: 0 0 6px 1px rgba(255, 240, 190, .7); animation: twinkle var(--d) ease-in-out var(--delay) infinite; }
+	.mg-moon { position: relative; flex: none; width: 64px; height: 64px; filter: drop-shadow(0 0 14px rgba(255, 236, 170, .55)); transition: rotate .4s; }
+	.mg-sky:hover .mg-moon { rotate: -12deg; }
+	.mg-moon-dark { fill: #2a3358; }
+	.mg-moon-lit { fill: #fdf1c8; }
+	.mg-moon-rim { fill: none; stroke: rgba(253, 241, 200, .35); stroke-width: 1; }
+	.mg-sky-tx { position: relative; display: grid; gap: 4px; }
+	.mg-sky-tx b { font: 400 1.5rem/1.1 var(--f-hand); }
+	:lang(ar) .mg-sky-tx b { font: 800 1.05rem/1.4 var(--f-body); }
+	.mg-sky-tx b em { font-style: normal; font: 400 1rem var(--f-label); letter-spacing: .05em; color: #f5d54e; margin-inline-start: 4px; }
+	.mg-sky-tx small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .85rem; color: rgba(244, 238, 222, .8); }
+	.mg-sky-k { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 7px; border-radius: 999px; background: var(--c); color: #fff; font-weight: 800; }
+
+	/* مناسباتنا: a desk calendar torn to the next occasion (shell.js calendarHTML) */
+	.mega-you .mega-in > .mg-list { grid-row: 1 / span 2; }
+	.mega-you .mega-in > .mg-cal { grid-column: 2; grid-row: 2; position: relative; display: block; margin: 18px 6px 6px; text-decoration: none; color: #2b2b33; }
+	.mg-cal-back { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 6px; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px;
+		translate: calc(var(--bujo-x) * var(--n) * 6px) calc(var(--n) * -7px); rotate: calc(var(--n) * 2.5deg); z-index: calc(3 - var(--n)); }
+	.mg-cal-back small { font-size: .62rem; color: #8a8792; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	.mg-cal-page { position: relative; z-index: 3; display: grid; justify-items: center; gap: 1px; padding: 0 10px 12px; text-align: center; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px;
+		box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); rotate: -1.5deg; transition: rotate .25s, translate .25s, box-shadow .2s; }
+	.mg-cal:hover .mg-cal-page { rotate: 0deg; translate: 0 -3px; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral); }
+	.mg-cal-rings { position: absolute; top: -9px; left: 0; right: 0; display: flex; justify-content: space-around; }
+	.mg-cal-rings i { width: 7px; height: 16px; border-radius: 4px; background: #c9c3cf; border: 1.5px solid #37353f; }
+	.mg-cal-month { justify-self: stretch; margin: 0 -10px 4px; padding: 9px 0 5px; border-radius: 5px 5px 0 0; background: var(--coral-deep, #d9534f); color: #fff; font: 400 1.05rem var(--f-label); letter-spacing: .08em; }
+	:lang(ar) .mg-cal-month { font: 800 .9rem/1.4 var(--f-body); letter-spacing: 0; }
+	.mg-cal-day { font: 400 3.2rem/1 var(--f-label); color: #2b2b33; }
+	.mg-cal-wday { font-size: .72rem; color: #8a8792; margin-bottom: 4px; }
+	.mg-cal-page b { font-size: .86rem; line-height: 1.3; }
+	.mg-cal-page small { font-size: .72rem; color: #6b6b75; }
+	.mg-cal-left { margin-top: 6px; padding: 2px 10px; border-radius: 999px; background: var(--hl-yellow); border: 1.5px solid #37353f; font-size: .76rem; font-weight: 800; }
+	.mg-cal-left.is-today { background: var(--coral); color: #fff; }
 }
 
 /* ---------- دوّر: the search page, and the glow on what a search result opened ---------- */
@@ -551,4 +610,4 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 	0%, 60% { box-shadow: 0 0 0 4px var(--coral), 0 0 0 12px var(--hl-yellow); }
 	100% { box-shadow: 0 0 0 0 transparent; }
 }
-@media (prefers-reduced-motion: reduce) { .sr-card { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .sr-card, .mg-sky-stars i { animation: none; } }
