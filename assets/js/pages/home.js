@@ -62,7 +62,7 @@ function yearStage(main, years) {
 		track.style.transform = `translateX(${ruler.clientWidth / 2 - (m.offsetLeft + m.offsetWidth / 2)}px)`;
 		hydrate(stage);
 	};
-	const play = () => { clearInterval(timer); if (!REDUCE && !hold && seen) timer = setInterval(() => show(i + 1, 1), 3600); };
+	const play = () => { clearInterval(timer); if (!REDUCE && !hold && seen) timer = setInterval(() => show(i + 1, 1), 2400); };
 	box.addEventListener('click', (e) => {
 		const b = e.target.closest('[data-step]'); if (b) { show(i + +b.dataset.step, +b.dataset.step); play(); return; }
 		const y = e.target.closest('.hm-ruler__y'); if (y) { const n = +y.dataset.i; show(n, n > i ? 1 : -1); play(); }
