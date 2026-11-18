@@ -682,6 +682,10 @@ function megaHTML(s) {
 				${img(gb.photo, '', 'mg-cover')}
 				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
 			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
+			<a class="mg-card mg-card--ticket" href="tickets.html">
+				<span class="mg-ticket" aria-hidden="true"><small>${L('تذكرة دخول', 'Admit one')}</small><b>♥</b><small>${L('سينما · قطر · كافيه', 'Cinema · train · café')}</small></span>
+				<span class="mg-card-t"><b>${L('تذاكر وفواتير', 'Tickets')}</b><small>${L('كشكول ذكرياتنا', 'Our scrapbook')}</small></span>
+			</a>
 		</div>
 		<div class="mg-more"><p class="mg-h">${L('ذكرياتنا', 'Our memories')}</p>${pages('memories').map(row).join('')}</div>
 		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`);

@@ -444,6 +444,26 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-memories .mg-card:nth-child(1) { rotate: 3deg; } .mega-memories .mg-card:nth-child(2) { rotate: -2deg; } .mega-memories .mg-card:nth-child(3) { rotate: 1.5deg; }
 	.mega-memories .mg-card:nth-child(1)::before { rotate: 4deg; } .mega-memories .mg-card:nth-child(2)::before { rotate: -3deg; }
 	.mega-memories .mg-card:hover { rotate: 0deg; }
+	/* four smaller polaroids here: the album, a love note, the guestbook and the scrapbook */
+	.mega-memories .mg-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; padding-top: 12px; }
+	.mega-memories .mg-card { padding: 6px 6px 38px; }
+	.mega-memories .mg-card-t { inset-inline: 6px; bottom: 5px; }
+	.mega-memories .mg-card-t b { font-size: 1.1rem; }
+	:lang(ar) .mega-memories .mg-card-t b { font-size: .82rem; }
+	:lang(ar) .mega-memories .mg-card-t small { font-size: .66rem; }
+	.mega-memories .mg-card::before { width: 50%; height: 16px; top: -9px; }
+	.mega-memories .mg-card:nth-child(4) { rotate: -1.5deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
+	.mega-memories .mg-card:nth-child(4)::before { background: rgba(14, 105, 144, .45); rotate: 2deg; }
+	.mega-memories .mg-note { padding: 8px; gap: 4px; }
+	.mega-memories .mg-note q { -webkit-line-clamp: 5; font-size: .95rem; }
+	:lang(ar) .mega-memories .mg-note q { font-size: .74rem; line-height: 1.55; }
+	.mega-memories .mg-note small { font-size: .78rem; }
+	/* the scrapbook polaroid: a little admit-one stub on kraft paper */
+	.mega-memories .mg-ticket { display: grid; place-content: center; justify-items: center; gap: 2px; height: 100%; padding: 8px; border: 1px solid rgba(55, 53, 63, .25);
+		background: radial-gradient(rgba(90, 60, 30, .1) 1px, transparent 1.5px) 0 0 / 6px 6px, linear-gradient(135deg, #d9bf94, #cfb184); }
+	.mega-memories .mg-ticket b { display: grid; place-items: center; width: 82%; padding: 6px 0; font-size: 1.4rem; color: #d9534f; background: #fffaf0; border: 1.5px dashed #37353f; border-radius: 4px; rotate: -4deg; box-shadow: 0 3px 6px rgba(60, 40, 20, .2); }
+	.mega-memories .mg-ticket small { font: 400 .78rem var(--f-label); letter-spacing: .08em; color: #4a3726; text-align: center; }
+	:lang(ar) .mega-memories .mg-ticket small { font: 700 .62rem/1.4 var(--f-body); letter-spacing: 0; }
 	/* where حكايتنا has its band, a strip of film: five moments, sprocket holes along both edges, a label taped on */
 	.mega-memories .mg-film { position: relative; margin-top: 8px; padding: 18px 12px; background: #1e1c21; border: 1.5px solid #37353f; border-radius: 3px; rotate: -.6deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); transition: rotate .25s, box-shadow .2s; }
 	.mega-memories .mg-film:hover { rotate: 0deg; box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); }
