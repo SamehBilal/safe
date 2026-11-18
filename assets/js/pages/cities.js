@@ -10,7 +10,9 @@ import { fit, where, here, nearestGov, CAPITALS, km } from '../tilemap.js';
    apart), the governorates of our anniversary trips, and spots added from the phones
    (the shared list content/live/spots.bin). */
 
-const coords = ({ lat, lng }) => `${Math.abs(lat).toFixed(2)}°${lat >= 0 ? 'N' : 'S'} · ${Math.abs(lng).toFixed(2)}°${lng >= 0 ? 'E' : 'W'}`;
+// degrees and minutes, as on a map poster: 30°03′N 31°14′E
+const dm = (v) => { const a = Math.abs(v), d = Math.floor(a), m = Math.round((a - d) * 60); return m === 60 ? `${d + 1}°00′` : `${d}°${String(m).padStart(2, '0')}′`; };
+const coords = ({ lat, lng }) => `${dm(lat)}${lat >= 0 ? 'N' : 'S'} ${dm(lng)}${lng >= 0 ? 'E' : 'W'}`;
 
 /* The governorate a spot is in. Cairo's and Giza's centres are a few km apart, so around them the Nile decides
    (Giza is the west bank: Mohandeseen, Dokki, the Pyramids, October; Zamalek and Maadi are Cairo). */
@@ -20,6 +22,13 @@ function govOf(at) {
 	return g;
 }
 
+/* where a city's poster is centred: its capital, or (for a city of its own, like Siwa) the middle of its spots */
+const centreOf = (c) => {
+	if (CAPITALS[c.id]) return { lat: CAPITALS[c.id][0], lng: CAPITALS[c.id][1] };
+	if (!c.spots.length) return null;
+	return { lat: c.spots.reduce((a, p) => a + p.at.lat, 0) / c.spots.length, lng: c.spots.reduce((a, p) => a + p.at.lng, 0) / c.spots.length };
+};
+
 /* how far (km) from its governorate's capital a place can be and still sit on that city's map */
 const FAR = 80;
 
@@ -27,11 +36,11 @@ const FAR = 80;
 function cities(s, trips, extra) {
 	const map = new Map();
 	const get = (gov) => {
-		if (!map.has(gov)) map.set(gov, { id: gov, name: govName(gov) || gov, area: '', spots: [], trips: [] });
+		if (!map.has(gov)) map.set(gov, { id: gov, name: govName(gov) || gov, ar: GOV[gov]?.ar || '', en: GOV[gov]?.en || gov, gov: '', spots: [], trips: [] });
 		return map.get(gov);
 	};
-	const getOwn = (id, name) => {
-		if (!map.has(id)) map.set(id, { id, name, area: name, spots: [], trips: [] });
+	const getOwn = (id, area, gov) => {
+		if (!map.has(id)) map.set(id, { id, name: App.t(area), ar: area.ar || App.t(area), en: area.en || App.t(area), gov: GOV[gov]?.en || '', spots: [], trips: [] });
 		return map.get(id);
 	};
 	// every place on the map of its own governorate — Cairo and Giza are two cities, not one. A place far from its
@@ -41,7 +50,7 @@ function cities(s, trips, extra) {
 		if (!at) continue;
 		const gov = govOf(at), cap = CAPITALS[gov];
 		const own = m.area && cap && km(at, { lat: cap[0], lng: cap[1] }) > FAR;
-		const c = own ? getOwn(`${gov}~${App.t(m.area)}`, App.t(m.area)) : get(gov);
+		const c = own ? getOwn(`${gov}~${App.t(m.area)}`, m.area, gov) : get(gov);
 		c.spots.push({ title: App.t(m.title), at, date: m.date, note: App.t(m.where) || App.t(m.place) });
 	}
 	for (const x of extra) {
@@ -64,10 +73,10 @@ export default {
 			<div class="cm" id="cm" style="direction:ltr">
 				<div class="cm__map" aria-hidden="true"></div>
 				<div class="cm__pins"></div>
-				<div class="cm__title"><b id="cm-name"></b><small id="cm-sub"></small></div>
+				<div class="cm__title"><b id="cm-name"></b><i id="cm-ar" dir="rtl"></i><small id="cm-sub"></small></div>
 				<p class="cm__empty" id="cm-empty" hidden>${Y('لسه مفيش أماكن منورة هنا — ضيف اللي رحناه', 'لسه مفيش أماكن منورة هنا — ضيفي اللي رحناه', 'No spots lit up here yet — add the ones we went to')}</p>
 				<div class="cm__tip" id="cm-tip" hidden></div>
-				<p class="cm__credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p>
+				<p class="cm__credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · © <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a></p>
 			</div>
 			<ol class="cm-spots" id="cm-spots"></ol>
 			<h2 class="sec__title">${L('مدننا', 'Our cities')}</h2>
@@ -102,11 +111,14 @@ export default {
 			if (!c) return;
 			cur = c.id;
 			const pts = c.spots.map((p) => p.at);
-			const cap = CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITALS[c.id][1] } : pts[0];
-			const view = fit(mapEl, pts, { pad: 60, padTop: 110, zoom: pts.length ? 15 : 12, maxZ: 16, center: cap });
+			const cap = centreOf(c);
+			// the poster's name sits at its foot, so the spots are fitted in the space above it
+			const narrow = mapEl.clientWidth < 600;
+			const view = fit(mapEl, [...pts, cap].filter(Boolean), { pad: narrow ? 70 : 120, padTop: narrow ? 20 : 40, zoom: pts.length ? 15 : 13, maxZ: 16, minZ: 13, center: cap, poster: true });
 			pinsEl.innerHTML = c.spots.map((p, i) => { const xy = view.at(p.at); return `<button class="cm__pin" type="button" data-i="${i}" style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px;--d:${(i % 7) * 0.4}s" aria-label="${esc(p.title)}"></button>`; }).join('');
-			$('#cm-name', main).textContent = c.label;
-			$('#cm-sub', main).textContent = [cap ? coords(cap) : '', c.trips.length ? L(`رحلة ${c.trips.map((y) => num(y).replace(/[٬,]/g, '')).join(' و')}`, `Trip ${c.trips.join(' & ')}`) : ''].filter(Boolean).join(' · ');
+			$('#cm-name', main).textContent = c.en;
+			$('#cm-ar', main).textContent = c.ar;
+			$('#cm-sub', main).textContent = [[c.gov, 'Egypt'].filter(Boolean).join(', '), cap ? coords(cap) : '', c.trips.length ? L(`رحلة ${c.trips.map((y) => num(y).replace(/[٬,]/g, '')).join(' و')}`, `Trip ${c.trips.join(' & ')}`) : ''].filter(Boolean).join(' · ');
 			$('#cm-empty', main).hidden = !!c.spots.length;
 			tip.hidden = true;
 			const mineOk = live.canWrite();
@@ -152,18 +164,30 @@ export default {
 
 		function build(want) {
 			list = cities(s, trips, spots.items || []);
-			grid.innerHTML = list.length ? list.map((c) => `
-				<button class="cm-card" type="button" data-c="${esc(c.id)}">
-					<span class="cm-card__map" style="direction:ltr" aria-hidden="true"><span class="cm-card__tiles"></span><span class="cm-card__dots"></span></span>
-					<b>${esc(c.label)}</b>
+			// each city a framed street-map poster on the wall, in one of three styles in turn: white streets on black to the
+			// edges, the city in a circle on a white poster, or cream streets in a circle on charcoal — the English name big,
+			// the Arabic under it, then the governorate, Egypt and where it is
+			const STYLES = ['noir', 'circle', 'cream'];
+			grid.innerHTML = list.length ? list.map((c, k) => {
+				const cap = centreOf(c);
+				return `<button class="cm-card cm-card--${STYLES[k % 3]}" type="button" data-c="${esc(c.id)}" style="--k:${k}">
+					<span class="cm-poster" aria-hidden="true">
+						<span class="cm-card__map" style="direction:ltr"><span class="cm-card__tiles"></span><span class="cm-card__dots"></span></span>
+						<span class="cm-poster__en">${esc(c.en)}</span>
+						<span class="cm-poster__ar" dir="rtl">${esc(c.ar)}</span>
+						<span class="cm-poster__sub">${esc([c.gov, 'Egypt'].filter(Boolean).join(' · '))}</span>
+						${cap ? `<span class="cm-poster__xy">${esc(coords(cap))}</span>` : ''}
+					</span>
+					<b class="sr-only">${esc(c.label)}</b>
 					<small>${c.spots.length ? L(`${num(c.spots.length)} ${c.spots.length === 1 ? 'مكان' : c.spots.length <= 10 ? 'أماكن' : 'مكان'} منورة`, `${c.spots.length} spot${c.spots.length === 1 ? '' : 's'} lit up`) : L('مستنية أماكنها', 'waiting for its spots')}${c.trips.length ? ` · ${doodle('suitcase', 14)}` : ''}</small>
-				</button>`).join('') : `<p class="empty">${Y('لسه مفيش مدن… ضيف أول مكان رحناه ♥', 'لسه مفيش مدن… ضيفي أول مكان رحناه ♥', 'No cities yet… add the first spot we went to ♥')}</p>`;
-			// each card gets its own little night map
+				</button>`;
+			}).join('') : `<p class="empty">${Y('لسه مفيش مدن… ضيف أول مكان رحناه ♥', 'لسه مفيش مدن… ضيفي أول مكان رحناه ♥', 'No cities yet… add the first spot we went to ♥')}</p>`;
+			// each poster gets its city's streets: wide enough to show the town, with our spots in gold
 			for (const card of $$('.cm-card', grid)) {
 				const c = list.find((x) => x.id === card.dataset.c);
 				const tiles = $('.cm-card__tiles', card);
-				const cap = CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITALS[c.id][1] } : null;
-				const v = fit(tiles, c.spots.map((p) => p.at), { pad: 26, zoom: c.spots.length ? 14 : 11, maxZ: 15, center: cap || undefined });
+				const mid = centreOf(c);
+				const v = fit(tiles, [...c.spots.map((p) => p.at), mid].filter(Boolean), { pad: 30, zoom: 12, maxZ: 13, minZ: 11, center: mid || undefined, poster: true, detail: 2 });
 				$('.cm-card__dots', card).innerHTML = c.spots.map((p) => { const xy = v.at(p.at); return `<i style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px"></i>`; }).join('');
 			}
 			const fromHash = decodeURIComponent(location.hash.slice(1));

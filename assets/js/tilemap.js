@@ -3,6 +3,9 @@
 
 export const TILE = 256;
 const TILES = (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
+/* the city posters: Esri's Dark Gray Canvas without its labels layer — streets, water and land only, no key needed —
+   which CSS turns into white streets on black, black on white, or cream on charcoal */
+const POSTER = (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}`;
 
 /** "30.0731, 31.3456" (or [lat, lng], or { lat, lng }, or a thing with "at") → { lat, lng }, or null. */
 export function where(m) {
@@ -31,7 +34,8 @@ export function km(a, b) {
  * Lay tiles in `el` (position: relative, a size of its own) so every point shows, leaving `pad` pixels around them.
  * Returns { z, at(spot) → { x, y } in the box's pixels, W, H }. With one point (or none) it uses `zoom` around it.
  */
-export function fit(el, spots, { pad = 60, padTop = pad, zoom = 13, maxZ = 16, minZ = 3, center = { lat: 30.0444, lng: 31.2357 } } = {}) {
+export function fit(el, spots, { pad = 60, padTop = pad, zoom = 13, maxZ = 16, minZ = 3, center = { lat: 30.0444, lng: 31.2357 }, poster = false, detail = 1 } = {}) {
+	const TILES_ = poster ? POSTER : TILES;
 	const W = el.clientWidth, H = el.clientHeight;
 	const pts = spots.filter(Boolean).map(world);
 	if (!pts.length) pts.push(world(center));
@@ -46,12 +50,14 @@ export function fit(el, spots, { pad = 60, padTop = pad, zoom = 13, maxZ = 16, m
 	const k = 2 ** z;
 	const cx = ((minX + maxX) / 2) * k, cy = ((minY + maxY) / 2) * k - (padTop - pad) / 2;
 	const ox = cx - W / 2, oy = cy - H / 2;
-	const n = 2 ** z, x0 = Math.floor(ox / TILE), y0 = Math.floor(oy / TILE), x1 = Math.floor((ox + W) / TILE), y1 = Math.floor((oy + H) / TILE);
+	// a poster asks for the next zoom's tiles and draws them at half size: the same ground, twice the streets, finer lines
+	const d = poster ? Math.max(0, Math.min(detail, 18 - z)) : 0, zt = z + d, T = TILE / 2 ** d;
+	const n = 2 ** zt, x0 = Math.floor(ox / T), y0 = Math.floor(oy / T), x1 = Math.floor((ox + W) / T), y1 = Math.floor((oy + H) / T);
 	let html = '';
 	for (let ty = Math.max(0, y0); ty <= Math.min(n - 1, y1); ty++) {
 		for (let tx = x0; tx <= x1; tx++) {
 			const wx = ((tx % n) + n) % n;
-			html += `<img src="${TILES(z, wx, ty)}" alt="" width="${TILE}" height="${TILE}" draggable="false" referrerpolicy="origin" style="left:${(tx * TILE - ox).toFixed(1)}px;top:${(ty * TILE - oy).toFixed(1)}px" onerror="this.remove()">`;
+			html += `<img src="${TILES_(zt, wx, ty)}" alt="" width="${T}" height="${T}" draggable="false" referrerpolicy="origin" style="left:${(tx * T - ox).toFixed(1)}px;top:${(ty * T - oy).toFixed(1)}px;width:${T}px;height:${T}px" onerror="this.remove()">`;
 		}
 	}
 	el.innerHTML = html;
