@@ -16,7 +16,21 @@
 .hm-hero > :not(.hm-hero__snaps) { position: relative; z-index: 2; }
 /* the arrow sits under the «since» line, centred, not beside it */
 .hm-hero > .scroll-cue { left: auto; bottom: auto; translate: none; justify-self: center; margin-top: 26px; line-height: 1; }
-.hm-hero__since { margin: 14px 0 0; padding: 0 10px; font-weight: 800; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-lime) 45% 92%, transparent 92%); }
+/* «since …»: a paper label taped on under the ribbon — the date in hand, the years as a round stamp, then «and counting» */
+.hm-hero__since { position: relative; display: flex; align-items: center; gap: 14px; margin: 22px 0 0; padding: 12px 20px 10px; color: #2b2b33; background: #fffdf8 repeating-linear-gradient(transparent 0 23px, rgba(14, 105, 144, .13) 23px 24px); border: 1.5px solid var(--ink); border-radius: 3px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); rotate: 1.5deg; }
+.hm-hero__since::before { content: ""; position: absolute; top: -11px; inset-inline-start: -14px; width: 74px; height: 20px; rotate: -24deg; background: rgba(253, 200, 48, .75) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+[dir="rtl"] .hm-hero__since::before { rotate: 24deg; }
+.hm-since__from { display: grid; justify-items: center; line-height: 1; }
+.hm-since__from small { font: 700 1.25rem/1 var(--f-hand); color: #6b6b75; }
+.hm-since__from b { font: 400 1.7rem/1.05 var(--f-label); letter-spacing: .06em; color: #0e6990; }
+.hm-since__stamp { flex: none; display: grid; place-content: center; justify-items: center; width: 64px; height: 64px; margin-block: -8px; color: #d9534f; border: 2.5px solid currentColor; border-radius: 50%; outline: 1.5px dashed currentColor; outline-offset: -7px; rotate: -12deg; opacity: .92; }
+.hm-since__stamp b { font: 400 1.9rem/.9 var(--f-label); }
+.hm-since__stamp small { font: 800 .62rem/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase; }
+.hm-since__go { font: 700 1.7rem/1 var(--f-hand); color: #2b2b33; }
+:lang(ar) .hm-since__from small, :lang(ar) .hm-since__go { font: 700 1.05rem/1.3 var(--f-body); }
+:lang(ar) .hm-since__go { color: #d9534f; }
+:lang(ar) .hm-since__stamp small { font-size: .78rem; letter-spacing: 0; }
+@media (max-width: 480px) { .hm-hero__since { gap: 10px; padding: 10px 12px 8px; } .hm-since__from b { font-size: 1.35rem; } .hm-since__go { font-size: 1.35rem; } .hm-since__stamp { width: 54px; height: 54px; } }
 .hm-hero__snaps { display: contents; }
 .hm-hero .hm-snap { position: absolute; z-index: 1; width: clamp(130px, 13vw, 190px); pointer-events: auto; }
 .hm-hero .hm-snap__cap b { -webkit-line-clamp: 1; }

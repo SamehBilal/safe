@@ -203,7 +203,7 @@ export default {
 			${next ? `<a class="hero__bday" href="${occHref(next)}">${doodle(next.emoji, 18)} ${next.days === 0 ? `${L('النهارده', 'Today')}: ${esc(next.title)}` : `${esc(next.title)} ${L(`بعد ${num(next.days)} يوم`, `in ${next.days} days`)}`}</a>` : ''}
 			<h1 class="hero__title">${L('حكاية حبنا', 'Our Love Story')}</h1>
 			<div class="ribbon"><span>${T(s.him)}</span><span class="heart">♥</span><span>${T(s.her)}</span></div>
-			<p class="hm-hero__since">${L(`من ${fmtDate(s.met)} — ${num(yearsBetween(met))} سنة ولسه مكملين`, `Since ${fmtDate(s.met)} — ${yearsBetween(met)} years and counting`)}</p>
+			<p class="hm-hero__since" aria-label="${esc(L(`من ${fmtDate(s.met)} — ${num(yearsBetween(met))} سنة ولسه مكملين`, `Since ${fmtDate(s.met)} — ${yearsBetween(met)} years and counting`))}"><span class="hm-since__from"><small>${L("من", "since")}</small><b>${fmtDate(s.met)}</b></span><span class="hm-since__stamp"><b>${num(yearsBetween(met))}</b><small>${L("سنة", "years")}</small></span><span class="hm-since__go">${L("ولسه مكملين…", "and counting…")}</span></p>
 			<a class="scroll-cue" href="#now" aria-label="${Y('انزل', 'انزلي', 'Scroll down')}">⌄</a>
 		</section>
 
