@@ -294,9 +294,9 @@
    Each one lands at its own tilt and straightens and lifts when it's touched. ---- */
 .scatter-wrap { margin-block: 30px 10px; }
 .scatter__h { margin-bottom: 26px; }
-.scatter { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(46%, 158px), 1fr)); gap: clamp(18px, 2.4vw, 30px) clamp(12px, 2vw, 22px); padding: 14px 4px 20px; }
-@media (min-width: 1100px) { .scatter { grid-template-columns: repeat(6, 1fr); } }
-.scatter--few { grid-template-columns: repeat(auto-fit, minmax(150px, 220px)); justify-content: center; }
+/* small polaroids: never wider than 150px, as many to a row as fit, the rows centred */
+.scatter { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(42%, 120px), 150px)); justify-content: center; gap: clamp(18px, 2.4vw, 30px) clamp(12px, 2vw, 22px); padding: 14px 4px 20px; }
+.scatter--few { grid-template-columns: repeat(auto-fit, minmax(120px, 150px)); }
 .snap { position: relative; margin: 0; padding: 7px 7px 0; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink), 0 10px 20px rgba(30, 20, 10, .14);
 	rotate: var(--r); translate: var(--dx) var(--dy); transition: rotate .35s var(--ease-pop, ease), translate .35s var(--ease-pop, ease), scale .35s var(--ease-pop, ease), box-shadow .2s; animation: snap-drop .6s cubic-bezier(.3, 1.4, .5, 1) calc(var(--i) * 45ms) both; }
 .snap:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime), 0 10px 20px rgba(30, 20, 10, .14); }

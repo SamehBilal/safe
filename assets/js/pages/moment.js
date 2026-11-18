@@ -17,9 +17,8 @@ const rnd = (i, salt) => { const v = Math.sin((i + 1) * 9301 + salt * 49297) * 2
 /* a polaroid without its own caption gets the moment's date, like ink on the white strip */
 const capOf = (x, n) => (n === 0 ? App.t(x.title) : x.when ? App.t(x.when) : String(x.date || '').split('-').reverse().join('.'));
 /* where the first six sit in the fan: offsets in the photo's width, scale, rotation (the demo's own values) */
-const FAN = [{ tx: -0.6, ty: -0.3, s: 1.1, r: -20 }, { tx: 0.2, ty: -0.7, s: 1.4, r: 1 }, { tx: 0.5, ty: -0.5, s: 1.3, r: 15 }, { tx: -0.2, ty: -0.4, s: 1.4, r: -17 }, { tx: -0.15, ty: -0.4, s: 1.2, r: -5 }, { tx: 0.7, ty: -0.2, s: 1.1, r: 15 }];
+const FAN = [{ tx: -0.6, ty: -0.3, s: 0.95, r: -20 }, { tx: 0.2, ty: -0.7, s: 1.1, r: 1 }, { tx: 0.5, ty: -0.5, s: 1.05, r: 15 }, { tx: -0.2, ty: -0.4, s: 1.1, r: -17 }, { tx: -0.15, ty: -0.4, s: 1, r: -5 }, { tx: 0.7, ty: -0.2, s: 0.95, r: 15 }];
 const EASE_OUT = 'cubic-bezier(0.2, 1, 0.3, 1)';
-const EASE_IN = 'cubic-bezier(0.7, 0, 0.3, 1)';
 
 const photosOf = (x) => [...new Map([x.photo, ...(x.photos || [])].filter(Boolean).map((p) => (typeof p === 'string' ? { photo: p } : p)).map((p) => [p.photo, p])).values()];
 
@@ -117,39 +116,32 @@ function stackToGrid(main, intro) {
 	place(true);
 	$('#mo-badge', main).animate([{ transform: 'translateY(25vh)' }, { transform: 'none' }], { duration: 1000, easing: EASE_OUT });
 
+	/* One move, once: the opening folds away at once (the title stays put, the badge and the arrow go), and then each
+	   of the six glides from where it sat in the fan — measured on the screen before the fold — to its place on the
+	   wall, measured after it, so nothing jumps and nothing plays twice. The rest of the photos pop in around them. */
 	const toGrid = () => {
 		if (state !== 'stack') return;
-		state = 'moving';
+		state = 'grid';
 		removeEventListener('scroll', onScroll);
 		removeEventListener('resize', onResize);
-		const scrolled = scrollY > 0;
-		const fly = { duration: 600, easing: EASE_IN, fill: 'forwards' };
-		$('#mo-titles', main).animate([{ transform: 'none', opacity: 1 }, { transform: `translateY(${-innerHeight / 2}px)`, opacity: 0 }], fly);
-		$('#mo-badge', main).animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(300px)', opacity: 0 }], fly);
+		const from = fan.map((el) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, t: el.style.transform }; });
+		const titles = $('#mo-titles', main), titleTop = titles.getBoundingClientRect().top;
+		fan.forEach((el) => { el.getAnimations().forEach((a) => a.cancel()); el.style.transform = ''; });
 		$('#mo-down', main)?.remove();
-		// each of the six leaves its spot in the fan and settles into its own on the wall
-		fan.forEach((el, n) => {
-			const from = el.style.transform;
-			el.style.transform = '';
-			el.animate([{ transform: from }, { transform: 'none' }], { duration: 650, delay: scrolled ? 0 : 100 + n * 30, easing: 'cubic-bezier(0.5, 0, 0.2, 1.25)', fill: 'backwards' });
-		});
-		// the others pop in around them
-		rest.forEach((el) => el.animate([{ transform: 'scale(0)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 800, delay: 100 + Math.random() * 300, easing: EASE_OUT, fill: 'backwards' }));
-		wallH?.animate([{ transform: 'translateY(60px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 800, delay: 400, easing: EASE_OUT, fill: 'backwards' });
+		$('#mo-badge', main)?.getAnimations().forEach((a) => a.cancel());
+		intro.classList.add('is-done');
+		intro.classList.remove('is-stack');
 		main.classList.remove('mo-stacked');
 		main.classList.add('mo-grid');
-		setTimeout(() => {
-			state = 'grid';
-			intro.classList.add('is-done');
-			// the intro folds away, keeping the wall where it is on the screen
-			const top = $('#mo-wall', main).getBoundingClientRect().top;
-			intro.classList.remove('is-stack');
-			scrollBy(0, $('#mo-wall', main).getBoundingClientRect().top - top);
-			// and the title comes back, small, above the wall (the demo's page title)
-			const titles = $('#mo-titles', main);
-			titles.getAnimations().forEach((a) => a.cancel());
-			titles.animate([{ transform: 'translateY(40px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 700, easing: EASE_OUT });
-		}, 900);
+		titles.animate([{ transform: `translateY(${titleTop - titles.getBoundingClientRect().top}px)` }, { transform: 'none' }], { duration: 500, easing: EASE_OUT });
+		fan.forEach((el, n) => {
+			const r = el.getBoundingClientRect();
+			const dx = from[n].x - (r.left + r.width / 2), dy = from[n].y - (r.top + r.height / 2);
+			const f = FAN[n];
+			el.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${f.s}) rotate(${f.r}deg)` }, { transform: 'none' }], { duration: 700, delay: n * 40, easing: 'cubic-bezier(0.3, 0.9, 0.3, 1.05)', fill: 'backwards' });
+		});
+		rest.forEach((el, n) => el.animate([{ transform: 'scale(.6)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 500, delay: 250 + n * 35, easing: EASE_OUT, fill: 'backwards' }));
+		wallH?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 150, easing: 'ease-out', fill: 'backwards' });
 	};
 	const onScroll = () => { if (scrollY > 8) toGrid(); };
 	let t;
