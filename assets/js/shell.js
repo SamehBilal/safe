@@ -706,7 +706,7 @@ function megaHTML(s) {
 	const met = parseDate(s.met || '2009-06-10');
 	const yrs = yearsBetween(met);
 	const you = panel('you', L('مناسباتنا', 'Occasions'),
-		`<div class="mg-list">${pages('you').filter((p) => p.id !== 'numbers').map(item).join('')}</div>
+		`<div class="mg-list"><p class="mg-h">${L('مناسباتنا', 'Our occasions')}</p>${pages('you').filter((p) => p.id !== 'numbers').map(item).join('')}</div>
 		<a class="mg-data" href="numbers.html"${cur('numbers.html')}>
 			<span class="mg-new">${L('بالأرقام', 'In numbers')}</span>
 			<span class="mg-bars" aria-hidden="true">${Array.from({ length: Math.min(yrs + 1, 20) }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / Math.min(yrs + 1, 20))}%"></i>`).join('')}</span>

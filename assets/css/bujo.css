@@ -374,7 +374,7 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-in { padding: 22px 0 26px; gap: 22px 36px; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) !important; align-items: start !important; }
 	.mega-in > :not(.mg-list):not(.mg-more) { grid-column: 1; }
 	.mg-list, .mg-more { grid-column: 2; grid-row: 1 / span 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; align-content: start; }
-	.mg-more .mg-h { grid-column: 1 / -1; }
+	.mg-more .mg-h, .mg-list .mg-h { grid-column: 1 / -1; }
 	.mg-h { margin: 0 0 6px; padding-inline: .3em; width: fit-content; font: 400 1.35rem var(--f-label); letter-spacing: .06em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
 	/* the links: the name, and a small one-line description under it */
 	.mg-item, .mg-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; }
@@ -523,7 +523,9 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mg-sky-k { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 7px; border-radius: 999px; background: var(--c); color: #fff; font-weight: 800; }
 
 	/* مناسباتنا: a desk calendar torn to the next occasion (shell.js calendarHTML) */
-	.mega-you .mega-in > .mg-list { grid-row: 1 / span 2; }
+	/* the same headline as the other panels, and room between the links like theirs */
+	.mega-you .mega-in > .mg-list { grid-row: 1 / span 2; row-gap: 12px; }
+	.mega-you .mg-list .mg-h { margin-bottom: 0; }
 	.mega-you .mega-in > .mg-cal { grid-column: 3; grid-row: 1; align-self: start; position: relative; display: block; margin: 14px 6px 6px; text-decoration: none; color: #2b2b33; }
 	.mega-you .mega-in > .mg-tags { grid-column: 2 / 4; grid-row: 2; }
 	.mg-tags { position: relative; padding-top: 4px; }
