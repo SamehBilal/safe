@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-fef4f7d58f';
+var VERSION = 'us-9ba8593489';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -24,9 +24,11 @@ var SHELL = [
 	'cities.html',
 	'distances.html',
 	'draw.html',
+	'drawings.html',
 	'famdays.html',
 	'family.html',
 	'familytree.html',
+	'favorites.html',
 	'firsts.html',
 	'food.html',
 	'gallery.html',
@@ -62,6 +64,7 @@ var SHELL = [
 	'settings.html',
 	'soundtrack.html',
 	'story.html',
+	'tickets.html',
 	'trip.html',
 	'trips.html',
 	'wishes.html',
@@ -113,9 +116,11 @@ var SHELL = [
 	'assets/js/pages/cities.js',
 	'assets/js/pages/distances.js',
 	'assets/js/pages/draw.js',
+	'assets/js/pages/drawings.js',
 	'assets/js/pages/famdays.js',
 	'assets/js/pages/family.js',
 	'assets/js/pages/familytree.js',
+	'assets/js/pages/favorites.js',
 	'assets/js/pages/firsts.js',
 	'assets/js/pages/food.js',
 	'assets/js/pages/gallery.js',
@@ -151,6 +156,7 @@ var SHELL = [
 	'assets/js/pages/settings.js',
 	'assets/js/pages/soundtrack.js',
 	'assets/js/pages/story.js',
+	'assets/js/pages/tickets.js',
 	'assets/js/pages/trip.js',
 	'assets/js/pages/trips.js',
 	'assets/js/pages/wishes.js',
