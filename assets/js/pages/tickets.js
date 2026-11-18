@@ -2,8 +2,8 @@ import { L, esc, fmtDate } from '../shell.js';
 import { listPage, shorten } from '../listpage.js';
 
 /* «تذاكر وفواتير» — the scrapbook: cinema tickets, train tickets, café receipts, entry tickets, kept with where and
-   when they were. Top: a scrapbook spread on kraft paper, the newest stubs taped on at angles with a paper clip and
-   a stamp. Each card is a ticket itself — torn notches, a perforated stub with the date. */
+   when they were. Top: a scrapbook spread on kraft paper — the newest ticket stuck in open, the ones before it on a
+   thread beside it. Each card is a ticket itself — torn notches, a perforated stub with the date. */
 
 const KINDS = [
 	['cinema', '🎬', 'سينما', 'Cinema'], ['train', '🚆', 'قطر', 'Train'], ['bus', '🚌', 'أتوبيس', 'Bus'], ['cafe', '☕', 'كافيه', 'Café'],
@@ -31,22 +31,41 @@ export default listPage({
 	chips: { n: 'type', opts: KINDS.map(([v, e, ar, en]) => [v, `${e} ${ar}`, `${e} ${en}`]) },
 	sort: (a, b) => String(b.date || '').localeCompare(String(a.date || '')),
 	band: (items) => {
-		const shown = items.slice(0, 4);
-		const stubs = (shown.length ? shown : [{ type: 'cinema', what: L('أول سينما', 'First cinema'), date: '' }, { type: 'train', what: L('قطر طنطا', 'Tanta train'), date: '' }, { type: 'cafe', what: L('أول قهوة', 'First coffee'), date: '' }])
-			.map((x, i) => { const [, e, ar, en] = kindOf(x.type); return `<span class="tk-stub" style="--i:${i};--t:${TINT[x.type] || TINT.other}">
-				<span class="tk-stub-k">${e} ${esc(L(ar, en))}</span>
-				<b dir="auto">${esc(shorten(x.what, 20))}</b>
-				<small>${x.date ? esc(fmtDate(x.date)) : '··.··.····'}</small>
-				<span class="tk-tape" aria-hidden="true"></span>
-			</span>`; }).join('');
+		// like the home page's diary: the newest ticket stuck in open — its photo taped on, the date stamped, the story
+		// written out — and the ones before it strung on a thread beside it, newest first
+		const [top, ...rest] = items, more = rest.slice(0, 4);
+		const pic = (x, cls) => `<span class="${cls}">${kindOf(x.type)[1]}${x.photo ? `<img data-sketch="${esc(x.photo)}" alt="">` : ''}</span>`;
+		const open = top ? (() => { const [, e, ar, en] = kindOf(top.type); return `<a class="tk-open" href="#tk-${esc(top.id)}" tabindex="-1" style="--t:${TINT[top.type] || TINT.other}">
+				<span class="tk-open__tab">${L('آخر تذكرة', 'Newest ticket')}</span>
+				${pic(top, 'tk-open__pic')}
+				<span class="tk-open__tx">
+					<time>${top.date ? esc(fmtDate(top.date)) : '··.··.····'}</time>
+					<small class="tk-open__k">${e} ${esc(L(ar, en))}</small>
+					<b dir="auto">${esc(top.what)}</b>
+					${top.where || top.price ? `<span class="tk-open__meta" dir="auto">${top.where ? `📍 ${esc(top.where)}` : ''}${top.where && top.price ? ' · ' : ''}${top.price ? esc(top.price) : ''}</span>` : ''}
+					${top.note ? `<p dir="auto">${esc(top.note)}</p>` : ''}
+				</span>
+				<span class="tk-open__no">№ ${serial(top.id)}</span>
+			</a>`; })() : `<span class="tk-open tk-open--empty" style="--t:${TINT.cinema}">
+				<span class="tk-open__tab">${L('آخر تذكرة', 'Newest ticket')}</span>
+				<span class="tk-open__pic">🎟️</span>
+				<span class="tk-open__tx"><time>··.··.····</time><b>${L('أول تذكرة تتلزّق هنا', 'The first ticket goes here')}</b></span>
+			</span>`;
+		const thread = more.length ? `<div class="tk-thread">
+				<p class="tk-thread__h">${L('واللي قبلها', 'And before that')}</p>
+				<ol>${more.map((x) => `<li style="--t:${TINT[x.type] || TINT.other}"><a href="#tk-${esc(x.id)}" tabindex="-1">
+					${pic(x, 'tk-thread__pic')}
+					<span class="tk-thread__tx"><time>${x.date ? esc(fmtDate(x.date)) : '—'}</time><b dir="auto">${esc(shorten(x.what, 34))}</b></span>
+				</a></li>`).join('')}</ol>
+			</div>` : '';
 		return `<div class="tk-book">
 			<span class="tk-clip" aria-hidden="true"></span>
 			<p class="tk-title">${L('كشكول ذكرياتنا', 'Our scrapbook')}</p>
-			<div class="tk-stubs">${stubs}</div>
+			<div class="tk-spread${thread ? '' : ' is-solo'}">${open}${thread}</div>
 			<span class="tk-stamp" aria-hidden="true">${L('محفوظة ♥', 'Kept ♥')}</span>
 		</div>`;
 	},
-	card: (x, c) => { const [, e, ar, en] = kindOf(x.type); return `<article class="lp-card tk-card" style="--t:${TINT[x.type] || TINT.other}">
+	card: (x, c) => { const [, e, ar, en] = kindOf(x.type); return `<article class="lp-card tk-card" id="tk-${esc(x.id)}" style="--t:${TINT[x.type] || TINT.other}">
 		<div class="tk-main">
 			<p class="tk-k">${e} ${esc(L(ar, en))}</p>
 			<h3 dir="auto">${esc(x.what)}</h3>
