@@ -3,7 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { GOV, govName, loadTrips } from './trips.js';
-import { fit, where, here, nearestGov, CAPITALS } from '../tilemap.js';
+import { fit, where, here, nearestGov, CAPITALS, km } from '../tilemap.js';
 
 /* A map for every city we've been to, like a city poster: the streets in the dark and every spot we went to lit up.
    The spots are our places that have "at" in story.json (each on the map of the governorate it's in — Cairo and Giza
@@ -20,18 +20,29 @@ function govOf(at) {
 	return g;
 }
 
-/** Every city with its spots: [{ id (governorate), name, spots: [{ title, at, date, note, id?, by? }], trips: [years] }] */
+/* how far (km) from its governorate's capital a place can be and still sit on that city's map */
+const FAR = 80;
+
+/** Every city with its spots:[{ id (governorate), name, spots: [{ title, at, date, note, id?, by? }], trips: [years] }] */
 function cities(s, trips, extra) {
 	const map = new Map();
 	const get = (gov) => {
 		if (!map.has(gov)) map.set(gov, { id: gov, name: govName(gov) || gov, area: '', spots: [], trips: [] });
 		return map.get(gov);
 	};
-	// every place on the map of its own governorate — Cairo and Giza are two cities, not one
+	const getOwn = (id, name) => {
+		if (!map.has(id)) map.set(id, { id, name, area: name, spots: [], trips: [] });
+		return map.get(id);
+	};
+	// every place on the map of its own governorate — Cairo and Giza are two cities, not one. A place far from its
+	// governorate's capital (Siwa is 300 km from Marsa Matrouh) is a city of its own, named after its area
 	for (const m of s.places || []) {
 		const at = where(m);
 		if (!at) continue;
-		get(govOf(at)).spots.push({ title: App.t(m.title), at, date: m.date, note: App.t(m.where) || App.t(m.place) });
+		const gov = govOf(at), cap = CAPITALS[gov];
+		const own = m.area && cap && km(at, { lat: cap[0], lng: cap[1] }) > FAR;
+		const c = own ? getOwn(`${gov}~${App.t(m.area)}`, App.t(m.area)) : get(gov);
+		c.spots.push({ title: App.t(m.title), at, date: m.date, note: App.t(m.where) || App.t(m.place) });
 	}
 	for (const x of extra) {
 		const at = where(x);
@@ -102,7 +113,7 @@ export default {
 			$('#cm-spots', main).innerHTML = c.spots.map((p, i) => `<li><button type="button" data-i="${i}"><b dir="auto">${esc(p.title)}</b>${p.date || p.note ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.note || ''].filter(Boolean).join(' · '))}</small>` : ''}</button>${p.live && mineOk && p.by === live.me() ? `<button class="link link--danger" type="button" data-del="${esc(p.id)}">${L('مسح', 'Delete')}</button>` : ''}</li>`).join('');
 			for (const b of $$('.cm-card', grid)) b.classList.toggle('is-on', b.dataset.c === c.id);
 			const f = $('#cm-form', main);
-			if (f && !f.title.value) f.gov.value = c.id;
+			if (f && !f.title.value) f.gov.value = c.id.split('~')[0];
 		};
 
 		const tipFor = (i) => {
