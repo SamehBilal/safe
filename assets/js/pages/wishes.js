@@ -1,4 +1,4 @@
-import { L, Y, T, pageHead, related, sleep, store, $, App } from '../shell.js';
+import { L, Y, T, esc, pageHead, related, sleep, store, $, $$, App } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
@@ -77,6 +77,7 @@ export default {
 			</form>
 			<p class="wish-hint">${Y('دوس على أي نجمة عشان تقرا الأمنية اللي جواها', 'دوسي على أي نجمة عشان تقري الأمنية اللي جواها', 'Tap a star to read the wish inside')}</p>
 			<div class="jar" id="jar">${JAR}<div class="jar__stars" id="jar-stars"></div></div>
+			<div class="wish-note" id="wish-note" aria-live="polite" hidden></div>
 			<p class="wish-toast" id="wish-toast" aria-live="polite"></p>
 		</div></section>
 		${related(['birthday', 'journal', 'notes'])}`;
@@ -96,13 +97,31 @@ export default {
 			try { wishes = (await live.save('wishes', (d) => { (d.items = d.items || []).push(...mine.map((w) => ({ ...w, id: live.newId(), by: live.me() }))); })).items; store.del(KEY); }
 			catch { /* try again next time */ }
 		}
+		// a star tapped: the wish inside unfolds out of the jar as a slip of paper — taped on, a gold star stamped on it,
+		// whose wish it is, the wish in handwriting on ruled lines, and the day it went in
+		const note = $('#wish-note', main);
+		const open = (w, b) => {
+			$$('.is-read', box).forEach((x) => x.classList.remove('is-read'));
+			b.classList.add('is-read');
+			toast.textContent = '';
+			const day = w.at ? new Date(w.at).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+			note.innerHTML = `<span class="wish-note__tape" aria-hidden="true"></span>
+				<span class="wish-note__stamp" aria-hidden="true">★</span>
+				<small class="wish-note__k">${w.by ? esc(L(`أمنية ${name(w.by)}`, `A wish from ${name(w.by)}`)) : L('أمنية', 'A wish')}</small>
+				<p class="wish-note__tx" dir="auto">${esc(w.text)}</p>
+				${day ? `<small class="wish-note__day">${esc(L(`اتحطت في البرطمان ${day}`, `Into the jar on ${day}`))}</small>` : ''}`;
+			note.hidden = false;
+			note.classList.remove('is-in');
+			void note.offsetWidth;
+			note.classList.add('is-in');
+		};
 		const add = (w, animate) => {
 			const b = document.createElement('button');
 			b.type = 'button';
 			b.innerHTML = doodle('star', 22, 'dd--fill');
 			b.setAttribute('aria-label', L('أمنية: ', 'Wish: ') + w.text);
 			if (!animate) b.style.animation = 'none';
-			b.onclick = () => { toast.textContent = '«' + w.text + '»' + (w.by ? ' — ' + name(w.by) : ''); };
+			b.onclick = () => open(w, b);
 			box.append(b);
 		};
 		wishes.forEach((w) => add(w, false));
