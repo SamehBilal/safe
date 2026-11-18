@@ -158,4 +158,45 @@
 .hm-room li small { color: var(--muted); font-size: .82rem; }
 .hm-room__more { margin: 8px 0 0; padding-top: 8px; font-size: .82rem; color: var(--muted); border-top: 1.5px dashed var(--ink); }
 
+/* the house: fills the row beside the last card (three columns wide when the grid has four) */
+.hm-rooms { container-type: inline-size; }
+@container (min-width: 1100px) { .hm-house { grid-column: span 3; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); } .hm-house__new { order: -1; } }
+.hm-house { display: grid; gap: 22px 28px; align-items: end; padding: 10px 6px 0; }
+.hm-house__home { position: relative; width: min(100%, 380px); justify-self: center; display: grid; }
+.hm-house__roof { display: block; width: 100%; height: 96px; overflow: visible; fill: color-mix(in srgb, var(--hl-pink) 55%, var(--card)); stroke: var(--ink); stroke-width: 2.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.hm-house__roof path { vector-effect: non-scaling-stroke; }
+.hm-house__chim { fill: var(--card); }
+.hm-house__tiles { fill: none; stroke-dasharray: 6 6; stroke-width: 1.4; opacity: .6; }
+.hm-house__smoke { position: absolute; top: -34px; inset-inline-end: 21%; display: flex; flex-direction: column-reverse; align-items: center; color: var(--coral); pointer-events: none; }
+[dir="rtl"] .hm-house__smoke { inset-inline-end: auto; inset-inline-start: 21%; }
+.hm-house__smoke .ic { animation: hm-smoke 3.2s ease-in-out infinite; opacity: 0; }
+.hm-house__smoke .ic:nth-child(2) { animation-delay: 1.05s; }
+.hm-house__smoke .ic:nth-child(3) { animation-delay: 2.1s; }
+@keyframes hm-smoke { 0% { opacity: 0; translate: 0 10px; } 30% { opacity: .9; } 100% { opacity: 0; translate: 8px -22px; } }
+.hm-house__body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: -1px 14px 0; padding: 16px 14px 0; background: var(--card); border: 2.4px solid var(--ink); border-bottom: 0; }
+.hm-house__win { display: grid; justify-items: center; gap: 4px; text-decoration: none; color: var(--text); }
+.hm-house__glass { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1.1; color: var(--coral-deep); background: linear-gradient(var(--ink), var(--ink)) 50% 0 / 1.5px 100% no-repeat, linear-gradient(var(--ink), var(--ink)) 0 50% / 100% 1.5px no-repeat, color-mix(in srgb, var(--hl-yellow) 70%, var(--card)); border: 2px solid var(--ink); border-radius: 4px; box-shadow: inset 0 -6px 0 color-mix(in srgb, var(--hl-yellow) 40%, transparent); transition: background-color .25s, translate .2s; }
+.hm-house__glass .ic { padding: 3px; background: var(--card); border-radius: 50%; }
+.hm-house__glass::after { content: ''; position: absolute; inset-inline: -6px; bottom: -6px; height: 5px; background: var(--ink); border-radius: 2px; }
+.hm-house__win small { margin-top: 4px; font-size: .78rem; font-weight: 700; color: var(--muted); text-align: center; }
+.hm-house__win:hover .hm-house__glass { background-color: var(--hl-yellow); translate: 0 -2px; }
+.hm-house__win:hover small { color: var(--coral-deep); }
+.hm-house__door { align-self: end; display: grid; align-content: center; justify-items: center; gap: 2px; min-height: 92px; margin-top: 4px; padding: 10px 4px; text-align: center; text-decoration: none; color: #fff; background: var(--blue); border: 2px solid var(--ink); border-bottom: 0; border-radius: 40px 40px 0 0; position: relative; transition: background .25s; }
+.hm-house__door::after { content: ''; position: absolute; inset-inline-end: 9px; top: 54%; width: 7px; height: 7px; border-radius: 50%; background: var(--hl-yellow); border: 1.5px solid var(--ink); }
+.hm-house__door span { font-weight: 800; font-size: .9rem; }
+.hm-house__door small { font-size: .72rem; opacity: .85; }
+.hm-house__door:hover { background: var(--coral-deep); }
+.hm-house__mat { margin: 0; padding: 6px 0 0; text-align: center; font-size: .82rem; font-weight: 700; color: var(--muted); border-top: 2.4px solid var(--ink); }
+.hm-house__new { display: grid; gap: 12px; align-content: end; }
+.hm-house__new h3 { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0; padding-inline: 4px; font: 400 1.9rem/1.2 var(--f-hand); background: linear-gradient(transparent 50%, var(--hl-yellow) 50% 92%, transparent 92%); }
+:lang(ar) .hm-house__new h3 { font: 800 1.3rem/1.6 var(--f-body); }
+.hm-house__note { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; text-decoration: none; color: var(--text); background: color-mix(in srgb, var(--hl-lime) 45%, var(--card)); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--ink); rotate: calc((var(--k) - 1) * -1.2deg); transition: rotate .2s, translate .2s; }
+.hm-house__note:nth-of-type(2) { background: color-mix(in srgb, var(--hl-pink) 50%, var(--card)); }
+.hm-house__note:nth-of-type(3) { background: color-mix(in srgb, var(--hl-yellow) 55%, var(--card)); }
+.hm-house__note:hover { rotate: 0deg; translate: 0 -2px; }
+.hm-house__note .ic { margin-top: 3px; color: var(--coral-deep); }
+.hm-house__note span { display: grid; }
+.hm-house__note small { color: var(--muted); font-size: .82rem; }
+@media (prefers-reduced-motion: reduce) { .hm-house__smoke .ic { animation: none; opacity: .7; } }
+
 @media (prefers-reduced-motion: reduce) { .hm-snap { transition: none; } }

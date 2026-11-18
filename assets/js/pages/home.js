@@ -90,6 +90,33 @@ const GROUPS = [
 	{ id: 'you', ar: 'مناسباتنا', en: 'Occasions', ic: 'cake', top: ['birthday', 'calendar', 'firsts', 'gifts'] }
 ];
 
+/* the house itself, filling the row beside the last card: a drawn house with a window for every room
+   (each opens that room's first page), a door that opens a page at random, and the newest corners pinned beside it */
+const NEWEST = ['tickets', 'drawings', 'favorites'];
+const house = (page) => {
+	const rooms = GROUPS.map((g) => ({ g, p: page(g.top[0]) })).filter((r) => r.p);
+	const door = PAGES[Math.floor(Math.random() * PAGES.length)];
+	const win = ({ g, p }, k) => `<a class="hm-house__win" href="${p.href}" style="--k:${k}"><span class="hm-house__glass">${icon(g.ic, 20)}</span><small>${esc(L(g.ar, g.en))}</small></a>`;
+	const fresh = NEWEST.map(page).filter(Boolean);
+	return `<div class="hm-house reveal">
+		<div class="hm-house__home">
+			<span class="hm-house__smoke" aria-hidden="true">${icon('heart', 15)}${icon('heart', 12)}${icon('heart', 9)}</span>
+			<svg class="hm-house__roof" viewBox="0 0 300 96" preserveAspectRatio="none" aria-hidden="true"><path class="hm-house__chim" d="M214 47 V12 h24 v49" /><path d="M4 94 L150 6 L296 94" /><path class="hm-house__tiles" d="M64 68 h172 M104 44 h92 M134 26 h32" /></svg>
+			<div class="hm-house__body">
+				${rooms.slice(0, 3).map(win).join('')}
+				${rooms[3] ? win(rooms[3], 3) : '<i></i>'}
+				<a class="hm-house__door" href="${door.href}" title="${esc(L(door.ar, door.en))}"><span>${L('افتح الباب', 'Open the door')}</span><small>${L('صفحة مفاجأة', 'a surprise page')}</small></a>
+				${rooms[4] ? win(rooms[4], 4) : '<i></i>'}
+			</div>
+			<p class="hm-house__mat">${L(`${num(GROUPS.length)} أوض · ${num(PAGES.length)} ركن`, `${GROUPS.length} rooms · ${PAGES.length} corners`)}</p>
+		</div>
+		${fresh.length ? `<div class="hm-house__new">
+			<h3>${icon('star', 20)} ${L('جديد في البيت', 'New in the house')}</h3>
+			${fresh.map((p, k) => `<a class="hm-house__note" href="${p.href}" style="--k:${k}">${icon(p.ic, 18)}<span><b>${esc(L(p.ar, p.en))}</b><small>${esc(L(p.dar, p.den))}</small></span></a>`).join('')}
+		</div>` : ''}
+	</div>`;
+};
+
 /* one moment as a polaroid: photo, date on the white strip, title in hand */
 const snap = (x, p, cls = '') => `<a class="hm-snap ${cls}" href="moment.html?id=${esc(x.id)}">${img(p, '', 'hm-snap__img')}<span class="hm-snap__cap"><small>${esc(dateOf(x))}</small><b dir="auto">${T(x.title)}</b></span></a>`;
 
@@ -288,7 +315,7 @@ export default {
 					<ul>${top.map((p) => `<li><a href="${p.href}">${icon(p.ic, 18)}<span><b>${esc(L(p.ar, p.en))}</b><small>${esc(L(p.dar, p.den))}</small></span></a></li>`).join('')}</ul>
 					${all.length > top.length ? `<p class="hm-room__more">${L(`و${num(all.length - top.length)} صفحات تانية في القايمة فوق`, `and ${all.length - top.length} more in the menu above`)}</p>` : ''}
 				</div>`;
-			}).join('')}</div>
+			}).join('')}${house(page)}</div>
 		</div></section>
 
 		${s.poster ? `
