@@ -133,7 +133,14 @@ export default {
 			...(music.items || []).map((x) => ({ at: x.at, by: x.by, e: 'music', what: verb(x.by, 'ضاف أغنية', 'ضافت أغنية', 'added a song'), text: [x.title, x.artist].filter(Boolean).join(' — '), href: `music.html#${x.id}` })),
 			...(movies.items || []).map((x) => ({ at: x.at, by: x.by, e: 'popcorn', what: L('اتفرجنا على', 'we watched'), text: x.title, href: `movies.html#${x.id}` })),
 			...this.firsts.map((x) => ({ at: x.at, by: x.by, e: 'star', what: verb(x.by, 'سجّل أول مرة', 'سجّلت أول مرة', 'logged a first'), text: x.what, href: 'firsts.html' }))
-		].filter((x) => x.at).sort((a, b) => b.at - a.at).slice(0, 6);
+		].filter((x) => x.at).sort((a, b) => b.at - a.at).slice(0, 60)
+			// the same thing done by the same one on the same day folds into one line: «ضاف ٦ أغاني: …»
+			.reduce((out, x) => {
+				const p = out.at(-1), day = (ms) => new Date(ms).toDateString();
+				if (p && p.by === x.by && p.what === x.what && day(p.at) === day(x.at)) { p.more.push(x); if (x.text) p.texts.push(x.text); }
+				else out.push({ ...x, more: [], texts: x.text ? [x.text] : [] });
+				return out;
+			}, []).slice(0, 6);
 	},
 	render(s) {
 		const met = parseDate(s.met);
@@ -285,16 +292,38 @@ export default {
 		<section class="sec"><div class="wrap home-cols">
 			<div>
 				<h2 class="sec__title reveal">${L('آخر أخبارنا', 'What’s new with us')}</h2>
-				${feed.length ? `<ol class="feed">${feed.map((x) => `
-					<li class="reveal"><a href="${esc(x.href)}"><span class="feed__e" aria-hidden="true">${doodle(x.e, 26)}</span>
-						<span><span><b>${x.by ? name(x.by) : ''}</b> ${esc(x.what)}${x.text ? `: <q dir="auto">${esc(t(x.text).slice(0, 90))}</q>` : ''}</span><small>${ago(x.at)}</small></span></a></li>`).join('')}</ol>`
-					: `<p class="empty">${Y('لسه محدش كتب حاجة — ابدأ بصفحة في الدفتر ♥', 'لسه محدش كتب حاجة — ابدئي بصفحة في الدفتر ♥', 'Nothing added yet — start with a journal page ♥')}</p>`}
+				${feed.length ? (() => {
+					// a notepad clipped to the page: the days as stamped headings, each thing done as a line on it
+					let last = "";
+					return `<div class="hm-pad reveal"><span class="hm-pad__clip" aria-hidden="true"></span><ol class="hm-pad__list">${feed.map((x) => {
+						const d = ago(x.at), head = d !== last ? `<li class="hm-pad__day"><span>${d}</span></li>` : "";
+						last = d;
+						const n = x.more.length;
+						return `${head}<li class="hm-pad__ln"><a href="${esc(x.href)}"><span class="hm-pad__e" aria-hidden="true">${doodle(x.e, 22)}</span>
+							<span class="hm-pad__tx"><span><b>${x.by ? name(x.by) : ""}</b> ${esc(x.what)}${n ? ` <em class="hm-pad__n">×${num(n + 1)}</em>` : ""}</span>
+							${x.texts.length ? `<q dir="auto">${x.texts.slice(0, 3).map((q) => esc(t(q).slice(0, 48))).join(" · ")}</q>${x.texts.length > 3 ? `<small class="hm-pad__more">${L(`و${num(x.texts.length - 3)} كمان`, `and ${x.texts.length - 3} more`)}</small>` : ""}` : ""}</span></a></li>`;
+					}).join("")}</ol></div>`;
+				})()
+					: `<p class="empty">${Y("لسه محدش كتب حاجة — ابدأ بصفحة في الدفتر ♥", "لسه محدش كتب حاجة — ابدئي بصفحة في الدفتر ♥", "Nothing added yet — start with a journal page ♥")}</p>`}
 			</div>
 			<div>
-				<h2 class="sec__title reveal">${L('جاي قريب', 'Coming up')}</h2>
-				<ul class="coming">${occ.slice(0, 5).map((o) => `
-					<li class="reveal"><a href="${occHref(o)}"><span class="feed__e" aria-hidden="true">${doodle(o.emoji, 26)}</span><span><b>${esc(o.title)}</b><small>${fmtDate(o.date).slice(0, 5)} · ${esc(o.sub)}</small></span>
-						<em>${o.days === 0 ? L('النهارده', 'today') : L(`${num(o.days)} يوم`, `${o.days} days`)}</em></a></li>`).join('')}</ul>
+				<h2 class="sec__title reveal">${L("جاي قريب", "Coming up")}</h2>
+				${occ.length ? (() => {
+					// the nearest one as a big countdown, the rest as torn calendar leaves on a string
+					const leaf = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return d; };
+					const mon = (d) => new Intl.DateTimeFormat(App.lang === "ar" ? "ar-EG" : "en-GB", { month: "short" }).format(d);
+					const [o, ...rest] = occ.slice(0, 5), d0 = leaf(o);
+					return `<a class="hm-count reveal" href="${occHref(o)}">
+						<span class="hm-count__e" aria-hidden="true">${doodle(o.emoji, 30)}</span>
+						<span class="hm-count__tx"><small>${L("اللي جاي", "Next up")}</small><b>${esc(o.title)}</b><small>${num(d0.getDate())} ${esc(mon(d0))} · ${esc(o.sub)}</small></span>
+						<span class="hm-count__n">${o.days === 0 ? `<b>♥</b><small>${L("النهارده", "today")}</small>` : `<b>${num(o.days)}</b><small>${L("يوم", o.days === 1 ? "day" : "days")}</small>`}</span>
+					</a>
+					<ul class="hm-leaves">${rest.map((x, k) => { const d = leaf(x); return `<li class="reveal" style="--k:${k}"><a href="${occHref(x)}">
+						<span class="hm-leaf" aria-hidden="true"><small>${esc(mon(d))}</small><b>${num(d.getDate())}</b></span>
+						<span class="hm-leaves__tx"><b>${esc(x.title)}</b><small>${esc(x.sub)}</small></span>
+						<em>${L(`بعد ${num(x.days)} يوم`, `in ${x.days} days`)}</em>
+					</a></li>`; }).join("")}</ul>`;
+				})() : ""}
 			</div>
 		</div></section>
 
