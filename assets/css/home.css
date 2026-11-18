@@ -14,6 +14,8 @@
 /* ---- the hero: the title with our photos scattered round it ---- */
 .hm-hero { position: relative; overflow: hidden; isolation: isolate; }
 .hm-hero > :not(.hm-hero__snaps) { position: relative; z-index: 2; }
+/* the arrow sits under the «since» line, centred, not beside it */
+.hm-hero > .scroll-cue { left: auto; bottom: auto; translate: none; justify-self: center; margin-top: 26px; line-height: 1; }
 .hm-hero__since { margin: 14px 0 0; padding: 0 10px; font-weight: 800; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-lime) 45% 92%, transparent 92%); }
 .hm-hero__snaps { display: contents; }
 .hm-hero .hm-snap { position: absolute; z-index: 1; width: clamp(130px, 13vw, 190px); pointer-events: auto; }

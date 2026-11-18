@@ -490,8 +490,8 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 	.mega-nights .mg-kind-e { font-size: 2.4rem; }
 	/* مناسباتنا: the numbers card as the big picture */
 	/* مناسباتنا: the pages in four columns, the numbers as a small card beside them */
-	.mega-you .mega-in { grid-template-columns: minmax(0, 1fr) 210px !important; }
-	.mega-you .mega-in > .mg-list { grid-column: 1; grid-row: 1; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+	.mega-you .mega-in { grid-template-columns: minmax(0, 1fr) 210px 180px !important; column-gap: 26px; }
+	.mega-you .mega-in > .mg-list { grid-column: 1; grid-row: 1; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 	.mega-you .mega-in > .mg-data.mg-data { grid-column: 2; grid-row: 1; align-self: start; min-height: 0; gap: 2px; padding: 34px 14px 14px; rotate: -1deg; }
 	.mega-you .mg-data .mg-new { top: 10px; font-size: 1.05rem; }
 	:lang(ar) .mega-you .mg-data .mg-new { font-size: .8rem; }
@@ -546,7 +546,21 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 
 	/* مناسباتنا: a desk calendar torn to the next occasion (shell.js calendarHTML) */
 	.mega-you .mega-in > .mg-list { grid-row: 1 / span 2; }
-	.mega-you .mega-in > .mg-cal { grid-column: 2; grid-row: 2; position: relative; display: block; margin: 18px 6px 6px; text-decoration: none; color: #2b2b33; }
+	.mega-you .mega-in > .mg-cal { grid-column: 3; grid-row: 1; align-self: start; position: relative; display: block; margin: 14px 6px 6px; text-decoration: none; color: #2b2b33; }
+	.mega-you .mega-in > .mg-tags { grid-column: 2 / 4; grid-row: 2; }
+	.mg-tags { position: relative; padding-top: 4px; }
+	.mg-tags-h { margin: 0 0 4px; width: fit-content; padding-inline: .3em; font: 400 1.2rem var(--f-label); letter-spacing: .05em; background: linear-gradient(transparent 45%, var(--hl-pink) 45% 92%, transparent 92%); }
+	:lang(ar) .mg-tags-h { font: 800 .85rem/1.6 var(--f-body); }
+	.mg-tags-row { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; padding-top: 16px; }
+	.mg-tags-row::before { content: ""; position: absolute; top: 4px; inset-inline: -4px; height: 10px; border-top: 1.5px dashed #b9a99a; border-radius: 50%; }
+	.mg-tag { position: relative; display: grid; justify-items: center; gap: 2px; padding: 16px 6px 9px; text-align: center; text-decoration: none; color: #2b2b33; background: #fff6df; border: 1.5px solid #37353f; border-radius: 4px;
+		clip-path: polygon(22% 0, 78% 0, 100% 14%, 100% 100%, 0 100%, 0 14%); rotate: calc((var(--i) % 2 * 2 - 1) * 3deg); transform-origin: 50% 0; transition: rotate .25s; }
+	.mg-tag:nth-child(2) { background: #ffe3e4; } .mg-tag:nth-child(3) { background: #eef4d2; } .mg-tag:nth-child(4) { background: #e1eef5; }
+	.mg-tag::before { content: ""; position: absolute; top: 5px; left: 50%; width: 7px; height: 7px; translate: -50% 0; border-radius: 50%; background: var(--paper, #faf7f2); border: 1.5px solid #37353f; }
+	.mg-tag:hover { rotate: 0deg; }
+	.mg-tag-e { color: var(--coral-deep); }
+	.mg-tag b { font-size: .74rem; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+	.mg-tag small { font-size: .64rem; color: #6b6b75; }
 	.mg-cal-back { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 6px; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px;
 		translate: calc(var(--bujo-x) * var(--n) * 6px) calc(var(--n) * -7px); rotate: calc(var(--n) * 2.5deg); z-index: calc(3 - var(--n)); }
 	.mg-cal-back small { font-size: .62rem; color: #8a8792; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

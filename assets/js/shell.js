@@ -713,7 +713,8 @@ function megaHTML(s) {
 			<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
 			<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
 		</a>
-		${calendarHTML(s)}`);
+		${calendarHTML(s)}
+		${nextTagsHTML(s)}`);
 
 	// ليالينا — the four draws as coloured cards, then the songs and the rest of the evenings.
 	const kind = qs('k');
@@ -808,6 +809,24 @@ function calendarHTML(s) {
 			<span class="mg-cal-left${o.days === 0 ? ' is-today' : ''}">${left}</span>
 		</span>
 	</a>`;
+}
+
+/* مناسباتنا, under the calendar: the occasions after the next one, as gift tags on a string — what it is, the date,
+   and how long is left */
+function nextTagsHTML(s) {
+	const after = occasions(s).slice(1, 5);
+	if (!after.length) return '';
+	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	const day = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return new Intl.DateTimeFormat(loc, { day: 'numeric', month: 'short' }).format(d); };
+	const href = (o) => (o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html');
+	return `<div class="mg-tags">
+		<p class="mg-tags-h">${L('وبعدها', 'And after that')}</p>
+		<div class="mg-tags-row">${after.map((o, i) => `<a class="mg-tag" href="${href(o)}" style="--i:${i}">
+			<span class="mg-tag-e" aria-hidden="true">${doodle(o.emoji, 20)}</span>
+			<b>${esc(o.title)}</b>
+			<small>${day(o)} · ${L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`)}</small>
+		</a>`).join('')}</div>
+	</div>`;
 }
 
 /* the album polaroid in ذكرياتنا: any photo from the album, a different one each time */
