@@ -140,6 +140,7 @@
 .ft-maker { border-top: 2px dashed var(--line); padding-top: 16px; }
 .ft-copy { margin: 0; font-size: 0.9rem; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .owl { display: inline-block; white-space: pre; font: 0.62rem/1.05 ui-monospace, Consolas, monospace; color: var(--coral-deep); direction: ltr; unicode-bidi: isolate; }
+.ft-copy .orca { direction: ltr; unicode-bidi: isolate; }
 .ft-heart { color: #f9812e; display: inline-flex; vertical-align: middle; }
 .ft-end { text-align: center; margin: 0; padding: 22px var(--gutter) calc(22px + var(--safe-b)); font: 1.6rem/1.4 var(--f-hand); color: var(--blue); }
 .ft-end span { color: var(--coral); }

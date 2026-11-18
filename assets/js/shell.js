@@ -977,7 +977,7 @@ function renderChrome() {
 		location.href = 'index.html';
 	};
 	pwaChrome();
-	owl();
+	pet(footer);
 }
 
 /* The footer: the four of us as the river stones from the portrait Sameh made for Esraa, sitting together on a dune
@@ -1131,11 +1131,33 @@ function footerHTML(s) {
 		${col(L('عيلتنا ومناسباتنا', 'Family & occasions'), [...g('family'), ...g('you'), ...g('app')])}
 		<div class="ft-maker">
 			${App.lang === 'ar'
-				? `<p class="ft-copy" dir="rtl">حقوق النشر @${new Date().getFullYear()}، <span class="ascii owl" aria-hidden="true">,___,\n[o,o]\n/)__)\n~"--"~</span>كل الحب محفوظ. <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
-				: `<p class="ft-copy" dir="ltr">Copyright @${new Date().getFullYear()}, <span class="ascii owl" aria-hidden="true">,___,\n[o,o]\n/)__)\n~"--"~</span>All love reserved. <span>Crafted with <span class="ft-heart">${doodle('heart', 16)}</span> Sameh Bilal</span></p>`}
+				? `<p class="ft-copy" dir="rtl">حقوق النشر @${new Date().getFullYear()}، ${petHTML()}كل الحب محفوظ. <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
+				: `<p class="ft-copy" dir="ltr">Copyright @${new Date().getFullYear()}, ${petHTML()}All love reserved. <span>Crafted with <span class="ft-heart">${doodle('heart', 16)}</span> Sameh Bilal</span></p>`}
 		</div>
 	</div>
 	<p class="ft-end">${T(s.closing)} <span aria-hidden="true">♥</span></p></div>`;
+}
+
+/* the footer pet, as on Sameh's portfolio: on each visit the ASCII orca (3 in 4) or the owl (1 in 4).
+   The orca (orca.js, from the portfolio) loads only when it's picked; when the footer is drawn again (moving between
+   pages while a song plays) the same swimming orca is moved into the new footer; if orca.js fails, the owl stays. */
+let PET = Math.random() < 0.75 ? 'orca' : 'owl';
+let orcaEl = null;
+const OWL_HTML = '<span class="ascii owl" aria-hidden="true">,___,\n[o,o]\n/)__)\n~"--"~</span>';
+const petHTML = () => (PET === 'orca' ? '<span class="ascii orca" data-len="34" aria-hidden="true"></span>' : OWL_HTML);
+function pet(footer) {
+	if (PET === 'owl') return owl();
+	const spot = $('.orca', footer);
+	if (!spot) return;
+	if (orcaEl) return spot.replaceWith(orcaEl);
+	const toOwl = () => { PET = 'owl'; const el = $('.site-footer .orca'); if (el) el.outerHTML = OWL_HTML; owl(); };
+	const mount = () => { const el = $('.site-footer .orca'); if (!el || !window.AsciiOrca) return toOwl(); orcaEl = el; window.AsciiOrca.mount([el]); };
+	if (window.AsciiOrca) return mount();
+	const sc = document.createElement('script');
+	sc.src = new URL('orca.js', import.meta.url).href;
+	sc.onload = mount;
+	sc.onerror = toOwl;
+	document.head.append(sc);
 }
 
 /* the footer owl (from Sameh's portfolio): blinks while idle, glances when the page scrolls */
