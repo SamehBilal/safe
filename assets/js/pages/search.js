@@ -87,6 +87,45 @@ async function build(s) {
 	return out;
 }
 
+/* Searching by date. Day first, the way we write dates: 12-10-2017, 12/10/2017, 12.10.2017, ١٢-١٠-٢٠١٧, 2017-10-12,
+   «12 أكتوبر 2017», «October 2017», 10-2017, 2017 — or a day in every year: 12-10, «14 يوليو». Any other words
+   typed with the date narrow it down («2017 كورنيش»). Returns { label, test(iso), exact, rest } or null. */
+const MONTHS = [
+	['يناير', 'jan', 'january'], ['فبراير', 'feb', 'february'], ['مارس', 'mar', 'march'], ['ابريل', 'apr', 'april'],
+	['مايو', 'may'], ['يونيو', 'يونيه', 'jun', 'june'], ['يوليو', 'يوليه', 'jul', 'july'], ['اغسطس', 'aug', 'august'],
+	['سبتمبر', 'sep', 'sept', 'september'], ['اكتوبر', 'oct', 'october'], ['نوفمبر', 'nov', 'november'], ['ديسمبر', 'dec', 'december']
+];
+const MONTH_OF = new Map(MONTHS.flatMap((names, i) => names.map((n) => [n, i + 1])));
+const MONTH_RE = [...MONTH_OF.keys()].sort((a, b) => b.length - a.length).join('|');
+const MONTH_NAME = (m) => L(MONTHS[m - 1][0].replace('ابريل', 'أبريل').replace('اغسطس', 'أغسطس').replace('اكتوبر', 'أكتوبر'), MONTHS[m - 1].at(-1)[0].toUpperCase() + MONTHS[m - 1].at(-1).slice(1));
+export function dateQuery(q) {
+	const s = ` ${fold(q).replace(/[،,]/g, ' ').replace(/\s+/g, ' ').trim()} `;
+	const pad = (n) => String(n).padStart(2, '0');
+	const full = (y) => (String(y).length === 2 ? `20${y}` : String(y));
+	const day = (d, m) => d >= 1 && d <= 31 && m >= 1 && m <= 12;
+	const out = (found, y, m, d) => {
+		const rest = s.replace(found, ' ').trim();
+		if (y && m && d && new Date(Date.UTC(+y, m - 1, d)).getUTCDate() !== d) return null; // 31 February
+		if (y && m && d) { const iso = `${y}-${pad(m)}-${pad(d)}`; return { label: `${d} ${MONTH_NAME(m)} ${y}`, iso, exact: true, rest, test: (x) => String(x).slice(0, 10) === iso }; }
+		if (y && m) { const p = `${y}-${pad(m)}`; return { label: `${MONTH_NAME(m)} ${y}`, rest, test: (x) => String(x).startsWith(p) }; }
+		if (m && d) { const p = `-${pad(m)}-${pad(d)}`; return { label: `${d} ${MONTH_NAME(m)} ${L('(كل سنة)', '(every year)')}`, rest, test: (x) => String(x).slice(4, 10) === p }; }
+		return { label: String(y), rest, test: (x) => String(x).startsWith(y + '-') };
+	};
+	let m;
+	if ((m = s.match(/ (\d{4})[-/.](\d{1,2})[-/.](\d{1,2}) /)) && day(+m[3], +m[2])) return out(m[0], m[1], +m[2], +m[3]);
+	if ((m = s.match(/ (\d{1,2})[-/.](\d{1,2})[-/.](\d{4}|\d{2}) /)) && day(+m[1], +m[2])) return out(m[0], full(m[3]), +m[2], +m[1]);
+	if ((m = s.match(/ (\d{4})[-/.](\d{1,2}) /)) && +m[2] >= 1 && +m[2] <= 12) return out(m[0], m[1], +m[2]);
+	if ((m = s.match(/ (\d{1,2})[-/.](\d{4}) /)) && +m[1] >= 1 && +m[1] <= 12) return out(m[0], m[2], +m[1]);
+	if ((m = s.match(/ (\d{1,2})[-/.](\d{1,2}) /)) && day(+m[1], +m[2])) return out(m[0], 0, +m[2], +m[1]);
+	if ((m = s.match(new RegExp(` (?:(\\d{1,2}) )?(${MONTH_RE})(?: (\\d{4}))? `)))) {
+		const mo = MONTH_OF.get(m[2]), d = m[1] ? +m[1] : 0;
+		if (m[3] || d) return out(m[0], m[3] || 0, mo, d && day(d, mo) ? d : 0);
+		return null; // a month on its own is too often just a word
+	}
+	if ((m = s.match(/ ((?:19|20)\d\d) /))) return out(m[0], m[1]);
+	return null;
+}
+
 /* Score: every word must be found; the title counts most, then how early and how whole the match is. */
 function search(q) {
 	const words = fold(q).split(/\s+/).filter((w) => w.length >= 1);
@@ -166,17 +205,43 @@ const hrefWith = (href, title) => `${href}#find=${encodeURIComponent(title.slice
 function resultsHTML(q) {
 	const query = q.trim();
 	if (fold(query).replace(/\s/g, '').length < MIN) return startHTML();
+	const dq = dateQuery(query);
+	if (dq) return dateHTML(dq);
 	const hits = search(query);
 	if (!hits.length) {
 		return `<div class="sr-none reveal">${doodle('eyes', 64)}
 			<p><b>${L('مالقيناش', 'Nothing found for')} «${esc(query)}»</b></p>
 			<p>${Y('جرّب كلمة تانية، أو جزء من الكلمة', 'جرّبي كلمة تانية، أو جزء من الكلمة', 'Try another word, or just part of one')}</p></div>`;
 	}
+	return listHTML(hits, query, `<p class="sr-count" role="status">${num(hits.length)} ${hits.length === 1 ? L('نتيجة', 'result') : L('نتيجة', 'results')} ${L('لـ', 'for')} «${esc(query)}»</p>`);
+}
+
+/* Everything on a date (or in a month, a year, or on a day in every year), oldest first. An exact day with nothing
+   on it shows the closest moments of our story before and after it instead. */
+function dateHTML(dq) {
+	const words = dq.rest.split(/\s+/).filter(Boolean);
+	const hits = index.filter((r) => r.date && dq.test(r.date) && words.every((w) => r.hay.includes(w)))
+		.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+	const what = `${esc(dq.label)}${words.length ? ` · «${esc(dq.rest)}»` : ''}`;
+	if (hits.length) return listHTML(hits, dq.rest, `<p class="sr-count" role="status">${doodle('calendar', 22)} ${num(hits.length)} ${hits.length === 1 ? L('حاجة', 'thing') : L('حاجة', 'things')} — ${what}</p>`);
+	if (dq.exact && !words.length) {
+		const day = Date.parse(dq.iso);
+		const near = index.filter((r) => r.page === 'story' && r.date).map((r) => ({ r, d: Date.parse(String(r.date).slice(0, 10)) - day }))
+			.sort((a, b) => Math.abs(a.d) - Math.abs(b.d)).slice(0, 4).map((x) => x.r).sort((a, b) => String(a.date).localeCompare(String(b.date)));
+		if (near.length) return listHTML(near, '', `<p class="sr-count" role="status">${doodle('calendar', 22)} ${L('مفيش حاجة مكتوبة يوم', 'Nothing written on')} ${what} — ${L('دي أقرب ذكريات ليه', 'here are the closest moments')}</p>`);
+	}
+	return `<div class="sr-none reveal">${doodle('calendar', 64)}
+		<p><b>${L('مفيش حاجة في', 'Nothing on')} ${what}</b></p>
+		<p>${Y('جرّب شهر أو سنة بس، زي «أكتوبر 2017» أو «2017»', 'جرّبي شهر أو سنة بس، زي «أكتوبر 2017» أو «2017»', 'Try just a month or a year, like “October 2017” or “2017”')}</p></div>`;
+}
+
+/* results grouped by page, the found words marked */
+function listHTML(hits, query, countLine) {
 	const groups = new Map();
 	for (const r of hits) { if (!groups.has(r.page)) groups.set(r.page, []); groups.get(r.page).push(r); }
 	const order = [...groups.keys()];
 	const chips = `<nav class="sr-jump" aria-label="${L('النتايج حسب الصفحة', 'Results by page')}">${order.map((g) => `<a href="#sr-${esc(g)}">${icon(groupIcon(g), 16)}<span>${esc(groupName(g))}</span><b>${num(groups.get(g).length)}</b></a>`).join('')}</nav>`;
-	return `<p class="sr-count" role="status">${num(hits.length)} ${hits.length === 1 ? L('نتيجة', 'result') : L('نتيجة', 'results')} ${L('لـ', 'for')} «${esc(query)}»</p>
+	return `${countLine}
 		${order.length > 1 ? chips : ''}
 		${order.map((g) => {
 			const list = groups.get(g);
@@ -201,9 +266,13 @@ function resultsHTML(q) {
 function startHTML() {
 	const r = recent();
 	const ideas = [L('عيد ميلاد', 'birthday'), L('رحلة', 'trip'), L('أغنية', 'song'), L('أول مرة', 'first'), L('فيلم', 'film'), L('بحبك', 'love')];
+	// a date with something on it, a month, and today's day in every year
+	const now = new Date();
+	const dates = ['12-10-2017', L('أكتوبر 2017', 'October 2017'), `${now.getDate()}-${now.getMonth() + 1}`];
 	return `<div class="sr-start">
 		${r.length ? `<div class="sr-chips"><p>${L('دوّرت عليهم قبل كده', 'Searched before')}</p>${r.map((q) => `<button type="button" class="sr-chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}<button type="button" class="sr-chip sr-chip--clear" data-clear>${L('امسح', 'Clear')}</button></div>` : ''}
 		<div class="sr-chips"><p>${Y('جرّب', 'جرّبي', 'Try')}</p>${ideas.map((q) => `<button type="button" class="sr-chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+		<div class="sr-chips"><p>${L('أو بالتاريخ', 'Or by date')}</p>${dates.map((q) => `<button type="button" class="sr-chip" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>
 	</div>`;
 }
 
