@@ -1312,3 +1312,81 @@ button.cal-d { transition: scale 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 
 button.cal-d.is-tip { scale: 0.9; background: var(--k); color: #fff; }
 @media (hover: none) { .ctip { display: none; } }
 @media (prefers-reduced-motion: reduce) { button.cal-d { transition: none; } }
+
+/* ---------- «جاي قريب»: the next day pinned up as a polaroid with its countdown stamped beside it, the ones after it as
+   ticket stubs (a torn-off calendar page, the words, a little photo, the days to go stamped on the end) ---------- */
+.cal-up { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 26px 30px; align-items: start; margin-bottom: 30px; }
+.cal-snap { position: relative; display: grid; place-items: center; flex: none; overflow: hidden; background: #fffdf8; border: 1.5px solid var(--ink, #37353f); box-shadow: 2px 3px 0 rgba(30, 20, 10, 0.18); }
+.cal-snap img, .cal-snap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cal-snap.is-ic { color: #fff; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--k) 65%, #fff), var(--k)); }
+.cal-snap__ic { display: grid; place-items: center; }
+/* the next one: a polaroid taped to the page */
+.cal-hero { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 14px 16px; align-items: start; padding: 18px 18px 20px; color: var(--text); text-decoration: none; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--k) 70%, transparent); rotate: -1deg; transition: rotate 0.3s, translate 0.2s; }
+a.cal-hero:hover { rotate: 0deg; translate: 0 -3px; }
+.cal-snap--big { grid-column: 1 / -1; width: 100%; aspect-ratio: 4 / 3; padding: 10px 10px 34px; overflow: visible; rotate: 1.5deg; border-radius: 3px; }
+.cal-snap--big img, .cal-snap--big video { border: 1px solid rgba(0, 0, 0, 0.08); }
+.cal-snap--big.is-ic { padding: 0; border-radius: 3px; }
+.cal-snap__tape { position: absolute; z-index: 2; top: -11px; left: 50%; width: 92px; height: 24px; translate: -50% 0; rotate: -3deg; background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--k) 45%, transparent) 0 7px, transparent 7px 14px), rgba(255, 236, 170, 0.92); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); }
+.cal-hero__tx { display: grid; gap: 4px; min-width: 0; }
+.cal-hero__kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 400 1.05rem/1 var(--f-label); letter-spacing: 0.08em; color: var(--muted); }
+:lang(ar) .cal-hero__kicker { font: 800 0.8rem/1.4 var(--f-body); letter-spacing: 0; }
+.cal-hero__t { font: 400 clamp(1.6rem, 3.4vw, 2.1rem)/1.2 var(--f-script); color: var(--blue); }
+.cal-hero__s { font: 600 1.35rem/1.2 var(--f-hand); color: color-mix(in srgb, var(--k) 75%, var(--text)); }
+:lang(ar) .cal-hero__s { font: 700 0.95rem/1.5 var(--f-body); }
+.cal-hero__when { font-weight: 800; font-size: 0.9rem; }
+/* the countdown, stamped in ink */
+.cal-stamp { display: grid; place-items: center; align-content: center; width: 96px; height: 96px; margin-top: 4px; color: var(--k); border: 3px double var(--k); border-radius: 50%; rotate: 12deg; text-align: center; mask: radial-gradient(circle at 30% 40%, #000 60%, rgba(0, 0, 0, 0.75)); }
+.cal-stamp b { font: 400 2.5rem/0.9 var(--f-label); }
+.cal-stamp small { font: 400 0.95rem/1 var(--f-label); letter-spacing: 0.1em; text-transform: uppercase; }
+:lang(ar) .cal-stamp small { font: 800 0.78rem/1.3 var(--f-body); }
+.cal-tag { display: inline-block; padding: 1px 9px; font: 800 0.7rem/1.6 var(--f-body); letter-spacing: 0; color: #fff; background: var(--k); border-radius: 999px; }
+/* the rest: ticket stubs */
+.cal-stubs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; margin: 0; padding: 0; list-style: none; }
+.cal-stub { display: flex; align-items: center; gap: 12px; height: 100%; padding: 10px 12px 10px 10px; color: var(--text); text-decoration: none; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 10px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 color-mix(in srgb, var(--k) 65%, transparent); transition: translate 0.15s, box-shadow 0.15s; }
+.cal-stubs li:nth-child(odd) .cal-stub { rotate: 0.5deg; }
+.cal-stubs li:nth-child(even) .cal-stub { rotate: -0.6deg; }
+a.cal-stub:hover { translate: calc(var(--bujo-x, 1) * -2px) -2px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--k) 65%, transparent); }
+.cal-stub__pg, .cal-pop__pg { flex: none; display: grid; justify-items: center; width: 52px; overflow: hidden; color: #2b2b33; background: #fffdf8; border: 1.5px solid var(--ink, #37353f); border-radius: 5px 5px 9px 9px; }
+.cal-stub__pg small, .cal-pop__pg small { width: 100%; padding: 1px 0; text-align: center; color: #fff; background: var(--k); font: 800 0.62rem/1.5 var(--f-body); }
+.cal-stub__pg b, .cal-pop__pg b { padding: 2px 0 3px; font: 400 1.75rem/1 var(--f-label); }
+.cal-stub__tx { flex: 1; min-width: 0; display: grid; }
+.cal-stub__tx b { font-weight: 800; font-size: 0.95rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cal-stub__tx small { font: 600 1.1rem/1.15 var(--f-hand); color: var(--muted); }
+:lang(ar) .cal-stub__tx small { font: 700 0.75rem/1.5 var(--f-body); }
+.cal-snap--sm { width: 42px; height: 42px; border-radius: 50%; border-width: 2px; border-color: #fffdf8; box-shadow: 0 0 0 1.5px var(--ink, #37353f); }
+/* the days to go, on the torn end of the stub */
+.cal-stub__in { flex: none; align-self: stretch; display: grid; place-items: center; min-width: 58px; margin-block: -10px; margin-inline-end: -12px; padding: 0 8px; font-style: normal; font: 400 1rem/1.05 var(--f-label); letter-spacing: 0.05em; text-align: center; color: var(--k); border-inline-start: 2px dashed color-mix(in srgb, var(--ink, #37353f) 35%, transparent); }
+:lang(ar) .cal-stub__in { font: 800 0.75rem/1.35 var(--f-body); }
+@media (max-width: 960px) { .cal-up { grid-template-columns: 1fr; } .cal-hero { max-width: 560px; justify-self: center; width: 100%; } }
+@media (max-width: 640px) { .cal-stubs { grid-template-columns: 1fr; } .cal-stamp { width: 80px; height: 80px; } .cal-stamp b { font-size: 2rem; } }
+
+/* ---------- a day's window: torn off the calendar, each thing that day with its photo and a way into its page ---------- */
+.cal-pop { width: min(560px, 100vw - 24px); }
+.cal-pop .cmodal__in { box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--k) 60%, transparent), 0 20px 50px rgba(0, 0, 0, 0.25); }
+.cal-pop .cmodal__in::before { content: ''; position: absolute; z-index: 3; top: -12px; left: 50%; width: 110px; height: 26px; translate: -50% 0; rotate: 2deg; background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--k) 45%, transparent) 0 7px, transparent 7px 14px), rgba(255, 236, 170, 0.92); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); pointer-events: none; }
+.cal-pop .cmodal__in { overflow: visible; }
+.cal-pop__list { overflow: auto; max-height: min(70svh, 700px); border-radius: 0 0 var(--sketch, 18px) var(--sketch, 18px); }
+.cal-pop__hd { padding: 18px 18px 14px; }
+.cal-pop__pg { rotate: -4deg; }
+.cal-pop__hd h2 { display: grid; gap: 2px; }
+.cal-pop__w { font: 400 1.7rem/1.15 var(--f-script); color: var(--blue); }
+:lang(ar) .cal-pop__w { font: 400 1.6rem/1.3 var(--f-script); }
+.cal-pop__hd h2 em { font-style: normal; font: 800 0.85rem/1.3 var(--f-body); color: var(--coral-deep); }
+.cal-pop__list { display: grid; gap: 12px; margin: 0; padding: 16px 18px 20px; list-style: none; }
+.cal-pop__list li { animation: cal-ev-in 0.45s cubic-bezier(0.34, 1.4, 0.5, 1) calc(0.08s + var(--i) * 0.07s) backwards; }
+@keyframes cal-ev-in { from { opacity: 0; translate: 0 14px; } }
+.cal-ev { display: flex; align-items: center; gap: 14px; padding: 10px 12px; color: var(--text); text-decoration: none; background: color-mix(in srgb, var(--k) 8%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-radius: 12px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 color-mix(in srgb, var(--k) 60%, transparent); transition: translate 0.15s; }
+a.cal-ev:hover { translate: calc(var(--bujo-x, 1) * -2px) -2px; }
+.cal-snap--md { width: 76px; height: 76px; padding: 5px 5px 14px; border-radius: 2px; rotate: -3deg; }
+.cal-ev:nth-child(1) .cal-snap--md { rotate: -3deg; }
+.cal-pop__list li:nth-child(even) .cal-snap--md { rotate: 3deg; }
+.cal-snap--md.is-ic { padding: 0; border-radius: 10px; }
+.cal-ev__tx { flex: 1; min-width: 0; display: grid; justify-items: start; gap: 3px; }
+.cal-ev__tx b { font-weight: 800; line-height: 1.3; }
+.cal-ev__tx small { font: 600 1.15rem/1.15 var(--f-hand); color: var(--muted); }
+:lang(ar) .cal-ev__tx small { font: 700 0.78rem/1.5 var(--f-body); }
+.cal-ev__go { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 5px 12px; font-weight: 800; font-size: 0.82rem; color: #fff; background: var(--k); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
+a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
+.cal-ev__go i { font-style: normal; transition: translate 0.2s; }
+@media (max-width: 600px) { .cal-pop { width: 100vw; } .cal-ev__go { padding: 5px 9px; } .cal-snap--md { width: 62px; height: 62px; } }
+@media (prefers-reduced-motion: reduce) { .cal-pop__list li { animation: none; } .cal-hero, .cal-stub { transition: none; } }
