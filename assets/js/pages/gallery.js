@@ -1,4 +1,5 @@
-import { L, Y, T, esc, img, pageHead, related, App, $, $$, REDUCE, hydrate } from '../shell.js';
+import { L, Y, T, esc, img, pageHead, related, App, $, $$, REDUCE, hydrate, icon } from '../shell.js';
+import { fold } from './search.js';
 
 /* Our photos in piles, after Codrops' «Adaptive Thumbnail Pile Effect» (Stapel, demo 3: a wide gutter, a little delay
    between photos and a random tilt). Every album, and every place on the map, is a pile of its photos with the top
@@ -35,6 +36,10 @@ export default {
 				<h2 class="tp-bar__h">${L('صورنا', 'Our photos')}</h2>
 				<p class="tp-bar__name" id="tp-name" aria-live="polite"></p>
 			</div>
+			<div class="tp-find" id="tp-find" role="search">
+				<label class="tp-find__field">${icon('search', 20)}<input id="tp-q" type="search" autocomplete="off" spellcheck="false" dir="auto" placeholder="${esc(Y('دوّر في الألبومات… «ستاربكس»، «2017»، «فهد»', 'دوّري في الألبومات… «ستاربكس»، «2017»، «فهد»', 'Search the albums… “Starbucks”, “2017”, “Fahd”'))}" aria-label="${esc(L('دوّر في الألبومات', 'Search the albums'))}"></label>
+				<p class="tp-find__n" id="tp-n" aria-live="polite"></p>
+			</div>
 			<ul class="tp" id="tp" aria-label="${L('كوم الصور', 'Piles of photos')}">${ps.map((p, k) => p.items.map((it, i) => {
 				const top = i === p.items.length - 1, show = i >= p.items.length - 3;
 				const pic = img(it.photo, it.caption || p.name, 'tp__img');
@@ -59,6 +64,16 @@ export default {
 		const rtl = () => document.documentElement.dir === 'rtl';
 		const DELAY = REDUCE ? 0 : 50, SPEED = REDUCE ? 0 : 400, ANGLE = 5;
 		let open = -1, size = 0, gutter = 0, spot = [];
+		// the piles the search leaves on the table (all of them with nothing typed), in their order
+		let shown = ps.map((_, k) => k);
+		const hay = ps.map((p) => fold([p.name, ...p.items.map((it) => it.caption || '')].join(' ')));
+		const bar = $('.tp-bar', main), find = $('#tp-find', main), q = $('#tp-q', main), count = $('#tp-n', main);
+		// up to the album's bar, under the sticky header, so a spread pile starts with its first photo
+		const toTop = () => {
+			const hd = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hd')) || 70;
+			const y = bar.getBoundingClientRect().top + scrollY - hd - 12;
+			if (Math.abs(scrollY - y) > 4) scrollTo({ top: y, behavior: REDUCE ? 'auto' : 'smooth' });
+		};
 		const byPile = (k) => items.filter((el) => +el.dataset.pile === k);
 		const tilt = () => Math.floor(Math.random() * 11) - 5;
 
@@ -74,7 +89,8 @@ export default {
 				const x = pad + c * (size + gutter);
 				return { x: rtl() ? W - x - size : x, y: r * (size + gutter) };
 			};
-			spot = ps.map((_, k) => at(k));
+			spot = ps.map(() => at(0));
+			shown.forEach((k, j) => { spot[k] = at(j); });
 			return { at, cols };
 		}
 
@@ -96,7 +112,7 @@ export default {
 				}
 				if (!animate) { void el.offsetWidth; el.style.transition = ''; }
 			}
-			const rows = open >= 0 ? Math.ceil(ps[open].items.length / measure().cols) : Math.ceil(ps.length / measure().cols);
+			const rows = open >= 0 ? Math.ceil(ps[open].items.length / measure().cols) : Math.max(1, Math.ceil(shown.length / measure().cols));
 			grid.style.height = `${rows * (size + gutter) - gutter + 20}px`;
 		}
 
@@ -117,6 +133,8 @@ export default {
 			}
 			hydrate(grid);
 			place();
+			find.hidden = true;
+			toTop();
 			back.hidden = false;
 			setTimeout(() => back.focus({ preventScroll: true }), SPEED);
 		}
@@ -128,15 +146,24 @@ export default {
 			grid.classList.remove('is-open');
 			name.textContent = '';
 			for (const el of items) {
-				el.classList.remove('is-gone', 'is-out');
+				const on = shown.includes(+el.dataset.pile);
+				el.classList.remove('is-out');
+				el.classList.toggle('is-gone', !on);
 				$('img', el)?.classList.remove('zoom');
 				const top = +el.dataset.i === ps[+el.dataset.pile].items.length - 1;
-				$('.tp__btn', el).tabIndex = top ? 0 : -1;
+				$('.tp__btn', el).tabIndex = top && on ? 0 : -1;
 			}
 			place();
+			find.hidden = false;
 			back.hidden = true;
 			const front = byPile(k).at(-1);
-			setTimeout(() => $('.tp__btn', front)?.focus({ preventScroll: true }), SPEED);
+			// back where the pile sits on the table
+			setTimeout(() => {
+				const hd = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hd')) || 70;
+				const r = front.getBoundingClientRect();
+				if (r.top < hd || r.bottom > innerHeight) scrollTo({ top: r.top + scrollY - hd - 80, behavior: REDUCE ? 'auto' : 'smooth' });
+				$('.tp__btn', front)?.focus({ preventScroll: true });
+			}, SPEED);
 		}
 
 		grid.addEventListener('click', (e) => {
@@ -147,6 +174,23 @@ export default {
 			spread(+li.dataset.pile);
 		}, true);
 		back.onclick = gather;
+		/* the search: every word typed must be in a pile's name or one of its captions (Arabic letter forms and digits
+		   don't matter); the piles that don't match fade away and the rest close up */
+		const filter = () => {
+			const words = fold(q.value).split(/\s+/).filter(Boolean);
+			shown = ps.map((_, k) => k).filter((k) => words.every((w) => hay[k].includes(w)));
+			for (const el of items) {
+				const on = shown.includes(+el.dataset.pile);
+				el.classList.toggle('is-gone', !on);
+				const top = +el.dataset.i === ps[+el.dataset.pile].items.length - 1;
+				$('.tp__btn', el).tabIndex = top && on ? 0 : -1;
+			}
+			count.textContent = !words.length ? '' : shown.length ? L(`${shown.length.toLocaleString('ar-EG')} ${shown.length === 1 ? 'ألبوم' : 'ألبومات'}`, `${shown.length} album${shown.length === 1 ? '' : 's'}`) : L('مفيش ألبوم فيه الكلام ده', 'No album has that');
+			place();
+		};
+		let ft = 0;
+		q.addEventListener('input', () => { clearTimeout(ft); ft = setTimeout(filter, 120); });
+		q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && shown.length === 1) { e.preventDefault(); spread(shown[0]); } });
 		main.onkeydown = ((e) => { if (e.key === 'Escape' && open >= 0 && !document.querySelector('.lightbox')) gather(); });
 		let w = grid.clientWidth;
 		new ResizeObserver(() => { if (Math.abs(grid.clientWidth - w) > 2) { w = grid.clientWidth; place(false); } }).observe(grid);
