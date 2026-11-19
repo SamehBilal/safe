@@ -1,6 +1,7 @@
 import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, rand, REDUCE, qs, occasions, longDate, age } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { sky } from '../bdsky.js';
+import { pastBirthdays, wallHTML, tickerHTML, startTicker, gameHTML, balloonGame } from '../bdmore.js';
 
 /* Birthdays: each of us, with how long until the next one and the age we're turning. The cake below is for
    whoever is next (or whose day it is today, or whoever you tap): blow out the candles, get confetti.
@@ -34,6 +35,10 @@ export default {
 		const missing = members.filter((m) => !m.born);
 		const pick = bdays.find((o) => o.id === qs('id')) || bdays[0];
 		this.pick = pick;
+		this.s = s;
+		this.past = pick ? pastBirthdays(s, pick.member) : [];
+		// the balloons carry photos from everyone's birthdays gone by
+		this.shots = [...new Set(members.flatMap((m) => pastBirthdays(s, m)).flatMap((p) => p.shots))];
 		const card = (o) => `
 			<a class="bd-card reveal${o === pick ? ' is-on' : ''}${o.days === 0 ? ' is-today' : ''}" href="birthday.html?id=${esc(o.id)}" style="--c:${esc(o.member.color || '#0e6990')}">
 				<svg class="bd-fx" aria-hidden="true">
@@ -103,7 +108,10 @@ export default {
 				<h2 class="sec__title">${L(`كل سنة و${App.t(pick.member.name)} ${pick.member.female ? 'طيبة' : 'طيب'}`, `Happy birthday, ${App.t(pick.member.name)}`)}</h2>
 				<p class="center"><a class="btn btn--coral" href="wishes.html">${Y('اكتب الأمنية في البرطمان', 'اكتبي الأمنية في البرطمان', 'Put the wish in the jar')} ${App.arrow}</a></p>
 			</div>
-		</div></section>` : ''}
+		</div></section>
+		${tickerHTML(pick.member, s)}
+		${wallHTML(pick.member, this.past)}` : ''}
+		${gameHTML()}
 		${related(['wishes', 'family', 'journal'])}`;
 	},
 	after(main) {
@@ -171,7 +179,9 @@ export default {
 			// a drag isn't a tap on the card
 			card.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } }, true);
 		}
-		this.leave = () => { stopSky(); ro.disconnect(); io.disconnect(); };
+		const stopTicker = p ? startTicker(main, p.member, this.s) : () => {};
+		const stopGame = balloonGame(main, this.shots || []);
+		this.leave = () => { stopSky(); ro.disconnect(); io.disconnect(); stopTicker(); stopGame(); };
 
 		const candles = $$('.candle', main);
 		const blow = (c) => {

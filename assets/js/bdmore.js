@@ -1,0 +1,160 @@
+/* More party on «أعياد الميلاد»: the birthdays we've already had (from «حكايتنا»), the age counting up live in sticky
+   notes, and a sky of balloons to pop — each one lets a photo from a past birthday fly out. */
+import { L, T, esc, img, num, App, $, $$, REDUCE, hydrate, parseDate } from './shell.js';
+
+const KEY = /birthday|ميلاد|cake|تورت/i;
+const md = (iso) => +iso.slice(5, 7) * 100 + +iso.slice(8, 10);
+const shotsOf = (m) => [...new Set([m.photo, ...(m.photos || []).map((p) => (typeof p === 'string' ? p : p?.photo))].filter(Boolean))];
+
+/** The birthdays a member has had, from «حكايتنا»: moments near the date that talk about a birthday or a cake. */
+export function pastBirthdays(s, member) {
+	if (!member?.born) return [];
+	const name = String(member.name?.en || '').toLowerCase();
+	const others = (s.family?.members || []).filter((x) => x !== member).map((x) => String(x.name?.en || '').toLowerCase()).filter(Boolean);
+	const out = [];
+	for (const m of s.timeline || []) {
+		if (!/^\d{4}-\d{2}-\d{2}$/.test(m.date || '')) continue;
+		const words = `${m.title?.en || ''} ${m.title?.ar || ''} ${m.text?.en || ''}`;
+		if (!KEY.test(words)) continue;
+		const title = String(m.title?.en || '').toLowerCase();
+		const turned = +m.date.slice(0, 4) - +member.born.slice(0, 4);
+		if (turned < 1) continue;
+		const named = name && title.includes(name);
+		if (!named && others.some((o) => title.includes(o))) continue;           // somebody else's
+		if (!named && /\bher\b/.test(title) && !member.female) continue;
+		if (!named && /\b(his|my)\b|made me/.test(title) && member.female) continue;
+		const gap = md(m.date) - md(member.born);
+		if (!named && (gap < -8 || gap > 3)) continue;                           // the cake can come a few days early
+		if (named && !/birthday|ميلاد/i.test(words)) continue;
+		out.push({ m, turned, shots: shotsOf(m) });
+	}
+	return out.sort((a, b) => a.m.date.localeCompare(b.m.date));
+}
+
+/* ---------- the birthdays we've had: polaroids pegged on a string under bunting ---------- */
+export function wallHTML(member, past) {
+	if (!past.length) return '';
+	const nm = App.t(member.name);
+	const ord = (t) => t + (t % 100 >= 11 && t % 100 <= 13 ? 'th' : { 1: 'st', 2: 'nd', 3: 'rd' }[t % 10] || 'th');
+	const tag = (t) => L(`عيد ميلاد${member.female ? 'ها' : 'ه'} الـ${num(t)}`, `${member.female ? 'Her' : 'His'} ${ord(t)}`);
+	const flags = Array.from({ length: 18 }, (_, i) => `<i style="--i:${i}"></i>`).join('');
+	return `<section class="sec bdw"><div class="wrap">
+		<h2 class="sec__title reveal">${L(`أعياد ميلاد ${esc(nm)} اللي عدّت`, `${esc(nm)}’s birthdays so far`)}</h2>
+		<p class="sec__sub reveal">${L('من حكايتنا — دوس على أي صورة تفتح اليوم بتاعها', 'From our story — tap a photo to open its day')}</p>
+		<div class="bdw__bunting" aria-hidden="true">${flags}</div>
+		<ol class="bdw__line">${past.map(({ m, turned, shots }, i) => `<li style="--i:${i}">
+			<a class="bdw__snap" href="moment.html?id=${encodeURIComponent(m.id)}">
+				<span class="bdw__peg" aria-hidden="true"></span>
+				<span class="bdw__pic">${shots[0] ? img(shots[0], T(m.title)) : `<span class="bdw__ic" aria-hidden="true">🎂</span>`}${shots.length > 1 ? `<em>+${num(shots.length - 1)}</em>` : ''}</span>
+				<b dir="auto">${esc(T(m.title))}</b>
+				<small>${esc(tag(turned))} · ${num(+m.date.slice(0, 4)).replace(/[٬,]/g, '')}</small>
+			</a></li>`).join('')}</ol>
+		${past.some((p) => p.shots.length > 1) ? `<div class="bdw__strip" aria-label="${L('صور من أعياد الميلاد', 'Photos from the birthdays')}">${past.flatMap((p) => p.shots.slice(1, 9).map((ph) => `<a href="moment.html?id=${encodeURIComponent(p.m.id)}">${img(ph, T(p.m.title))}</a>`)).slice(0, 24).join('')}</div>` : ''}
+	</div></section>`;
+}
+
+/* ---------- the age, counting up live ---------- */
+export function tickerHTML(member, s) {
+	if (!member?.born) return '';
+	const nm = App.t(member.name);
+	const note = (k, ic, label) => `<li class="bdt__n" data-k="${k}"><span class="bdt__ic" aria-hidden="true">${ic}</span><b data-v>—</b><small>${label}</small></li>`;
+	const together = s.met && member.born < s.met;
+	return `<section class="sec bdt"><div class="wrap">
+		<h2 class="sec__title reveal">${L(`${esc(nm)} بالأرقام`, `${esc(nm)} in numbers`)}</h2>
+		<p class="sec__sub reveal">${L('بتعد دلوقتي، ثانية بثانية', 'Counting right now, second by second')}</p>
+		<ul class="bdt__notes">
+			${note('days', '📅', L('يوم عاشه', 'days lived'))}
+			${note('hours', '⏰', L('ساعة', 'hours'))}
+			${note('secs', '⏱️', L('ثانية — وبتزيد', 'seconds, and counting'))}
+			${note('beats', '💓', L('دقة قلب (تقريباً)', 'heartbeats (about)'))}
+			${note('suns', '🌅', L('شروق شمس', 'sunrises'))}
+			${note('moons', '🌕', L('قمر كامل', 'full moons'))}
+			${together ? note('together', '💞', L('عيد ميلاد عدّى وإحنا سوا', 'birthdays since we met')) : note('cakes', '🎂', L('تورتة عيد ميلاد', 'birthday cakes'))}
+			${note('next', '⏳', L('ثانية لعيد الميلاد الجاي', 'seconds to the next birthday'))}
+		</ul>
+	</div></section>`;
+}
+export function startTicker(root, member, s) {
+	const box = $('.bdt__notes', root);
+	if (!box || !member?.born) return () => {};
+	const born = parseDate(member.born), met = s.met ? parseDate(s.met) : null;
+	const fmt = (n) => num(Math.floor(n));
+	const tick = () => {
+		const now = new Date(), ms = now - born, days = ms / 864e5;
+		const next = new Date(now.getFullYear(), born.getMonth(), born.getDate());
+		if (next < now) next.setFullYear(now.getFullYear() + 1);
+		let had = now.getFullYear() - born.getFullYear() - (now < new Date(now.getFullYear(), born.getMonth(), born.getDate()) ? 1 : 0);
+		let since = 0;
+		if (met) for (let y = met.getFullYear(); y <= now.getFullYear(); y++) { const d = new Date(y, born.getMonth(), born.getDate()); if (d >= met && d <= now) since++; }
+		const v = { days, hours: ms / 36e5, secs: ms / 1e3, beats: (ms / 6e4) * 80, suns: days, moons: days / 29.53, together: since, cakes: had, next: (next - now) / 1e3 };
+		for (const li of $$('.bdt__n', box)) { const b = $('[data-v]', li); const t = fmt(v[li.dataset.k]); if (b.textContent !== t) b.textContent = t; }
+	};
+	tick();
+	const t = setInterval(tick, 1000);
+	return () => clearInterval(t);
+}
+
+/* ---------- pop the balloons ---------- */
+export function gameHTML() {
+	return `<section class="sec bdg-sec"><div class="wrap">
+		<h2 class="sec__title reveal">${L('فرقع البلالين', 'Pop the balloons')}</h2>
+		<p class="sec__sub reveal">${L('كل بلونة جواها صورة من عيد ميلاد فات', 'Every balloon has a photo from a birthday gone by')}</p>
+		<div class="bdg" id="bdg" role="application" aria-label="${L('لعبة البلالين', 'The balloon game')}">
+			<p class="bdg__score" aria-live="polite"><span>🎈</span> <b id="bdg-n">${num(0)}</b></p>
+		</div>
+	</div></section>`;
+}
+const COLORS = ['#f2726f', '#0e6990', '#ffc94a', '#5a9e6f', '#c2185b', '#6d4bb3', '#e39b2d'];
+export function balloonGame(root, photos) {
+	const box = $('#bdg', root);
+	if (!box) return () => {};
+	let n = 0, k = 0, timer = 0, live = false;
+	const pool = [...photos].sort(() => Math.random() - 0.5);
+	const spawn = () => {
+		if (!live || document.hidden || $$('.bdg__b', box).length > 9) return;
+		const b = document.createElement('button');
+		b.type = 'button';
+		b.className = 'bdg__b';
+		b.setAttribute('aria-label', L('فرقع البلونة', 'Pop the balloon'));
+		const c = COLORS[Math.floor(Math.random() * COLORS.length)];
+		b.style.cssText = `--x:${4 + Math.random() * 88}%;--dur:${7 + Math.random() * 5}s;--sway:${(Math.random() * 30 + 10) * (Math.random() < 0.5 ? -1 : 1)}px;--c:${c};--s:${0.8 + Math.random() * 0.45}`;
+		b.innerHTML = '<svg viewBox="-24 -64 48 110" aria-hidden="true"><path d="M0 0C-15-4-21-22-21-35-21-51-11-60 0-60 11-60 21-51 21-35 21-22 15-4 0 0Z" fill="var(--c)" stroke="#37353f" stroke-width="1.6"/><path d="M10-44c3 3 5 7 4 12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/><path d="M-4 5 0 0 4 5Z" fill="var(--c)" stroke="#37353f" stroke-width="1.2"/><path d="M0 5c-5 8 5 14 0 22s5 12 0 18" fill="none" stroke="#37353f" stroke-width="1.2"/></svg>';
+		b.addEventListener('animationend', (e) => { if (e.animationName === 'bdg-rise') b.remove(); });
+		box.append(b);
+	};
+	const pop = (b) => {
+		if (b.classList.contains('is-pop')) return;
+		const r = b.getBoundingClientRect(), br = box.getBoundingClientRect();
+		const x = r.left - br.left + r.width / 2, y = r.top - br.top + r.height * 0.3;
+		b.classList.add('is-pop');
+		setTimeout(() => b.remove(), 260);
+		navigator.vibrate?.(20);
+		$('#bdg-n', box).textContent = num(++n);
+		// a burst of confetti where it was
+		const burst = document.createElement('span');
+		burst.className = 'bdg__burst';
+		burst.style.cssText = `left:${x}px;top:${y}px`;
+		burst.innerHTML = Array.from({ length: 12 }, (_, i) => `<i style="--a:${i * 30}deg;--d:${30 + (i % 3) * 14}px;background:${COLORS[(i + 2) % COLORS.length]}"></i>`).join('');
+		box.append(burst);
+		setTimeout(() => burst.remove(), 900);
+		// and a photo from a past birthday flies out
+		const ph = pool.length ? pool[k++ % pool.length] : '';
+		const snap = document.createElement('span');
+		snap.className = 'bdg__snap';
+		snap.style.cssText = `left:${Math.min(br.width - 70, Math.max(70, x))}px;top:${Math.min(br.height - 90, Math.max(80, y))}px;--r:${(Math.random() * 16 - 8).toFixed(1)}deg`;
+		snap.innerHTML = ph ? img(ph, '') : `<b>${['🎂', '🎁', '🥳', '💝', '🎉'][n % 5]}</b>`;
+		if (ph) $('img', snap)?.setAttribute('data-eager', '');
+		box.append(snap);
+		hydrate(snap);
+		setTimeout(() => snap.remove(), REDUCE ? 1800 : 2600);
+	};
+	box.addEventListener('pointerdown', (e) => { const b = e.target.closest('.bdg__b'); if (b) pop(b); });
+	box.addEventListener('keydown', (e) => { const b = e.target.closest('.bdg__b'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pop(b); } });
+	const io = new IntersectionObserver(([en]) => {
+		live = en.isIntersecting;
+		clearInterval(timer);
+		if (live) { spawn(); timer = setInterval(spawn, REDUCE ? 2400 : 850); }
+	}, { threshold: 0.2 });
+	io.observe(box);
+	return () => { clearInterval(timer); io.disconnect(); };
+}
