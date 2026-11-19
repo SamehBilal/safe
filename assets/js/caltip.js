@@ -14,6 +14,8 @@ const SHAPES = {
 	indis: 'M 44.5,24 C 148,24 252,24 356,24 367,24 376,32.9 376,44 L 376,256 C 376,267 367,276 356,276 252,276 148,276 44.5,276 33.4,276 24.5,267 24.5,256 L 24.5,44 C 24.5,32.9 33.4,24 44.5,24 Z',
 	malva: 'M 94.9,90.2 101,30.7 163,72.3 229,17.7 263,68.2 319,55.9 315,102 375,144 316,175 340,228 265,220 251,263 180,233 143,282 98.9,218 57.5,236 82,189 25,170 82.8,141 48.7,93.7 Z'
 };
+/* the room inside each shape where the words fit, in its own 400×300 drawing: [left, top, right, bottom] */
+const BOX = { cora: [78, 64, 322, 218], smaug: [62, 80, 338, 222], dori: [42, 64, 358, 224], gram: [58, 70, 342, 230], indis: [46, 40, 354, 260], malva: [118, 104, 282, 208] };
 export const TYPE = { us: 'cora', days: 'dori', family: 'smaug', holy: 'gram', egypt: 'indis', capsule: 'malva' };
 
 /* anime.js' easings, as CSS can say them */
@@ -106,12 +108,17 @@ export function tooltips(root, sel, { html, kind }) {
 		path.setAttribute('d', SHAPES[type]);
 		tip.style.setProperty('--k', getComputedStyle(el).getPropertyValue('--k') || 'var(--coral)');
 		content.innerHTML = html(el);
-		// a busy day gets a taller shape: the words never spill over its edge
-		tip.style.height = '';
-		tip.style.height = `${Math.max(202, Math.ceil(content.scrollHeight / ({ cora: 0.5, malva: 0.45 }[type] || 0.62)))}px`;
+		// the words sit inside the shape's own room (BOX), and a busy day gets a taller shape, so they never spill over its edge
+		const [x0, y0, x1, y1] = BOX[type];
+		Object.assign(content.style, { left: `${(x0 / 4).toFixed(2)}%`, width: `${((x1 - x0) / 4).toFixed(2)}%`, top: '0', height: 'auto' });
+		const room = (y1 - y0) / 300;
+		tip.style.height = `${Math.max(202, Math.ceil((content.scrollHeight + 8) / room))}px`;
 		el.setAttribute('aria-describedby', 'ctip');
 		el.classList.add('is-tip');
 		place(el);
+		// hanging under the day the shape is turned over, so its room is too
+		const below = tip.classList.contains('is-below');
+		Object.assign(content.style, { top: `${(((below ? 300 - y1 : y0) / 300) * 100).toFixed(2)}%`, height: `${(room * 100).toFixed(2)}%` });
 		play('in');
 	};
 	const hide = () => {
