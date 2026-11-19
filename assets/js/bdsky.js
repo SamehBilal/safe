@@ -24,7 +24,7 @@ export function sky(box, lines) {
 	box.prepend(back, front);
 	const bx = back.getContext('2d'), fx = front.getContext('2d');
 	const rtl = App.lang === 'ar';
-	const face = rtl ? 'Lalezar, Cairo, sans-serif' : '"Bebas Neue", Lalezar, sans-serif';
+	const face = rtl ? '"Aref Ruqaa", Lalezar, serif' : 'Lobster, "Aref Ruqaa", serif';   // the headlines' own script, so the greeting reads like the page
 	let w = 0, h = 0, size = 40, k = 1;       // k: the pens were tuned for a ~1000px-wide screen
 	let pieces = [], rockets = [], restart = 0, shown = 0, night = dark();
 
@@ -32,7 +32,7 @@ export function sky(box, lines) {
 	function layout() {
 		fx.font = `100px ${face}`;
 		const space = fx.measureText(' ').width * (rtl ? 1.6 : 1.2);
-		const track = rtl ? 0 : 6;                       // a little air between Latin capitals; Arabic letters touch
+		const track = rtl ? 0 : 1;                       // the script's letters sit close, like handwriting; Arabic letters touch
 		const plan = lines.map((line) => line.split(/\s+/).filter(Boolean).map((word) => (rtl ? slices(word) : [...word].map((t) => ({ t, w: fx.measureText(t).width })))));
 		const widths = plan.map((ws) => ws.reduce((a, word) => a + word.reduce((b, l) => b + l.w + track, 0), 0) + space * (ws.length - 1));
 		size = Math.min(100 * (w * 0.86) / Math.max(...widths, 1), h / (lines.length * 1.75), 96);
