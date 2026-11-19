@@ -1390,3 +1390,10 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 .cal-ev__go i { font-style: normal; transition: translate 0.2s; }
 @media (max-width: 600px) { .cal-pop { width: 100vw; } .cal-ev__go { padding: 5px 9px; } .cal-snap--md { width: 62px; height: 62px; } }
 @media (prefers-reduced-motion: reduce) { .cal-pop__list li { animation: none; } .cal-hero, .cal-stub { transition: none; } }
+/* «جاي قريب»: the polaroid and the stubs stand the same height — the photo gives way to fill what the stubs need,
+   and the stubs share out what the polaroid needs */
+.cal-up { align-items: stretch; }
+.cal-hero { grid-template-rows: minmax(200px, 1fr) auto; }
+.cal-snap--big { aspect-ratio: auto; height: 100%; min-height: 200px; }
+.cal-stubs { grid-auto-rows: 1fr; }
+@media (max-width: 960px) { .cal-hero { grid-template-rows: auto auto; } .cal-snap--big { aspect-ratio: 4 / 3; height: auto; } }
