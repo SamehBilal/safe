@@ -978,14 +978,16 @@ async function morphSearch(btn) {
 	ms.setAttribute('aria-label', L('دوّر', 'Search'));
 	ms.style.cssText = `--x:${r.left}px;--y:${r.top}px;--w:${r.width}px;--h:${r.height}px`;
 	ms.innerHTML = `<form class="ms-form" role="search" action="search.html">
+			<p class="ms-tape">${L('دوّر في حكايتنا', 'Search our story')}</p>
 			<input class="ms-input" name="q" type="search" autocomplete="off" spellcheck="false" dir="auto" enterkeyhint="search" placeholder="${esc(Y('بتدوّر على إيه؟', 'بتدوّري على إيه؟', 'Search…'))}" aria-label="${esc(L('دوّر', 'Search'))}">
 			<button class="ms-go" type="submit" aria-label="${esc(L('دوّر', 'Search'))}">${icon('search', 34)}</button>
 		</form>
+		<div class="ms-sug" aria-label="${esc(L('اقتراحات', 'Suggestions'))}"><span class="ms-sug__h" data-sh></span><div class="ms-sug__row" data-sug></div></div>
 		<button class="ms-close" type="button" aria-label="${esc(L('اقفل', 'Close'))}"></button>
 		<div class="ms-cols" aria-live="polite">
-			<section class="ms-col"><h2>${L('صفحات', 'Pages')}</h2><div class="ms-list" data-c="1"></div></section>
-			<section class="ms-col"><h2>${L('من حكايتنا', 'From our story')}</h2><div class="ms-list" data-c="2"></div></section>
-			<section class="ms-col"><h2 data-h3>${L('دوّرت عليهم قبل كده', 'Searched before')}</h2><div class="ms-list" data-c="3"></div></section>
+			<section class="ms-col"><h2><i aria-hidden="true">${icon('book', 16)}</i><span>${L('صفحات', 'Pages')}</span><small data-n="1"></small></h2><div class="ms-list" data-c="1"></div></section>
+			<section class="ms-col"><h2><i aria-hidden="true">${icon('heart', 16)}</i><span>${L('من حكايتنا', 'From our story')}</span><small data-n="2"></small></h2><div class="ms-list" data-c="2"></div></section>
+			<section class="ms-col"><h2><i aria-hidden="true">${icon('star', 16)}</i><span data-h3>${L('في اليوم ده', 'On this day')}</span><small data-n="3"></small></h2><div class="ms-list" data-c="3"></div></section>
 		</div>`;
 	document.body.append(ms);
 	document.body.classList.add('menu-lock');
@@ -1006,23 +1008,56 @@ async function morphSearch(btn) {
 	ms.addEventListener('click', (e) => { if (e.target.closest('.ms-list a')) { find.rememberSearch?.(input.value); setTimeout(close, 60); } });
 	$('.ms-form', ms).onsubmit = (e) => { e.preventDefault(); const q = input.value.trim(); if (!q) return; find.rememberSearch?.(q); location.href = `search.html?q=${encodeURIComponent(q)}`; };
 
-	const card = (h) => `<a href="${esc(h.href)}">${icon(h.ic || 'heart', 22)}<span><b dir="auto">${esc(h.title)}</b>${h.date ? `<small>${fmtDate(h.date)}</small>` : h.sub ? `<small>${esc(h.sub)}</small>` : ''}</span></a>`;
-	const fill = (n, list, empty) => { $(`[data-c="${n}"]`, ms).innerHTML = list.length ? list.map(card).join('') : `<p class="ms-none">${empty}</p>`; };
+	const card = (h) => `<a href="${esc(h.href)}">${icon(h.ic || 'heart', 20)}<span><b dir="auto">${esc(h.title)}</b>${h.date ? `<small>${fmtDate(h.date)}</small>` : h.sub ? `<small>${esc(h.sub)}</small>` : ''}</span></a>`;
+	const fill = (n, list, empty) => {
+		$(`[data-c="${n}"]`, ms).innerHTML = list.length ? list.map(card).join('') : `<p class="ms-none">${empty}</p>`;
+		$(`[data-n="${n}"]`, ms).textContent = list.length ? num(list.length) : '';
+	};
+	// the chips under the box: before typing, what to try (what was searched before, ideas, today's date in other
+	// years, a year); while typing, the titles that match, to finish the words with a tap
+	const chips = (head, list) => {
+		$('[data-sh]', ms).textContent = head;
+		$('[data-sug]', ms).innerHTML = list.map((c) => `<button type="button" class="ms-chip${c.kind ? ` ms-chip--${c.kind}` : ''}" data-q="${esc(c.q)}">${c.kind === 'recent' ? icon('search', 14) : c.kind === 'date' ? icon('calendar', 14) : ''}<span dir="auto">${esc(c.label || c.q)}</span></button>`).join('');
+	};
+	$('[data-sug]', ms).addEventListener('click', (e) => {
+		const c = e.target.closest('[data-q]');
+		if (!c) return;
+		input.value = c.dataset.q;
+		input.focus({ preventScroll: true });
+		draw();
+	});
 	find = await import('./pages/search.js');
 	const s = App.story;
 	await find.ensureIndex(s);
+	const now = new Date(), md = `-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+	const moments = (s.timeline || []).filter((x) => x.date && !x.when);
 	const start = () => {
-		$('[data-h3]', ms).textContent = L('دوّرت عليهم قبل كده', 'Searched before');
+		const ideas = [L('عيد ميلاد', 'birthday'), L('رحلة', 'trip'), L('أول مرة', 'first'), L('أغنية', 'song'), L('ستاربكس', 'Starbucks'), L('فهد', 'Fahd')];
+		const years = [...new Set(moments.map((x) => x.date.slice(0, 4)))];
+		chips(Y('جرّب', 'جرّبي', 'Try'), [
+			...find.recentSearches().slice(0, 4).map((q) => ({ q, kind: 'recent' })),
+			{ q: `${now.getDate()}-${now.getMonth() + 1}`, label: L('النهارده في السنين اللي فاتت', 'Today in past years'), kind: 'date' },
+			...(years.length ? [{ q: years[Math.floor(Math.random() * years.length)], kind: 'date' }] : []),
+			...ideas.map((q) => ({ q }))
+		]);
 		fill(1, ['story', 'gallery', 'places', 'cities', 'remember', 'calendar'].map((id) => PAGES.find((p) => p.id === id)).filter(Boolean).map((p) => ({ title: L(p.ar, p.en), sub: L(p.dar || '', p.den || ''), href: p.href, ic: p.ic })), '');
-		fill(2, (s.timeline || []).filter((x) => x.date && !x.when).slice(-5).reverse().map((x) => ({ title: App.t(x.title), date: x.date, href: `moment.html?id=${encodeURIComponent(x.id)}`, ic: 'book' })), '');
-		const rec = find.recentSearches();
-		$(`[data-c="3"]`, ms).innerHTML = rec.length ? rec.map((q) => `<a href="search.html?q=${encodeURIComponent(q)}">${icon('search', 20)}<span><b dir="auto">${esc(q)}</b></span></a>`).join('') : `<p class="ms-none">${Y('جرّب «رحلة» أو «2017» أو اسم أغنية', 'جرّبي «رحلة» أو «2017» أو اسم أغنية', 'Try “trip”, “2017” or a song’s name')}</p>`;
+		fill(2, moments.slice(-5).reverse().map((x) => ({ title: App.t(x.title), date: x.date, href: `moment.html?id=${encodeURIComponent(x.id)}`, ic: 'book' })), '');
+		// on this day: the moments of today's date in other years, else the ones closest to it
+		const today = moments.filter((x) => x.date.slice(4, 10) === md);
+		const day = (d) => { const x = new Date(`2000${d.slice(4, 10)}T12:00:00`); const t = new Date(`2000${md}T12:00:00`); const k = Math.abs(x - t) / 864e5; return Math.min(k, 366 - k); };
+		const near = today.length ? today : [...moments].sort((a, b) => day(a.date) - day(b.date)).slice(0, 4);
+		$('[data-h3]', ms).textContent = today.length ? L('في اليوم ده', 'On this day') : L('قريب من النهارده', 'Close to today');
+		fill(3, near.slice(0, 5).map((x) => ({ title: App.t(x.title), date: x.date, href: `moment.html?id=${encodeURIComponent(x.id)}`, ic: 'calendar' })), '');
 	};
 	let timer = 0;
 	const draw = () => {
 		const q = input.value;
 		if (q.trim().length < 2) return start();
 		const hits = find.quick(q, 60);
+		// finish the words: the titles that match, each once, the shortest first
+		const fq = q.trim().toLowerCase();
+		const done = [...new Set(hits.map((h) => h.title.replace(/…$/, '')))].filter((t) => t.toLowerCase() !== fq).sort((a, b) => a.length - b.length).slice(0, 6);
+		chips(done.length ? L('قصدك؟', 'Did you mean') : '', done.map((t) => ({ q: t })));
 		$('[data-h3]', ms).textContent = L('وكمان', 'And more');
 		const none = L('مفيش هنا', 'Nothing here');
 		fill(1, hits.filter((h) => h.page === 'pages').slice(0, 6), none);

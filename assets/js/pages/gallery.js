@@ -35,10 +35,9 @@ export default {
 				<button class="tp-back" type="button" id="tp-back" hidden aria-label="${L('رجوع للكوم', 'Back to the piles')}">${App.arrow === '←' ? '→' : '←'}</button>
 				<h2 class="tp-bar__h">${L('صورنا', 'Our photos')}</h2>
 				<p class="tp-bar__name" id="tp-name" aria-live="polite"></p>
-			</div>
-			<div class="tp-find" id="tp-find" role="search">
-				<label class="tp-find__field">${icon('search', 20)}<input id="tp-q" type="search" autocomplete="off" spellcheck="false" dir="auto" placeholder="${esc(Y('دوّر في الألبومات… «ستاربكس»، «2017»، «فهد»', 'دوّري في الألبومات… «ستاربكس»، «2017»، «فهد»', 'Search the albums… “Starbucks”, “2017”, “Fahd”'))}" aria-label="${esc(L('دوّر في الألبومات', 'Search the albums'))}"></label>
-				<p class="tp-find__n" id="tp-n" aria-live="polite"></p>
+				<div class="tp-find" id="tp-find" role="search">
+					<label class="tp-find__field">${icon('search', 18)}<input id="tp-q" type="search" autocomplete="off" spellcheck="false" dir="auto" placeholder="${esc(Y('دوّر في الألبومات…', 'دوّري في الألبومات…', 'Search the albums…'))}" aria-label="${esc(L('دوّر في الألبومات', 'Search the albums'))}"><span class="tp-find__n" id="tp-n" aria-live="polite"></span></label>
+				</div>
 			</div>
 			<ul class="tp" id="tp" aria-label="${L('كوم الصور', 'Piles of photos')}">${ps.map((p, k) => p.items.map((it, i) => {
 				const top = i === p.items.length - 1, show = i >= p.items.length - 3;
@@ -185,7 +184,7 @@ export default {
 				const top = +el.dataset.i === ps[+el.dataset.pile].items.length - 1;
 				$('.tp__btn', el).tabIndex = top && on ? 0 : -1;
 			}
-			count.textContent = !words.length ? '' : shown.length ? L(`${shown.length.toLocaleString('ar-EG')} ${shown.length === 1 ? 'ألبوم' : 'ألبومات'}`, `${shown.length} album${shown.length === 1 ? '' : 's'}`) : L('مفيش ألبوم فيه الكلام ده', 'No album has that');
+			count.textContent = !words.length ? '' : shown.length ? L(`${shown.length.toLocaleString('ar-EG')} ${shown.length === 1 ? 'ألبوم' : 'ألبومات'}`, `${shown.length} album${shown.length === 1 ? '' : 's'}`) : L('ولا ألبوم', 'None');
 			place();
 		};
 		let ft = 0;

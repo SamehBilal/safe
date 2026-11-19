@@ -686,16 +686,22 @@ body:not(.is-locked) .hearts { opacity: 0.45; }
 .tp-back { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 46px; height: 46px; display: grid; place-items: center; font-size: 1.3rem; cursor: pointer; background: var(--hl-yellow, #fdc830); color: var(--text); border: 1.5px solid var(--ink, #37353f); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; box-shadow: 3px 3px 0 0 var(--ink, #37353f); }
 .tp-back:active { translate: calc(-50% + 3px) calc(-50% + 3px); box-shadow: none; }
 .tp-back[hidden] { display: none; }
-/* the albums' search, under the bar: a field in the journal's ink, how many albums are left beside it */
-.tp-find { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; margin: -14px 0 34px; }
+/* the albums' search, in the bar beside «صورنا»: a little field in the journal's ink, how many albums are left in it */
+.tp-bar { flex-wrap: wrap; }
+.tp-bar__name:empty { display: none; }
+.tp-find { flex: 0 1 330px; margin-inline-start: auto; }
 .tp-find[hidden] { display: none; }
-.tp-find__field { display: flex; align-items: center; gap: 10px; width: min(520px, 100%); padding: 4px 16px; color: var(--coral); background: var(--card); border: 1.5px solid var(--ink); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); }
-.tp-find__field:focus-within { box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--coral); }
-.tp-find__field .ic { display: grid; }
-.tp-find__field input { flex: 1; min-width: 0; min-height: 44px; border: 0; outline: 0; background: none; color: var(--text); font: 700 1rem var(--f-body); }
+.tp-find__field { display: flex; align-items: center; gap: 8px; padding: 0 6px 0 14px; color: var(--coral); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); transition: box-shadow .15s, translate .15s; }
+[dir='rtl'] .tp-find__field { padding: 0 14px 0 6px; }
+.tp-find__field:focus-within { translate: calc(var(--bujo-x, 1) * -1px) -1px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--coral); }
+.tp-find__field .ic { display: grid; flex: none; }
+.tp-find__field input { flex: 1; min-width: 0; min-height: 40px; border: 0; outline: 0; background: none; color: var(--text); font: 700 .95rem var(--f-body); }
 .tp-find__field input::placeholder { color: var(--muted); font-weight: 600; }
-.tp-find__n { margin: 0; font-weight: 800; color: var(--muted); }
+.tp-find__field input::-webkit-search-cancel-button { cursor: pointer; }
+.tp-find__n { flex: none; padding: 1px 9px; font: 400 .95rem var(--f-label); letter-spacing: .04em; color: var(--text); background: var(--hl-yellow, #fdc830); border: 1.5px solid var(--ink); border-radius: 999px; }
+:lang(ar) .tp-find__n { font: 800 .75rem/1.6 var(--f-body); }
 .tp-find__n:empty { display: none; }
+@media (max-width: 559px) { .tp-find { flex: 1 1 100%; } }
 .tp { position: relative; list-style: none; margin: 0; padding: 0; --size: 200px; transition: height 0.4s ease-in-out; }
 .tp__item { position: absolute; top: 0; left: 0; width: var(--size); height: var(--size); opacity: 0; transition: translate 0.4s ease-in-out, rotate 0.4s ease-in-out, opacity 0.35s ease-in-out; }
 .tp.is-ready .tp__item { opacity: 1; }
