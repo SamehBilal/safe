@@ -2,15 +2,17 @@ import { L, Y, T, esc, pageHead, related, App, $, $$, num, occasions } from '../
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { today, daysTo, iso, parse, nextMD, inDays, holyDays, egyptDays, ics } from '../occ.js';
+import { tooltips, TYPE } from '../caltip.js';
 
 /* Our calendar: every occasion of ours in the year ahead on one page. Above the title a tear-off desk calendar flips
    to each coming occasion by itself; then what's next, a page for each of the next twelve months with the days
    marked, and a button that puts them all in the phone's own calendar. It gathers: our birthdays, anniversary and
-   first hello (the story), the big days (chapters), the wider family (famdays), the boys' capsule letters opening,
+   first hello (the story), the big days (chapters), every day of our story coming round again (the timeline), the wider family (famdays), the boys' capsule letters opening,
    the Islamic days and Egypt's days of the year. */
 
 const KIND = {
 	us: { ar: 'إحنا', en: 'Us', c: 'var(--coral)' },
+	days: { ar: 'أيامنا', en: 'Our days', c: '#c2185b' },
 	family: { ar: 'العيلة', en: 'Family', c: '#5a9e6f' },
 	holy: { ar: 'رمضان والأعياد', en: 'Ramadan & Eid', c: '#6d4bb3' },
 	egypt: { ar: 'مواسم السنة', en: 'Days of the year', c: '#e39b2d' },
@@ -25,6 +27,15 @@ function gather(s, fam, caps) {
 	const from = today(), out = [];
 	for (const o of occasions(s)) out.push({ date: nextMD(o.date, from), title: o.title, sub: o.sub, icon: o.emoji, kind: 'us', href: o.kind === 'birthday' ? `birthday.html?id=${encodeURIComponent(o.id)}` : 'story.html', yearly: true });
 	for (const c of s.chapters || []) if (c.date) out.push({ date: nextMD(c.date, from), title: T(c.title), sub: L('ذكرى يوم فارق', 'A big day’s anniversary'), icon: c.icon || 'ring', kind: 'us', href: `chapter.html?id=${encodeURIComponent(c.id)}`, yearly: true });
+	// every day of our story, the year it comes round again: «من ٧ سنين…»
+	const seen = new Set(out.map((e) => `${iso(e.date)}|${e.title}`));
+	for (const m of s.timeline || []) {
+		if (!/^\d{4}-\d{2}-\d{2}$/.test(m.date || '')) continue;
+		const date = nextMD(m.date, from), title = T(m.title), n = date.getFullYear() - +m.date.slice(0, 4);
+		if (n < 1 || seen.has(`${iso(date)}|${title}`)) continue;
+		seen.add(`${iso(date)}|${title}`);
+		out.push({ date, title, sub: n === 1 ? L('من سنة', 'A year ago') : n === 2 ? L('من سنتين', 'Two years ago') : L(`من ${num(n)} ${n <= 10 ? 'سنين' : 'سنة'}`, `${n} years ago`), icon: m.icon || 'heart', kind: 'days', href: `moment.html?id=${encodeURIComponent(m.id)}`, yearly: true });
+	}
 	for (const f of fam) if (f.date) out.push({ date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: f.rel || '', icon: f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: 'famdays.html', yearly: true });
 	for (const h of holyDays(from)) out.push({ date: h.date, title: L(h.ar, h.en), sub: L('بالتقويم الهجري، ممكن يفرق يوم', 'By the Hijri calendar, may differ by a day'), icon: h.icon, kind: 'holy', href: 'ramadan.html' });
 	for (const e of egyptDays(from)) out.push({ date: e.date, title: L(e.ar, e.en), sub: '', icon: e.icon, kind: 'egypt', yearly: e.id !== 'nessim' });
@@ -105,7 +116,7 @@ export default {
 				const date = new Date(m.getFullYear(), m.getMonth(), d), key = iso(date), evs = byDay.get(key) || [];
 				const isToday = key === iso(today());
 				cells += evs.length
-					? `<button type="button" class="cal-d has-ev${isToday ? ' is-today' : ''}" data-day="${key}" style="--k:${KIND[evs[0].kind].c}" title="${esc(evs.map((e) => e.title).join(' · '))}">${num(d)}</button>`
+					? `<button type="button" class="cal-d has-ev${isToday ? ' is-today' : ''}" data-day="${key}" data-tip="${TYPE[evs[0].kind] || 'cora'}" style="--k:${KIND[evs[0].kind].c}" aria-label="${esc(`${num(d)} ${monthName(m.getMonth())}: ${evs.map((e) => e.title).join('، ')}`)}">${num(d)}</button>`
 					: `<span class="cal-d${isToday ? ' is-today' : ''}">${num(d)}</span>`;
 			}
 			const count = [...byDay.keys()].filter((key) => key.startsWith(iso(m).slice(0, 7))).length;
@@ -113,6 +124,20 @@ export default {
 				<div class="cal-grid">${heads.map((h) => `<b>${h}</b>`).join('')}${cells}</div></article>`;
 		}
 		$('#cal-months', main).innerHTML = html;
+
+		/* hover a marked day: its tooltip pops out, each kind of day in its own shape (caltip.js) */
+		const untip = tooltips($('#cal-months', main), '[data-day]', {
+			kind: (el) => el.dataset.tip,
+			html: (el) => {
+				const evs = byDay.get(el.dataset.day) || [], d = parse(el.dataset.day);
+				const more = evs.length - 3;
+				return `<p class="ctip__when">${esc(dayName(d))} ${num(d.getDate())} ${esc(monthName(d.getMonth()))} · ${esc(inDays(daysTo(d)))}</p>
+					${evs.slice(0, 3).map((ev) => `<p class="ctip__ev" style="--k:${KIND[ev.kind].c}"><i aria-hidden="true">${doodle(ev.icon, 16)}</i><span><b dir="auto">${esc(ev.title)}</b>${ev.sub ? `<small dir="auto">${esc(ev.sub)}</small>` : ''}</span></p>`).join('')}
+					${more > 0 ? `<p class="ctip__more">${L(`و${num(more)} كمان`, `and ${more} more`)}</p>` : ''}`;
+			}
+		});
+		const stop = this.leave;
+		this.leave = () => { stop?.(); untip(); };
 
 		/* a tap on a marked day says what it is */
 		const dayBox = $('#cal-day', main);
