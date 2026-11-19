@@ -23,6 +23,7 @@ const KIND = {
 };
 const MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const monthName = (m) => (App.lang === 'ar' ? MONTHS_AR[m] : new Date(2000, m, 1).toLocaleDateString('en-GB', { month: 'long' }));
+const when = (d) => { const n = daysTo(d); return n >= 0 ? inDays(n) : L(`من ${num(-n)} ${-n === 1 ? 'يوم' : -n === 2 ? 'يومين' : -n <= 10 ? 'أيام' : 'يوم'}`, -n === 1 ? 'yesterday' : `${-n} days ago`); };
 const dayName = (d) => d.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long' });
 
 /* everything in the coming year, soonest first */
@@ -32,8 +33,8 @@ function gather(s, fam, caps) {
 	const onDay = new Map();
 	for (const m of s.timeline || []) { const p = firstPhoto(m); if (p && m.date && !onDay.has(m.date)) onDay.set(m.date, p); }
 	for (const c of s.chapters || []) { const p = firstPhoto(c); if (p && c.date && !onDay.has(c.date)) onDay.set(c.date, p); }
-	for (const o of occasions(s)) out.push({ date: nextMD(o.date, from), title: o.title, sub: o.sub, icon: o.emoji, kind: 'us', href: o.kind === 'birthday' ? `birthday.html?id=${encodeURIComponent(o.id)}` : 'story.html', yearly: true, photo: onDay.get(o.date) || '' });
-	for (const c of s.chapters || []) if (c.date) out.push({ date: nextMD(c.date, from), title: T(c.title), sub: L('ذكرى يوم فارق', 'A big day’s anniversary'), icon: c.icon || 'ring', kind: 'us', href: `chapter.html?id=${encodeURIComponent(c.id)}`, yearly: true, photo: firstPhoto(c) || onDay.get(c.date) || '' });
+	for (const o of occasions(s)) out.push({ orig: o.date, date: nextMD(o.date, from), title: o.title, sub: o.sub, icon: o.emoji, kind: 'us', href: o.kind === 'birthday' ? `birthday.html?id=${encodeURIComponent(o.id)}` : 'story.html', yearly: true, photo: onDay.get(o.date) || '' });
+	for (const c of s.chapters || []) if (c.date) out.push({ orig: c.date, date: nextMD(c.date, from), title: T(c.title), sub: L('ذكرى يوم فارق', 'A big day’s anniversary'), icon: c.icon || 'ring', kind: 'us', href: `chapter.html?id=${encodeURIComponent(c.id)}`, yearly: true, photo: firstPhoto(c) || onDay.get(c.date) || '' });
 	// every day of our story, the year it comes round again: «من ٧ سنين…»
 	const seen = new Set(out.map((e) => `${iso(e.date)}|${e.title}`));
 	for (const m of s.timeline || []) {
@@ -41,13 +42,21 @@ function gather(s, fam, caps) {
 		const date = nextMD(m.date, from), title = T(m.title), n = date.getFullYear() - +m.date.slice(0, 4);
 		if (n < 1 || seen.has(`${iso(date)}|${title}`)) continue;
 		seen.add(`${iso(date)}|${title}`);
-		out.push({ date, title, sub: n === 1 ? L('من سنة', 'A year ago') : n === 2 ? L('من سنتين', 'Two years ago') : L(`من ${num(n)} ${n <= 10 ? 'سنين' : 'سنة'}`, `${n} years ago`), icon: m.icon || 'heart', kind: 'days', href: `moment.html?id=${encodeURIComponent(m.id)}`, yearly: true, photo: firstPhoto(m) || onDay.get(m.date) || '' });
+		out.push({ orig: m.date, date, title, sub: n === 1 ? L('من سنة', 'A year ago') : n === 2 ? L('من سنتين', 'Two years ago') : L(`من ${num(n)} ${n <= 10 ? 'سنين' : 'سنة'}`, `${n} years ago`), icon: m.icon || 'heart', kind: 'days', href: `moment.html?id=${encodeURIComponent(m.id)}`, yearly: true, photo: firstPhoto(m) || onDay.get(m.date) || '' });
 	}
-	for (const f of fam) if (f.date) out.push({ date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: f.rel || '', icon: f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: '#cal-fam', yearly: true });
+	for (const f of fam) if (f.date) out.push({ orig: f.date, late: !!f.late, date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: (f.late && f.note) || f.rel || '', icon: f.late ? 'heart' : f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: '#cal-fam', yearly: true });
 	for (const h of holyDays(from)) out.push({ date: h.date, title: L(h.ar, h.en), sub: L('بالتقويم الهجري، ممكن يفرق يوم', 'By the Hijri calendar, may differ by a day'), icon: h.icon, kind: 'holy', href: 'ramadan.html' });
 	for (const e of egyptDays(from)) out.push({ date: e.date, title: L(e.ar, e.en), sub: '', icon: e.icon, kind: 'egypt', yearly: e.id !== 'nessim' });
 	for (const c of caps) if (c.openOn && parse(c.openOn) >= from && daysTo(parse(c.openOn)) <= 366) out.push({ date: parse(c.openOn), title: L(`جواب الكبسولة لـ${c.kidName || ''} يتفتح`, `A capsule letter opens for ${c.kidName || ''}`), sub: c.title || '', icon: 'letter', kind: 'capsule', href: 'capsule.html' });
-	return out.filter((e) => daysTo(e.date) <= 366).sort((a, b) => a.date - b.date);
+	// this month's days that have already gone by stay on its page (faded), so a day like a memorial a few days ago
+	// isn't missing from the month it belongs to
+	const past = [];
+	for (const e of out) {
+		if (!e.yearly || !e.orig) continue;
+		const d = new Date(from.getFullYear(), +e.orig.slice(5, 7) - 1, +e.orig.slice(8, 10));
+		if (d < from && d.getMonth() === from.getMonth()) past.push({ ...e, date: d, past: true });
+	}
+	return [...past, ...out.filter((e) => daysTo(e.date) <= 366)].sort((a, b) => a.date - b.date);
 }
 
 /* the wider family's days (the list kept in content/live/famdays.bin): their kinds, and how each one reads */
@@ -109,7 +118,7 @@ export default {
 		let fam = famData;
 		const capsules = (caps.items || []).map((c) => ({ ...c, kidName: App.t(kids.find((k) => k.id === c.kid)?.name || '') }));
 		$('#fd-names', main).innerHTML = [...new Set((tree.items || []).map((p) => p.name).filter(Boolean))].map((n) => `<option value="${esc(n)}">`).join('');
-		let events = [], coming = [], byDay = new Map();
+		let events = [], ahead = [], coming = [], byDay = new Map();
 
 		const tag = (e) => `<span class="cal-tag" style="--k:${KIND[e.kind].c}">${esc(L(KIND[e.kind].ar, KIND[e.kind].en))}</span>`;
 		const snap = (e, size) => (e.photo ? img(e.photo, e.title) : `<span class="cal-snap__ic" aria-hidden="true">${doodle(e.icon, size)}</span>`);
@@ -121,7 +130,7 @@ export default {
 			<b class="cal-pg__d">${num(e.date.getDate())}</b>
 			<span class="cal-pg__w">${esc(dayName(e.date))}</span>
 			<span class="cal-pg__t"><i aria-hidden="true">${doodle(e.icon, 20)}</i> ${esc(e.title)}</span>
-			<em class="cal-pg__in">${esc(inDays(daysTo(e.date)))}</em>
+			<em class="cal-pg__in">${esc(when(e.date))}</em>
 		</div>`;
 
 		/* the band: the family's bunting strung across the top — a flag with each name, the next one's lifted — and
@@ -167,7 +176,7 @@ export default {
 		/* coming up: the very next day pinned up big as a polaroid with its countdown stamped beside it, and the ones
 		   after it as ticket stubs — a torn-off calendar page, the words, a little photo, the days stamped on the end */
 		const drawComing = () => {
-			const [first, ...rest] = events.slice(0, 9);
+			const [first, ...rest] = ahead.slice(0, 9);
 			$('#cal-next', main).innerHTML = first ? `
 				${tagOpen(first, 'cal-hero reveal is-in')} style="--k:${KIND[first.kind].c}">
 					<span class="cal-snap cal-snap--big${first.photo ? '' : ' is-ic'}"><span class="cal-snap__tape" aria-hidden="true"></span>${snap(first, 64)}</span>
@@ -177,14 +186,14 @@ export default {
 						${first.sub ? `<small class="cal-hero__s" dir="auto">${esc(first.sub)}</small>` : ''}
 						<span class="cal-hero__when">${esc(dayName(first.date))} ${num(first.date.getDate())} ${esc(monthName(first.date.getMonth()))}</span>
 					</span>
-					<span class="cal-stamp" aria-label="${esc(inDays(daysTo(first.date)))}">${left(first)}</span>
+					<span class="cal-stamp" aria-label="${esc(when(first.date))}">${left(first)}</span>
 				${tagClose(first)}
 				<ol class="cal-stubs">${rest.map((e, i) => `<li class="reveal is-in" style="--k:${KIND[e.kind].c}; --i:${i}">
 					${tagOpen(e, 'cal-stub')}>
 						<span class="cal-stub__pg"><small>${esc(monthName(e.date.getMonth()))}</small><b>${num(e.date.getDate())}</b></span>
 						<span class="cal-stub__tx"><b dir="auto">${esc(e.title)}</b>${e.sub ? `<small dir="auto">${esc(e.sub)}</small>` : ''}</span>
 						<span class="cal-snap cal-snap--sm${e.photo ? '' : ' is-ic'}">${snap(e, 22)}</span>
-						<em class="cal-stub__in">${esc(inDays(daysTo(e.date)))}</em>
+						<em class="cal-stub__in">${esc(when(e.date))}</em>
 					${tagClose(e)}</li>`).join('')}</ol>` : `<p class="empty">${L('مفيش مناسبات لسه', 'No occasions yet')}</p>`;
 			hydrate($('#cal-next', main));
 		};
@@ -204,7 +213,7 @@ export default {
 					const date = new Date(m.getFullYear(), m.getMonth(), d), key = iso(date), evs = byDay.get(key) || [];
 					const isToday = key === iso(today());
 					cells += evs.length
-						? `<button type="button" class="cal-d has-ev${isToday ? ' is-today' : ''}" data-day="${key}" data-tip="${TYPE[evs[0].kind] || 'cora'}" style="--k:${KIND[evs[0].kind].c}" aria-label="${esc(`${num(d)} ${monthName(m.getMonth())}: ${evs.map((e) => e.title).join('، ')}`)}">${num(d)}</button>`
+						? `<button type="button" class="cal-d has-ev${isToday ? ' is-today' : ''}${evs.every((e) => e.past) ? ' is-past' : ''}${evs.some((e) => e.late) ? ' is-late' : ''}" data-day="${key}" data-tip="${TYPE[evs[0].kind] || 'cora'}" style="--k:${KIND[evs[0].kind].c}" aria-label="${esc(`${num(d)} ${monthName(m.getMonth())}: ${evs.map((e) => e.title).join('، ')}`)}">${num(d)}</button>`
 						: `<span class="cal-d${isToday ? ' is-today' : ''}">${num(d)}</span>`;
 				}
 				const count = [...byDay.keys()].filter((key) => key.startsWith(iso(m).slice(0, 7))).length;
@@ -220,8 +229,8 @@ export default {
 			$('#fd-list', main).innerHTML = items.length ? items.map((f, i) => {
 				const t = ftype(f.type), dd = daysTo(f.next);
 				const yrs = f.noYear ? 0 : f.next.getFullYear() - +String(f.date).slice(0, 4);
-				return `<article class="fd-card reveal is-in${dd === 0 ? ' is-today' : ''}" style="--c:${FLAGS[i % FLAGS.length]}">
-					<span class="fd-card__ic" aria-hidden="true">${doodle(t.icon, 30)}</span>
+				return `<article class="fd-card reveal is-in${dd === 0 ? ' is-today' : ''}${f.late ? ' is-late' : ''}" style="--c:${FLAGS[i % FLAGS.length]}">
+					<span class="fd-card__ic" aria-hidden="true">${doodle(f.late ? 'heart' : t.icon, 30)}</span>
 					<div class="fd-card__tx">
 						<h3 dir="auto">${esc(ftitle(f))}</h3>
 						<p>${[f.rel, longDate(f.date).replace(f.noYear ? /\s*\S+$/ : /$^/, '')].filter(Boolean).map(esc).join(' · ')}</p>
@@ -237,7 +246,8 @@ export default {
 		/* everything again, from the lists as they are now */
 		const paint = () => {
 			events = gather(s, fam.items || [], capsules);
-			coming = events.slice(0, 8);
+			ahead = events.filter((e) => !e.past);
+			coming = ahead.slice(0, 8);
 			k = 0;
 			byDay = new Map();
 			for (const e of events) { const key = iso(e.date); (byDay.get(key) || byDay.set(key, []).get(key)).push(e); }
@@ -254,7 +264,7 @@ export default {
 			html: (el) => {
 				const evs = byDay.get(el.dataset.day) || [], d = parse(el.dataset.day);
 				const more = evs.length - 3;
-				return `<p class="ctip__when">${esc(dayName(d))} ${num(d.getDate())} ${esc(monthName(d.getMonth()))} · ${esc(inDays(daysTo(d)))}</p>
+				return `<p class="ctip__when">${esc(dayName(d))} ${num(d.getDate())} ${esc(monthName(d.getMonth()))} · ${esc(when(d))}</p>
 					${evs.slice(0, 3).map((ev) => `<p class="ctip__ev" style="--k:${KIND[ev.kind].c}"><i aria-hidden="true">${doodle(ev.icon, 16)}</i><span><b dir="auto">${esc(ev.title)}</b>${ev.sub ? `<small dir="auto">${esc(ev.sub)}</small>` : ''}</span></p>`).join('')}
 					${more > 0 ? `<p class="ctip__more">${L(`و${num(more)} كمان`, `and ${more} more`)}</p>` : ''}`;
 			}
@@ -278,7 +288,7 @@ export default {
 			pop.innerHTML = `<div class="cmodal__in" style="--k:${KIND[evs[0]?.kind || 'us'].c}">
 				<header class="cmodal__hd cal-pop__hd">
 					<span class="cal-pop__pg" aria-hidden="true"><small>${esc(monthName(d.getMonth()))}</small><b>${num(d.getDate())}</b></span>
-					<h2><span class="cal-pop__w">${esc(dayName(d))} ${num(d.getDate())} ${esc(monthName(d.getMonth()))} ${num(d.getFullYear()).replace(/[٬,]/g, '')}</span><em>${esc(inDays(daysTo(d)))}</em></h2>
+					<h2><span class="cal-pop__w">${esc(dayName(d))} ${num(d.getDate())} ${esc(monthName(d.getMonth()))} ${num(d.getFullYear()).replace(/[٬,]/g, '')}</span><em>${esc(when(d))}</em></h2>
 					<button type="button" class="cmodal__x" aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button>
 				</header>
 				<ul class="cal-pop__list">${evs.map((ev, i) => `<li style="--k:${KIND[ev.kind].c}; --i:${i}">
@@ -317,7 +327,7 @@ export default {
 
 		/* everything into the phone's calendar */
 		$('#cal-ics', main).onclick = () => {
-			const blob = new Blob([ics(events.map((e) => ({ date: e.date, title: e.title, yearly: e.yearly })))], { type: 'text/calendar' });
+			const blob = new Blob([ics(ahead.map((e) => ({ date: e.date, title: e.title, yearly: e.yearly })))], { type: 'text/calendar' });
 			const a = document.createElement('a');
 			a.href = URL.createObjectURL(blob);
 			a.download = 'our-occasions.ics';

@@ -1550,3 +1550,9 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 	.calb__pad { width: min(330px, 100%); margin-top: 6px; }
 	.calb__pad::before { display: none; }
 }
+/* days gone by this month, faded; a day we remember someone we've lost, in a quiet white with a soft ring */
+button.cal-d.is-past { opacity: 0.5; }
+button.cal-d.is-past:hover, button.cal-d.is-past.is-on { opacity: 1; }
+button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed; box-shadow: 0 0 0 3px color-mix(in srgb, #6d4bb3 22%, transparent); }
+.fd-card.is-late { background: color-mix(in srgb, #6d4bb3 7%, var(--card)); }
+.fd-card.is-late .fd-card__ic { color: #6d4bb3; background: color-mix(in srgb, #6d4bb3 15%, #fff); }
