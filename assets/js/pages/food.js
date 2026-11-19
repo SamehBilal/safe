@@ -87,7 +87,7 @@ export default {
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('أكلنا', 'Our food'), L('المطاعم اللي بنحبها، والمنيو بتاع كل واحد — واللي دايماً بنطلبه', 'The places we love, each with its menu — and what we always order'), [{ href: 'food.html', ar: 'أكلنا', en: 'Our food' }], [['dinner', 'عشا', 'Dinner'], ['coffee', 'قهوة', 'Coffee'], ['scooter', 'دليفري', 'Delivery'], ['heart', 'أكلتنا', 'Our dish']])}
+		${pageHead(L('أكلنا', 'Our food'), L('المطاعم اللي بنحبها، والمنيو بتاع كل واحد — واللي دايماً بنطلبه', 'The places we love, each with its menu — and what we always order'), [{ href: 'food.html', ar: 'أكلنا', en: 'Our food' }], { band: `<div class="lp-band fm-band" id="fm-band"><div class="fm-board"><p class="fm-board__h">${L('مطاعمنا', 'Our places')}</p><p class="fm-board__wait">${L('بنكتب المنيو…', 'Chalking the menu…')}</p></div></div>` })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="chips fm-places" role="toolbar" aria-label="${L('المطاعم', 'Restaurants')}" id="fm-places"></div>
 			<div class="fm-stage" id="fm-stage"><p class="empty">${L('بنجيب المطاعم…', 'Fetching the restaurants…')}</p></div>
@@ -130,15 +130,39 @@ export default {
 		const all = () => (data.items || []).slice();
 		const close = () => { fm?.classList.remove('is-open', 'is-in', 'no-delay'); $('.fm__card', fm || stage)?.remove(); };
 
+		/* the band: a café chalkboard on an easel — «مطاعمنا» chalked at the top and every place a line of the menu, the
+		   dots running out to the year we first went where the price would be; tap one and its menu opens below */
+		const board = $('#fm-band', main);
+		const drawBoard = () => {
+			if (!board) return;
+			const xs = all();
+			const yr = (r) => String(r.date || '').slice(0, 4);
+			const line = (r) => `<li><button type="button" data-r="${esc(r.id)}"${r.id === cur ? ' class="is-on"' : ''}><span dir="auto">${esc(App.t(r.name))}</span><i aria-hidden="true"></i><b>${yr(r) ? num(+yr(r)).replace(/[٬,]/g, '') : '♥'}</b></button></li>`;
+			board.innerHTML = `<div class="fm-board">
+				<span class="fm-board__cup" aria-hidden="true">${doodle('coffee', 44)}</span>
+				<p class="fm-board__h">${L('مطاعمنا', 'Our places')}</p>
+				${xs.length ? `<ol class="fm-board__list">${xs.map(line).join('')}</ol>` : `<p class="fm-board__wait">${L('لسه مفيش مطاعم', 'No places yet')}</p>`}
+				<p class="fm-board__foot">${L('والجاي أحلى ♥', 'More to come ♥')}</p>
+			</div>`;
+		};
+		board?.addEventListener('click', (e) => {
+			const b = e.target.closest('[data-r]');
+			if (!b) return;
+			show(b.dataset.r);
+			history.replaceState(history.state, '', '#' + b.dataset.r);
+			stage.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+		});
+
 		function show(id) {
 			const r = all().find((x) => x.id === id) || all()[0];
-			if (!r) { stage.innerHTML = `<p class="empty">${Y('لسه مفيش مطاعم… ضيف أول مطعم بنحبه ♥', 'لسه مفيش مطاعم… ضيفي أول مطعم بنحبه ♥', 'No restaurants yet… add the first place we love ♥')}</p>`; chips.innerHTML = ''; return; }
+			if (!r) { stage.innerHTML = `<p class="empty">${Y('لسه مفيش مطاعم… ضيف أول مطعم بنحبه ♥', 'لسه مفيش مطاعم… ضيفي أول مطعم بنحبه ♥', 'No restaurants yet… add the first place we love ♥')}</p>`; chips.innerHTML = ''; drawBoard(); return; }
 			cur = r.id;
 			stage.innerHTML = menuHTML(r);
 			fm = $('#fm', stage);
 			live.hydrateSketches(stage);
 			chips.innerHTML = all().map((x) => `<button class="chip${x.id === cur ? ' is-on' : ''}" type="button" data-r="${esc(x.id)}" style="--c:${esc(x.color || COLORS[0])}">${esc(App.t(x.name))}</button>`).join('');
 			chips.hidden = all().length < 2;
+			drawBoard();
 			const mine = $('#fm-mine', main);
 			const canDel = live.canWrite() && (r.by === live.me() || !r.by);
 			// a place without its menu yet: a button that opens the form with its name in, so the menu lands on it
