@@ -4,12 +4,18 @@ import * as live from '../live.js';
 import { setupNote } from './journal.js';
 
 const KEY = 'us.wishes';
-const JAR = `<svg viewBox="0 0 200 260" aria-hidden="true">
-	<rect x="30" y="70" width="140" height="180" rx="34" fill="rgba(230,247,255,.55)" stroke="#27525c" stroke-width="5"/>
-	<path d="M138 92c10 30 10 110 0 140" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".8"/>
-	<rect x="48" y="52" width="104" height="22" rx="6" fill="#cfe3ec" stroke="#27525c" stroke-width="5"/>
-	<g class="jar__lid"><rect x="40" y="26" width="120" height="28" rx="10" fill="#66a8b8" stroke="#27525c" stroke-width="5"/><path d="M56 38h88" stroke="#27525c" stroke-width="3" opacity=".35"/></g>
-</svg>`;
+const JAR = `<svg viewBox="0 0 200 270" aria-hidden="true">
+	<path class="jar__shadow" d="M44 78c-14 14-16 32-16 60v84c0 26 14 38 40 38h76c26 0 40-12 40-38v-84c0-28-2-46-16-60Z"/>
+	<path class="jar__glass" d="M40 74c-14 14-16 32-16 60v84c0 26 14 38 40 38h72c26 0 40-12 40-38v-84c0-28-2-46-16-60Z"/>
+	<path d="M146 98c9 28 10 104 1 136" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".75"/>
+	<path d="M58 104c-5 20-5 50-3 66" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".5"/>
+	<path class="jar__neck" d="M48 56h104c3 0 4 2 4 5v12c0 3-1 4-4 4H48c-3 0-4-1-4-4V61c0-3 1-5 4-5Z"/>
+	<g class="jar__lid">
+		<path class="jar__cloth" d="M30 46c18-10 44-18 70-18s52 8 70 18c-4 6-6 12-4 20-20 4-44 6-66 6s-46-2-66-6c2-8 0-14-4-20Z"/>
+		<path d="M30 46c18-10 44-18 70-18s52 8 70 18" fill="none" stroke="#37353f" stroke-width="2" stroke-dasharray="4 5" opacity=".5"/>
+		<path class="jar__string" d="M36 62c22 6 106 6 128 0M150 64c6 8 14 10 20 6M150 64c2 10-2 16-8 18"/>
+	</g>
+	</svg>`;
 
 /* The night sky over the jar, after indextwo's «BANANA 🍌» pen on CodePen: the wish jar drawn as a glowing neon line
    whose dashes keep marching round it, in a sky of little twinkling stars that keep clear of the jar and fade
@@ -70,13 +76,21 @@ export default {
 		${pageHead(L('برطمان الأمنيات', 'Wish jar'), L('أمنياتنا إحنا الاتنين، في برطمان واحد', 'Both our wishes, in one jar'), [{ href: 'wishes.html', ar: 'برطمان الأمنيات', en: 'Wish jar' }], { band: SKY })}
 		${live.canWrite() ? '' : `<div class="wrap narrow" style="margin-top:16px">${setupNote()}</div>`}
 		<section class="sec sec--top"><div class="wrap jar-wrap">
-			<form class="wish-form reveal" id="wish-form" autocomplete="off">
-				<label class="sr-only" for="wish-input">${L('نفسي…', 'I wish…')}</label>
-				<input id="wish-input" dir="auto" maxlength="140" placeholder="${L('نفسي…', 'I wish…')}" enterkeyhint="send">
-				<button type="submit" aria-label="${Y('حط الأمنية في البرطمان', 'حطي الأمنية في البرطمان', 'Put the wish in the jar')}">★</button>
-			</form>
-			<p class="wish-hint">${Y('دوس على أي نجمة عشان تقرا الأمنية اللي جواها', 'دوسي على أي نجمة عشان تقري الأمنية اللي جواها', 'Tap a star to read the wish inside')}</p>
-			<div class="jar" id="jar">${JAR}<div class="jar__stars" id="jar-stars"></div></div>
+			<div class="wj">
+				<form class="wish-form reveal" id="wish-form" autocomplete="off">
+					<span class="wish-form__tape" aria-hidden="true"></span>
+					<label class="wish-form__h" for="wish-input">${L('نفسي…', 'I wish…')}</label>
+					<textarea id="wish-input" dir="auto" maxlength="140" rows="3" enterkeyhint="send" placeholder="${L('اكتب أمنيتك هنا…', 'Write your wish here…')}"></textarea>
+					<div class="wish-form__ft">
+						<small class="wish-form__n" id="wish-n" aria-live="off">${L('١٤٠ حرف', '140 letters')}</small>
+						<button type="submit" class="wish-form__go"><span aria-hidden="true">★</span> ${Y('حطها في البرطمان', 'حطيها في البرطمان', 'Into the jar')}</button>
+					</div>
+				</form>
+				<div class="wj__jar">
+					<div class="jar" id="jar">${JAR}<span class="jar__tag" aria-hidden="true">${L('أمنياتنا ♥', 'our wishes ♥')}</span><div class="jar__stars" id="jar-stars"></div></div>
+					<p class="wish-hint"><span aria-hidden="true">↶</span> ${Y('دوس على أي نجمة عشان تقرا الأمنية اللي جواها', 'دوسي على أي نجمة عشان تقري الأمنية اللي جواها', 'Tap a star to read the wish inside')}</p>
+				</div>
+			</div>
 			<div class="wish-note" id="wish-note" aria-live="polite" hidden></div>
 			<p class="wish-toast" id="wish-toast" aria-live="polite"></p>
 		</div></section>
@@ -128,6 +142,9 @@ export default {
 		const skyEl = $('#wish-sky', main);
 		const count = () => { $('#sky-count', main).textContent = wishes.length ? L(`${wishes.length.toLocaleString('ar-EG')} ${wishes.length === 1 ? 'أمنية' : wishes.length <= 10 ? 'أمنيات' : 'أمنية'} في البرطمان ♥`, `${wishes.length} ${wishes.length === 1 ? 'wish' : 'wishes'} in the jar ♥`) : L('البرطمان مستني أول أمنية ♥', 'The jar is waiting for its first wish ♥'); };
 		if (skyEl) { sky(skyEl); count(); }
+		const left = () => { const n = 140 - input.value.length; $('#wish-n', main).textContent = L(`${n.toLocaleString('ar-EG')} حرف`, `${n} letters`); };
+		input.addEventListener('input', left);
+		input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); } });
 		form.onsubmit = async (e) => {
 			e.preventDefault();
 			const text = input.value.trim();
@@ -137,6 +154,7 @@ export default {
 			try { wishes = (await live.save('wishes', (d) => { (d.items = d.items || []).push(w); })).items; }
 			catch (err) { toast.textContent = live.why(err); return; }
 			input.value = '';
+			left();
 			const from = form.getBoundingClientRect();
 			const to = jar.getBoundingClientRect();
 			const star = Object.assign(document.createElement('span'), { className: 'flying-star', innerHTML: doodle('star', 30, 'dd--fill') });
