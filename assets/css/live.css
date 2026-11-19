@@ -1537,3 +1537,16 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 :lang(ar) .wish-form textarea { font-size: 1.55rem; }
 .jar__tag { top: 50%; padding: 10px 20px 8px; font-size: 1.5rem; rotate: -3deg; }
 :lang(ar) .jar__tag { font-size: 1.3rem; }
+
+/* ---------- «تقويمنا»'s band, now shared with the family: their bunting strung across, the tear-off calendar hanging
+   from the lowest point of its string (the string bottoms out at 8.5% of the band's width; the drawing is 23% tall,
+   so the calendar climbs back 14.5% of the width to meet it) ---------- */
+.calb { position: relative; width: min(1100px, 100% - 2 * var(--gutter)); margin: clamp(8px, 2vw, 20px) auto clamp(18px, 3vw, 34px); text-align: center; }
+.calb .fd-svg { display: block; }
+.calb__pad { position: relative; z-index: 2; width: min(380px, 100%); margin: -14.5% auto 0; }
+.calb__pad::before { content: ''; position: absolute; top: -10px; left: 50%; width: 2px; height: 14px; translate: -50% 0; background: var(--ink, #37353f); }
+.calb .fd-next { margin-top: 18px; }
+@media (max-width: 700px) {
+	.calb__pad { width: min(330px, 100%); margin-top: 6px; }
+	.calb__pad::before { display: none; }
+}

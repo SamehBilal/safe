@@ -88,7 +88,7 @@ export default {
 			<p class="form-msg" id="rm-msg" role="status"></p>
 			<div class="rm-photos" id="rm-photos"></div>
 		</div></section>
-		${related(['calendar', 'gifts', 'famdays'])}`;
+		${related(['calendar', 'gifts', 'birthday'])}`;
 	},
 
 	async after(main, s) {

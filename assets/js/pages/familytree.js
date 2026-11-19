@@ -25,7 +25,7 @@ export default {
 			</svg></div>`
 		})}
 		<section class="sec sec--top"><div class="wrap">${treeHTML(s)}</div></section>
-		${related(['family', 'famdays', 'distances'])}`;
+		${related(['family', 'calendar', 'distances'])}`;
 	},
 	after(main, s) { return wireTree(main, s); }
 };

@@ -577,7 +577,6 @@ export const PAGES = [
 	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'you' },
 	{ href: 'wishes.html', id: 'wishes', ic: 'star', ar: 'برطمان الأمنيات', en: 'Wish jar', dar: 'أمنياتنا في أمان هنا', den: 'Our wishes, kept safe', group: 'you' },
 	{ href: 'calendar.html', id: 'calendar', ic: 'calendar', ar: 'تقويمنا', en: 'Our calendar', dar: 'كل مناسباتنا في سنة واحدة', den: 'All our occasions in one year', group: 'you' },
-	{ href: 'famdays.html', id: 'famdays', ic: 'family', ar: 'مناسبات العيلة', en: 'Family occasions', dar: 'مناسبات العيلة الكبيرة', den: 'The wider family’s big days', group: 'you' },
 	{ href: 'yearly.html', id: 'yearly', ic: 'image', ar: 'صورة كل سنة', en: 'A photo every year', dar: 'نفس الصورة، سنة ورا سنة', den: 'The same photo, year after year', group: 'you' },
 	{ href: 'ramadan.html', id: 'ramadan', ic: 'moon', ar: 'رمضان والعيد', en: 'Ramadan & Eid', dar: 'العد التنازلي، وعاداتنا، والعيدية', den: 'Countdowns, our traditions, and the Eid money', group: 'you' },
 	{ href: 'firsts.html', id: 'firsts', ic: 'steps', ar: 'أول مرة', en: 'Firsts', dar: 'أول خطوة، أول كلمة', den: 'First step, first word', group: 'you' },
