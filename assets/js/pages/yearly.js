@@ -26,7 +26,9 @@ export default {
 				<form id="yr-form" autocomplete="off">
 					<div class="f-row">
 						<label class="f"><span>${L('السنة', 'Year')}</span><input name="year" type="number" min="1980" max="${y + 1}" value="${y}" required inputmode="numeric"></label>
-						<label class="f f--grow"><span>${L('الصورة', 'Photo')}</span><input name="photo" type="file" accept="image/*" required></label>
+						<label class="f f--grow yr-drop"><span>${L('الصورة', 'Photo')}</span>
+							<span class="yr-drop__pol"><span class="yr-drop__ph" id="yr-prev">${doodle('camera', 34)}<small>${Y('اختار الصورة', 'اختاري الصورة', 'Choose the photo')}</small></span></span>
+							<input name="photo" type="file" accept="image/*" required></label>
 					</div>
 					<label class="f"><span>${L('كلمتين عن السنة دي (اختياري)', 'A few words about this year (optional)')}</span><input name="note" dir="auto" maxlength="140"></label>
 					<p class="form-msg" id="yr-msg" role="status"></p>
@@ -35,12 +37,21 @@ export default {
 			</details>
 			<div class="yr-compare" id="yr-compare" hidden>
 				<h2 class="sec__title">${L('قارن سنتين', 'Compare two years')}</h2>
-				<div class="yr-pick"><select id="yr-a" aria-label="${L('السنة الأولى', 'First year')}"></select><span>↔</span><select id="yr-b" aria-label="${L('السنة التانية', 'Second year')}"></select></div>
-				<div class="yr-slide" id="yr-slide">
-					<img class="yr-slide__b" id="yr-img-b" alt="">
-					<div class="yr-slide__a" id="yr-clip"><img id="yr-img-a" alt=""></div>
-					<input class="yr-slide__range" id="yr-range" type="range" min="0" max="100" value="50" aria-label="${Y('حرّك عشان تقارن', 'حرّكي عشان تقارني', 'Slide to compare')}">
-					<span class="yr-slide__bar" aria-hidden="true"></span>
+				<div class="yr-pick">
+					<label class="yr-tagsel"><small>${L('من', 'From')}</small><select id="yr-a" aria-label="${L('السنة الأولى', 'First year')}"></select></label>
+					<span class="yr-pick__arrow" aria-hidden="true">${App.lang === 'ar' ? '⟵' : '⟶'}</span>
+					<label class="yr-tagsel"><small>${L('لـ', 'To')}</small><select id="yr-b" aria-label="${L('السنة التانية', 'Second year')}"></select></label>
+				</div>
+				<div class="yr-frame">
+					<span class="yr-frame__tape yr-frame__tape--a" aria-hidden="true"></span><span class="yr-frame__tape yr-frame__tape--b" aria-hidden="true"></span>
+					<div class="yr-slide" id="yr-slide">
+						<img class="yr-slide__b" id="yr-img-b" alt="">
+						<div class="yr-slide__a" id="yr-clip"><img id="yr-img-a" alt=""></div>
+						<span class="yr-slide__yr yr-slide__yr--a" id="yr-lab-a"></span><span class="yr-slide__yr yr-slide__yr--b" id="yr-lab-b"></span>
+						<input class="yr-slide__range" id="yr-range" type="range" min="0" max="100" value="50" aria-label="${Y('حرّك عشان تقارن', 'حرّكي عشان تقارني', 'Slide to compare')}">
+						<span class="yr-slide__bar" aria-hidden="true"></span>
+					</div>
+					<p class="yr-frame__cap">${Y('اسحب الخط عشان تشوف الفرق', 'اسحبي الخط عشان تشوفي الفرق', 'Drag the line to see the difference')}</p>
 				</div>
 			</div>
 			<h2 class="sec__title">${L('سنة ورا سنة', 'Year after year')}</h2>
@@ -101,6 +112,8 @@ export default {
 				a.value = String(years[years.length - 1]); b.value = String(years[0]);
 				const show = () => {
 					const pa = list.find((p) => String(p.year) === a.value), pb = list.find((p) => String(p.year) === b.value);
+					$('#yr-lab-a', main).textContent = yearTxt(+a.value);
+					$('#yr-lab-b', main).textContent = yearTxt(+b.value);
 					if (pa) live.sketchURL(pa.photo).then((u) => { $('#yr-img-a', main).src = u; }).catch(() => {});
 					if (pb) live.sketchURL(pb.photo).then((u) => { $('#yr-img-b', main).src = u; }).catch(() => {});
 				};
@@ -117,6 +130,15 @@ export default {
 			try { data = await live.save('yearly', (d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); }); paint(); } catch (err) { alert(live.why(err)); }
 		});
 		const form = $('#yr-form', main);
+		const prev = $('#yr-prev', main), blank = prev.innerHTML;
+		form.photo.onchange = () => {
+			const file = form.photo.files[0];
+			if (!file) { prev.innerHTML = blank; return; }
+			const u = URL.createObjectURL(file);
+			prev.innerHTML = `<img src="${u}" alt="">`;
+			prev.firstChild.onload = () => URL.revokeObjectURL(u);
+		};
+		form.addEventListener('reset', () => { prev.innerHTML = blank; });
 		form.onsubmit = async (e) => {
 			e.preventDefault();
 			const msg = $('#yr-msg', main);
