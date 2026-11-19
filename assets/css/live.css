@@ -1397,3 +1397,9 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 .cal-snap--big { aspect-ratio: auto; height: 100%; min-height: 200px; }
 .cal-stubs { grid-auto-rows: 1fr; }
 @media (max-width: 960px) { .cal-hero { grid-template-rows: auto auto; } .cal-snap--big { aspect-ratio: 4 / 3; height: auto; } }
+/* …and it's the stubs that set that height: the polaroid takes no room of its own (height 0, then stretched to the
+   row), so it shrinks down to the stubs instead of pulling them taller */
+.cal-hero { height: 0; min-height: 100%; grid-template-rows: minmax(0, 1fr) auto; }
+.cal-snap--big { min-height: 0; }
+.cal-stubs { grid-auto-rows: auto; }
+@media (max-width: 960px) { .cal-hero { height: auto; min-height: 0; grid-template-rows: auto auto; } }
