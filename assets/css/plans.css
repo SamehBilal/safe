@@ -278,7 +278,12 @@
 .fm-places { margin-bottom: 28px; }
 .fm-places .chip.is-on { background: var(--c); border-color: var(--c); color: #fff; }
 .fm-stage { padding: 10px 0 30px; }
-.fm-mine { text-align: center; margin: 0; }
+.fm-mine { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 16px; text-align: center; margin: 0; }
+/* a place whose menu is still to be written: a note in the middle of the unfolded flyer */
+.fm-soon { display: grid; justify-items: center; align-content: center; gap: 8px; min-height: 60%; margin: 0; padding: 20px 10px; text-align: center; color: var(--fm, #c2185b); }
+.fm-soon b { font: 700 1.6rem/1.2 var(--f-hand); }
+:lang(ar) .fm-soon b { font: 800 1.1rem/1.5 var(--f-body); }
+.fm-soon span { font-size: .85rem; color: #6b6b75; }
 .fm-howto { font-size: 0.82rem; color: var(--muted); margin: -6px 0 14px; }
 .fm { --gold: #d9a93c; --menu-ink: #2a323f; position: relative; width: 33%; max-width: 360px; height: 680px; margin: 0 auto; perspective: 1800px; color: var(--menu-ink); }
 .fm__wrap, .fm__wrap > div { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 0.6s ease-in-out, box-shadow 0.6s; }

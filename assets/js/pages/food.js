@@ -69,7 +69,7 @@ function menuHTML(r) {
 				</div></div>
 				<div class="fm__back"><div class="fm__in">${dl(a, r)}</div><div class="fm__shade"></div></div>
 			</div>
-			<div class="fm__middle"><div class="fm__in">${dl(b, r)}</div><div class="fm__shade"></div></div>
+			<div class="fm__middle"><div class="fm__in">${(r.sections || []).length ? dl(b, r) : `<p class="fm-soon">${doodle(r.icon || 'dinner', 40)}<b>${L('المنيو جاي قريب', 'The menu is coming soon')}</b><span>${L('لسه هنكتب اللي فيه، وإيه اللي بنطلبه دايماً', 'We’ll write what’s on it, and what we always order')}</span></p>`}</div><div class="fm__shade"></div></div>
 			<div class="fm__right">
 				<div class="fm__front"><div class="fm__in"></div></div>
 				<div class="fm__back"><div class="fm__in">
@@ -141,8 +141,11 @@ export default {
 			chips.hidden = all().length < 2;
 			const mine = $('#fm-mine', main);
 			const canDel = live.canWrite() && (r.by === live.me() || !r.by);
-			mine.hidden = !canDel;
-			mine.innerHTML = canDel ? `<button class="link link--danger" type="button" data-del="${esc(r.id)}">${r.by ? Y('شيل المطعم ده', 'شيلي المطعم ده', 'Remove this restaurant') : Y('شيل المثال ده', 'شيلي المثال ده', 'Remove this example')}</button>` : '';
+			// a place without its menu yet: a button that opens the form with its name in, so the menu lands on it
+			const needsMenu = live.canWrite() && !(r.sections || []).length;
+			mine.hidden = !canDel && !needsMenu;
+			mine.innerHTML = [needsMenu ? `<button class="btn btn--sm btn--coral" type="button" data-menu="${esc(r.id)}">${doodle('pen', 16)} ${Y('حط المنيو بتاعه', 'حطي المنيو بتاعه', 'Add its menu')}</button>` : '',
+				canDel ? `<button class="link link--danger" type="button" data-del="${esc(r.id)}">${r.by ? Y('شيل المطعم ده', 'شيلي المطعم ده', 'Remove this restaurant') : Y('شيل المثال ده', 'شيلي المثال ده', 'Remove this example')}</button>` : ''].filter(Boolean).join(' ');
 		}
 
 		function dish(key, btn) {
@@ -222,6 +225,19 @@ export default {
 		});
 		chips.onclick = (e) => { const b = e.target.closest('[data-r]'); if (b) { show(b.dataset.r); history.replaceState(history.state, '', '#' + b.dataset.r); } };
 		$('#fm-mine', main).onclick = async (e) => {
+			const m = e.target.closest('[data-menu]');
+			if (m) {
+				const r = all().find((x) => x.id === m.dataset.menu);
+				const box = form.closest('details');
+				box.open = true;
+				form.name.value = App.t(r.name);
+				if (!form.tagline.value) form.tagline.value = App.t(r.tagline || '');
+				if (!form.cuisine.value) form.cuisine.value = App.t(r.cuisine || '');
+				if (!form.area.value) form.area.value = App.t(r.area || '');
+				box.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+				setTimeout(() => form.menu.focus({ preventScroll: true }), REDUCE ? 0 : 400);
+				return;
+			}
 			const b = e.target.closest('[data-del]');
 			if (!b || !confirm(Y('تشيل المطعم ده بالمنيو بتاعه؟', 'تشيلي المطعم ده بالمنيو بتاعه؟', 'Remove this restaurant and its menu?'))) return;
 			try { data = await live.save('food', (d) => { d.items = (d.items || []).filter((x) => x.id !== b.dataset.del); }); show(''); } catch (err) { alert(live.why(err)); }
@@ -239,9 +255,26 @@ export default {
 				area: form.area.value.trim() || undefined, phone: form.phone.value.trim() || undefined, order: form.order.value.trim() || undefined,
 				color: COLORS[all().length % COLORS.length], icon: 'dinner', sections, by: live.me(), at: Date.now()
 			};
+			// a place already on the list without its menu (same name, in either language) gets the menu, not a twin
+			const key = (v) => String(v || '').trim().toLowerCase();
+			const named = (x) => [x.name?.ar, x.name?.en, App.t(x.name)].some((n) => key(n) && key(n) === key(r.name));
+			const old = all().find((x) => named(x) && !(x.sections || []).length);
 			try {
 				r.link = safeLink(form.link.value.trim()) || undefined;
 				if (form.pic.files[0]) r.img = await live.putSketch(await shrinkPhoto(form.pic.files[0], 500));
+				if (old) {
+					data = await live.save('food', (d) => {
+						const x = (d.items || []).find((y) => y.id === old.id);
+						if (!x) return;
+						x.sections = sections;
+						for (const k of ['tagline', 'cuisine', 'area', 'phone', 'order', 'link', 'img']) if (r[k]) x[k] = r[k];
+					});
+					form.reset();
+					msg.textContent = L('المنيو اتحط ♥', 'Menu added ♥');
+					show(old.id);
+					stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+					return;
+				}
 				data = await live.save('food', (d) => { (d.items = d.items || []).push(r); });
 				form.reset();
 				msg.textContent = L('المنيو اتحط ♥', 'Menu added ♥');
