@@ -17,6 +17,10 @@ const FAV = { him: () => App.t(App.story.him), her: () => App.t(App.story.her), 
 const safeLink = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
 const EYE = '<svg class="fm-eye" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>';
 const phone = () => matchMedia('(max-width: 960px)').matches;
+/** A place's logo as a little round badge — its first letter in its colour until the logo is in. */
+const badge = (r, cls) => r.img
+	? `<span class="${cls} has-pic" aria-hidden="true"><img data-sketch="${esc(r.img)}" alt=""></span>`
+	: `<span class="${cls}" aria-hidden="true" style="--c:${esc(r.color || COLORS[0])}">${esc([...String(App.t(r.name) || '♥').replace(/^(ال|thes+)/i, '')][0] || '♥')}</span>`;
 const price = (p) => (p ? L(`${num(+p)} ج`, `EGP ${(+p).toLocaleString('en')}`) : '');
 
 /** "# Section" lines start a section; "Dish | price | what's in it | him/her/both" lines are its dishes. */
@@ -137,13 +141,14 @@ export default {
 			if (!board) return;
 			const xs = all();
 			const yr = (r) => String(r.date || '').slice(0, 4);
-			const line = (r) => `<li><button type="button" data-r="${esc(r.id)}"${r.id === cur ? ' class="is-on"' : ''}><span dir="auto">${esc(App.t(r.name))}</span><i aria-hidden="true"></i><b>${yr(r) ? num(+yr(r)).replace(/[٬,]/g, '') : '♥'}</b></button></li>`;
+			const line = (r) => `<li><button type="button" data-r="${esc(r.id)}"${r.id === cur ? ' class="is-on"' : ''}>${badge(r, 'fm-board__logo')}<span dir="auto">${esc(App.t(r.name))}</span><i aria-hidden="true"></i><b>${yr(r) ? num(+yr(r)).replace(/[٬,]/g, '') : '♥'}</b></button></li>`;
 			board.innerHTML = `<div class="fm-board">
 				<span class="fm-board__cup" aria-hidden="true">${doodle('coffee', 44)}</span>
 				<p class="fm-board__h">${L('مطاعمنا', 'Our places')}</p>
 				${xs.length ? `<ol class="fm-board__list">${xs.map(line).join('')}</ol>` : `<p class="fm-board__wait">${L('لسه مفيش مطاعم', 'No places yet')}</p>`}
 				<p class="fm-board__foot">${L('والجاي أحلى ♥', 'More to come ♥')}</p>
 			</div>`;
+			live.hydrateSketches(board);
 		};
 		board?.addEventListener('click', (e) => {
 			const b = e.target.closest('[data-r]');
@@ -160,15 +165,17 @@ export default {
 			stage.innerHTML = menuHTML(r);
 			fm = $('#fm', stage);
 			live.hydrateSketches(stage);
-			chips.innerHTML = all().map((x) => `<button class="chip${x.id === cur ? ' is-on' : ''}" type="button" data-r="${esc(x.id)}" style="--c:${esc(x.color || COLORS[0])}">${esc(App.t(x.name))}</button>`).join('');
+			chips.innerHTML = all().map((x) => `<button class="chip${x.id === cur ? ' is-on' : ''}" type="button" data-r="${esc(x.id)}" style="--c:${esc(x.color || COLORS[0])}">${badge(x, 'fm-chip-logo')}${esc(App.t(x.name))}</button>`).join('');
 			chips.hidden = all().length < 2;
+			live.hydrateSketches(chips);
 			drawBoard();
 			const mine = $('#fm-mine', main);
 			const canDel = live.canWrite() && (r.by === live.me() || !r.by);
 			// a place without its menu yet: a button that opens the form with its name in, so the menu lands on it
 			const needsMenu = live.canWrite() && !(r.sections || []).length;
-			mine.hidden = !canDel && !needsMenu;
+			mine.hidden = !canDel && !needsMenu && !live.canWrite();
 			mine.innerHTML = [needsMenu ? `<button class="btn btn--sm btn--coral" type="button" data-menu="${esc(r.id)}">${doodle('pen', 16)} ${Y('حط المنيو بتاعه', 'حطي المنيو بتاعه', 'Add its menu')}</button>` : '',
+				live.canWrite() ? `<label class="btn btn--sm fm-logo-btn">${doodle('camera', 16)} ${r.img ? Y('غيّر اللوجو', 'غيّري اللوجو', 'Change the logo') : Y('حط اللوجو', 'حطي اللوجو', 'Add the logo')}<input type="file" accept="image/*" data-logo="${esc(r.id)}" hidden></label>` : '',
 				canDel ? `<button class="link link--danger" type="button" data-del="${esc(r.id)}">${r.by ? Y('شيل المطعم ده', 'شيلي المطعم ده', 'Remove this restaurant') : Y('شيل المثال ده', 'شيلي المثال ده', 'Remove this example')}</button>` : ''].filter(Boolean).join(' ');
 		}
 
@@ -265,6 +272,17 @@ export default {
 			const b = e.target.closest('[data-del]');
 			if (!b || !confirm(Y('تشيل المطعم ده بالمنيو بتاعه؟', 'تشيلي المطعم ده بالمنيو بتاعه؟', 'Remove this restaurant and its menu?'))) return;
 			try { data = await live.save('food', (d) => { d.items = (d.items || []).filter((x) => x.id !== b.dataset.del); }); show(''); } catch (err) { alert(live.why(err)); }
+		};
+
+		$('#fm-mine', main).onchange = async (e) => {
+			const inp = e.target.closest('[data-logo]');
+			const file = inp?.files[0];
+			if (!file) return;
+			try {
+				const id = await live.putSketch(await shrinkPhoto(file, 500));
+				data = await live.save('food', (d) => { const x = (d.items || []).find((y) => y.id === inp.dataset.logo); if (x) x.img = id; });
+				show(inp.dataset.logo);
+			} catch (err) { alert(live.why(err)); }
 		};
 
 		const form = $('#fm-form', main);

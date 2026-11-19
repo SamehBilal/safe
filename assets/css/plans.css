@@ -340,8 +340,8 @@
 .fm__x { position: absolute; top: 22px; inset-inline-end: 22px; width: 26px; height: 26px; appearance: none; border: 0; cursor: pointer; color: #fff; background: var(--menu-ink); font-size: 0.8rem; }
 /* a dish with a photo or a link carries the little eye, like the original's "view details" */
 .fm-eye { flex: none; align-self: center; color: var(--fm); opacity: 0.75; }
-.fm__logo.has-pic { overflow: hidden; background: var(--menu-ink); }
-.fm__logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.fm__logo.has-pic { overflow: hidden; background: #fff; }
+.fm__logo img { width: 100%; height: 100%; object-fit: contain; padding: 8%; border-radius: 50%; }
 .fm__site { display: inline-block; margin-top: 10px; font-weight: 800; font-size: 0.85rem; color: var(--fm); }
 .fm__site::after, .fm__go::after { content: ' →'; }
 [dir='rtl'] .fm__site::after, [dir='rtl'] .fm__go::after { content: ' ←'; }
@@ -484,3 +484,13 @@
 :lang(ar) .fm-board__foot { font: 700 .9rem/1.6 var(--f-body); }
 .fm-board__wait { margin: 0; font: 700 1.3rem var(--f-hand); opacity: .7; }
 @media (max-width: 560px) { .fm-board__list { grid-template-columns: 1fr; } .fm-board { border-width: 9px; } }
+/* each place's logo — on the chalkboard, on its chip and on the menu's cover; its first letter in its colour until it's in */
+.fm-board__logo, .fm-chip-logo { flex: none; display: inline-grid; place-items: center; border-radius: 50%; overflow: hidden; font: 700 1rem/1 var(--f-body); color: #fff; background: var(--c, #8a5a2b); }
+.fm-board__logo { width: 30px; height: 30px; align-self: center; box-shadow: 0 0 0 2px rgba(241, 239, 230, .7); }
+.fm-chip-logo { width: 24px; height: 24px; margin-inline-end: 7px; font-size: .8rem; box-shadow: 0 0 0 1.5px var(--ink, #333); }
+.fm-board__logo.has-pic, .fm-chip-logo.has-pic { background: #fff; }
+.fm-board__logo img, .fm-chip-logo img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
+.fm-places .chip { display: inline-flex; align-items: center; }
+.fm-board__list button { align-items: center; }
+.fm-board__list i { translate: 0 5px; }
+.fm-logo-btn { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
