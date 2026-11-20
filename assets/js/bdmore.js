@@ -49,7 +49,11 @@ export function wallHTML(member, past) {
 				<b dir="auto">${esc(T(m.title))}</b>
 				<small>${esc(tag(turned))} · ${num(+m.date.slice(0, 4)).replace(/[٬,]/g, '')}</small>
 			</a></li>`).join('')}</ol>
-		${past.some((p) => p.shots.length > 1) ? `<div class="bdw__strip" aria-label="${L('صور من أعياد الميلاد', 'Photos from the birthdays')}">${past.flatMap((p) => p.shots.slice(1, 9).map((ph) => `<a href="moment.html?id=${encodeURIComponent(p.m.id)}">${img(ph, T(p.m.title))}</a>`)).slice(0, 24).join('')}</div>` : ''}
+		${past.some((p) => p.shots.length > 1) ? `<div class="bdw__film">
+			<button type="button" class="bdw__arr bdw__arr--prev" data-go="-1" aria-label="${L('الصور اللي قبل', 'Previous photos')}"><span aria-hidden="true">${App.lang === 'ar' ? '→' : '←'}</span></button>
+			<div class="bdw__strip" aria-label="${L('صور من أعياد الميلاد', 'Photos from the birthdays')}">${past.flatMap((p) => p.shots.slice(1, 9).map((ph) => `<a href="moment.html?id=${encodeURIComponent(p.m.id)}">${img(ph, T(p.m.title))}</a>`)).slice(0, 24).join('')}</div>
+			<button type="button" class="bdw__arr bdw__arr--next" data-go="1" aria-label="${L('الصور اللي بعد', 'Next photos')}"><span aria-hidden="true">${App.lang === 'ar' ? '←' : '→'}</span></button>
+		</div>` : ''}
 	</div></section>`;
 }
 
@@ -67,6 +71,21 @@ export function filmstrip(root) {
 		e.preventDefault();
 		strip.scrollBy({ left: (document.documentElement.dir === 'rtl' ? -1 : 1) * e.deltaY });
 	}, { passive: false });
+	// the arrows move a screenful at a time, in the reading direction; each one fades out at its end of the strip
+	const film = strip.closest('.bdw__film'), rtl = () => document.documentElement.dir === 'rtl';
+	const ends = () => {
+		const max = strip.scrollWidth - strip.clientWidth, at = Math.abs(strip.scrollLeft);
+		film?.classList.toggle('is-start', at <= 2);
+		film?.classList.toggle('is-end', at >= max - 2);
+	};
+	film?.addEventListener('click', (e) => {
+		const b = e.target.closest('[data-go]');
+		if (!b) return;
+		strip.scrollBy({ left: +b.dataset.go * (rtl() ? -1 : 1) * strip.clientWidth * 0.8, behavior: REDUCE ? 'auto' : 'smooth' });
+	});
+	strip.addEventListener('scroll', ends, { passive: true });
+	new ResizeObserver(ends).observe(strip);
+	ends();
 }
 
 /* ---------- the age, counting up live ---------- */

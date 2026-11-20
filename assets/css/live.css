@@ -1648,3 +1648,15 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 }
 :root:not([data-theme='dark']) .sky--band { margin-bottom: clamp(22px, 3vw, 34px); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .sky--band { margin-bottom: 0; } }
+/* the filmstrip's arrows: round ink buttons on each end, half over the film; the one at the strip's end fades away */
+.bdw__film { position: relative; margin-top: 34px; }
+.bdw__film .bdw__strip { margin-top: 0; }
+.bdw__arr { position: absolute; z-index: 2; top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; font: 800 1.3rem/1 var(--f-body); color: #2b2b33; background: #ffd84a; border: 1.5px solid var(--ink, #37353f); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink, #37353f); cursor: pointer; transition: opacity 0.25s, scale 0.15s; }
+.bdw__arr--prev { inset-inline-start: -16px; }
+.bdw__arr--next { inset-inline-end: -16px; }
+.bdw__arr:hover { scale: 1.08; }
+.bdw__arr:active { scale: 0.95; }
+.bdw__arr:focus-visible { outline: 2px dashed var(--coral-deep, #d9534f); outline-offset: 3px; }
+.bdw__film.is-start .bdw__arr--prev, .bdw__film.is-end .bdw__arr--next { opacity: 0; pointer-events: none; }
+@media (max-width: 600px) { .bdw__arr { width: 36px; height: 36px; font-size: 1.1rem; } .bdw__arr--prev { inset-inline-start: -8px; } .bdw__arr--next { inset-inline-end: -8px; } }
+@media (prefers-reduced-motion: reduce) { .bdw__arr { transition: none; } }
