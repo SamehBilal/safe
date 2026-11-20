@@ -1632,3 +1632,19 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 /* the photo a popped balloon lets out is laid inside its polaroid's frame, so a tall picture can't spill out of it */
 .bdg__snap { box-sizing: border-box; overflow: hidden; }
 .bdg__snap img, .bdg__snap video { position: absolute; top: 8px; left: 8px; width: calc(100% - 16px); height: calc(100% - 38px); object-fit: cover; }
+
+/* ---------- the wish jar's band in the light theme: a window cut into the night, so the neon still glows — a piece of
+   dark-blue paper taped onto the page (ink edge, yellow offset shadow), a crescent moon, the stars and the count
+   in their night colours ---------- */
+:root:not([data-theme='dark']) .sky--band { position: relative; background: radial-gradient(120% 95% at 50% 0%, #2f4670 0%, #1d2a49 55%, #151c33 100%); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--hl-yellow, #fdc830), 0 18px 34px -16px rgba(20, 20, 40, 0.5); }
+:root:not([data-theme='dark']) .sky--band::before { content: ''; position: absolute; z-index: 3; top: -13px; left: 50%; width: 130px; height: 28px; translate: -50% 0; rotate: -2deg; background: rgba(252, 139, 147, 0.75) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, 0.35) 6px 9px); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); }
+:root:not([data-theme='dark']) .sky--band::after { content: ''; position: absolute; z-index: 1; top: 14%; inset-inline-end: 9%; width: clamp(30px, 4vw, 50px); aspect-ratio: 1; border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * -9px) 7px 0 0 #fff4c8; filter: drop-shadow(0 0 10px rgba(255, 244, 200, 0.55)); rotate: -15deg; }
+:root:not([data-theme='dark']) .sky--band .sky__stars path { fill: #fff4c8; }
+:root:not([data-theme='dark']) .sky--band .sky__count { color: #fee3ac; text-shadow: 0 0 10px rgba(241, 196, 15, 0.6); }
+/* the dark theme keeps its open sky, no paper */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) .sky--band { background: none; border: 0; box-shadow: none; }
+	:root:not([data-theme='light']) .sky--band::before, :root:not([data-theme='light']) .sky--band::after { content: none; }
+}
+:root:not([data-theme='dark']) .sky--band { margin-bottom: clamp(22px, 3vw, 34px); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .sky--band { margin-bottom: 0; } }
