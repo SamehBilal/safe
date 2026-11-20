@@ -148,18 +148,54 @@ export default {
 			const nextOne = items[0];
 			const W = 1000, sag = (x) => { const t = x / W; return (1 - t) * (1 - t) * 20 + 2 * (1 - t) * t * 150 + t * t * 20; };
 			const w = 58, h = w * 1.25;
+			const label = (name) => `<text y="${(h * 0.34).toFixed(1)}" font-size="14">${esc(name)}</text>`;
 			band.innerHTML = `
 				<svg class="fd-svg" viewBox="0 0 ${W} 230" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
 					<path class="fd-string" d="M0 20Q${W / 2} 150 ${W} 20"/>
 					${slots.map((p, i) => {
 						const x = p * W, y = sag(x) - 1, name = flags[i], on = nextOne && name === nextOne.name;
 						return `<g class="fd-flag${on ? ' is-next' : ''}" style="--d:${(i % 5) * -0.4}s;--c:${FLAGS[i % FLAGS.length]}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})">
-							<g class="fd-flag__sw"><path d="M${-w / 2} 0H${w / 2}L0 ${h}Z"/>${name ? `<text y="${h * 0.36}" font-size="${Math.min(14, (w / Math.max(name.length, 3)) * 1.7).toFixed(1)}">${esc(name)}</text>` : `<circle cy="${h * 0.34}" r="${w * 0.09}" class="fd-dot"/>`}</g></g>`;
+							<g class="fd-flag__sw"><path d="M${-w / 2} 0H${w / 2}L0 ${h}Z"/>${name ? label(name) : `<circle cy="${h * 0.34}" r="${w * 0.09}" class="fd-dot"/>`}</g></g>`;
 					}).join('')}
 				</svg>
 				<div class="calb__pad cal-pad"><span class="cal-rings" aria-hidden="true">${'<i></i>'.repeat(7)}</span><div class="cal-stack" id="cal-stack">${coming.length ? page(coming[0]) : `<div class="cal-pg"><b class="cal-pg__d">${num(today().getDate())}</b><span class="cal-pg__t">${L('مفيش مناسبات قريبة', 'Nothing coming up')}</span></div>`}</div></div>
 				${nextOne ? `<p class="fd-next">${doodle(ftype(nextOne.type).icon, 20)} ${L('اللي جاي في العيلة:', 'Next in the family:')} <b>${esc(ftitle(nextOne))}</b> <em>${esc(inDays(daysTo(nextOne.next)))}</em></p>` : ''}`;
+			fitFlags();
 		};
+		/* the names as the browser really drew them, in the font it really used: any line still wider than its flag at
+		   that height shrinks until it fits (and again once the fonts have arrived, since they're wider than the stand-in) */
+		const fitFlags = () => {
+			const fw = 58, fh = fw * 1.25;
+			// how much a line at height y must shrink to fit the flag there (the flag narrows downwards; a little margin)
+			const shrink = (ln, y, size) => { const room = fw * (1 - (y + size * 0.25) / fh) * 0.88, len = ln.getComputedTextLength(); return room > 0 && len > room ? room / len : 1; };
+			for (const t of $$('.fd-flag text', band)) {
+				const name = t.dataset.name || t.textContent;
+				t.dataset.name = name;
+				// first, all on one line
+				t.textContent = name;
+				t.setAttribute('y', (fh * 0.34).toFixed(1));
+				t.setAttribute('font-size', '14');
+				let k = shrink(t, fh * 0.34, 14);
+				const words = name.split(/\s+/).filter(Boolean);
+				if (14 * k >= 9.5 || words.length < 2) { t.setAttribute('font-size', (14 * k).toFixed(2)); continue; }
+				// too small on one line: two lines, broken where they come out most even
+				const y1 = fh * 0.22, y2 = fh * 0.41;
+				t.removeAttribute('y');
+				t.innerHTML = `<tspan x="0" y="${y1.toFixed(1)}"></tspan><tspan x="0" y="${y2.toFixed(1)}"></tspan>`;
+				const [a, b] = t.querySelectorAll('tspan');
+				let best = 1, gap = Infinity;
+				for (let i = 1; i < words.length; i++) {
+					a.textContent = words.slice(0, i).join(' '); b.textContent = words.slice(i).join(' ');
+					const d = Math.abs(a.getComputedTextLength() - b.getComputedTextLength());
+					if (d < gap) { gap = d; best = i; }
+				}
+				a.textContent = words.slice(0, best).join(' '); b.textContent = words.slice(best).join(' ');
+				t.setAttribute('font-size', '13');
+				k = Math.min(shrink(a, y1, 13), shrink(b, y2, 13));
+				t.setAttribute('font-size', (13 * k).toFixed(2));
+			}
+		};
+		document.fonts?.ready.then(() => { if (band.isConnected) fitFlags(); });
 		let k = 0;
 		const flip = () => {
 			if (coming.length < 2 || document.hidden) return;
