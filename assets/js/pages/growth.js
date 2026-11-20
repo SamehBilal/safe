@@ -2,7 +2,7 @@ import { L, esc, num, longDate } from '../shell.js';
 import { listPage } from '../listpage.js';
 import * as live from '../live.js';
 
-/* Growth chart: the boys' height and weight over time, a line each. Heights marked on the door on «أول مرة» count too.
+/* Growth chart: the boys' height and weight over time, a line each. (Old door marks from «أول مرة», if any, still count.)
    Band: a tall ruler with each boy's latest height marked on it, a little figure standing at his mark. */
 const C = ['#e39b2d', '#5a9e6f', '#0e6990', '#c2185b'];
 let doorHeights = [];
@@ -39,7 +39,6 @@ export default listPage({
 		{ n: 'cm', t: 'num', l: ['الطول (سم)', 'Height (cm)'], step: 0.5 },
 		{ n: 'kg', t: 'num', l: ['الوزن (كجم)', 'Weight (kg)'], step: 0.1 }
 	],
-	note: ['الأطوال اللي اتعلّمت على الباب في «أول مرة» بتبان هنا كمان', 'Heights marked on the door in «Firsts» show here too'],
 	chips: { n: 'kid', opts: 'kids' },
 	sort: (a, b) => String(b.date).localeCompare(String(a.date)),
 	ready: async () => { const f = await live.load('firsts').catch(() => ({ items: [] })); doorHeights = (f.items || []).filter((x) => x.type === 'height').map((x) => ({ ...x, door: 1 })); },
