@@ -53,6 +53,22 @@ export function wallHTML(member, past) {
 	</div></section>`;
 }
 
+/** The filmstrip's scrollbar shows only while it's moving; a mouse wheel turns it sideways, so no bar is needed to scroll. */
+export function filmstrip(root) {
+	const strip = $('.bdw__strip', root);
+	if (!strip) return;
+	let t = 0;
+	strip.addEventListener('scroll', () => { strip.classList.add('is-scrolling'); clearTimeout(t); t = setTimeout(() => strip.classList.remove('is-scrolling'), 900); }, { passive: true });
+	strip.addEventListener('wheel', (e) => {
+		if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+		const max = strip.scrollWidth - strip.clientWidth, at = Math.abs(strip.scrollLeft);
+		// at either end the page scrolls on as usual
+		if (max <= 0 || (e.deltaY > 0 && at >= max - 1) || (e.deltaY < 0 && at <= 0)) return;
+		e.preventDefault();
+		strip.scrollBy({ left: (document.documentElement.dir === 'rtl' ? -1 : 1) * e.deltaY });
+	}, { passive: false });
+}
+
 /* ---------- the age, counting up live ---------- */
 export function tickerHTML(member, s) {
 	if (!member?.born) return '';

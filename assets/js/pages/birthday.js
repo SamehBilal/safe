@@ -1,7 +1,7 @@
 import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, rand, REDUCE, qs, occasions, longDate, age } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { sky } from '../bdsky.js';
-import { pastBirthdays, wallHTML, tickerHTML, startTicker, gameHTML, balloonGame } from '../bdmore.js';
+import { pastBirthdays, wallHTML, tickerHTML, startTicker, gameHTML, balloonGame, filmstrip } from '../bdmore.js';
 
 /* Birthdays: each of us, with how long until the next one and the age we're turning. The cake below is for
    whoever is next (or whose day it is today, or whoever you tap): blow out the candles, get confetti.
@@ -181,6 +181,7 @@ export default {
 		}
 		const stopTicker = p ? startTicker(main, p.member, this.s) : () => {};
 		const stopGame = balloonGame(main, this.shots || []);
+		filmstrip(main);
 		this.leave = () => { stopSky(); ro.disconnect(); io.disconnect(); stopTicker(); stopGame(); };
 
 		const candles = $$('.candle', main);

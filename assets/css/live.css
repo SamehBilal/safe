@@ -1621,3 +1621,14 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 #yr-form input[name='note'] { padding: 4px 2px; border: 0; border-bottom: 2px dashed rgba(14, 105, 144, 0.35); border-radius: 0; background: transparent; box-shadow: none; font: 700 1.5rem/1.4 var(--f-hand); color: #0e6990; }
 :lang(ar) #yr-form input[name='note'] { font: 700 1.2rem/1.6 'Aref Ruqaa', var(--f-body); }
 #yr-form input[name='note']:focus { outline: 0; border-bottom-color: var(--coral-deep, #d9534f); }
+/* the birthdays' filmstrip: its scrollbar stays hidden and only shows while it's being scrolled (bdmore.js marks it) */
+.bdw__strip { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.bdw__strip.is-scrolling { scrollbar-color: rgba(255, 253, 248, 0.55) transparent; }
+.bdw__strip::-webkit-scrollbar { height: 6px; }
+.bdw__strip::-webkit-scrollbar-button { display: none; }
+.bdw__strip::-webkit-scrollbar-track { background: transparent; }
+.bdw__strip::-webkit-scrollbar-thumb { background: transparent; border-radius: 6px; }
+.bdw__strip.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255, 253, 248, 0.55); }
+/* the photo a popped balloon lets out is laid inside its polaroid's frame, so a tall picture can't spill out of it */
+.bdg__snap { box-sizing: border-box; overflow: hidden; }
+.bdg__snap img, .bdg__snap video { position: absolute; top: 8px; left: 8px; width: calc(100% - 16px); height: calc(100% - 38px); object-fit: cover; }
