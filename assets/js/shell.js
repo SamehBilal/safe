@@ -543,7 +543,7 @@ export const PAGES = [
 	{ href: 'ourfirsts.html', id: 'ourfirsts', ic: 'heart', ar: 'أول مرة لينا', en: 'Our firsts', dar: 'أول مقابلة، أول «بحبك»، أول رحلة', den: 'First meeting, first “I love you”, first trip', group: 'story' },
 	{ href: 'beforeus.html', id: 'beforeus', ic: 'route', ar: 'قبل ما نتقابل', en: 'Before us', dar: 'حياتنا الاتنين جنب بعض لحد ٢٠٠٩', den: 'Our two lives side by side until 2009', group: 'story' },
 	{ href: 'minute.html', id: 'minute', ic: 'film', ar: 'الحكاية في دقيقة', en: 'Our story in a minute', dar: 'كل ذكرى بصورة، ورا بعض', den: 'Every memory, one photo after another', group: 'story' },
-	{ href: 'draw.html', id: 'draw', ic: 'dice', ar: 'قرعة الليلة', en: 'Tonight’s draw', dar: 'لبس، خروجة، دليفري، أو فيلم', den: 'Outfit, dinner out, delivery or a movie', group: 'nights' },
+	{ href: 'draw.html', id: 'draw', ic: 'dice', ar: 'قرعة الليلة', en: 'Tonight’s draw', dar: 'لبس، خروجة، دليفري، فيلم، لعبة، وأكتر', den: 'Outfit, dinner, delivery, a film, a game, and more', group: 'nights' },
 	{ href: 'movies.html', id: 'movies', ic: 'film', ar: 'اتفرجنا على إيه', en: 'What we’ve watched', dar: 'أفلامنا ومسلسلاتنا بالأرقام', den: 'Our films and series, in numbers', group: 'nights' },
 	{ href: 'music.html', id: 'music', ic: 'music', ar: 'أغانينا', en: 'Our songs', dar: 'الأغاني اللي بتفكرنا ببعض', den: 'The songs that remind us of each other', group: 'nights' },
 	{ href: 'food.html', id: 'food', ic: 'food', ar: 'أكلنا', en: 'Our food', dar: 'مطاعمنا والمنيو بتاع كل واحد', den: 'Our restaurants and their menus', group: 'nights' },
@@ -595,7 +595,11 @@ export const DRAW_KINDS = [
 	{ id: 'outfit', emoji: 'dress', color: '#c2185b', ar: 'لبس الليلة', en: 'Tonight’s outfit', dar: 'ثيم نلبسه سوا الليلة', den: 'A theme we dress up in tonight', sketch: { ar: 'رسمة اللبس', en: 'Sketch the outfit' } },
 	{ id: 'dining', emoji: 'dinner', color: '#e39b2d', ar: 'خروجة عشا', en: 'Dining out', dar: 'نتعشى برا فين؟', den: 'Where shall we eat out?', sketch: { ar: 'رسمة المكان', en: 'Sketch the place' } },
 	{ id: 'delivery', emoji: 'scooter', color: '#5a9e6f', ar: 'دليفري', en: 'Delivery night', dar: 'نطلب إيه النهارده؟', den: 'What shall we order in?', sketch: { ar: 'رسمة الأكلة', en: 'Sketch the meal' } },
-	{ id: 'movie', emoji: 'clapper', color: '#0e6990', ar: 'سهرة فيلم', en: 'Movie night', dar: 'هنتفرج على إيه؟', den: 'What are we watching?', sketch: { ar: 'رسمة بوستر الفيلم', en: 'Sketch the poster' } }
+	{ id: 'movie', emoji: 'clapper', color: '#0e6990', ar: 'سهرة فيلم', en: 'Movie night', dar: 'هنتفرج على إيه؟', den: 'What are we watching?', sketch: { ar: 'رسمة بوستر الفيلم', en: 'Sketch the poster' } },
+	{ id: 'game', emoji: 'dice', color: '#8e5bd1', ar: 'سهرة ألعاب', en: 'Game night', dar: 'هنلعب إيه الليلة؟', den: 'What are we playing tonight?', sketch: { ar: 'رسمة الماتش', en: 'Sketch the game' } },
+	{ id: 'sweet', emoji: 'cake', color: '#f2726f', ar: 'حاجة حلوة', en: 'Something sweet', dar: 'نحلّي بإيه؟', den: 'What’s for dessert?', sketch: { ar: 'رسمة الحلو', en: 'Sketch the dessert' } },
+	{ id: 'outing', emoji: 'walk', color: '#13789f', ar: 'خروجة يوم إجازة', en: 'A day out', dar: 'نروح فين يوم الإجازة؟', den: 'Where to on our day off?', sketch: { ar: 'رسمة المكان', en: 'Sketch the place' } },
+	{ id: 'kids', emoji: 'family', color: '#5a9e6f', ar: 'نشاط مع الولاد', en: 'With the boys', dar: 'نعمل إيه مع فهد وعبد الرحمن؟', den: 'What shall we do with Fahd and Abdulrahman?', sketch: { ar: 'رسمة النشاط', en: 'Sketch it' } }
 ];
 /* pages that are one page per item, and which menu they belong to */
 const DETAIL_OF = { moment: 'story', chapter: 'story', member: 'family', trip: 'story' };

@@ -89,6 +89,32 @@
 .kinds-tabs .chip { text-decoration: none; }
 .kinds-tabs .chip.is-on { background: var(--c); border-color: var(--c); }
 
+/* «قرعة الليلة»: one page, a folder tab for every kind of night */
+.dr-tabs { display: flex; gap: 6px; margin: 4px 0 0; padding: 14px 4px 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; border-bottom: 2px solid var(--ink, #37353f); }
+.dr-tabs::-webkit-scrollbar { display: none; }
+.dr-tab { position: relative; flex: 1 0 88px; display: grid; justify-items: center; gap: 2px; padding: 12px 10px 10px; font: inherit; color: var(--text); text-align: center; background: color-mix(in srgb, var(--c) 12%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-bottom: 0; border-radius: 16px 16px 0 0; cursor: pointer; scroll-snap-align: center; translate: 0 6px; transition: translate 0.25s var(--ease-pop, ease), background 0.25s, color 0.25s; }
+.dr-tab:hover { translate: 0 0; }
+.dr-tab__e { display: grid; place-items: center; width: 46px; height: 46px; color: var(--c); background: #fffdf6; border: 1.5px dashed var(--c); border-radius: 50%; transition: rotate 0.4s var(--ease-pop, ease); }
+.dr-tab:hover .dr-tab__e { rotate: -10deg; }
+.dr-tab b { font-size: 0.88rem; line-height: 1.3; }
+.dr-tab small { font-size: 0.72rem; font-weight: 700; color: var(--muted); }
+.dr-tab.is-on { color: #fff; background: var(--c); translate: 0 2px; box-shadow: 0 -4px 0 0 color-mix(in srgb, var(--c) 40%, transparent) inset; }
+.dr-tab.is-on small { color: rgba(255, 255, 255, 0.85); }
+.dr-tab.is-on .dr-tab__e { border-style: solid; border-color: #fff; }
+.dr-tab:focus-visible { outline: 3px solid var(--c); outline-offset: 2px; }
+.dr-panel { padding-top: 26px; }
+.dr-panel.is-swap .dr-head, .dr-panel.is-swap .draw, .dr-panel.is-swap .draw-cols { animation: dr-in 0.45s var(--ease-pop, ease) both; }
+.dr-panel.is-swap .draw { animation-delay: 0.05s; }
+.dr-panel.is-swap .draw-cols { animation-delay: 0.1s; }
+@keyframes dr-in { from { opacity: 0; translate: 0 14px; } }
+.dr-head { display: flex; gap: 14px; align-items: center; justify-content: center; margin: 0 0 22px; text-align: start; }
+.dr-head__e { display: grid; place-items: center; width: 70px; height: 70px; color: #fff; background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--c) 60%, #fff), var(--c)); border: 1.5px solid var(--ink, #37353f); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 45%, transparent); rotate: -6deg; }
+.dr-head h2 { margin: 0; font: 400 clamp(1.9rem, 4vw, 2.6rem)/1.1 var(--f-script); color: var(--c); }
+:lang(ar) .dr-head h2 { font: 800 clamp(1.4rem, 3vw, 1.9rem)/1.4 var(--f-body); }
+.dr-head p { margin: 2px 0 0; color: var(--muted); font-weight: 700; }
+.dr-n { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+@media (max-width: 640px) { .dr-tab { flex-basis: 96px; padding: 10px 6px 8px; } .dr-tab__e { width: 38px; height: 38px; } .dr-tab b { font-size: 0.78rem; } }
+@media (prefers-reduced-motion: reduce) { .dr-panel.is-swap .dr-head, .dr-panel.is-swap .draw, .dr-panel.is-swap .draw-cols { animation: none; } .dr-tab { transition: none; } }
 .draw { display: grid; gap: 24px; justify-items: center; }
 @media (min-width: 900px) { .draw { grid-template-columns: auto 1fr; align-items: center; justify-items: stretch; } }
 .wheel-box { display: grid; justify-items: center; gap: 8px; }
@@ -164,7 +190,7 @@
 /* ---------- ليالينا mega panel, and room for five menus ---------- */
 @media (min-width: 980px) {
 	.mega-nights .mega-in { grid-template-columns: 1fr 280px; }
-	.mg-kinds { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+	.mg-kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 	.mg-kind { display: grid; align-content: end; gap: 2px; min-height: 160px; padding: 16px; border-radius: 18px; color: #fff; text-decoration: none; background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 50%, #0d2633)); transition: transform 0.3s var(--ease-pop); }
 	.mg-kind:hover, .mg-kind[aria-current='page'] { transform: translateY(-4px) rotate(-1.5deg); }
 	.mg-kind-e { font-size: 2.4rem; line-height: 1; margin-bottom: auto; }
