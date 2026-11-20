@@ -1597,23 +1597,104 @@ export function reveal(root) {
 	els.forEach((e) => io.observe(e));
 }
 
+/* A tapped photo opens big, as a gallery of every photo shown with it (a moment's wall, an open pile in the album): the
+   arrows (or ← →, or a swipe) go from one to the next in the reading direction, ▶ plays them as a slideshow with a line
+   filling up to the next one, and ✕, Esc or a tap on the dark around them closes it. Photos not fetched yet are fetched
+   as they come up, the next ones a step ahead. */
 function lightbox(root) {
 	if (root.dataset.lb) return;
 	root.dataset.lb = '1';
 	root.addEventListener('click', (e) => {
 		const el = e.target.closest('img.zoom');
-		if (!el || !el.src) return;
+		if (!el || (!el.src && !el.dataset.m)) return;
+		// the set: every zoomable photo on show beside it (hidden piles in the album don't count)
+		const all = $$('img.zoom', root).filter((x) => x.dataset.m || x.src).filter((x) => x === el || x.offsetParent !== null);
+		let i = Math.max(0, all.indexOf(el));
+		const cap = (x) => x.closest('figure')?.querySelector('figcaption')?.textContent.trim() || x.alt || '';
+		const src = (x) => (x.src ? Promise.resolve(x.src) : mediaURL(x.dataset.m));
+		const many = all.length > 1;
+		const rtl = document.documentElement.dir === 'rtl';
 		const box = document.createElement('div');
-		box.className = 'lightbox';
+		box.className = 'lightbox lb';
 		box.setAttribute('role', 'dialog');
 		box.setAttribute('aria-modal', 'true');
-		box.innerHTML = `<button type="button" aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button><figure><img src="${el.src}" alt="${esc(el.alt)}">${el.alt ? `<figcaption>${esc(el.alt)}</figcaption>` : ''}</figure>`;
-		const close = () => { box.remove(); document.removeEventListener('keydown', onKey); };
-		const onKey = (k) => k.key === 'Escape' && close();
-		box.onclick = close;
+		box.setAttribute('aria-label', L('الصور', 'Photos'));
+		box.innerHTML = `
+			<button type="button" class="lb__x" aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button>
+			<figure class="lb__fig"><span class="lb__frame"><img class="lb__img" alt=""></span><figcaption class="lb__cap" dir="auto"></figcaption></figure>
+			${many ? `<button type="button" class="lb__go lb__go--prev" aria-label="${L('الصورة اللي قبل', 'Previous photo')}"><span aria-hidden="true">${rtl ? '→' : '←'}</span></button>
+			<button type="button" class="lb__go lb__go--next" aria-label="${L('الصورة اللي بعد', 'Next photo')}"><span aria-hidden="true">${rtl ? '←' : '→'}</span></button>
+			<div class="lb__bar">
+				<button type="button" class="lb__play" aria-pressed="false"><span class="lb__play-ic" aria-hidden="true">▶</span><span class="lb__play-tx">${L('عرض الصور', 'Slideshow')}</span></button>
+				<span class="lb__n" aria-live="polite"></span>
+			</div>
+			<span class="lb__time" aria-hidden="true"><i></i></span>` : ''}`;
+		const im = $('.lb__img', box), capEl = $('.lb__cap', box), n = $('.lb__n', box), play = $('.lb__play', box), time = $('.lb__time i', box);
+		let token = 0;
+		const show = (k, dir = 0) => {
+			i = (k + all.length) % all.length;
+			const me = ++token, x = all[i];
+			box.classList.remove('is-in', 'from-next', 'from-prev');
+			if (dir) box.classList.add(dir > 0 ? 'from-next' : 'from-prev');
+			box.classList.add('is-loading');
+			src(x).then((u) => {
+				if (me !== token) return;
+				im.onload = () => { if (me !== token) return; box.classList.remove('is-loading'); void im.offsetWidth; box.classList.add('is-in'); };
+				im.src = u;
+				im.alt = x.alt || '';
+			}).catch(() => { if (me === token) box.classList.remove('is-loading'); });
+			const c = cap(x);
+			capEl.textContent = c;
+			capEl.hidden = !c;
+			if (n) n.textContent = L(`${num(i + 1)} من ${num(all.length)}`, `${i + 1} of ${all.length}`);
+			// the next two a step ahead
+			for (const d of [1, 2, -1]) { const y = all[(i + d + all.length) % all.length]; if (y && !y.src && y.dataset.m) mediaURL(y.dataset.m).catch(() => {}); }
+			if (playing) restartTimer();
+		};
+		/* the slideshow */
+		const EVERY = 4000;
+		let playing = false, timer = 0;
+		const restartTimer = () => {
+			clearTimeout(timer);
+			if (!time) return;
+			time.style.transition = 'none'; time.style.transform = 'scaleX(0)'; void time.offsetWidth;
+			time.style.transition = `transform ${EVERY}ms linear`; time.style.transform = 'scaleX(1)';
+			timer = setTimeout(() => show(i + 1, 1), EVERY);
+		};
+		const setPlay = (on) => {
+			playing = on;
+			box.classList.toggle('is-playing', on);
+			if (!play) return;
+			play.setAttribute('aria-pressed', String(on));
+			$('.lb__play-ic', play).textContent = on ? '❚❚' : '▶';
+			$('.lb__play-tx', play).textContent = on ? L('وقّف', 'Stop') : L('عرض الصور', 'Slideshow');
+			if (on) restartTimer(); else { clearTimeout(timer); if (time) { time.style.transition = 'none'; time.style.transform = 'scaleX(0)'; } }
+		};
+		const step = (d) => show(i + d, d);
+		const close = () => { clearTimeout(timer); box.remove(); document.removeEventListener('keydown', onKey); el.focus?.({ preventScroll: true }); };
+		const onKey = (k) => {
+			if (k.key === 'Escape') close();
+			else if (many && (k.key === 'ArrowRight' || k.key === 'ArrowLeft')) { k.preventDefault(); step((k.key === 'ArrowRight') !== rtl ? 1 : -1); }
+			else if (many && k.key === ' ' && k.target === document.body) { k.preventDefault(); setPlay(!playing); }
+		};
+		box.addEventListener('click', (k) => {
+			if (k.target.closest('.lb__go--next')) step(1);
+			else if (k.target.closest('.lb__go--prev')) step(-1);
+			else if (k.target.closest('.lb__play')) setPlay(!playing);
+			else if (k.target.closest('.lb__x') || !k.target.closest('.lb__frame, .lb__bar, .lb__cap')) close();
+		});
+		// a swipe across the photo goes on (or back)
+		let sx = 0, sy = 0;
+		box.addEventListener('touchstart', (t) => { sx = t.touches[0].clientX; sy = t.touches[0].clientY; }, { passive: true });
+		box.addEventListener('touchend', (t) => {
+			if (!many) return;
+			const dx = t.changedTouches[0].clientX - sx, dy = t.changedTouches[0].clientY - sy;
+			if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) step((dx < 0) !== rtl ? 1 : -1);
+		}, { passive: true });
 		document.addEventListener('keydown', onKey);
 		document.body.append(box);
-		$('button', box).focus();
+		show(i);
+		$('.lb__x', box).focus();
 	});
 }
 
