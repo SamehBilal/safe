@@ -536,6 +536,7 @@ export const PAGES = [
 	{ href: 'chapters.html', id: 'chapters', ic: 'ring', ar: 'أيام فارقة', en: 'Big days', dar: 'الخطوبة، كتب الكتاب، الفرح', den: 'Engagement, wedding and more', group: 'story' },
 	{ href: 'places.html', id: 'places', ic: 'pin', ar: 'أماكننا', en: 'Our places', dar: 'أماكن فيها حتة مننا', den: 'Places that hold a piece of us', group: 'story' },
 	{ href: 'trips.html', id: 'trips', ic: 'map', ar: 'رحلات عيد جوازنا', en: 'Anniversary trips', dar: 'كل سنة محافظة جديدة على الخريطة', den: 'A new governorate every year, on the map', group: 'story' },
+	{ href: 'journeys.html', id: 'journeys', ic: 'map', ar: 'رحلاتنا', en: 'Our trips', dar: 'كل رحلة طريق على الخريطة، محطة ورا محطة', den: 'Every trip a road on the map, stop by stop', group: 'story' },
 	{ href: 'cities.html', id: 'cities', ic: 'city', ar: 'خرايط مدننا', en: 'Our city maps', dar: 'كل مدينة رحناها، وأماكننا منورة فيها', den: 'Every city we’ve been to, our spots lit up', group: 'story' },
 	{ href: 'journal.html', id: 'journal', ic: 'pen', ar: 'دفترنا', en: 'Our journal', dar: 'بنكتب حكايتنا سوا، يوم بيوم', den: 'We write our story together, day by day', group: 'story' },
 	{ href: 'questions.html', id: 'questions', ic: 'chat', ar: 'أسئلة لينا', en: 'Questions for us', dar: 'سؤال كل يوم، وكل واحد يجاوب', den: 'A question a day, and we both answer', group: 'story' },

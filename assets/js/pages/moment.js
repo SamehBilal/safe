@@ -85,6 +85,11 @@ export default {
 				${story ? story.split(/\n{2,}/).map((p) => `<p class="prose reveal">${esc(p)}</p>`).join('') : ''}
 				${x.code?.text ? `<figure class="mo-code reveal">${x.code.caption ? `<figcaption>${T(x.code.caption)}</figcaption>` : ''}<pre dir="ltr" tabindex="0"><code>${esc(x.code.text)}</code></pre>${x.code.run ? `<button class="btn mo-code__run" type="button" id="mo-run">▶ ${Y('شغّل البرنامج', 'شغّلي البرنامج', 'Run the program')}</button><div id="mo-console"></div>` : ''}</figure>` : ''}
 				${isFar(s, x) ? `<div class="moment-far">${farthestMap(s)}</div>` : ''}
+				${(() => {
+					// a trip on «رحلاتنا» this day is part of: its road on the map
+					const j = (s.journeys || []).find((t) => t.moment === x.id || t.stops.some((st) => (st.photos || []).includes(x.photo)));
+					return j ? `<a class="otd reveal" href="journeys.html#j-${esc(j.id)}"><span class="otd__ic">${doodle('plane', 28)}</span><span><small>${L('الرحلة على الخريطة', 'The trip on the map')}</small><b>${T(j.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : '';
+				})()}
 				${chapter ? `<a class="otd reveal" href="chapter.html?id=${esc(chapter.id)}"><span class="otd__ic">${doodle(chapter.icon, 28)}</span><span><small>${L('الحكاية كاملة', 'The full chapter')}</small><b>${T(chapter.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : ''}
 				<nav class="pager" aria-label="${L('ذكريات تانية', 'Other moments')}">
 					${prev ? `<a class="pager__prev" href="moment.html?id=${esc(prev.id)}"><small>${L('اللي قبلها', 'Before')}</small><b>${doodle(prev.icon, 18)} ${T(prev.title)}</b></a>` : '<span></span>'}
