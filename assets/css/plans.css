@@ -600,3 +600,20 @@
 @media (prefers-reduced-motion: reduce) { .bkb__flip, .bkb__mug i { animation: none; } }
 .bk-card__cover { float: inline-end; width: 110px; aspect-ratio: 2 / 3; object-fit: cover; margin-inline-start: 14px; border: 1.5px solid var(--ink, #37353f); border-radius: 3px 6px 6px 3px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--bk, var(--coral)); rotate: 2deg; cursor: zoom-in; }
 .bk-now__img { width: 100%; object-fit: cover; padding: 0; }
+
+/* «كتبنا»: calm sounds for reading */
+.bk-calm { display: grid; gap: 10px; justify-items: center; margin: 24px auto 0; padding: 16px 18px; max-width: 620px; text-align: center; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-lime, #c5e86c); }
+.bk-calm h3 { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 1.05rem; }
+.bk-calm p { margin: 0; font-size: .85rem; }
+.bk-calm__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.bk-calm__b { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font: inherit; font-weight: 800; color: var(--text); cursor: pointer; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--ink, #37353f); transition: background .2s, translate .1s; }
+.bk-calm__b span { font-size: 1.1rem; }
+.bk-calm__b:active { translate: calc(var(--bujo-x, 1) * 2px) 2px; box-shadow: none; }
+.bk-calm__b.is-on { background: var(--hl-yellow, #fdc830); color: #2b2b33; }
+.bk-calm__b.is-on span { animation: bk-calm-bob 1.6s ease-in-out infinite; }
+@keyframes bk-calm-bob { 50% { transform: translateY(-3px); } }
+.bk-calm__row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; font-size: .85rem; font-weight: 700; }
+.bk-calm__row label { display: inline-flex; align-items: center; gap: 8px; }
+.bk-calm__row input[type=range] { accent-color: var(--coral, #f2726f); }
+.bk-calm__row select { padding: 4px 8px; font: inherit; color: var(--text); background: var(--paper, #fffdf8); border: 1.5px solid var(--ink, #37353f); border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { .bk-calm__b.is-on span { animation: none; } }

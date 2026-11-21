@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-42ccd5f6ae';
+var VERSION = 'us-99c98235b2';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -84,6 +84,7 @@ var SHELL = [
 	'assets/css/trips.css',
 	'assets/js/bdmore.js',
 	'assets/js/bdsky.js',
+	'assets/js/calm.js',
 	'assets/js/caltip.js',
 	'assets/js/core.js',
 	'assets/js/cppconsole.js',

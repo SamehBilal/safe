@@ -2,6 +2,7 @@ import { L, Y, T, esc, pageHead, related, App, $, $$, num, longDate, mediaURL } 
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
+import * as calm from '../calm.js';
 
 /* Our books: what we're reading now (with the page we're on), a wooden shelf with a spine for every book we've
    finished (a thicker spine for a longer book), and a pile of the ones we want to read next. Both phones add and move
@@ -84,6 +85,19 @@ export default {
 		</div>` })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="counters" id="bk-totals"></div>
+			<section class="bk-calm" aria-label="${L('صوت هادي للقراية', 'Calm sounds for reading')}">
+				<h3>${doodle('music', 20)} ${L('صوت هادي للقراية', 'Calm sounds for reading')}</h3>
+				<p class="muted">${L('شغّلوا واحد أو أكتر سوا — بيتعمل هنا على الموبايل، من غير نت', 'Play one or more together — made right here, no internet needed')}</p>
+				<div class="bk-calm__btns">
+					<button type="button" class="bk-calm__b" data-calm="piano" aria-pressed="false"><span>🎹</span>${L('بيانو هادي', 'Soft piano')}</button>
+					<button type="button" class="bk-calm__b" data-calm="rain" aria-pressed="false"><span>🌧️</span>${L('مطر على الشباك', 'Rain on the window')}</button>
+					<button type="button" class="bk-calm__b" data-calm="fire" aria-pressed="false"><span>🔥</span>${L('نار في الدفاية', 'A crackling fire')}</button>
+				</div>
+				<div class="bk-calm__row">
+					<label>${L('الصوت', 'Volume')} <input type="range" id="bk-vol" min="0" max="1" step="0.05" value="0.6"></label>
+					<label>${L('يقف لوحده بعد', 'Stop after')} <select id="bk-sleep"><option value="0">${L('لأ', 'Never')}</option><option value="20">${L('٢٠ دقيقة', '20 minutes')}</option><option value="45">${L('٤٥ دقيقة', '45 minutes')}</option><option value="90">${L('ساعة ونص', '90 minutes')}</option></select></label>
+				</div>
+			</section>
 			${ok ? '' : `<div class="narrow" style="margin:24px auto 0">${setupNote()}</div>`}
 			<details class="composer reveal narrow" style="margin:24px auto 0"${ok ? '' : ' hidden'}>
 				<summary><span>${doodle('book', 22)}</span> ${Y('ضيف كتاب', 'ضيفي كتاب', 'Add a book')}</summary>
@@ -121,6 +135,14 @@ export default {
 	},
 
 	async after(main) {
+		/* the calm sounds: they stop when we leave the page, and after a while if we ask */
+		let sleep = 0;
+		const calmPaint = () => $$('[data-calm]', main).forEach((b) => { const on = calm.playing(b.dataset.calm); b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on); });
+		$('.bk-calm', main).addEventListener('click', (e) => { const b = e.target.closest('[data-calm]'); if (!b) return; calm.toggle(b.dataset.calm); calmPaint(); });
+		$('#bk-vol', main).oninput = (e) => calm.volume(+e.target.value);
+		$('#bk-sleep', main).onchange = (e) => { clearTimeout(sleep); const m = +e.target.value; if (m) sleep = setTimeout(() => { calm.stopAll(); calmPaint(); e.target.value = '0'; }, m * 60000); };
+		this.leave = () => { clearTimeout(sleep); calm.stopAll(); };
+		calmPaint();
 		const sec = $('.sec', main), detail = $('#bk-detail', main);
 		let data = { items: [] };
 		const all = () => (data.items || []).slice();
