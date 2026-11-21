@@ -1743,13 +1743,6 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .gm-boxes { position: relative; width: 150px; height: 104px; }
 .gm-boxes img { position: absolute; left: 50%; bottom: 0; width: 72px; height: 96px; margin-left: -36px; object-fit: cover; border: 2px solid #fffdf8; border-radius: 4px; box-shadow: 0 4px 10px rgba(30, 20, 10, .3); rotate: calc(var(--i) * 12deg); translate: calc(var(--i) * 34px) calc(var(--i) * var(--i) * 6px); transition: rotate .3s, translate .3s; }
 .gm-video:hover .gm-boxes img { rotate: calc(var(--i) * 18deg); translate: calc(var(--i) * 46px) calc(var(--i) * var(--i) * 10px); }
-.gm-pad { width: 130px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
-.gm-pad__body { fill: #2f3a4a; stroke: var(--ink, #37353f); stroke-width: 2; }
-.gm-pad__dpad { fill: #9aa7b8; }
-.gm-pad__stick { fill: #1d2430; stroke: #9aa7b8; stroke-width: 2; }
-.gm-pad__b { stroke: #1d2430; stroke-width: 1.5; animation: gm-press 2.4s steps(1) infinite; }
-.gm-pad__b--1 { fill: #5a9e6f; } .gm-pad__b--2 { fill: #f2726f; animation-delay: .6s; } .gm-pad__b--3 { fill: #0e6990; animation-delay: 1.2s; } .gm-pad__b--4 { fill: #e39b2d; animation-delay: 1.8s; }
-@keyframes gm-press { 0%, 20% { filter: brightness(1.8); r: 5px; } 21%, 100% { filter: none; } }
 .gm-pics { display: flex; flex-wrap: wrap; gap: 6px; }
 .gm-pics img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink, #37353f); cursor: zoom-in; }
 .gm-log li .gm-pics { flex-basis: 100%; margin-top: 4px; }
@@ -1757,19 +1750,8 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .game .gm-pics { justify-content: center; margin: 6px 0; }
 .game > .btn { margin-top: 6px; }
 @media (max-width: 640px) { .gm-video { display: none; } }
-@media (prefers-reduced-motion: reduce) { .gm-pad__b { animation: none; } }
 /* the Switch and the PC in the band, and which one each game is on */
 .gm-consoles { display: flex; align-items: flex-end; gap: 10px; }
-.gm-switch { width: 140px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
-.gm-pc { width: 84px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
-.gm-jc { stroke: var(--ink, #37353f); stroke-width: 2; }
-.gm-jc--l { fill: #0ab9e6; } .gm-jc--r { fill: #ff3c28; }
-.gm-tab, .gm-mon { fill: #2b2f36; stroke: var(--ink, #37353f); stroke-width: 2; }
-.gm-scr { fill: #1b2a3a; }
-.gm-stand { fill: #4a4f58; stroke: var(--ink, #37353f); stroke-width: 1.5; }
-.gm-stick { fill: #2b2f36; stroke: #1b1d22; stroke-width: 2; }
-.gm-dbtn { stroke: #1b1d22; stroke-width: 3; stroke-linecap: round; }
-.gm-abxy { fill: #1b1d22; }
 .gm-scr__play { animation: gm-blink 1.6s steps(2) infinite; }
 @keyframes gm-blink { 50% { opacity: .55; } }
 .gm-on { justify-self: center; width: fit-content; padding: 1px 10px; font-size: .74rem; font-weight: 800; color: #fff; background: var(--c); border-radius: 999px; }
@@ -1777,10 +1759,26 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 #gm-plat .chip { cursor: pointer; }
 #gm-plat .chip.is-on { color: #fff; background: var(--c); border-color: var(--ink, #37353f); }
 @media (prefers-reduced-motion: reduce) { .gm-scr__play { animation: none; } }
-.gm-ps { width: 80px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
-.gm-ps__body { fill: #20232a; stroke: var(--ink, #37353f); stroke-width: 2; }
-.gm-ps__pad { fill: #3a3f48; }
-.gm-ps__d { fill: #9aa7b8; }
-.gm-ps__btn circle { fill: none; stroke-width: 2; }
-.gm-ps__btn circle:nth-child(1) { stroke: #5fc9a8; } .gm-ps__btn circle:nth-child(2) { stroke: #ff6b7a; } .gm-ps__btn circle:nth-child(3) { stroke: #e590d9; } .gm-ps__btn circle:nth-child(4) { stroke: #6fa8ff; }
-.gm-ps__st { fill: #2b2f36; stroke: #14161a; stroke-width: 2; }
+/* the band's devices, in the journal's hand: paper and pastel fills, ink outlines, highlighter buttons, a hard shadow */
+.gm-switch, .gm-pc, .gm-ps { overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 color-mix(in srgb, var(--ink, #37353f) 85%, transparent)); transition: rotate .3s; }
+.gm-switch { width: 140px; rotate: -3deg; } .gm-pc { width: 84px; rotate: 2deg; } .gm-ps { width: 82px; rotate: 4deg; }
+.gm-video:hover :is(.gm-switch, .gm-pc, .gm-ps) { rotate: 0deg; }
+:is(.gm-switch, .gm-pc, .gm-ps) :is(rect, path, circle) { stroke: var(--ink, #37353f); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.gm-jc--l { fill: color-mix(in srgb, var(--blue, #0e6990) 55%, #fffdf8); }
+.gm-jc--r { fill: color-mix(in srgb, var(--coral, #f2726f) 70%, #fffdf8); }
+.gm-tab, .gm-mon, .gm-ps__body { fill: #fffdf8; }
+.gm-scr { fill: color-mix(in srgb, var(--hl-yellow, #fdc830) 35%, #fffdf8); stroke-dasharray: 3 3; }
+.gm-stand, .gm-ps__pad { fill: color-mix(in srgb, var(--hl-pink, #fc8b93) 40%, #fffdf8); }
+.gm-stick, .gm-ps__st { fill: #fffdf8; }
+.gm-dbtn { fill: none; stroke-width: 3; }
+.gm-abxy { fill: var(--hl-yellow, #fdc830); stroke-width: 1.4; }
+.gm-ps__d { fill: color-mix(in srgb, var(--blue, #0e6990) 30%, #fffdf8); }
+.gm-ps__btn circle { stroke-width: 1.6; }
+.gm-ps__btn circle:nth-child(1) { fill: var(--hl-lime, #c5e86c); } .gm-ps__btn circle:nth-child(2) { fill: var(--hl-pink, #fc8b93); } .gm-ps__btn circle:nth-child(3) { fill: color-mix(in srgb, #8e5bd1 45%, #fffdf8); } .gm-ps__btn circle:nth-child(4) { fill: color-mix(in srgb, var(--blue, #0e6990) 45%, #fffdf8); }
+.gm-ps__btn circle, .gm-abxy { animation: gm-press 2.4s steps(1) infinite; }
+.gm-ps__btn circle:nth-child(2), .gm-abxy:nth-of-type(2) { animation-delay: .6s; } .gm-ps__btn circle:nth-child(3), .gm-abxy:nth-of-type(3) { animation-delay: 1.2s; } .gm-ps__btn circle:nth-child(4), .gm-abxy:nth-of-type(4) { animation-delay: 1.8s; }
+@keyframes gm-press { 0%, 20% { transform: translateY(1px); filter: brightness(.85); } 21%, 100% { transform: none; filter: none; } }
+.gm-ps__btn circle, .gm-abxy { transform-box: fill-box; }
+.gm-scr__play path { stroke: var(--coral-deep, #d6544f); stroke-dasharray: none; }
+.gm-scr__play circle { stroke-width: 1.4; }
+@media (prefers-reduced-motion: reduce) { .gm-ps__btn circle, .gm-abxy { animation: none; } }
