@@ -90,7 +90,7 @@ export default {
 					<b dir="auto">${T(x.what)}</b>
 					${x.where ? `<small class="adv-where">${doodle('pin', 14)} ${T(x.where)}</small>` : ''}
 					${x.note ? `<small class="adv-note" dir="auto">${T(x.note)}</small>` : ''}
-					${x.done ? `<small class="adv-when">✓ ${L('عملناها في', 'We did it on')} ${esc(fmtDate(x.done))}</small>` : ''}
+					${x.done ? `<small class="adv-when">✓ ${L('عملناها في', 'We did it on')} ${esc(fmtDate(x.done))}${live.canWrite() ? ` <button class="link" type="button" data-when="${esc(x.id)}">${L('غيّر اليوم', 'Change the day')}</button>` : ''}</small>` : ''}
 				</span>
 				${live.canWrite() ? `<button class="adv-tog${x.done ? ' is-on' : ''}" type="button" data-tog="${esc(x.id)}">${x.done ? L('لسه ماعملناهاش', 'Not done yet') : `<span aria-hidden="true">✓</span> ${Y('عملناها', 'عملناها', 'We did it')}`}</button>` : ''}
 				${mine && !(x.photo && !x.from) ? `<button class="link adv-del" type="button" data-del="${esc(x.id)}">${L('مسح', 'Delete')}</button>` : ''}
@@ -148,6 +148,23 @@ export default {
 		};
 		draw();
 
+		/* which day we did it: a small window with a date, today unless we pick another (null when it's closed) */
+		const askDay = (x) => new Promise((done) => {
+			const dlg = document.createElement('dialog');
+			dlg.className = 'cmodal adv-day';
+			dlg.innerHTML = `<div class="cmodal__in"><header class="cmodal__hd"><h2>${doodle('star', 22)} ${L('عملناها إمتى؟', 'When did we do it?')}</h2><button type="button" class="cmodal__x" aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button></header>
+				<form><p dir="auto"><b>${T(x?.what || '')}</b></p>
+				<label class="f"><span>${L('اليوم', 'The day')}</span><input name="day" type="date" required max="${live.today()}" value="${esc(x?.done || live.today())}"></label>
+				<div class="f-actions"><button class="btn btn--coral" type="submit">${L('اختمها ✓', 'Stamp it ✓')}</button></div></form></div>`;
+			document.body.append(dlg);
+			let out = null;
+			const f = $('form', dlg);
+			f.onsubmit = (e) => { e.preventDefault(); out = f.day.value || live.today(); dlg.close(); };
+			dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('.cmodal__x')) dlg.close(); });
+			dlg.addEventListener('close', () => { dlg.remove(); done(out); });
+			dlg.showModal();
+		});
+
 		// an entry is saved in the list it came from
 		const save = async (id, fn) => {
 			if (items().find((x) => x.id === id)?.from === 'bucket') old = await live.save('bucket', fn);
@@ -176,10 +193,15 @@ export default {
 				$('#' + CSS.escape(x.id), main)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				return;
 			}
-			const tog = e.target.closest('[data-tog]');
-			if (tog) {
-				const id = tog.dataset.tog;
-				try { await save(id, (d) => { const x = (d.items || []).find((y) => y.id === id); if (x) x.done = x.done ? undefined : live.today(); }); }
+			const tog = e.target.closest('[data-tog]'), when = e.target.closest('[data-when]');
+			if (tog || when) {
+				const id = (tog || when).dataset.tog || when.dataset.when;
+				const x = items().find((y) => y.id === id);
+				// done → not done; otherwise ask which day we did it (today unless we say otherwise)
+				let day;
+				if (tog && x?.done) day = undefined;
+				else { day = await askDay(x); if (day === null) return; }
+				try { await save(id, (d) => { const y = (d.items || []).find((z) => z.id === id); if (y) y.done = day; }); }
 				catch (err) { alert(live.why(err)); }
 				$('#' + CSS.escape(id), main)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 				return;
