@@ -1795,3 +1795,7 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .gm-on { justify-self: center; width: fit-content; padding: 1px 10px; font: 800 .74rem/1.6 var(--f-body); color: var(--ink-text, #2b2b33); background: color-mix(in srgb, var(--c) 28%, #fffdf8); border: 1.5px solid var(--ink, #37353f); border-radius: 6px 10px 7px 9px / 9px 6px 10px 7px; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--c); rotate: -2deg; }
 .game:nth-child(even) .gm-on { rotate: 2deg; }
 :lang(en) .gm-on { font: 400 .95rem/1.4 var(--f-label); letter-spacing: .04em; }
+
+/* a game card: its rows packed at the top, so a tag or a year never stretches when the card beside it is taller */
+.game { align-content: start; }
+.game .gm-on, .game .game__year { align-self: center; height: auto; }
