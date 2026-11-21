@@ -40,7 +40,7 @@ const PARTS = [
 	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: onHer(70, 386) },
 	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: onHer(200, 425) },
 	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: onHer(156, 410) },
-	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: onHer(190, 590) },
+	{ id: 'leg', ar: 'الفخد', en: 'Thigh', side: 'l', y: 75, at: onHer(116, 530) },
 	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: onHer(92, 772) },
 	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: onHer(160, 825) }
 ];
