@@ -196,19 +196,20 @@ export default {
 			crackleOn();
 		};
 		const quiet = radio.on(sync);
-		/* the record slides out toward the next sleeve; a sleeve in the last column has no room there (the screen edge
-		   would crop it), so the sleeve steps back by what's missing and its record still slides out the same way.
-		   --room: how many px it has beyond its edge before the shelf clips (the shelf lets 16px spill over) */
+		/* the record slides out toward the next sleeve; a sleeve in the last column slides it into the page's margin,
+		   and where the screen's edge is too close the record just slides out less (--slide), the sleeve never moving */
 		const edges = () => {
 			const box = list.getBoundingClientRect();
 			const rtl = document.documentElement.dir === 'rtl';
 			for (const el of $$('.sleeve', list)) {
 				const r = el.getBoundingClientRect();
-				const room = (rtl ? r.left - box.left : box.right - r.right) + 16;
-				// a wide screen leaves room at the end of the row (the CSS), so only a phone needs the step back
-				const edge = innerWidth <= 640 && room < r.width * 0.58;
-				el.classList.toggle('is-edge', edge);
-				if (edge) el.style.setProperty('--room', `${Math.max(0, room - 16).toFixed(0)}px`); else el.style.removeProperty('--room');
+				// the record may slide past the shelf into the page's margin, as far as the screen's edge
+				const room = (rtl ? r.left : innerWidth - r.right) - 6;
+				// near the edge the sleeve stays where it is and its record just slides out less, as far as there's room (taken
+				// out fully it sticks out about (0.63 × slide − 0.05) of the sleeve's width)
+				const slide = Math.max(0.25, Math.min(1, (room / r.width + 0.05) / 0.63));
+				el.classList.remove('is-edge');
+				if (slide < 1) el.style.setProperty('--slide', slide.toFixed(2)); else el.style.removeProperty('--slide');
 			}
 		};
 		const ro = new ResizeObserver(edges);
