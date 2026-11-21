@@ -565,3 +565,36 @@
 @media (prefers-reduced-motion: reduce) { .jr__frame > .jr__world, .jr__road, .jr-pin, .jr-stop, .jr-stamp { transition: none; } }
 /* the perforated edge only round the border: the middle (content box) whole, the padding punched with holes */
 .jr-stamp { -webkit-mask: linear-gradient(#000 0 0) content-box, radial-gradient(circle 5px, transparent 96%, #000) -7px -7px / 14px 14px; mask: linear-gradient(#000 0 0) content-box, radial-gradient(circle 5px, transparent 96%, #000) -7px -7px / 14px 14px; -webkit-mask-composite: source-over; mask-composite: add; }
+
+/* «كتبنا», the band: our reading corner — a pile of our books (their own spines), an open book with its pages turning
+   and a ribbon in it, a mug steaming beside it, and how much we've read */
+.bkb { display: flex; align-items: flex-end; justify-content: center; gap: clamp(18px, 4vw, 44px); width: min(1100px, 100% - 2 * var(--gutter)); margin: clamp(14px, 3vw, 30px) auto clamp(10px, 2vw, 20px); min-height: 170px; }
+.bkb__stack { display: grid; justify-items: center; gap: 0; }
+.bkb__spine { display: grid; place-items: center; width: calc(150px - var(--i) * 8px); height: 26px; padding: 0 10px; margin-inline-start: calc((var(--i) % 2 * 2 - 1) * 8px); overflow: hidden; color: var(--bk-p); background: var(--bk); border: 1.5px solid var(--ink, #37353f); border-radius: 3px 6px 6px 3px; box-shadow: inset 6px 0 0 rgba(255, 255, 255, .18), inset -4px 0 0 rgba(0, 0, 0, .12); rotate: calc((var(--i) % 2 * 2 - 1) * 1.5deg); }
+.bkb__spine b { overflow: hidden; font-size: .72rem; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+.bkb__stack .bkb__spine:last-child { box-shadow: inset 6px 0 0 rgba(255, 255, 255, .18), inset -4px 0 0 rgba(0, 0, 0, .12), calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--ink, #37353f) 80%, transparent); }
+.bkb__book { position: relative; display: flex; width: 230px; height: 140px; perspective: 900px; filter: drop-shadow(calc(var(--bujo-x, 1) * 4px) 4px 0 color-mix(in srgb, var(--ink, #37353f) 85%, transparent)); }
+.bkb__page { position: relative; display: grid; align-content: center; gap: 9px; flex: 1; padding: 0 16px; background: #fffdf6; border: 1.5px solid var(--ink, #37353f); }
+.bkb__page--l { border-radius: 10px 2px 2px 10px; transform: skewY(4deg); transform-origin: right; }
+.bkb__page--r { border-radius: 2px 10px 10px 2px; transform: skewY(-4deg); transform-origin: left; }
+.bkb__page i { display: block; height: 2px; background: color-mix(in srgb, var(--ink, #37353f) 30%, transparent); border-radius: 2px; }
+.bkb__page i:nth-child(2) { width: 85%; } .bkb__page i:nth-child(4) { width: 70%; } .bkb__page i:nth-child(5) { width: 50%; }
+.bkb__flip { position: absolute; top: 0; inset-inline-start: 50%; width: 50%; height: 100%; background: #fffdf6; border: 1.5px solid var(--ink, #37353f); border-radius: 2px 10px 10px 2px; transform-origin: left center; transform: skewY(-4deg); animation: bkb-turn 5s ease-in-out infinite; backface-visibility: visible; }
+[dir='rtl'] .bkb__flip { inset-inline-start: auto; right: 50%; left: auto; transform-origin: right center; border-radius: 10px 2px 2px 10px; transform: skewY(4deg); animation-name: bkb-turn-rtl; }
+.bkb__flip--2 { animation-delay: 2.5s; background: color-mix(in srgb, var(--hl-yellow, #fdc830) 18%, #fffdf6); }
+@keyframes bkb-turn { 0%, 30% { transform: skewY(-4deg) rotateY(0deg); } 60%, 100% { transform: skewY(4deg) rotateY(-180deg); } }
+@keyframes bkb-turn-rtl { 0%, 30% { transform: skewY(4deg) rotateY(0deg); } 60%, 100% { transform: skewY(-4deg) rotateY(180deg); } }
+.bkb__ribbon { position: absolute; z-index: 2; top: -6px; left: 54%; width: 12px; height: 160px; background: var(--coral, #f2726f); border: 1.5px solid var(--ink, #37353f); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 92%, 0 100%); }
+.bkb__side { display: grid; justify-items: center; gap: 10px; }
+.bkb__mug { position: relative; width: 52px; height: 50px; margin-top: 40px; background: color-mix(in srgb, var(--hl-pink, #fc8b93) 55%, #fffdf6); border: 1.5px solid var(--ink, #37353f); border-radius: 4px 4px 14px 14px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink, #37353f); }
+.bkb__mug::after { content: ''; position: absolute; top: 10px; inset-inline-end: -16px; width: 14px; height: 20px; border: 1.5px solid var(--ink, #37353f); border-inline-start: 0; border-radius: 0 12px 12px 0; }
+[dir='rtl'] .bkb__mug::after { border-radius: 12px 0 0 12px; border-inline-start: 1.5px solid var(--ink, #37353f); border-inline-end: 0; }
+.bkb__mug i { position: absolute; bottom: 100%; width: 2px; height: 26px; margin-bottom: 6px; border-radius: 2px; background: color-mix(in srgb, var(--ink, #37353f) 45%, transparent); animation: bkb-steam 2.6s ease-in-out infinite; }
+.bkb__mug i:nth-child(1) { left: 14px; } .bkb__mug i:nth-child(2) { left: 25px; animation-delay: .8s; } .bkb__mug i:nth-child(3) { left: 36px; animation-delay: 1.6s; }
+@keyframes bkb-steam { 0% { opacity: 0; transform: translateY(8px) scaleY(.6); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px) scaleY(1.1) rotate(8deg); } }
+.bkb__n { margin: 0; font-size: .82rem; font-weight: 800; line-height: 1.5; text-align: center; color: var(--muted); }
+.bkb__n b { font: 400 1.5rem/1 var(--f-label); color: var(--blue); }
+.bk-card__pub { margin: 0; font-size: .85rem; font-weight: 700; color: var(--coral-deep, var(--coral)); }
+.bk-card__about { margin: 2px 0 0; line-height: 1.7; }
+@media (max-width: 560px) { .bkb__stack { display: none; } .bkb__book { width: 200px; height: 124px; } }
+@media (prefers-reduced-motion: reduce) { .bkb__flip, .bkb__mug i { animation: none; } }

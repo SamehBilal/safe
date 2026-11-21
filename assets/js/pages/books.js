@@ -54,6 +54,9 @@ function details(b) {
 		<h3 dir="auto">${esc(b.title)}</h3>
 		${b.author ? `<p class="bk-card__au" dir="auto">${esc(b.author)}</p>` : ''}
 		<p class="bk-card__meta">${[whoName(b.who), +b.pages ? L(`${num(+b.pages)} صفحة`, `${+b.pages} pages`) : '', b.finished ? `${L('خلصناه', 'Finished')} ${longDate(b.finished)}` : ''].filter(Boolean).map(esc).join(' · ')}</p>
+		${b.genre || b.publisher || b.year ? `<p class="bk-card__pub" dir="auto">${[b.genre, b.publisher, b.year ? num(+b.year).replace(/[٬,]/g, '') : ''].filter(Boolean).map(esc).join(' · ')}</p>` : ''}
+		${b.about ? `<p class="bk-card__about" dir="auto">${esc(b.about)}</p>` : ''}
+		${b.link ? `<a class="link" href="${esc(b.link)}" target="_blank" rel="noopener noreferrer">${L('صفحة الكتاب', 'The book’s page')} ↗</a>` : ''}
 		${b.hearts ? `<p class="bk-card__hearts" aria-label="${L(`${b.hearts} من ٥`, `${b.hearts} of 5`)}">${hearts(b.hearts)}</p>` : ''}
 		${b.note ? `<p class="bk-card__note" dir="auto">«${esc(b.note)}»</p>` : ''}
 		${ok ? `<div class="bk-card__acts">${b.status === 'want' ? `<button class="btn btn--sm btn--coral" type="button" data-start="${esc(b.id)}">${L('هنبدأ فيه', 'Start reading')}</button>` : ''}${b.by === live.me() ? `<button class="link link--danger" type="button" data-del="${esc(b.id)}">${L('مسح', 'Delete')}</button>` : ''}</div>` : ''}
@@ -65,7 +68,19 @@ export default {
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('كتبنا', 'Our books'), L('اللي بنقراه، واللي خلصناه، واللي مستنينا على الرف', 'What we’re reading, what we’ve finished, and what’s waiting on the shelf'), [{ href: 'books.html', ar: 'كتبنا', en: 'Our books' }], [['book', 'صفحة كمان', 'One more page'], ['coffee', 'مع القهوة', 'With coffee'], ['moon', 'قبل النوم', 'Before bed'], ['heart', 'حبيناه', 'Loved it']])}
+		${pageHead(L('كتبنا', 'Our books'), L('اللي بنقراه، واللي خلصناه، واللي مستنينا على الرف', 'What we’re reading, what we’ve finished, and what’s waiting on the shelf'), [{ href: 'books.html', ar: 'كتبنا', en: 'Our books' }], { band: `<div class="bkb" id="bk-band" aria-hidden="true">
+			<div class="bkb__stack" id="bkb-stack"></div>
+			<div class="bkb__book">
+				<span class="bkb__page bkb__page--l"><i></i><i></i><i></i><i></i><i></i></span>
+				<span class="bkb__page bkb__page--r"><i></i><i></i><i></i><i></i><i></i></span>
+				<span class="bkb__flip"></span><span class="bkb__flip bkb__flip--2"></span>
+				<span class="bkb__ribbon"></span>
+			</div>
+			<div class="bkb__side">
+				<span class="bkb__mug"><i></i><i></i><i></i></span>
+				<p class="bkb__n" id="bkb-n"></p>
+			</div>
+		</div>` })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="counters" id="bk-totals"></div>
 			${ok ? '' : `<div class="narrow" style="margin:24px auto 0">${setupNote()}</div>`}
@@ -131,6 +146,10 @@ export default {
 				[num(pages), L('صفحة قريناها', 'pages read')],
 				[num(want.length), L('مستنيين', 'waiting')]
 			].map(([b, s]) => `<div class="counter"><b>${b}</b><span>${s}</span></div>`).join('');
+			const pile = [...read.slice(-3), ...now.slice(0, 1), ...want.slice(0, 1)].slice(-4);
+			$('#bkb-stack', main).innerHTML = [...Array.from({ length: Math.max(0, 3 - pile.length) }, (_, k) => ({ title: '', id: 'blank' + k })), ...pile]
+				.map((b, i) => { const [ink, paper] = spine(b); return `<span class="bkb__spine" style="--bk:${ink};--bk-p:${paper};--i:${i}"><b dir="auto">${esc(b.title)}</b></span>`; }).join('');
+			$('#bkb-n', main).innerHTML = `<b>${num(read.length)}</b> ${L('كتاب خلصناهم', read.length === 1 ? 'book finished' : 'books finished')}<br><b>${num(pages)}</b> ${L('صفحة', 'pages')}`;
 			if (open) showBook(open);
 		};
 
