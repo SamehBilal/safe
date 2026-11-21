@@ -251,6 +251,9 @@ function halt() {
 	playing = false;
 	asked++;
 	song.pause();
+	// let go of the old song altogether: its «paused» arrives a moment later, and with the old song still loaded it would
+	// read as «the phone paused it» — stopping the new song before it loads, and «play» bringing the old one back
+	if (song.getAttribute('src')) { song.removeAttribute('src'); song.load(); }
 	screen('');
 }
 
