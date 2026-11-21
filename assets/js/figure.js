@@ -94,21 +94,32 @@ const ANCHORS = {
 };
 export const anchor = (part, who = 'her') => { const [u, v] = ANCHORS[who][part] || ANCHORS[who].body; return who === 'him' ? atHim(u, v) : at(u, v); };
 const NAVY = '#1f3a5f', NAVY_D = '#13243b';
-/* his pieces, fitted to him (measured from the picture: torso 38–125 wide, arms 8–32 and 129–152 down to the wrists
-   at 270, briefs 232–290, legs from 34–131 at the hips to 59–77 and 109–130 at the ankles) */
-const SLEEVES = 'M66 93 C52 95 36 98 24 105 C11 111 5 126 6 150 L6 200 L5 268 L22 270 L28 214 L32 168 L37 170 L40 205 L40 240 L35 262 L34 270 L128 270 L125 240 L124 205 L127 170 L131 168 L135 214 L140 270 L156 268 L155 200 L155 150 C156 126 151 111 138 105 C126 98 110 95 96 93 Z';
+/* his pieces, fitted to him (measured from the picture, row by row: shoulders 34–127 at 100 and 8–153 at 140, then
+   the arms 8–32 and 129–152 apart from the torso 38–125 down to the wrists at 270, briefs 232–290, legs from 34–131 at
+   the hips to 59–77 and 109–130 at the ankles). A top is a yoke over the shoulders, two sleeves and a torso, so the gap
+   between his arms and his body stays open; where it's worn open his own chest shows through (`open`). */
+const poly = (pts) => `M${pts.map((p) => p.join(' ')).join(' L')} Z`;
+const YOKE = 'M66 89 C56 92 42 95 32 98 C22 102 14 106 10 113 C6 121 4 131 4 142 L5 156 L158 156 L157 142 C157 131 155 121 151 113 C147 106 140 102 130 98 C120 95 106 92 96 89 Z';
+const SLEEVE_L = (end = 272) => poly([[4, 150], [36, 150], [35, 195], [33, 225], [29, end < 250 ? end : 240], ...(end < 250 ? [] : [[26, 255]]), [23, end], [4, end]]);
+const SLEEVE_R = (end = 272) => poly([[126, 150], [158, 150], [158, 200], [157, 240], [155, end], [138, end], ...(end < 250 ? [] : [[136, 252]]), [133, 236], [130, 212], [127, 175]]);
+const TORSO = (bottom = 272) => poly([[37, 150], [127, 150], [127, 175], [126, 205], [125, 235], [126, bottom], [32, bottom], [33, 250], [39, 234], [40, 205], [38, 172]]);
+/* a garment made of several shapes: outlined once underneath, then filled over, so no seams show where they overlap */
+const piece = (d, fill, line) => { const parts = d.trim().split(/\s(?=M)/); return parts.map((q) => `<path d="${q}" fill="${line}" stroke="${line}" stroke-width="2.2" stroke-linejoin="round"/>`).join('') + parts.map((q) => `<path d="${q}" fill="${fill}"/>`).join(''); };
+const top = (end = 272, bottom = 272) => `${YOKE} ${SLEEVE_L(end)} ${SLEEVE_R(end)} ${TORSO(bottom)}`;
 const HIS = {
-	'silk-pajama': { wear: () => `<path d="M33 266 L130 266 L134 300 L135 372 L133 474 L106 476 L102 400 L91 330 L82 300 L80 300 L79 330 L78 400 L80 476 L56 476 L46 400 L42 340 L32 300 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.2"/>
-		<path d="${SLEEVES}" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.2"/>
-		<path d="M72 96 L81 140 L90 96 M81 140 L81 270 M5 258 L22 260 M140 260 L156 258 M72 96 L60 114 L70 124 M90 96 L102 114 L92 124" fill="none" stroke="#c9d6e6" stroke-width="1.2"/>
-		${[160, 185, 210, 235, 258].map((y) => `<circle cx="84" cy="${y}" r="1.8" fill="#c9d6e6"/>`).join('')}` },
-	'silk-robe': { wear: () => `<path d="M66 96 L74 96 L81 222 L88 96 L96 96 C108 101 130 106 143 114 C152 120 155 132 154 150 L155 238 L138 240 L133 200 L130 300 L134 404 L44 404 L36 300 L33 200 L26 240 L7 238 L8 150 C7 132 10 120 18 114 C32 106 54 101 66 96 Z" fill="#7b1f2e" stroke="#4e1019" stroke-width="1.2"/>
-		<path d="M74 96 L81 222 L88 96" fill="none" stroke="#c9a14a" stroke-width="2"/>
-		<path d="M36 222 L128 222 L128 232 L36 232 Z" fill="#5e1622"/><path d="M80 232 L74 262 M83 232 L90 260" stroke="#5e1622" stroke-width="3.4" stroke-linecap="round"/>` },
-	'white-shirt': { wear: () => `<path d="M66 96 L76 98 L77 270 L34 270 L35 262 L40 240 L40 205 L37 170 L32 168 L28 214 L22 270 L5 268 L6 200 L7 150 C6 132 9 120 18 114 C32 106 54 101 66 96 Z M96 96 L86 98 L85 270 L128 270 L125 240 L124 205 L127 170 L131 168 L135 214 L140 270 L156 268 L155 200 L155 150 C156 126 151 111 138 105 C126 98 110 95 96 93 Z" fill="#fbfbf8" stroke="#bdbab2" stroke-width="1.2"/>
-		<path d="M76 98 L66 114 L74 122 M86 98 L96 114 L88 122" fill="none" stroke="#bdbab2" stroke-width="1.2"/>` },
-	'red-boxers': { z: -1, wear: () => `<path d="M37 230 C60 235 104 235 126 230 L130 296 L132 318 C118 322 100 322 89 318 L83 286 L79 318 C67 322 49 322 36 318 L35 296 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="1.3"/>
-		<path d="M37 233 C60 238 104 238 126 233" fill="none" stroke="#fff" stroke-width="2.4" opacity=".8"/>
+	'silk-pajama': { wear: () => `<path d="M32 266 L130 266 L134 300 L135 372 L133 476 L106 478 L102 400 L91 330 L82 302 L80 302 L79 330 L78 400 L80 478 L56 478 L46 400 L42 340 L31 300 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.1"/>
+		${piece(top(), NAVY, NAVY_D)}
+		<path d="M72 92 L81 136 L90 92 M81 136 L81 272 M4 262 L23 263 M138 263 L156 262 M72 92 L62 110 L71 118 M90 92 L100 110 L91 118" fill="none" stroke="#c9d6e6" stroke-width="1.1"/>
+		${[158, 184, 210, 236, 260].map((y) => `<circle cx="84" cy="${y}" r="1.7" fill="#c9d6e6"/>`).join('')}` },
+	'silk-robe': { open: 'M74 90 L88 90 L81 222 Z', wear: () => `${piece(`${YOKE} ${SLEEVE_L(240)} ${SLEEVE_R(240)} ${poly([[37, 150], [127, 150], [127, 175], [126, 205], [125, 235], [131, 270], [135, 330], [136, 404], [42, 404], [32, 330], [31, 270], [39, 234], [40, 205], [38, 172]])}`, '#7b1f2e', '#4e1019')}
+		<path d="M74 90 L81 222 L88 90" fill="none" stroke="#c9a14a" stroke-width="2"/>
+		<path d="M38 220 L127 220 L127 230 L38 230 Z" fill="#5e1622"/><path d="M80 230 L74 260 M83 230 L90 258" stroke="#5e1622" stroke-width="3.2" stroke-linecap="round"/>` },
+	'white-shirt': { open: 'M75 90 L87 90 L86 226 L76 226 Z', wear: () => `${piece(top(), '#fbfbf8', '#bdbab2')}
+		<path d="M75 90 L76 226 M87 90 L86 226 M76 226 L81 272 L86 226" fill="none" stroke="#bdbab2" stroke-width="1.1"/>
+		<path d="M75 92 L64 110 L73 118 M87 92 L98 110 L89 118" fill="none" stroke="#bdbab2" stroke-width="1.1"/>
+		${[236, 254].map((y) => `<circle cx="81" cy="${y}" r="1.6" fill="#cfcac0"/>`).join('')}` },
+	'red-boxers': { z: -1, wear: () => `<path d="M37 230 C60 235 104 235 126 230 L130 296 L132 318 C118 322 100 322 89 318 L83 286 L79 318 C67 322 49 322 36 318 L35 296 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="1.2"/>
+		<path d="M37 233 C60 238 104 238 126 233" fill="none" stroke="#fff" stroke-width="2.2" opacity=".8"/>
 		${[[50, 256], [70, 248], [98, 250], [116, 266], [56, 292], [110, 296], [84, 242]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.42)" d="M0 4 C-8 -4 -10 -12 -4 -12 C-1 -12 0 -9 0 -8 C0 -9 1 -12 4 -12 C10 -12 8 -4 0 4 Z" fill="#fff"/>`).join('')}` },
 	'bow-tie': { over: () => '<path d="M81 100 L70 94 L70 106 Z M81 100 L92 94 L92 106 Z" fill="#111" stroke="#000" stroke-width=".8"/><circle cx="81" cy="100" r="2.6" fill="#222"/>' },
 	watch: { over: () => '<path d="M7 264 L21 265 L21 273 L7 272 Z" fill="#3a2a1e"/><circle cx="14" cy="268.5" r="4.4" fill="#e9d6a6" stroke="#8a6d2e" stroke-width="1.2"/><path d="M14 268.5 L14 265.6 M14 268.5 L16 269.2" stroke="#333" stroke-width=".8"/>' }
@@ -121,7 +132,8 @@ export function figureSVG(looks = [], src = '', who = 'her') {
 		const on = looks.map((l) => HIS[l]).filter(Boolean).sort((a, b) => (a.z || 0) - (b.z || 0));
 		const layer = (k) => on.map((l) => l[k]?.() || '').join('');
 		return `<svg class="sx-fig__svg" viewBox="0 0 600 600" aria-hidden="true"><g transform="translate(${HX0.toFixed(2)} ${Y0}) scale(${HK.toFixed(5)})">
-			${src ? `<image href="${src}" width="${HW}" height="${HH}"/>` : ''}${layer('wear')}${layer('over')}</g></svg>`;
+			${src ? `<image href="${src}" width="${HW}" height="${HH}"/>` : ''}${layer('wear')}
+			${src ? on.filter((l) => l.open).map((l, k) => `<clipPath id="sx-open-${k}"><path d="${l.open}"/></clipPath><image href="${src}" width="${HW}" height="${HH}" clip-path="url(#sx-open-${k})"/>`).join('') : ''}${layer('over')}</g></svg>`;
 	}
 	const on = looks.map((l) => LOOKS[l]).filter(Boolean);
 	const layer = (k) => on.map((l) => l[k]?.() || '').join('');
