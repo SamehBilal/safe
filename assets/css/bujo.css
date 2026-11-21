@@ -706,3 +706,10 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 .gs-drop b { flex: 1; min-width: 0; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gs-drop small { flex: none; font-size: .72rem; opacity: .7; }
 @media (prefers-reduced-motion: reduce) { .gs, .gs-pill, .gs-bubble, .gs-drop, .gs-input { transition: none; } }
+
+/* the page you're on, in every menu panel (the grid items and the rows alike): a solid highlighter, dark ink on it,
+   the same in the light and the dark theme (the dark theme's see-through yellow turned it a muddy olive) */
+.mg-item[aria-current='page'], .mg-row[aria-current='page'] { background: #fdc830; color: #2b2b33; border-color: var(--ink); box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); }
+.mg-item[aria-current='page'] :is(b, small), .mg-row[aria-current='page'] :is(b, small, .mg-arr) { color: #2b2b33; }
+.mg-item[aria-current='page'] small, .mg-row[aria-current='page'] small { opacity: .8; }
+.mnav-btn[aria-expanded='true'] { background: #fdc830; color: #2b2b33; }
