@@ -8,7 +8,7 @@
 const INK = '#5b3a2e', SKIN = '#fae2d2', GOLD = '#d4a017';
 const [W, H] = [266, 880];
 const K = 584 / H, X0 = 300 - (W * K) / 2, Y0 = 8;
-/** where a point of the picture lands in the 600×600 drawing (for the labels' lines) */
+/** where a point of her picture lands in the 600×600 drawing (for the labels' lines) */
 export const at = (u, v) => [Math.round(X0 + u * K), Math.round(Y0 + v * K)];
 
 /* her, in the picture's pixels */
@@ -82,8 +82,44 @@ const LOOKS = {
 	'coin-anklet': { over: () => `${chain('M162 776 C170 790 180 790 188 776', 2.6)}${coins(along(164, 186, 784, 784, 5, 3), 2.8)}` }
 };
 
-/** The drawing: her (the picture, from `src`), and the given looks on her (ids from LOOKS; unknown ones are skipped). */
-export function figureSVG(looks = [], src = '') {
+/* ---- him: the trapezoid man from the men's body-types chart (cut out, the red trapezoid painted out, his black briefs
+   kept as his base — sealed as `figure-him`), in his picture's own pixels (170×530) */
+const [HW, HH] = [170, 530];
+const HK = 584 / HH, HX0 = 300 - (HW * HK) / 2;
+const atHim = (u, v) => [Math.round(HX0 + u * HK), Math.round(Y0 + v * HK)];
+/* where each part's label points, on each of us */
+const ANCHORS = {
+	her: { head: [155, 60], neck: [152, 165], arm: [62, 232], body: [156, 300], wrist: [70, 386], hand: [200, 425], under: [156, 410], leg: [116, 530], ankle: [92, 772], feet: [160, 825] },
+	him: { head: [82, 40], neck: [82, 100], arm: [18, 180], body: [82, 170], wrist: [16, 268], hand: [146, 296], under: [82, 256], leg: [60, 340], ankle: [58, 480], feet: [110, 512] }
+};
+export const anchor = (part, who = 'her') => { const [u, v] = ANCHORS[who][part] || ANCHORS[who].body; return who === 'him' ? atHim(u, v) : at(u, v); };
+const NAVY = '#1f3a5f', NAVY_D = '#13243b';
+const HIS = {
+	'silk-pajama': { wear: () => `<path d="M34 238 L128 238 L126 300 L122 380 L124 488 L98 490 L94 380 L82 300 L72 380 L70 490 L44 488 L46 380 L38 300 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.5"/>
+		<path d="M60 96 L104 96 C126 100 146 106 152 120 L160 200 L162 268 L140 270 L136 196 L132 252 L32 252 L28 196 L24 270 L2 268 L4 200 L12 120 C20 106 38 100 60 96 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.5"/>
+		<path d="M70 96 L82 150 L94 96 M82 150 L82 252 M24 262 L2 260 M140 262 L162 260 M70 96 L56 118 L66 130 M94 96 L108 118 L98 130" fill="none" stroke="#c9d6e6" stroke-width="1.4"/>
+		${[168, 190, 212, 234].map((y) => `<circle cx="86" cy="${y}" r="2" fill="#c9d6e6"/>`).join('')}` },
+	'silk-robe': { wear: () => `<path d="M58 96 L72 96 L82 226 L92 96 L106 96 C128 100 146 106 152 120 L160 244 L140 246 L136 200 L138 300 L136 394 L28 394 L26 300 L28 200 L24 246 L4 244 L12 120 C20 106 38 100 58 96 Z" fill="#7b1f2e" stroke="#4e1019" stroke-width="1.5"/>
+		<path d="M72 96 L82 226 L92 96" fill="none" stroke="#c9a14a" stroke-width="2.4"/>
+		<path d="M28 222 L136 222 L136 234 L28 234 Z" fill="#5e1622"/><path d="M84 234 L76 270 M86 234 L94 268" stroke="#5e1622" stroke-width="4" stroke-linecap="round"/>` },
+	'white-shirt': { wear: () => `<path d="M60 96 L76 96 L76 268 L30 266 L28 196 L24 270 L2 268 L4 200 L12 120 C20 106 38 100 60 96 Z M104 96 L88 96 L88 268 L134 266 L136 196 L140 270 L162 268 L160 200 L152 120 C146 106 126 100 104 96 Z" fill="#fbfbf8" stroke="#bdbab2" stroke-width="1.5"/>
+		<path d="M76 96 L64 118 L74 126 M88 96 L100 118 L90 126" fill="none" stroke="#bdbab2" stroke-width="1.4"/>` },
+	'red-boxers': { z: -1, wear: () => `<path d="M32 230 C60 236 106 236 132 230 L134 304 C120 310 100 310 88 304 L84 268 L80 304 C66 310 44 310 32 304 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="1.6"/>
+		<path d="M32 232 C60 238 106 238 132 232" fill="none" stroke="#fff" stroke-width="3" opacity=".8"/>
+		${[[48, 256], [70, 248], [100, 250], [118, 266], [56, 286], [110, 290], [86, 240]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.5)" d="M0 4 C-8 -4 -10 -12 -4 -12 C-1 -12 0 -9 0 -8 C0 -9 1 -12 4 -12 C10 -12 8 -4 0 4 Z" fill="#fff"/>`).join('')}` },
+	'bow-tie': { over: () => '<path d="M82 100 L66 92 L66 108 Z M82 100 L98 92 L98 108 Z" fill="#111" stroke="#000" stroke-width="1"/><circle cx="82" cy="100" r="3.5" fill="#222"/>' },
+	watch: { over: () => '<path d="M4 262 L26 264 L25 274 L3 272 Z" fill="#3a2a1e"/><circle cx="15" cy="268" r="6" fill="#e9d6a6" stroke="#8a6d2e" stroke-width="1.6"/><path d="M15 268 L15 264 M15 268 L18 269" stroke="#333" stroke-width="1"/>' }
+};
+
+/** The drawing: her or him (the picture, from `src`), and the given looks on them (unknown ones are skipped). */
+export function figureSVG(looks = [], src = '', who = 'her') {
+	if (who === 'him') {
+		// what goes underneath first, then what goes over it
+		const on = looks.map((l) => HIS[l]).filter(Boolean).sort((a, b) => (a.z || 0) - (b.z || 0));
+		const layer = (k) => on.map((l) => l[k]?.() || '').join('');
+		return `<svg class="sx-fig__svg" viewBox="0 0 600 600" aria-hidden="true"><g transform="translate(${HX0.toFixed(2)} ${Y0}) scale(${HK.toFixed(5)})">
+			${src ? `<image href="${src}" width="${HW}" height="${HH}"/>` : ''}${layer('wear')}${layer('over')}</g></svg>`;
+	}
 	const on = looks.map((l) => LOOKS[l]).filter(Boolean);
 	const layer = (k) => on.map((l) => l[k]?.() || '').join('');
 	const her = src ? `<image href="${src}" width="${W}" height="${H}"/>` : '';

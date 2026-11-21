@@ -2,7 +2,7 @@ import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey, pageHead } from
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
-import { figureSVG, at as onHer } from '../figure.js';
+import { figureSVG, anchor } from '../figure.js';
 
 /* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
    Header band: a closed door with a «ممنوع الإزعاج» sign swinging on its handle, two candles flickering and petals falling.
@@ -33,16 +33,16 @@ const PAGE = Infinity; // every position shows at once (the images load as they 
 /* the parts of the outfit figure: where its label sits (side, height in %), and the point on the figure it points at
    (in the figure's 600×600 drawing). Each outfit piece names its part in secret.json (`part`); one without is «body». */
 const PARTS = [
-	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: onHer(155, 60) },
-	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: onHer(152, 165) },
-	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: onHer(62, 232) },
-	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: onHer(156, 300) },
-	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: onHer(70, 386) },
-	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: onHer(200, 425) },
-	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: onHer(156, 410) },
-	{ id: 'leg', ar: 'الفخد', en: 'Thigh', side: 'l', y: 75, at: onHer(116, 530) },
-	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: onHer(92, 772) },
-	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: onHer(160, 825) }
+	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8 },
+	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17 },
+	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30 },
+	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33 },
+	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47 },
+	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50 },
+	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61 },
+	{ id: 'leg', ar: 'الفخد', en: 'Thigh', side: 'l', y: 75 },
+	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88 },
+	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93 }
 ];
 const partOf = (x) => (PARTS.some((p) => p.id === x.part) ? x.part : 'body');
 
@@ -180,14 +180,15 @@ async function room(main, s, data, lock) {
 	const outfit = lists.outfit || [];
 	const games = lists.games || [];
 	const basket = []; // tonight: refs, in the order they were added (only while the room is open)
-	const dressed = {}; // the outfit on the figure: part → item id
+	const dressedBy = { her: {}, him: {} }; // the outfit on each figure: part → item id
+	let wearer = 'her'; // whose outfit the tab shows
 
 	const tab = qs('t') || 'pos';
 	box.innerHTML = `
 		<div class="sx-head"><span class="sx-head__t">${doodle('love', 26)} ${L('جوه أوضتنا', 'Inside our room')}</span><button type="button" class="btn btn--sm btn--ghost" id="sx-close">${doodle('lock', 16)} ${L('اقفل', 'Lock')}</button></div>
 		<nav class="chips kinds-tabs sx-tabs" role="tablist">
 			<button type="button" class="chip" data-tab="pos">${doodle('heart', 18)} ${L('الأوضاع', 'Positions')} <small>${P.length}</small></button>
-			<button type="button" class="chip" data-tab="outfit">${doodle('dress', 18)} ${L('لبس الليلة', 'Tonight’s outfit')} <small>${outfit.length}</small></button>
+			<button type="button" class="chip" data-tab="outfit">${doodle('dress', 18)} ${L('لبس الليلة', 'Tonight’s outfit')} <small>${outfit.length + (lists.outfitHim || []).length}</small></button>
 			<button type="button" class="chip" data-tab="games">${doodle('dice', 18)} ${L('لعبة الليلة', 'Tonight’s game')} <small>${games.length + PLAY.length}</small></button>
 			<button type="button" class="chip" data-tab="nights">${doodle('moon', 18)} ${L('ليالينا', 'Our nights')} <small id="sx-nn"></small></button>
 		</nav>
@@ -378,11 +379,16 @@ async function room(main, s, data, lock) {
 	/* ---- the outfit, part by part ---- */
 	function dress() {
 		const pane = $('#sx-pane', box);
-		const parts = PARTS.filter((p) => outfit.some((x) => partOf(x) === p.id));
+		const him = wearer === 'him';
+		const outfit = him ? lists.outfitHim || [] : lists.outfit || [];
+		const kind = him ? 'outfitHim' : 'outfit';
+		const dressed = dressedBy[wearer];
+		const parts = PARTS.filter((p) => outfit.some((x) => partOf(x) === p.id)).map((p) => ({ ...p, at: anchor(p.id, wearer) }));
 		const item = (id) => outfit.find((x) => x.id === id);
 		pane.innerHTML = `
+			<div class="chips sx-who" role="tablist" aria-label="${L('لبس مين؟', 'Whose outfit?')}">${[['her', s.her], ['him', s.him]].map(([w, n]) => `<button type="button" class="chip${w === wearer ? ' is-on' : ''}" data-wearer="${w}" aria-pressed="${w === wearer}">${doodle(w === 'her' ? 'dress' : 'groom', 18)} ${esc(L(`لبس ${App.t(n)}`, `${App.t(n)}’s`))}</button>`).join('')}</div>
 			<div class="sx-pick">
-				<button type="button" class="btn btn--coral" id="sx-dice-all">${doodle('dice', 20)} ${L('لبّسوني بالحظ', 'Dress me by luck')}</button>
+				<button type="button" class="btn btn--coral" id="sx-dice-all">${doodle('dice', 20)} ${him ? L('لبّسوه بالحظ', 'Dress him by luck') : L('لبّسوني بالحظ', 'Dress me by luck')}</button>
 				<button type="button" class="btn btn--ghost" id="sx-undress">${L('من الأول', 'Start over')}</button>
 				<span class="muted">${L('أو دوسوا على أي حتة واختاروا', 'or tap any part and choose')}</span>
 			</div>
@@ -391,10 +397,10 @@ async function room(main, s, data, lock) {
 			<div class="sx-fig__acts"><button type="button" class="btn btn--coral" id="sx-take-outfit" disabled>${doodle('moon', 18)} ${L('ضيف اللبس ده لليلة', 'Add this outfit to tonight')}</button></div>`;
 		const fig = $('#sx-fig', pane);
 		let open = '';
-		let her = ''; // the picture of her, once it's opened
-		photo('figure-base').then((u) => { her = u; paint(); }).catch(() => {});
+		let her = ''; // the picture of her (or him), once it's opened
+		photo(him ? 'figure-him' : 'figure-base').then((u) => { her = u; paint(); }).catch(() => {});
 		const paint = () => {
-			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean), her);
+			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean), her, wearer);
 			$('.sx-fig__lines', fig).innerHTML = parts.map((p) => {
 				const x = p.side === 'l' ? 170 : 430, y = (p.y / 100) * 600;
 				return `<path class="${dressed[p.id] ? 'is-on' : ''}" d="M${x} ${y} L${p.at[0]} ${p.at[1]}"/><circle class="${dressed[p.id] ? 'is-on' : ''}" cx="${p.at[0]}" cy="${p.at[1]}" r="7"/>`;
@@ -430,13 +436,15 @@ async function room(main, s, data, lock) {
 		};
 		pane.onclick = (e) => {
 			const tag = e.target.closest('[data-part]'), wear = e.target.closest('[data-wear]'), r = e.target.closest('[data-roll]');
+			const w = e.target.closest('[data-wearer]');
+			if (w) { wearer = w.dataset.wearer; return dress(); }
 			if (tag) return choose(tag.dataset.part);
 			if (r) { roll(r.dataset.roll); open = ''; choose(r.dataset.roll); return; }
 			if (wear) { dressed[open] = wear.dataset.wear; open = ''; $('#sx-choose', pane).hidden = true; paint(); }
 		};
 		$('#sx-dice-all', pane).onclick = () => { for (const p of parts) roll(p.id, true); open = ''; $('#sx-choose', pane).hidden = true; fig.classList.remove('is-shuffle'); void fig.offsetWidth; fig.classList.add('is-shuffle'); paint(); };
 		$('#sx-undress', pane).onclick = () => { for (const k of Object.keys(dressed)) delete dressed[k]; open = ''; $('#sx-choose', pane).hidden = true; paint(); };
-		$('#sx-take-outfit', pane).onclick = () => add(parts.filter((p) => dressed[p.id]).map((p) => `outfit:${dressed[p.id]}`));
+		$('#sx-take-outfit', pane).onclick = () => add(parts.filter((p) => dressed[p.id]).map((p) => `${kind}:${dressed[p.id]}`));
 		paint();
 	}
 
