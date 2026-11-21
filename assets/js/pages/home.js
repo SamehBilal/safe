@@ -85,7 +85,7 @@ function yearStage(main, years) {
 const GROUPS = [
 	{ id: 'story', ar: 'حكايتنا', en: 'Our story', ic: 'book', top: ['story', 'chapters', 'places', 'minute'] },
 	{ id: 'memories', ar: 'ذكرياتنا', en: 'Memories', ic: 'image', top: ['gallery', 'onthisday', 'notes', 'letters'] },
-	{ id: 'family', ar: 'عيلتنا', en: 'Our family', ic: 'family', top: ['family', 'growth', 'sayings', 'familytree'] },
+	{ id: 'family', ar: 'عيلتنا', en: 'Our family', ic: 'family', top: ['family', 'growth', 'sayings', 'distances'] },
 	{ id: 'nights', ar: 'ليالينا', en: 'Our nights', ic: 'moon', top: ['draw', 'music', 'movies', 'adventures'] },
 	{ id: 'you', ar: 'مناسباتنا', en: 'Occasions', ic: 'cake', top: ['birthday', 'calendar', 'firsts', 'gifts'] }
 ];

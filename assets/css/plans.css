@@ -761,3 +761,75 @@
 .fm-board__pot rect:first-of-type { fill: rgba(242, 114, 111, .35); }
 .fm-board__steam { stroke-dasharray: 3 6; animation: rc-wave 2s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .fm-board__steam { animation: none; } }
+
+/* ---------- «المسافات»: a map drawn with a pen on paper (papermap.js) — Egypt's governorates in an orange wash, the
+   lands around in sand, the seas left as paper with wave strokes, names by hand, a fountain pen lying on the corner,
+   pins with our faces, and a pen line flying between two of us. On top, «الأقرب» and «الأبعد» as two tabs ---------- */
+.dt-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: clamp(14px, 3vw, 28px); width: min(860px, 100% - 2 * var(--gutter)); margin: clamp(10px, 2vw, 22px) auto clamp(8px, 2vw, 16px); }
+.dt-tab { position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto auto; align-items: center; column-gap: 16px; padding: 18px 22px; font: inherit; text-align: start; cursor: pointer; color: var(--ink-text, #2b2b33);
+	background: #fbf6ea; border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--c) 55%, transparent); transition: transform .25s var(--ease-pop, ease), box-shadow .2s, background .2s; }
+.dt-tab--near { --c: #5a9e6f; rotate: -.8deg; } .dt-tab--far { --c: #1f3a5f; rotate: .8deg; }
+.dt-tab > svg { grid-row: 1 / span 3; width: 56px; height: 56px; color: var(--c); }
+.dt-tab small { font: 400 1rem var(--f-label); letter-spacing: .12em; color: var(--c); }
+:lang(ar) .dt-tab small { font: 800 .85rem/1.4 var(--f-body); letter-spacing: 0; }
+.dt-tab b { font: 400 clamp(1.8rem, 4vw, 2.5rem)/1.05 var(--f-label); letter-spacing: .03em; color: var(--ink-text, #2b2b33); }
+.dt-tab span { font-size: .85rem; font-weight: 700; color: #6a6560; }
+.dt-tab:hover { transform: translateY(-3px); }
+.dt-tab.is-on { background: var(--c); color: #fff; rotate: 0deg; transform: translateY(-3px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+.dt-tab.is-on > svg, .dt-tab.is-on small, .dt-tab.is-on b, .dt-tab.is-on span { color: #fff; }
+.dt-house { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.dt-house__heart { fill: var(--coral, #f2726f); stroke: none; }
+.dt-tab.is-on .dt-house__heart { fill: #fff; }
+
+.pm { position: relative; width: min(1000px, 100%); margin: 0 auto; overflow: hidden; color: #2a2620;
+	background: linear-gradient(rgba(14, 105, 144, .07) 1px, transparent 1px) 0 0 / 100% 26px, linear-gradient(90deg, rgba(14, 105, 144, .05) 1px, transparent 1px) 0 0 / 26px 100%, #fbf6ea;
+	border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-pink, #fc8b93), inset 0 0 60px rgba(160, 120, 60, .12); }
+.pm__paper, .pm__arcs { position: absolute; inset: 0; }
+.pm__svg, .pm__arcs { width: 100%; height: 100%; display: block; }
+.pm__land { fill: #efe2c4; stroke: #4a3f33; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.pm__land--iran { fill: #ece5d2; }
+.pm__gov { fill: #f6a76f; stroke: #fbf6ea; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.pm__egypt { stroke: #4a3f33; }
+.pm__egypt .pm__gov:nth-child(3n) { fill: #f39a5c; } .pm__egypt .pm__gov:nth-child(4n+1) { fill: #f7b27f; }
+.pm__wave { fill: none; stroke: rgba(14, 105, 144, .35); stroke-width: 1.3; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.pm__name { font-family: var(--f-hand); fill: #4a3f33; text-anchor: middle; opacity: .85; }
+:lang(ar) .pm__name { font-family: 'Aref Ruqaa', var(--f-body); font-weight: 700; }
+.pm__name--sea { fill: #2c6a8a; font-style: italic; opacity: .7; }
+.pm__marks { position: absolute; inset: 0; }
+.pm__mark { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 2px; padding: 0; font: inherit; color: inherit; background: none; border: 0; cursor: pointer; transform: translate(calc(-50% + var(--n, 0) * 46px), -50%); }
+.pm__mark:not(button) { cursor: default; }
+.pm__face { display: grid; place-items: center; width: clamp(30px, 5vw, 46px); aspect-ratio: 1; overflow: hidden; background: #fff; border: 2.5px solid var(--c); border-radius: 50%; box-shadow: 0 3px 0 0 color-mix(in srgb, var(--c) 45%, transparent); transition: transform .2s; }
+.pm__face img { width: 100%; height: 100%; object-fit: cover; }
+.pm__emoji { display: grid; place-items: center; font-size: clamp(1rem, 2.4vw, 1.4rem); }
+.pm__mark.is-picked .pm__face { transform: scale(1.18); box-shadow: 0 0 0 4px var(--hl-yellow, #fdc830); }
+.pm__name { display: grid; justify-items: center; line-height: 1.2; }
+.pm__name b { padding: 0 7px; font-size: clamp(.62rem, 1.4vw, .8rem); color: #fff; background: var(--c); border-radius: 999px; white-space: nowrap; }
+.pm__name small { font-size: clamp(.58rem, 1.2vw, .7rem); font-weight: 700; color: #5a5148; white-space: nowrap; }
+.pm__mark--spot { transform: translate(-50%, -6px); }
+.pm__dot { width: 12px; height: 12px; background: var(--c); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--c); }
+.pm__mark--spot .pm__name b { color: var(--c); background: #fbf6ea; border: 1px dashed var(--c); }
+.pm__trail { fill: none; stroke: #4a3f33; stroke-width: 1.6; stroke-dasharray: 2 6; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: .55; }
+.pm__dash { fill: none; stroke: var(--coral-deep, #d9534f); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 10 8; vector-effect: non-scaling-stroke; opacity: 0; }
+.pm__arc.is-on .pm__dash { opacity: 1; animation: pm-ink 1.4s linear infinite; }
+.pm__arc text { font-family: var(--f-label); fill: var(--coral-deep, #d9534f); paint-order: stroke; stroke: #fbf6ea; stroke-width: 6px; opacity: .55; }
+.pm__arc.is-on text { opacity: 1; }
+.pm__plane path { fill: var(--coral-deep, #d9534f); }
+@keyframes pm-ink { to { stroke-dashoffset: -36; } }
+.pm__pen { position: absolute; z-index: 1; bottom: -2%; inset-inline-end: -3%; width: min(28%, 260px); filter: drop-shadow(4px 8px 6px rgba(40, 30, 10, .3)); pointer-events: none; }
+.pm__read { position: absolute; z-index: 3; top: 4%; inset-inline-start: 3%; display: grid; gap: 0; max-width: 46%; padding: 10px 16px 12px; text-align: start; background: #fff6b8; color: #3a3420; box-shadow: 0 3px 8px rgba(40, 30, 10, .18); rotate: -2deg; direction: rtl; }
+[lang='en'] .pm__read, :root:lang(en) .pm__read { direction: ltr; }
+.pm__read p { margin: 0; }
+.pm__pair { font-weight: 800; font-size: clamp(.75rem, 1.6vw, .95rem); }
+.pm__km { font: 400 clamp(1.6rem, 5vw, 3.2rem)/1.05 var(--f-label); color: var(--coral-deep, #d9534f); }
+.pm__feel { font-size: clamp(.7rem, 1.4vw, .85rem); font-weight: 700; color: #6a5d3a; }
+.pm-hint { margin: 0 auto 16px; max-width: 640px; text-align: center; color: var(--muted); font-size: .9rem; }
+.pm + .pm-hint { margin-top: 14px; }
+.dt-panel .sec-title { text-align: center; }
+@media (max-width: 640px) { .pm__read { top: 3%; max-width: 58%; padding: 5px 9px 7px; } .pm__pen { width: 34%; } }
+@media (prefers-reduced-motion: reduce) { .pm__arc.is-on .pm__dash { animation: none; } }
+/* a paper map is never taller than most of the screen: a tall one (Egypt alone) gets narrower instead */
+.pm { width: min(1000px, 100%, calc(72vh * var(--r, 1.6))); }
+/* the pen lies on the empty western corner (the Libyan desert), away from Oman and the pins */
+.pm__pen { inset-inline-end: auto; left: -3%; transform: scaleX(-1); }
+/* on a phone the note on the map keeps only the distance (who and how are in the hint and the list around it) */
+@media (max-width: 640px) { .pm__read { top: 3%; max-width: none; padding: 2px 9px 3px; rotate: -3deg; } .pm__pair, .pm__feel { display: none; } .pm__km { font-size: 1.35rem; } }
