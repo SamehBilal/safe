@@ -2,6 +2,7 @@ import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey, pageHead } from
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
+import { figureSVG } from '../figure.js';
 
 /* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
    Header band: a closed door with a «ممنوع الإزعاج» sign swinging on its handle, two candles flickering and petals falling.
@@ -11,8 +12,8 @@ import { deriveKek, importMaster, open, fromB64 } from '../core.js';
 
    «الليلة»: anything — a position, a piece of the outfit, a game — can go in tonight's basket, picked by hand or by luck,
    and the basket is logged as one night with everything in it (and a date, for a night we forgot to log).
-   The outfit is dressed by body part, like a vocabulary sheet: a figure with a label for each part, each with what's
-   on it tonight — chosen by tapping the label, or all of them (or one) left to the dice.
+   The outfit is dressed by body part, like a vocabulary sheet: a woman drawn in line art (figure.js) with a label for
+   each part, and what's on it tonight drawn on her — chosen by tapping the label, or all of them (or one) left to the dice.
    The games: ours (the boards and cards in the photos), and two to play right here — the dice, and truth or dare. */
 
 const COLORS = ['#c2185b', '#8e1f4f', '#f2726f', '#e39b2d', '#8e5bd1', '#13789f', '#5a9e6f', '#f59a7b'];
@@ -32,16 +33,16 @@ const PAGE = Infinity; // every position shows at once (the images load as they 
 /* the parts of the outfit figure: where its label sits (side, height in %), and the point on the figure it points at
    (in the figure's 600×600 drawing). Each outfit piece names its part in secret.json (`part`); one without is «body». */
 const PARTS = [
-	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: [300, 62] },
-	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: [300, 118] },
-	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: [236, 200] },
-	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: [306, 220] },
-	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: [214, 300] },
-	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: [392, 330] },
-	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: [300, 336] },
-	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: [322, 450] },
-	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: [276, 548] },
-	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: [330, 580] }
+	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: [300, 72] },
+	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: [300, 130] },
+	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: [234, 224] },
+	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: [300, 250] },
+	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: [218, 334] },
+	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: [392, 368] },
+	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: [300, 340] },
+	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: [332, 432] },
+	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: [282, 552] },
+	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: [322, 586] }
 ];
 const partOf = (x) => (PARTS.some((p) => p.id === x.part) ? x.part : 'body');
 
@@ -85,17 +86,6 @@ const BAND = `<div class="sx-band" aria-hidden="true">
 	<div class="sx-door"><span class="sx-knob"></span><span class="sx-hanger"><b>ممنوع الإزعاج</b><small>Do not disturb</small></span></div>
 	<span class="sx-candle sx-candle--2"><i></i></span>
 </div>`;
-
-/* the figure: a simple outline, no more than a sewing mannequin with arms */
-const FIGURE = `<svg class="sx-fig__svg" viewBox="0 0 600 600" aria-hidden="true">
-	<g class="sx-fig__body">
-		<ellipse cx="300" cy="62" rx="34" ry="40"/>
-		<path d="M286 100 L286 120 M314 100 L314 120"/>
-		<path d="M286 120 C250 124 232 134 226 156 C220 190 214 240 206 300 C204 316 202 330 204 344 M314 120 C350 124 368 134 374 156 C380 190 386 240 394 300 C396 316 398 330 396 344"/>
-		<path d="M244 160 C246 200 252 236 264 262 C254 290 248 314 250 340 L350 340 C352 314 346 290 336 262 C348 236 354 200 356 160"/>
-		<path d="M250 340 C252 400 262 470 270 540 C272 556 270 572 262 584 L286 586 C290 570 290 552 292 536 C296 470 300 410 300 360 C300 410 304 470 308 536 C310 552 310 570 314 586 L338 584 C330 572 328 556 330 540 C338 470 348 400 350 340"/>
-	</g>
-</svg>`;
 
 let skey = null; // the secret key, only while the page is open and unlocked
 const urls = new Map();
@@ -395,12 +385,13 @@ async function room(main, s, data, lock) {
 				<button type="button" class="btn btn--ghost" id="sx-undress">${L('من الأول', 'Start over')}</button>
 				<span class="muted">${L('أو دوسوا على أي حتة واختاروا', 'or tap any part and choose')}</span>
 			</div>
-			<div class="sx-fig" id="sx-fig">${FIGURE}<svg class="sx-fig__lines" viewBox="0 0 600 600" aria-hidden="true" preserveAspectRatio="none"></svg><div class="sx-fig__tags"></div></div>
+			<div class="sx-fig" id="sx-fig"><div class="sx-fig__art"></div><svg class="sx-fig__lines" viewBox="0 0 600 600" aria-hidden="true" preserveAspectRatio="none"></svg><div class="sx-fig__tags"></div></div>
 			<div class="sx-choose" id="sx-choose" hidden></div>
 			<div class="sx-fig__acts"><button type="button" class="btn btn--coral" id="sx-take-outfit" disabled>${doodle('moon', 18)} ${L('ضيف اللبس ده لليلة', 'Add this outfit to tonight')}</button></div>`;
 		const fig = $('#sx-fig', pane);
 		let open = '';
 		const paint = () => {
+			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean));
 			$('.sx-fig__lines', fig).innerHTML = parts.map((p) => {
 				const x = p.side === 'l' ? 170 : 430, y = (p.y / 100) * 600;
 				return `<path class="${dressed[p.id] ? 'is-on' : ''}" d="M${x} ${y} L${p.at[0]} ${p.at[1]}"/><circle class="${dressed[p.id] ? 'is-on' : ''}" cx="${p.at[0]}" cy="${p.at[1]}" r="7"/>`;
