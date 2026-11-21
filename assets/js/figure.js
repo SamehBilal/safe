@@ -90,25 +90,28 @@ const atHim = (u, v) => [Math.round(HX0 + u * HK), Math.round(Y0 + v * HK)];
 /* where each part's label points, on each of us */
 const ANCHORS = {
 	her: { head: [155, 60], neck: [152, 165], arm: [62, 232], body: [156, 300], wrist: [70, 386], hand: [200, 425], under: [156, 410], leg: [116, 530], ankle: [92, 772], feet: [160, 825] },
-	him: { head: [82, 40], neck: [82, 100], arm: [18, 180], body: [82, 170], wrist: [16, 268], hand: [146, 296], under: [82, 256], leg: [60, 340], ankle: [58, 480], feet: [110, 512] }
+	him: { head: [81, 45], neck: [81, 100], arm: [20, 190], body: [81, 180], wrist: [14, 268], hand: [146, 295], under: [81, 260], leg: [62, 360], ankle: [68, 470], feet: [120, 505] }
 };
 export const anchor = (part, who = 'her') => { const [u, v] = ANCHORS[who][part] || ANCHORS[who].body; return who === 'him' ? atHim(u, v) : at(u, v); };
 const NAVY = '#1f3a5f', NAVY_D = '#13243b';
+/* his pieces, fitted to him (measured from the picture: torso 38–125 wide, arms 8–32 and 129–152 down to the wrists
+   at 270, briefs 232–290, legs from 34–131 at the hips to 59–77 and 109–130 at the ankles) */
+const SLEEVES = 'M66 93 C52 95 36 98 24 105 C11 111 5 126 6 150 L6 200 L5 268 L22 270 L28 214 L32 168 L37 170 L40 205 L40 240 L35 262 L34 270 L128 270 L125 240 L124 205 L127 170 L131 168 L135 214 L140 270 L156 268 L155 200 L155 150 C156 126 151 111 138 105 C126 98 110 95 96 93 Z';
 const HIS = {
-	'silk-pajama': { wear: () => `<path d="M34 238 L128 238 L126 300 L122 380 L124 488 L98 490 L94 380 L82 300 L72 380 L70 490 L44 488 L46 380 L38 300 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.5"/>
-		<path d="M60 96 L104 96 C126 100 146 106 152 120 L160 200 L162 268 L140 270 L136 196 L132 252 L32 252 L28 196 L24 270 L2 268 L4 200 L12 120 C20 106 38 100 60 96 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.5"/>
-		<path d="M70 96 L82 150 L94 96 M82 150 L82 252 M24 262 L2 260 M140 262 L162 260 M70 96 L56 118 L66 130 M94 96 L108 118 L98 130" fill="none" stroke="#c9d6e6" stroke-width="1.4"/>
-		${[168, 190, 212, 234].map((y) => `<circle cx="86" cy="${y}" r="2" fill="#c9d6e6"/>`).join('')}` },
-	'silk-robe': { wear: () => `<path d="M58 96 L72 96 L82 226 L92 96 L106 96 C128 100 146 106 152 120 L160 244 L140 246 L136 200 L138 300 L136 394 L28 394 L26 300 L28 200 L24 246 L4 244 L12 120 C20 106 38 100 58 96 Z" fill="#7b1f2e" stroke="#4e1019" stroke-width="1.5"/>
-		<path d="M72 96 L82 226 L92 96" fill="none" stroke="#c9a14a" stroke-width="2.4"/>
-		<path d="M28 222 L136 222 L136 234 L28 234 Z" fill="#5e1622"/><path d="M84 234 L76 270 M86 234 L94 268" stroke="#5e1622" stroke-width="4" stroke-linecap="round"/>` },
-	'white-shirt': { wear: () => `<path d="M60 96 L76 96 L76 268 L30 266 L28 196 L24 270 L2 268 L4 200 L12 120 C20 106 38 100 60 96 Z M104 96 L88 96 L88 268 L134 266 L136 196 L140 270 L162 268 L160 200 L152 120 C146 106 126 100 104 96 Z" fill="#fbfbf8" stroke="#bdbab2" stroke-width="1.5"/>
-		<path d="M76 96 L64 118 L74 126 M88 96 L100 118 L90 126" fill="none" stroke="#bdbab2" stroke-width="1.4"/>` },
-	'red-boxers': { z: -1, wear: () => `<path d="M32 230 C60 236 106 236 132 230 L134 304 C120 310 100 310 88 304 L84 268 L80 304 C66 310 44 310 32 304 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="1.6"/>
-		<path d="M32 232 C60 238 106 238 132 232" fill="none" stroke="#fff" stroke-width="3" opacity=".8"/>
-		${[[48, 256], [70, 248], [100, 250], [118, 266], [56, 286], [110, 290], [86, 240]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.5)" d="M0 4 C-8 -4 -10 -12 -4 -12 C-1 -12 0 -9 0 -8 C0 -9 1 -12 4 -12 C10 -12 8 -4 0 4 Z" fill="#fff"/>`).join('')}` },
-	'bow-tie': { over: () => '<path d="M82 100 L66 92 L66 108 Z M82 100 L98 92 L98 108 Z" fill="#111" stroke="#000" stroke-width="1"/><circle cx="82" cy="100" r="3.5" fill="#222"/>' },
-	watch: { over: () => '<path d="M4 262 L26 264 L25 274 L3 272 Z" fill="#3a2a1e"/><circle cx="15" cy="268" r="6" fill="#e9d6a6" stroke="#8a6d2e" stroke-width="1.6"/><path d="M15 268 L15 264 M15 268 L18 269" stroke="#333" stroke-width="1"/>' }
+	'silk-pajama': { wear: () => `<path d="M33 266 L130 266 L134 300 L135 372 L133 474 L106 476 L102 400 L91 330 L82 300 L80 300 L79 330 L78 400 L80 476 L56 476 L46 400 L42 340 L32 300 Z" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.2"/>
+		<path d="${SLEEVES}" fill="${NAVY}" stroke="${NAVY_D}" stroke-width="1.2"/>
+		<path d="M72 96 L81 140 L90 96 M81 140 L81 270 M5 258 L22 260 M140 260 L156 258 M72 96 L60 114 L70 124 M90 96 L102 114 L92 124" fill="none" stroke="#c9d6e6" stroke-width="1.2"/>
+		${[160, 185, 210, 235, 258].map((y) => `<circle cx="84" cy="${y}" r="1.8" fill="#c9d6e6"/>`).join('')}` },
+	'silk-robe': { wear: () => `<path d="M66 96 L74 96 L81 222 L88 96 L96 96 C108 101 130 106 143 114 C152 120 155 132 154 150 L155 238 L138 240 L133 200 L130 300 L134 404 L44 404 L36 300 L33 200 L26 240 L7 238 L8 150 C7 132 10 120 18 114 C32 106 54 101 66 96 Z" fill="#7b1f2e" stroke="#4e1019" stroke-width="1.2"/>
+		<path d="M74 96 L81 222 L88 96" fill="none" stroke="#c9a14a" stroke-width="2"/>
+		<path d="M36 222 L128 222 L128 232 L36 232 Z" fill="#5e1622"/><path d="M80 232 L74 262 M83 232 L90 260" stroke="#5e1622" stroke-width="3.4" stroke-linecap="round"/>` },
+	'white-shirt': { wear: () => `<path d="M66 96 L76 98 L77 270 L34 270 L35 262 L40 240 L40 205 L37 170 L32 168 L28 214 L22 270 L5 268 L6 200 L7 150 C6 132 9 120 18 114 C32 106 54 101 66 96 Z M96 96 L86 98 L85 270 L128 270 L125 240 L124 205 L127 170 L131 168 L135 214 L140 270 L156 268 L155 200 L155 150 C156 126 151 111 138 105 C126 98 110 95 96 93 Z" fill="#fbfbf8" stroke="#bdbab2" stroke-width="1.2"/>
+		<path d="M76 98 L66 114 L74 122 M86 98 L96 114 L88 122" fill="none" stroke="#bdbab2" stroke-width="1.2"/>` },
+	'red-boxers': { z: -1, wear: () => `<path d="M37 230 C60 235 104 235 126 230 L130 296 L132 318 C118 322 100 322 89 318 L83 286 L79 318 C67 322 49 322 36 318 L35 296 Z" fill="#c62828" stroke="#8e1b1b" stroke-width="1.3"/>
+		<path d="M37 233 C60 238 104 238 126 233" fill="none" stroke="#fff" stroke-width="2.4" opacity=".8"/>
+		${[[50, 256], [70, 248], [98, 250], [116, 266], [56, 292], [110, 296], [84, 242]].map(([x, y]) => `<path transform="translate(${x} ${y}) scale(.42)" d="M0 4 C-8 -4 -10 -12 -4 -12 C-1 -12 0 -9 0 -8 C0 -9 1 -12 4 -12 C10 -12 8 -4 0 4 Z" fill="#fff"/>`).join('')}` },
+	'bow-tie': { over: () => '<path d="M81 100 L70 94 L70 106 Z M81 100 L92 94 L92 106 Z" fill="#111" stroke="#000" stroke-width=".8"/><circle cx="81" cy="100" r="2.6" fill="#222"/>' },
+	watch: { over: () => '<path d="M7 264 L21 265 L21 273 L7 272 Z" fill="#3a2a1e"/><circle cx="14" cy="268.5" r="4.4" fill="#e9d6a6" stroke="#8a6d2e" stroke-width="1.2"/><path d="M14 268.5 L14 265.6 M14 268.5 L16 269.2" stroke="#333" stroke-width=".8"/>' }
 };
 
 /** The drawing: her or him (the picture, from `src`), and the given looks on them (unknown ones are skipped). */
