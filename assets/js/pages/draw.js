@@ -1,4 +1,4 @@
-import { L, Y, T, t, esc, pageHead, related, App, $, $$, qs, longDate, DRAW_KINDS, REDUCE, parseDate, daysBetween, num } from '../shell.js';
+import { L, Y, T, t, esc, pageHead, related, App, $, $$, qs, longDate, DRAW_KINDS, REDUCE, parseDate, daysBetween, num, moonTonight } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { openSketch } from '../sketch.js';
@@ -8,10 +8,41 @@ import { shrinkPhoto } from './trips.js';
 
 /* Tonight's draw, all on one page: a tab for every kind of night (outfit, dinner out, delivery, a film, a game, something
    sweet, a day out, something with the boys). The tab picks the wheel, our list for it and the nights we've logged; the
-   address keeps ?k= so a link (or the menu) still opens straight on a tab. */
+   address keeps ?k= so a link (or the menu) still opens straight on a tab.
+   The top is tonight's sky: the real moon over Egypt tonight, how many nights we've logged and the last one, and
+   «سيبوها للحظ» — luck picks the kind of night (one we haven't done lately) and spins its wheel. Under it the kinds
+   are coloured cards, each saying how many options it has and when we last did it.
+   A wheel holds our own options plus what's already written elsewhere, always as it is now: the films still waiting
+   on «اتفرجنا على إيه» (the boys' ones for a night with them), our restaurants on «أكلنا», and our games. Long lists
+   go on the wheel sixteen at a time, a fresh sixteen every spin. */
 
 const init = () => initOf('draw');
 const COLORS = ['#0e6990', '#f2726f', '#e39b2d', '#5a9e6f', '#8e5bd1', '#c2185b', '#13789f', '#f59a7b'];
+const ON_WHEEL = 16;
+/* the options other pages already keep: kind → [where, what it's called there, the page, the titles] */
+const LINKED = {
+	movie: ['movies', ['من «لسه هنتفرج عليه»', 'From our watch list'], 'movies.html', (m) => (m.towatch || []).map((x) => x.title)],
+	kids: ['movies', ['أفلام الولاد اللي مستنية', 'The boys’ films still waiting'], 'movies.html', (m) => (m.towatch || []).filter((x) => x.kind === 'kids').map((x) => x.title)],
+	game: ['movies', ['من ألعابنا', 'From our games'], 'games.html', (m) => (m.games || []).map((x) => x.title)],
+	dining: ['food', ['من مطاعمنا', 'From our restaurants'], 'food.html', (f) => (f.items || []).filter((x) => x.id !== 'f-example').map((x) => App.t(x.name))]
+};
+const key = (s) => String(s || '').trim().toLowerCase();
+
+/* tonight's sky over the kinds: the moon, our nights so far, and luck */
+function skyBand() {
+	const moon = moonTonight();
+	const stars = Array.from({ length: 26 }, (_, i) => `<i style="--x:${(i * 37) % 97 + 1.5}%;--y:${(i * 53) % 88 + 6}%;--s:${1.5 + (i % 3) * 0.7}px;--d:${2 + (i % 5) * 0.6}s"></i>`).join('');
+	return `<div class="dr-sky" id="dr-sky">
+		<span class="dr-sky__stars" aria-hidden="true">${stars}</span>
+		<span class="dr-sky__moon">${moon.svg}</span>
+		<div class="dr-sky__tx">
+			<p class="dr-sky__h">${L('قمر الليلة', 'Tonight’s moon')} · <b>${esc(moon.name)}</b> · ${esc(moon.how)}</p>
+			<p class="dr-sky__q" id="dr-sky-q">${L('نسهر على إيه الليلة؟', 'What shall we do tonight?')}</p>
+			<p class="dr-sky__sub" id="dr-sky-sub"></p>
+			<button class="btn btn--coral dr-luck" type="button" id="dr-luck">${doodle('dice', 20)} ${L('سيبوها للحظ', 'Leave it to luck')}</button>
+		</div>
+	</div>`;
+}
 
 export default {
 	title: { ar: 'قرعة الليلة', en: 'Tonight’s draw' },
@@ -19,11 +50,14 @@ export default {
 		const k = DRAW_KINDS.find((x) => x.id === qs('k')) || DRAW_KINDS[0];
 		const ok = live.canWrite();
 		return `
-			${pageHead(L('قرعة الليلة', 'Tonight’s draw'), Y('مش عارفين نعمل إيه الليلة؟ اختار نوع السهرة وسيبها للعجلة', 'مش عارفين نعمل إيه الليلة؟ اختاري نوع السهرة وسيبيها للعجلة', 'Can’t decide what to do tonight? Pick the kind of night and let the wheel choose'), [{ href: 'draw.html', ar: 'قرعة الليلة', en: 'Tonight’s draw' }], [['dice', 'نصيبنا', 'Luck'], ['heart', 'الليلة', 'Tonight'], ['popcorn', 'سهرة', 'A night in'], ['sparkle', 'سوا', 'Together']])}
+			${pageHead(L('قرعة الليلة', 'Tonight’s draw'), Y('مش عارفين نعمل إيه الليلة؟ اختار نوع السهرة وسيبها للعجلة', 'مش عارفين نعمل إيه الليلة؟ اختاري نوع السهرة وسيبيها للعجلة', 'Can’t decide what to do tonight? Pick the kind of night and let the wheel choose'), [{ href: 'draw.html', ar: 'قرعة الليلة', en: 'Tonight’s draw' }], { band: skyBand() })}
 			<div class="wrap">
-				<div class="dr-tabs" role="tablist" aria-label="${L('نوع السهرة', 'Kind of night')}">${DRAW_KINDS.map((x) => `
+				<div class="dr-tabs dr-kinds" role="tablist" aria-label="${L('نوع السهرة', 'Kind of night')}">${DRAW_KINDS.map((x) => `
 					<button class="dr-tab${x === k ? ' is-on' : ''}" type="button" role="tab" id="dr-tab-${x.id}" aria-controls="dr-panel" aria-selected="${x === k}" tabindex="${x === k ? 0 : -1}" data-k="${x.id}" style="--c:${x.color}">
-						<span class="dr-tab__e" aria-hidden="true">${doodle(x.emoji, 30)}</span><b>${esc(L(x.ar, x.en))}</b><small data-count="${x.id}"></small>
+						<span class="dr-tab__e" aria-hidden="true">${doodle(x.emoji, 30)}</span>
+						<b>${esc(L(x.ar, x.en))}</b>
+						<span class="dr-tab__sub">${esc(L(x.dar, x.den))}</span>
+						<small data-count="${x.id}"></small>
 					</button>`).join('')}
 				</div>
 			</div>
@@ -36,6 +70,7 @@ export default {
 					<div class="wheel-box">
 						<div class="wheel" id="wheel"><span class="wheel__pin" aria-hidden="true"></span><div class="wheel__disc" id="wheel-disc"></div><button class="wheel__hub" type="button" id="spin">${Y('لف', 'لفّي', 'Spin')}</button></div>
 						<label class="check"><input type="checkbox" id="fresh" checked> ${L('من غير اللي عملناه آخر أسبوعين', 'Skip what we did in the last two weeks')}</label>
+						<p class="dr-wheel-of" id="dr-wheel-of"></p>
 					</div>
 					<div class="result" id="result" hidden aria-live="polite"></div>
 				</div>
@@ -50,6 +85,7 @@ export default {
 						</form>
 						<label class="btn btn--sm btn--ghost pool-photos"${ok ? '' : ' hidden'}>${doodle('camera', 18)} ${Y('ضيف بالصور', 'ضيفي بالصور', 'Add with photos')}<input type="file" id="add-photos" accept="image/*" multiple hidden></label>
 						<p class="form-msg" id="add-msg" role="status"></p>
+						<div class="dr-linked" id="dr-linked" hidden></div>
 					</section>
 					<section class="panel">
 						<h2>${L('عملناها قبل كده', 'We’ve done these')}</h2>
@@ -69,6 +105,30 @@ export default {
 		const label = (x) => t(x.text);
 		const panel = $('#dr-panel', main);
 
+		/* what the other pages keep (films waiting, restaurants, games), loaded alongside; a wheel takes those that
+		   aren't already one of our own options */
+		const other = {};
+		await Promise.all([...new Set(Object.values(LINKED).map(([from]) => from))].map((from) => live.load(from).then((d) => { other[from] = d; }).catch(() => {})));
+		const linked = (id) => {
+			const l = LINKED[id];
+			if (!l || !other[l[0]]) return [];
+			const own = new Set((data.lists[id] || []).map((x) => key(label(x))));
+			const seen = new Set();
+			return l[3](other[l[0]]).filter((title) => { const k2 = key(title); if (!k2 || own.has(k2) || seen.has(k2)) return false; seen.add(k2); return true; })
+				.map((title) => ({ id: `ln-${id}-${key(title)}`, text: title, linked: true }));
+		};
+		const options = (id) => [...(data.lists[id] || []), ...linked(id)];
+		const lastOf = (id) => data.history.filter((h) => h.kind === id).map((h) => h.date).sort().at(-1);
+		const ago = (d) => { const n = daysBetween(parseDate(d)); return n <= 0 ? L('النهارده', 'today') : n === 1 ? L('امبارح', 'yesterday') : L(`من ${num(n)} يوم`, `${n} days ago`); };
+		const paintSky = () => {
+			const all = data.history.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+			const last = all[0];
+			const lk = last && DRAW_KINDS.find((x) => x.id === last.kind);
+			$('#dr-sky-sub', main).innerHTML = all.length
+				? `${L(`${num(all.length)} ليلة سجلناها`, `${all.length} night${all.length === 1 ? '' : 's'} logged`)} · ${L('آخر سهرة:', 'Last one:')} <b dir="auto">${esc(last.text)}</b>${lk ? ` (${esc(L(lk.ar, lk.en))})` : ''} ${esc(ago(last.date))}`
+				: L('لسه ما سجلناش ولا ليلة — أول واحدة الليلة؟', 'No nights logged yet — tonight the first?');
+		};
+
 		const night = (h) => {
 			const kk = DRAW_KINDS.find((x) => x.id === h.kind) || DRAW_KINDS[0];
 			return `<article class="night" style="--c:${kk.color}">
@@ -84,10 +144,12 @@ export default {
 			const list = data.history.filter((h) => h.kind === k.id).sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.at - a.at);
 			box.innerHTML = list.length ? list.map(night).join('') : `<p class="empty">${Y('لسه مفيش ليالي متسجلة هنا — لف العجلة وسجّل أول ليلة ♥', 'لسه مفيش ليالي متسجلة هنا — لفّي العجلة وسجّلي أول ليلة ♥', 'No nights logged here yet — spin the wheel and log the first ♥')}</p>`;
 			live.hydrateSketches(box);
+			// each card: how many options it has, and how many nights and when the last one was
 			$$('[data-count]', main).forEach((el) => {
-				const n = data.history.filter((h) => h.kind === el.dataset.count).length, o = (data.lists[el.dataset.count] || []).length;
-				el.textContent = n ? L(`${num(n)} ليلة`, `${n} night${n === 1 ? '' : 's'}`) : L(`${num(o)} اختيار`, `${o} option${o === 1 ? '' : 's'}`);
+				const id = el.dataset.count, n = data.history.filter((h) => h.kind === id).length, o = options(id).length, last = lastOf(id);
+				el.textContent = `${L(`${num(o)} اختيار`, `${o} option${o === 1 ? '' : 's'}`)} · ${n ? L(`${num(n)} ليلة، آخرها ${ago(last)}`, `${n} night${n === 1 ? '' : 's'}, last ${ago(last)}`) : L('لسه ما جربناهاش', 'not tried yet')}`;
 			});
+			paintSky();
 		};
 
 		/* sketch an old night */
@@ -111,7 +173,17 @@ export default {
 		const pool = $('#pool', main);
 		const paintPool = () => {
 			const items = data.lists[k.id] || [];
-			$('#dr-n', main).textContent = items.length ? `(${num(items.length)})` : '';
+			const more = linked(k.id);
+			const total = items.length + more.length;
+			$('#dr-n', main).textContent = total ? `(${num(total)})` : '';
+			// the ones from another page: listed under ours, changed on their own page
+			const box = $('#dr-linked', main);
+			box.hidden = !more.length;
+			if (more.length) {
+				const [, said, href] = LINKED[k.id];
+				box.innerHTML = `<p class="dr-linked__h">${doodle('sparkle', 16)} ${esc(L(...said))} <small>(${num(more.length)})</small> <a href="${href}">${L('تتغير من هناك', 'changed there')} ${App.arrow}</a></p>
+					<ul class="dr-linked__list">${more.map((x) => `<li dir="auto">${esc(label(x))}</li>`).join('')}</ul>`;
+			}
 			pool.innerHTML = items.length ? items.map((x) => `<li${x.img ? ' class="has-img"' : ''}>${x.img ? `<img class="pool__img zoom" data-sketch="${esc(x.img)}" alt="${esc(label(x))}">` : ''}<span dir="auto">${esc(label(x))}</span>${live.canWrite() ? `<button type="button" aria-label="${Y('شيل', 'شيلي', 'Remove')} ${esc(label(x))}" data-rm="${esc(x.id)}">✕</button>` : ''}</li>`).join('') : `<li class="empty">${Y('القايمة فاضية — ضيف اختيارات', 'القايمة فاضية — ضيفي اختيارات', 'The list is empty — add some options')}</li>`;
 			live.hydrateSketches(pool);
 			paintWheel();
@@ -164,14 +236,22 @@ export default {
 		let onWheel = [];
 		let rot = 0;
 		const candidates = () => {
-			const all = data.lists[k.id] || [];
+			const all = options(k.id);
 			if (!fresh.checked) return all;
-			const recent = new Set(data.history.filter((h) => h.kind === k.id && daysBetween(parseDate(h.date)) < 14).map((h) => h.text));
-			const left = all.filter((x) => !recent.has(label(x)));
+			const recent = new Set(data.history.filter((h) => h.kind === k.id && daysBetween(parseDate(h.date)) < 14).map((h) => key(h.text)));
+			const left = all.filter((x) => !recent.has(key(label(x))));
 			return left.length ? left : all;
 		};
+		// a long list goes on the wheel sixteen at a time, picked at random, a fresh sixteen each spin
+		const sample = (xs) => {
+			if (xs.length <= ON_WHEEL) return xs;
+			const pool2 = xs.slice();
+			for (let i = pool2.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool2[i], pool2[j]] = [pool2[j], pool2[i]]; }
+			return pool2.slice(0, ON_WHEEL);
+		};
 		function paintWheel() {
-			onWheel = candidates();
+			onWheel = sample(candidates());
+			$('#dr-wheel-of', main).textContent = candidates().length > ON_WHEEL ? L(`على العجلة ${num(ON_WHEEL)} من ${num(candidates().length)} — كل لفة مجموعة جديدة`, `${ON_WHEEL} of ${candidates().length} on the wheel — a new set every spin`) : '';
 			const n = onWheel.length;
 			if (!n) { disc.innerHTML = ''; return; }
 			const seg = 360 / n;
@@ -226,9 +306,43 @@ export default {
 		paintHistory();
 		centre(false);
 
+		/* «سيبوها للحظ»: the light runs over the cards and stops on a kind — one we haven't done in the last two weeks if
+		   there is one — then its wheel spins by itself */
+		$('#dr-luck', main).onclick = () => {
+			const btn = $('#dr-luck', main);
+			const fresh2 = DRAW_KINDS.filter((x) => options(x.id).length && !(lastOf(x.id) && daysBetween(parseDate(lastOf(x.id))) < 14));
+			const from = fresh2.length ? fresh2 : DRAW_KINDS.filter((x) => options(x.id).length);
+			if (!from.length) return;
+			const goal = from[Math.floor(Math.random() * from.length)];
+			const land = () => {
+				$$('.dr-tab.is-lit', main).forEach((b) => b.classList.remove('is-lit'));
+				pick(goal.id);
+				$('#dr-sky-q', main).innerHTML = `${L('الليلة:', 'Tonight:')} <span class="dr-sky__k" style="--c:${goal.color}">${doodle(goal.emoji, 20)} ${esc(L(goal.ar, goal.en))}</span>`;
+				btn.disabled = false;
+				$('#wheel', main).scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
+				setTimeout(() => $('#spin', main).click(), REDUCE ? 0 : 700);
+			};
+			if (REDUCE) return land();
+			btn.disabled = true;
+			const steps = 17 + DRAW_KINDS.indexOf(goal);   // two rounds, and the light's last stop is the kind luck chose
+			let n = 0;
+			const run = () => {
+				$$('.dr-tab.is-lit', main).forEach((b) => b.classList.remove('is-lit'));
+				if (n >= steps) return land();
+				tabs[n % tabs.length].classList.add('is-lit');
+				n++;
+				setTimeout(run, 60 + n * 9);
+			};
+			run();
+		};
+
 		const result = $('#result', main);
 		let pendingSketch = null;
+		let spun = false;
 		$('#spin', main).onclick = () => {
+			// after the first spin a long list puts a fresh sixteen on the wheel
+			if (spun && candidates().length > ON_WHEEL) paintWheel();
+			spun = true;
 			if (!onWheel.length) return;
 			const n = onWheel.length;
 			const i = Math.floor(Math.random() * n);

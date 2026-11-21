@@ -771,7 +771,7 @@ function tapeHTML(members) {
 
 /* ليالينا: tonight's sky — the real moon over Egypt tonight, drawn and named, a few stars, and one of the four draws
    suggested for tonight (a different one each time it opens). */
-function moonTonight(now = new Date()) {
+export function moonTonight(now = new Date()) {
 	const SYN = 29.530588853, NEW = Date.UTC(2000, 0, 6, 18, 14);
 	const days = (((now - NEW) / 864e5) % SYN + SYN) % SYN;
 	const f = days / SYN, lit = (1 - Math.cos(2 * Math.PI * f)) / 2;

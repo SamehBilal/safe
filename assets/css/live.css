@@ -1834,3 +1834,54 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .binge > .tw { margin-top: 0; padding-top: 0; border-top: 0; }
 .binge > .tw > .tw__title { display: none; }
 @media (min-width: 1024px) { .binge > .tw, .binge > .binge__only { grid-column: 2; } }
+
+/* ---------- قرعة الليلة's top: tonight's sky (the real moon, our nights so far, «سيبوها للحظ»), then the kinds of
+   night as coloured journal cards — how many options each has and when we last did it ---------- */
+.dr-sky { position: relative; display: flex; align-items: center; gap: clamp(16px, 4vw, 40px); width: min(1100px, 100% - 2 * var(--gutter)); margin: clamp(10px, 2vw, 22px) auto clamp(8px, 2vw, 18px); padding: clamp(20px, 3.5vw, 34px) clamp(20px, 5vw, 56px); overflow: hidden; color: #f4eede;
+	background: radial-gradient(120% 140% at 85% 10%, #2c3d6b 0%, #18213f 45%, #0d1226 100%); border: 1.5px solid #37353f; border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+.dr-sky__stars { position: absolute; inset: 0; pointer-events: none; }
+.dr-sky__stars i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #fff7d6; box-shadow: 0 0 6px 1px rgba(255, 240, 190, .7); animation: twinkle var(--d) ease-in-out infinite; }
+.dr-sky__moon { position: relative; flex: none; }
+.dr-sky .mg-moon { display: block; width: clamp(84px, 12vw, 130px); height: auto; filter: drop-shadow(0 0 22px rgba(255, 236, 170, .55)); animation: dr-float 6s ease-in-out infinite; }
+.dr-sky .mg-moon-dark { fill: #2a3358; } .dr-sky .mg-moon-lit { fill: #fdf1c8; } .dr-sky .mg-moon-rim { fill: none; stroke: rgba(253, 241, 200, .35); stroke-width: 1; }
+@keyframes dr-float { 50% { translate: 0 -6px; rotate: -6deg; } }
+.dr-sky__tx { position: relative; display: grid; gap: 6px; justify-items: start; }
+.dr-sky__h { margin: 0; font: 400 .95rem var(--f-label); letter-spacing: .1em; color: rgba(244, 238, 222, .75); }
+:lang(ar) .dr-sky__h { font: 700 .85rem/1.5 var(--f-body); letter-spacing: 0; }
+.dr-sky__h b { color: #f5d54e; font-weight: 800; }
+.dr-sky__q { margin: 0; font: 400 clamp(1.7rem, 4vw, 2.5rem)/1.15 var(--f-hand); color: #fff; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+:lang(ar) .dr-sky__q { font: 800 clamp(1.25rem, 3vw, 1.7rem)/1.5 var(--f-body); }
+.dr-sky__k { display: inline-flex; align-items: center; gap: 6px; padding: 2px 14px 2px 10px; border-radius: 999px; background: var(--c); font-size: .8em; }
+.dr-sky__sub { margin: 0; font-size: .9rem; color: rgba(244, 238, 222, .8); }
+.dr-sky__sub b { color: #fff; }
+.dr-luck { margin-top: 6px; }
+@media (max-width: 640px) { .dr-sky { flex-direction: column; text-align: center; } .dr-sky__tx { justify-items: center; } .dr-sky__q { justify-content: center; } }
+
+.dr-tabs.dr-kinds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 14px; margin: 18px 0 0; padding: 4px 2px 8px; overflow: visible; border-bottom: 0; }
+.dr-kinds .dr-tab { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto 1fr; align-items: center; column-gap: 12px; row-gap: 2px; min-height: 118px; padding: 14px 16px 12px; text-align: start; justify-items: start;
+	background: color-mix(in srgb, var(--c) 9%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 16px); translate: 0;
+	box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 55%, transparent); transition: transform .2s var(--ease-pop, ease), box-shadow .2s, background .25s, color .25s; }
+.dr-kinds .dr-tab:nth-child(odd) { rotate: -.6deg; } .dr-kinds .dr-tab:nth-child(even) { rotate: .6deg; }
+.dr-kinds .dr-tab:hover { translate: 0; transform: translateY(-3px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--c); }
+.dr-kinds .dr-tab__e { grid-row: 1 / span 2; width: 48px; height: 48px; }
+.dr-kinds .dr-tab b { font: 400 1.3rem/1.2 var(--f-script); color: var(--c); }
+:lang(ar) .dr-kinds .dr-tab b { font: 800 1rem/1.4 var(--f-body); }
+.dr-tab__sub { font-size: .78rem; line-height: 1.4; color: var(--muted); }
+.dr-kinds .dr-tab small { grid-column: 1 / -1; align-self: end; margin-top: 8px; padding-top: 6px; width: 100%; border-top: 1px dashed color-mix(in srgb, var(--ink, #37353f) 30%, transparent); font-size: .74rem; }
+.dr-kinds .dr-tab.is-on { color: #fff; background: linear-gradient(150deg, var(--c), color-mix(in srgb, var(--c) 55%, #0d2633)); translate: 0; transform: translateY(-3px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+.dr-kinds .dr-tab.is-on b, .dr-kinds .dr-tab.is-on .dr-tab__sub, .dr-kinds .dr-tab.is-on small { color: #fff; }
+.dr-kinds .dr-tab.is-on small { border-top-color: rgba(255, 255, 255, .35); opacity: .9; }
+/* the light running over the cards while luck chooses */
+.dr-kinds .dr-tab.is-lit { transform: translateY(-5px) scale(1.03); box-shadow: 0 0 0 3px var(--hl-yellow, #fdc830), calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--c); }
+@media (max-width: 900px) { .dr-tabs.dr-kinds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .dr-kinds .dr-tab { grid-template-columns: 1fr; min-height: 0; padding: 12px; } .dr-kinds .dr-tab__e { grid-row: auto; width: 40px; height: 40px; } .dr-tab__sub { display: none; } }
+@media (prefers-reduced-motion: reduce) { .dr-sky__stars i, .dr-sky .mg-moon { animation: none; } .dr-kinds .dr-tab { transition: none; } }
+
+/* what the other pages give a wheel, listed under our own options */
+.dr-wheel-of { margin: 0; font-size: .8rem; font-weight: 700; color: var(--muted); text-align: center; }
+.dr-linked { margin-top: 16px; padding-top: 12px; border-top: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 35%, transparent); }
+.dr-linked__h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 8px; font-weight: 800; font-size: .9rem; }
+.dr-linked__h small { color: var(--muted); }
+.dr-linked__h a { margin-inline-start: auto; font-size: .8rem; }
+.dr-linked__list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; max-height: 220px; overflow: auto; }
+.dr-linked__list li { padding: 3px 10px; font-size: .82rem; font-weight: 700; background: color-mix(in srgb, var(--c) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); border-radius: 999px; }
