@@ -28,6 +28,33 @@ const badge = (r, cls) => r.img
 	? `<span class="${cls} has-pic" aria-hidden="true"><img data-sketch="${esc(r.img)}" alt=""></span>`
 	: `<span class="${cls}" aria-hidden="true" style="--c:${esc(r.color || COLORS[0])}">${esc([...String(App.t(r.name) || '♥').replace(/^(ال|thes+)/i, '')][0] || '♥')}</span>`;
 const price = (p) => (p ? L(`${num(+p)} ج`, `EGP ${(+p).toLocaleString('en')}`) : '');
+/* the kinds of place, for the tabs over the list of restaurants (a place can be more than one) */
+export const CATS = [
+	{ id: 'coffee', ar: 'قهوة ومشروبات', en: 'Coffee & drinks', ic: 'coffee' },
+	{ id: 'sweets', ar: 'حلويات', en: 'Sweets', ic: 'cake' },
+	{ id: 'burger', ar: 'برجر', en: 'Burgers', ic: 'dinner' },
+	{ id: 'pizza', ar: 'بيتزا', en: 'Pizza', ic: 'dinner' },
+	{ id: 'chicken', ar: 'فراخ', en: 'Chicken', ic: 'dinner' },
+	{ id: 'crepe', ar: 'كريب وسندوتشات', en: 'Crêpes & sandwiches', ic: 'dinner' },
+	{ id: 'pasta', ar: 'مكرونة وإيطالي', en: 'Pasta & Italian', ic: 'dinner' },
+	{ id: 'egyptian', ar: 'أكل مصري', en: 'Egyptian', ic: 'dinner' },
+	{ id: 'grills', ar: 'مشويات', en: 'Grills', ic: 'dinner' },
+	{ id: 'seafood', ar: 'سمك وسي فود', en: 'Fish & seafood', ic: 'dinner' },
+	{ id: 'asian', ar: 'آسيوي', en: 'Asian', ic: 'dinner' },
+	{ id: 'restaurant', ar: 'مطعم وكافيه', en: 'Restaurant & café', ic: 'dinner' }
+];
+/* a place saved before it had kinds: guessed from what kind of food it says it is */
+const GUESS = [[/قهوة|coffee|كافيه|café|cafe/i, 'coffee'], [/عصير|juice/i, 'coffee'], [/حلو|حلويات|dessert|sweet/i, 'sweets'], [/برجر|burger/i, 'burger'], [/بيتزا|pizza/i, 'pizza'], [/فراخ|chicken/i, 'chicken'], [/كريب|crepe|crêpe|سندوتش|sandwich/i, 'crepe'], [/مكرونة|pasta|إيطالي|italian/i, 'pasta'], [/مصري|egyptian|كشري|koshary|كبدة|liver/i, 'egyptian'], [/مشويات|grill/i, 'grills'], [/سمك|fish|sea/i, 'seafood'], [/كوري|korean|صيني|chinese|سوشي|sushi|آسيوي|asian/i, 'asian'], [/مطعم|restaurant|لبناني|lebanese/i, 'restaurant']];
+export const catsOf = (r) => {
+	if (r.cats?.length) return r.cats;
+	const words = [r.cuisine?.ar, r.cuisine?.en, typeof r.cuisine === 'string' ? r.cuisine : ''].join(' ');
+	const got = [...new Set(GUESS.filter(([re]) => re.test(words)).map(([, c]) => c))];
+	return got.length ? got : ['restaurant'];
+};
+/* the days of the week, Sunday first like Date.getDay() */
+const DAYS = [['الحد', 'Sunday'], ['الاتنين', 'Monday'], ['التلات', 'Tuesday'], ['الأربع', 'Wednesday'], ['الخميس', 'Thursday'], ['الجمعة', 'Friday'], ['السبت', 'Saturday']];
+const dayName = (n) => L(...DAYS[n]);
+const WHO = [['him', () => App.t(App.story.him)], ['her', () => App.t(App.story.her)], ['both', () => L('إحنا الاتنين', 'Both of us')]];
 /* call them, order from elmenus (their app opens if it's on the phone), or their own site */
 const actsHTML = (r) => {
 	const tel = String(r.phone || '').replace(/[^\d+]/g, '');
@@ -114,9 +141,17 @@ export default {
 			<button type="button" role="tab" class="fd-side" data-side="home" aria-selected="false" aria-controls="recipes">${doodle('cake', 26)}<b>${L('في البيت', 'At home')}</b><small id="fd-n-home">${L('اللي بنطبخه سوا', 'What we cook together')}</small></button>
 		</div></div>
 		<section class="sec sec--top fd-out" id="fd-out" role="tabpanel"><div class="wrap">
-			<div class="chips fm-places" role="toolbar" aria-label="${L('المطاعم', 'Restaurants')}" id="fm-places"></div>
-			<div class="fm-stage" id="fm-stage"><p class="empty">${L('بنجيب المطاعم…', 'Fetching the restaurants…')}</p></div>
-			<p class="fm-mine" id="fm-mine" hidden></p>
+			<div class="fd-today" id="fd-today" hidden></div>
+			<div class="chips fd-cats" role="toolbar" aria-label="${L('نوع الأكل', 'Kind of food')}" id="fd-cats"></div>
+			<div class="fd-grid">
+				<aside class="fd-list" id="fd-list" aria-label="${L('مطاعمنا', 'Our places')}"></aside>
+				<div class="fd-main">
+					<div class="fm-stage" id="fm-stage"><p class="empty">${L('بنجيب المطاعم…', 'Fetching the restaurants…')}</p></div>
+					<div class="fd-offers" id="fd-offers"></div>
+					<p class="fm-mine" id="fm-mine" hidden></p>
+				</div>
+			</div>
+			<section class="fd-favs" id="fd-favs" aria-labelledby="fd-favs-h"></section>
 
 			${ok ? '' : `<div class="narrow" style="margin:28px auto 0">${setupNote()}</div>`}
 			<details class="composer reveal narrow" style="margin:28px auto 0"${ok ? '' : ' hidden'}>
@@ -131,6 +166,7 @@ export default {
 						<label class="f"><span>${L('فين؟', 'Where?')}</span><input name="area" dir="auto" maxlength="60"></label>
 						<label class="f"><span>${L('التليفون', 'Phone')}</span><input name="phone" type="tel" dir="ltr" maxlength="20"></label>
 					</div>
+					<fieldset class="f fd-catpick"><legend>${L('يتحط تحت أنهي نوع؟', 'Which kinds?')}</legend>${CATS.map((c) => `<label class="chip"><input type="checkbox" name="cats" value="${c.id}"> ${esc(L(c.ar, c.en))}</label>`).join('')}</fieldset>
 					<label class="f"><span>${L('المنيو', 'The menu')}</span><textarea name="menu" dir="auto" rows="8" required placeholder="${L('# مشويات\nكفتة | 180 | كفتة على الفحم مع عيش وطحينة | إحنا الاتنين\nريش | 320 | ريش ضاني\n# حلو\nأم علي | 70 | بالمكسرات والقشطة | هي', '# Grills\nKofta | 180 | Charcoal kofta with bread and tahini | both\nLamb chops | 320\n# Dessert\nOm Ali | 70 | With nuts and cream | her')}"></textarea></label>
 					<p class="fm-howto">${L('سطر يبدأ بـ # يبقى قسم. كل أكلة في سطر: الاسم | السعر | فيها إيه | مين بيحبها (هو / هي / إحنا الاتنين). الباقي اختياري.', 'A line starting with # is a section. One dish per line: name | price | what’s in it | who loves it (him / her / both). All but the name is optional.')}</p>
 					<label class="f"><span>${L('طلبنا المعتاد (اختياري)', 'Our usual order (optional)')}</span><input name="order" dir="auto" maxlength="160"></label>
@@ -144,17 +180,111 @@ export default {
 				</form>
 			</details>
 		</div></section>
-		<div id="recipes" class="fd-recipes" role="tabpanel" hidden>${recipes.section(s, `<h2 class="sec__title reveal">${doodle('cake', 30)} ${L('نطبخ إيه', 'Our recipes')}</h2><p class="sec__sub fd-recipes__sub">${L('الأكلات اللي بنعملها سوا، ومين بيعملها أحسن — وكل مرة عملناها', 'What we cook together, who makes it best — and every time we made it')}</p>`)}</div>
+		<div id="recipes" class="fd-recipes" role="tabpanel" hidden><a class="lp-band lp-band--recipes fd-pot" id="lp-band" href="#recipes" aria-hidden="true" tabindex="-1"></a>${recipes.section(s, `<h2 class="sec__title reveal">${doodle('cake', 30)} ${L('نطبخ إيه', 'Our recipes')}</h2><p class="sec__sub fd-recipes__sub">${L('الأكلات اللي بنعملها سوا، ومين بيعملها أحسن — وكل مرة عملناها', 'What we cook together, who makes it best — and every time we made it')}</p>`)}</div>
 		${related(['hosting', 'draw', 'places', 'cities'])}`;
 	},
 
 	async after(main, s) {
 		// our recipes, under the restaurants: their own list, kept inside their section
 		const cooking = recipes.after(main, s, $('#recipes', main));
-		const stage = $('#fm-stage', main), chips = $('#fm-places', main);
+		const stage = $('#fm-stage', main);
 		let data = { items: [] };
 		let cur = '';
+		let cat = '';      // the kind tab picked over the list ('' = all)
 		let fm = null;
+		const ok = live.canWrite();
+		const today = new Date().getDay();
+		const save = (fn) => live.save('food', fn).then((v) => { data = v; show(cur); }).catch((err) => alert(live.why(err)));
+
+		/* the kinds as tabs (only kinds that have a place), and the places of the one picked down the side, scrolling */
+		const shown = () => all().filter((r) => !cat || catsOf(r).includes(cat));
+		const favsOf = (r) => (r.sections || []).flatMap((sec) => sec.dishes.filter((d) => d.fav).map((d) => ({ d, sec })));
+		const paintList = () => {
+			const xs = all();
+			const kinds = CATS.map((c) => ({ c, n: xs.filter((r) => catsOf(r).includes(c.id)).length })).filter((k) => k.n);
+			$('#fd-cats', main).innerHTML = `<button class="chip${cat ? '' : ' is-on'}" type="button" data-cat="">${L('الكل', 'All')} <small>${num(xs.length)}</small></button>`
+				+ kinds.map(({ c, n }) => `<button class="chip${cat === c.id ? ' is-on' : ''}" type="button" data-cat="${c.id}">${doodle(c.ic, 16)} ${esc(L(c.ar, c.en))} <small>${num(n)}</small></button>`).join('');
+			$('#fd-list', main).innerHTML = `<p class="fd-list__h">${cat ? esc(L(...['ar', 'en'].map((k) => CATS.find((c) => c.id === cat)[k]))) : L('كل مطاعمنا', 'All our places')} <small>${num(shown().length)}</small></p>
+				<ul>${shown().map((r) => `<li><button type="button" class="fd-place${r.id === cur ? ' is-on' : ''}" data-r="${esc(r.id)}" style="--c:${esc(r.color || COLORS[0])}">
+					${badge(r, 'fd-place__logo')}
+					<span class="fd-place__tx"><b dir="auto">${esc(App.t(r.name))}</b><small>${esc([App.t(r.cuisine), App.t(r.area)].filter(Boolean).join(' · '))}</small></span>
+					<span class="fd-place__tags">${(r.offers || []).some((o) => +o.day === today) ? `<i class="fd-tag fd-tag--offer" title="${L('عرض النهارده', 'An offer today')}">🎁</i>` : ''}${favsOf(r).length ? `<i class="fd-tag" title="${L('أكلات بنحبها', 'Dishes we love')}">♥ ${num(favsOf(r).length)}</i>` : ''}${(r.sections || []).length ? '' : `<i class="fd-tag fd-tag--dim">${L('من غير منيو', 'no menu')}</i>`}</span>
+				</button></li>`).join('')}</ul>`;
+			live.hydrateSketches($('#fd-list', main));
+			$('.fd-place.is-on', main)?.scrollIntoView({ block: 'nearest' });
+		};
+		$('#fd-cats', main).addEventListener('click', (e) => {
+			const b = e.target.closest('[data-cat]');
+			if (!b) return;
+			cat = b.dataset.cat;
+			const xs = shown();
+			show(xs.some((r) => r.id === cur) ? cur : xs[0]?.id);
+		});
+		$('#fd-list', main).addEventListener('click', (e) => { const b = e.target.closest('[data-r]'); if (b) { show(b.dataset.r); history.replaceState(history.state, '', '#' + b.dataset.r); if (phone()) stage.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); } });
+
+		/* today's offers, over everything: every place with something on this day of the week */
+		const paintToday = () => {
+			const xs = all().flatMap((r) => (r.offers || []).filter((o) => +o.day === today).map((o) => ({ r, o })));
+			const box = $('#fd-today', main);
+			box.hidden = !xs.length;
+			box.innerHTML = xs.length ? `<p class="fd-today__h">🎁 ${L(`عروض النهارده — ${dayName(today)}`, `Today’s offers — ${dayName(today)}`)}</p>
+				<ul>${xs.map(({ r, o }) => `<li><button type="button" data-r="${esc(r.id)}"><b dir="auto">${esc(App.t(r.name))}</b> <span dir="auto">${esc(o.text)}</span></button></li>`).join('')}</ul>` : '';
+		};
+		$('#fd-today', main).addEventListener('click', (e) => { const b = e.target.closest('[data-r]'); if (b) { cat = ''; show(b.dataset.r); stage.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); } });
+
+		/* a place's weekly offers (every Wednesday a second coffee free…), and adding one */
+		const paintOffers = (r) => {
+			const box = $('#fd-offers', main);
+			const xs = (r.offers || []).slice().sort((a, b) => a.day - b.day);
+			box.hidden = !xs.length && !ok;
+			box.innerHTML = `<p class="fd-offers__h">🎁 ${L('عروضهم كل أسبوع', 'Their weekly offers')}</p>
+				${xs.length ? `<ul>${xs.map((o) => `<li class="${+o.day === today ? 'is-today' : ''}"><b>${L('كل', 'Every')} ${esc(dayName(+o.day))}</b> <span dir="auto">${esc(o.text)}</span>${+o.day === today ? ` <i>${L('النهارده!', 'today!')}</i>` : ''}${ok ? ` <button type="button" class="link link--danger" data-offer-rm="${esc(o.id)}" aria-label="${L('شيل العرض', 'Remove the offer')}">✕</button>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${L('مفيش عروض متسجلة لسه', 'No offers written down yet')}</p>`}
+				${ok ? `<form class="fd-offers__add" autocomplete="off"><select name="day" aria-label="${L('اليوم', 'Day')}">${DAYS.map((d, i) => `<option value="${i}"${i === today ? ' selected' : ''}>${L('كل', 'Every')} ${esc(L(...d))}</option>`).join('')}</select><input name="text" dir="auto" maxlength="90" required placeholder="${L('قهوة ببلاش مع التانية…', 'A second coffee free…')}"><button class="btn btn--sm" type="submit">${Y('ضيف', 'ضيفي', 'Add')}</button></form>` : ''}`;
+		};
+		$('#fd-offers', main).addEventListener('submit', (e) => {
+			e.preventDefault();
+			const f = e.target, text = f.text.value.trim();
+			if (!text) return;
+			save((d) => { const x = (d.items || []).find((y) => y.id === cur); if (x) (x.offers = x.offers || []).push({ id: live.newId(), day: +f.day.value, text, by: live.me() }); });
+		});
+		$('#fd-offers', main).addEventListener('click', (e) => {
+			const b = e.target.closest('[data-offer-rm]');
+			if (b && confirm(Y('تشيل العرض ده؟', 'تشيلي العرض ده؟', 'Remove this offer?'))) save((d) => { const x = (d.items || []).find((y) => y.id === cur); if (x) x.offers = (x.offers || []).filter((o) => o.id !== b.dataset.offerRm); });
+		});
+
+		/* أكلاتنا المفضلة: the dishes marked ♥ on every menu, and the ones we love from anywhere (data.favs) */
+		const paintFavs = () => {
+			const out = all().flatMap((r) => favsOf(r).map(({ d, sec }) => ({ r, d, sec })));
+			const free = data.favs || [];
+			const who = (w) => WHO.find((x) => x[0] === w)?.[1]() || '';
+			$('#fd-favs', main).innerHTML = `<h2 class="sec__title" id="fd-favs-h">${L('أكلاتنا المفضلة', 'Our favourite dishes')}</h2>
+				<p class="sec__sub">${L('اللي بنحبها من كل مطعم — اضغط على أي أكلة في المنيو وعلّمها ♥ — واللي بنحبها من أي حتة', 'The ones we love from each place — tap any dish on a menu and mark it ♥ — and the ones we love from anywhere')}</p>
+				<ul class="fd-favs__list">
+					${out.map(({ r, d, sec }) => `<li><button type="button" class="fd-fav" data-fav="${esc(r.id)}|${esc(sec.id)}|${esc(d.id)}" style="--c:${esc(r.color || COLORS[0])}"><b dir="auto">${esc(App.t(d.name))}</b><small dir="auto">${esc(App.t(r.name))}${d.price ? ` · ${esc(price(d.price))}` : ''}</small><i>♥ ${esc(who(d.fav))}</i></button></li>`).join('')}
+					${free.map((x) => `<li><span class="fd-fav fd-fav--free"><b dir="auto">${esc(x.name)}</b><small dir="auto">${esc(x.where || L('من أي حتة', 'From anywhere'))}</small><i>♥ ${esc(who(x.who))}</i>${ok ? `<button type="button" class="link link--danger" data-fav-rm="${esc(x.id)}" aria-label="${L('شيل', 'Remove')}">✕</button>` : ''}</span></li>`).join('')}
+				</ul>
+				${!out.length && !free.length ? `<p class="empty">${L('لسه ما علّمناش أكلات — افتح منيو واضغط على أكلة', 'None marked yet — open a menu and tap a dish')}</p>` : ''}
+				${ok ? `<form class="fd-favs__add" autocomplete="off"><input name="name" dir="auto" maxlength="60" required placeholder="${L('أكلة بنحبها…', 'A dish we love…')}"><input name="where" dir="auto" maxlength="60" placeholder="${L('من فين؟ (اختياري)', 'From where? (optional)')}"><select name="who">${WHO.map(([v, n]) => `<option value="${v}">${esc(n())}</option>`).join('')}</select><button class="btn btn--sm btn--coral" type="submit">♥ ${Y('ضيفها', 'ضيفيها', 'Add it')}</button></form>` : ''}`;
+		};
+		$('#fd-favs', main).addEventListener('click', (e) => {
+			const b = e.target.closest('[data-fav]');
+			if (b) {
+				const [rid] = b.dataset.fav.split('|');
+				show(rid);
+				fm.classList.add('is-open', 'no-delay');
+				stage.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' });
+				setTimeout(() => dish(b.dataset.fav, $(`[data-dish="${CSS.escape(b.dataset.fav)}"]`, fm)), REDUCE ? 0 : 500);
+				return;
+			}
+			const rm = e.target.closest('[data-fav-rm]');
+			if (rm && confirm(Y('تشيلها من المفضلة؟', 'تشيليها من المفضلة؟', 'Remove it from the favourites?'))) save((d) => { d.favs = (d.favs || []).filter((x) => x.id !== rm.dataset.favRm); });
+		});
+		$('#fd-favs', main).addEventListener('submit', (e) => {
+			e.preventDefault();
+			const f = e.target, name = f.name.value.trim();
+			if (!name) return;
+			save((d) => { (d.favs = d.favs || []).push({ id: live.newId(), name, where: f.where.value.trim() || undefined, who: f.who.value, by: live.me(), at: Date.now() }); });
+		});
 
 		const all = () => (data.items || []).slice();
 		const close = () => { fm?.classList.remove('is-open', 'is-in', 'no-delay'); $('.fm__card', fm || stage)?.remove(); };
@@ -168,7 +298,7 @@ export default {
 			const xs = all();
 			const yr = (r) => String(r.date || '').slice(0, 4);
 			const line = (r) => `<li><button type="button" data-r="${esc(r.id)}"${r.id === cur ? ' class="is-on"' : ''}>${badge(r, 'fm-board__logo')}<span dir="auto">${esc(App.t(r.name))}</span><i aria-hidden="true"></i><b>${yr(r) ? num(+yr(r)).replace(/[٬,]/g, '') : '♥'}</b></button></li>`;
-			const cooked = (x) => `<li><button type="button" data-rc="${esc(x.id)}"><span dir="auto">${esc(x.name)}</span><i aria-hidden="true"></i><b>${x.made?.length ? `×${num(x.made.length)}` : '♥'}</b></button></li>`;
+			const cooked = (x) => `<li><button type="button" data-rc="${esc(x.id)}"><span dir="auto">${{ dish: '🍲', sweet: '🍰', drink: '🥤' }[x.kind || 'dish']} ${esc(x.name)}</span><i aria-hidden="true"></i><b>${x.made?.length ? `×${num(x.made.length)}` : '♥'}</b></button></li>`;
 			board.innerHTML = `<div class="fm-board fm-board--two">
 				<span class="fm-board__cup" aria-hidden="true">${doodle('coffee', 44)}</span>
 				<div class="fm-board__cols">
@@ -177,6 +307,7 @@ export default {
 						${xs.length ? `<ol class="fm-board__list">${xs.map(line).join('')}</ol>` : `<p class="fm-board__wait">${L('لسه مفيش مطاعم', 'No places yet')}</p>`}
 					</section>
 					<section class="fm-board__col fm-board__col--home">
+						<svg class="fm-board__pot" viewBox="0 0 120 92" aria-hidden="true"><path class="fm-board__steam" d="M44 26c-6-8 6-13 0-22M60 26c-6-8 6-13 0-22M76 26c-6-8 6-13 0-22"/><rect x="22" y="40" width="76" height="40" rx="9"/><rect x="14" y="34" width="92" height="8" rx="4"/><rect x="51" y="27" width="18" height="7" rx="3"/><path d="M22 52H8M98 52h14"/></svg>
 						<p class="fm-board__h">${L('مطبخنا', 'Our kitchen')}</p>
 						${dishes.length ? `<ol class="fm-board__list fm-board__list--home">${dishes.slice(0, 14).map(cooked).join('')}</ol>` : `<p class="fm-board__wait">${L('أول أكلة نطبخها تتكتب هنا', 'The first dish we cook goes here')}</p>`}
 					</section>
@@ -246,14 +377,17 @@ export default {
 
 		function show(id) {
 			const r = all().find((x) => x.id === id) || all()[0];
-			if (!r) { stage.innerHTML = `<p class="empty">${Y('لسه مفيش مطاعم… ضيف أول مطعم بنحبه ♥', 'لسه مفيش مطاعم… ضيفي أول مطعم بنحبه ♥', 'No restaurants yet… add the first place we love ♥')}</p>`; chips.innerHTML = ''; drawBoard(); return; }
+			if (!r) { stage.innerHTML = `<p class="empty">${Y('لسه مفيش مطاعم… ضيف أول مطعم بنحبه ♥', 'لسه مفيش مطاعم… ضيفي أول مطعم بنحبه ♥', 'No restaurants yet… add the first place we love ♥')}</p>`; paintList(); paintFavs(); drawBoard(); return; }
 			cur = r.id;
+			// a place opened from outside the kind picked (the board, an offer, a favourite): back to all of them
+			if (cat && !catsOf(r).includes(cat)) cat = '';
 			stage.innerHTML = menuHTML(r);
 			fm = $('#fm', stage);
 			live.hydrateSketches(stage);
-			chips.innerHTML = all().map((x) => `<button class="chip${x.id === cur ? ' is-on' : ''}" type="button" data-r="${esc(x.id)}" style="--c:${esc(x.color || COLORS[0])}">${badge(x, 'fm-chip-logo')}${esc(App.t(x.name))}</button>`).join('');
-			chips.hidden = all().length < 2;
-			live.hydrateSketches(chips);
+			paintList();
+			paintToday();
+			paintOffers(r);
+			paintFavs();
 			drawBoard();
 			const mine = $('#fm-mine', main);
 			const canDel = live.canWrite() && (r.by === live.me() || !r.by);
@@ -262,6 +396,7 @@ export default {
 			mine.hidden = !canDel && !needsMenu && !live.canWrite();
 			mine.innerHTML = [needsMenu ? `<button class="btn btn--sm btn--coral" type="button" data-menu="${esc(r.id)}">${doodle('pen', 16)} ${Y('حط المنيو بتاعه', 'حطي المنيو بتاعه', 'Add its menu')}</button>` : '',
 				live.canWrite() ? `<label class="btn btn--sm fm-logo-btn">${doodle('camera', 16)} ${r.img ? Y('غيّر اللوجو', 'غيّري اللوجو', 'Change the logo') : Y('حط اللوجو', 'حطي اللوجو', 'Add the logo')}<input type="file" accept="image/*" data-logo="${esc(r.id)}" hidden></label>` : '',
+				live.canWrite() ? `<details class="fd-kinds"><summary>${doodle('pen', 16)} ${L('النوع', 'Kinds')}: ${esc(catsOf(r).map((c) => { const k = CATS.find((x) => x.id === c); return k ? L(k.ar, k.en) : c; }).join('، '))}</summary>${CATS.map((c) => `<label class="chip"><input type="checkbox" data-kind="${c.id}"${catsOf(r).includes(c.id) ? ' checked' : ''}> ${esc(L(c.ar, c.en))}</label>`).join('')}</details>` : '',
 				canDel ? `<button class="link link--danger" type="button" data-del="${esc(r.id)}">${r.by ? Y('شيل المطعم ده', 'شيلي المطعم ده', 'Remove this restaurant') : Y('شيل المثال ده', 'شيلي المثال ده', 'Remove this example')}</button>` : ''].filter(Boolean).join(' ');
 		}
 
@@ -289,6 +424,7 @@ export default {
 				</div>
 				${d.price ? `<p class="fm__card-price">${esc(price(d.price))}</p>` : ''}
 				${d.fav ? `<p class="fm__card-fav">♥ ${L('أكلة', 'A favourite of')} ${esc(FAV[d.fav]())}</p>` : ''}
+				${ok ? `<p class="fm__card-love"><span>${L('بنحبها؟', 'Do we love it?')}</span>${WHO.map(([v, n]) => `<button type="button" class="chip${d.fav === v ? ' is-on' : ''}" data-love="${v}">♥ ${esc(n())}</button>`).join('')}${d.fav ? `<button type="button" class="link" data-love="">${L('مش مفضلة', 'Not a favourite')}</button>` : ''}</p>` : ''}
 				<div class="fm__card-ft">
 					${ok ? `<label class="link fm__pic">${d.img ? Y('غيّر الصورة', 'غيّري الصورة', 'Change the photo') : Y('حط صورة للأكلة', 'حطي صورة للأكلة', 'Add a photo of it')}<input type="file" accept="image/*" hidden></label>` : ''}
 					${ok ? `<button class="link fm__lnk" type="button">${d.link ? Y('غيّر اللينك', 'غيّري اللينك', 'Change the link') : Y('حط لينك', 'حطي لينك', 'Add a link')}</button>` : ''}
@@ -315,6 +451,7 @@ export default {
 			}).catch((err) => alert(live.why(err)));
 			const pic = $('.fm__pic input', card);
 			if (pic) pic.onchange = async () => { const f = pic.files[0]; if (!f) return; try { const id = await live.putSketch(await shrinkPhoto(f, 1000)); edit((dd) => { dd.img = id; }); } catch (err) { alert(live.why(err)); } };
+			$('.fm__card-love', card)?.addEventListener('click', (e) => { const b = e.target.closest('[data-love]'); if (b) edit((dd) => { dd.fav = b.dataset.love || undefined; }); });
 			const lnk = $('.fm__lnk', card);
 			if (lnk) lnk.onclick = () => { const u = prompt(L('لينك الأكلة (من الأبلكيشن أو الصفحة)', 'A link for the dish (the app or their page)'), d.link || 'https://'); if (u == null) return; edit((dd) => { dd.link = safeLink(u.trim()) || undefined; }); };
 			const back = () => { fm.classList.remove('is-in'); setTimeout(() => card.remove(), REDUCE ? 0 : 600); btn?.focus({ preventScroll: true }); };
@@ -340,7 +477,6 @@ export default {
 			const d = e.target.closest('[data-dish]');
 			if (d) dish(d.dataset.dish, d);
 		});
-		chips.onclick = (e) => { const b = e.target.closest('[data-r]'); if (b) { show(b.dataset.r); history.replaceState(history.state, '', '#' + b.dataset.r); } };
 		$('#fm-mine', main).onclick = async (e) => {
 			const m = e.target.closest('[data-menu]');
 			if (m) {
@@ -361,6 +497,12 @@ export default {
 		};
 
 		$('#fm-mine', main).onchange = async (e) => {
+			// a kind ticked or unticked for this place
+			if (e.target.closest('[data-kind]')) {
+				const picked = $$('[data-kind]:checked', main).map((c) => c.dataset.kind);
+				if (picked.length) save((d) => { const x = (d.items || []).find((y) => y.id === cur); if (x) x.cats = picked; });
+				return;
+			}
 			const inp = e.target.closest('[data-logo]');
 			const file = inp?.files[0];
 			if (!file) return;
@@ -381,7 +523,7 @@ export default {
 			const r = {
 				id: live.newId(), name: form.name.value.trim(), tagline: form.tagline.value.trim() || undefined, cuisine: form.cuisine.value.trim() || undefined,
 				area: form.area.value.trim() || undefined, phone: form.phone.value.trim() || undefined, order: form.order.value.trim() || undefined,
-				color: COLORS[all().length % COLORS.length], icon: 'dinner', sections, by: live.me(), at: Date.now()
+				color: COLORS[all().length % COLORS.length], icon: 'dinner', sections, cats: [...form.querySelectorAll('[name=cats]:checked')].map((c) => c.value), by: live.me(), at: Date.now()
 			};
 			// a place already on the list without its menu (same name, in either language) gets the menu, not a twin
 			const key = (v) => String(v || '').trim().toLowerCase();

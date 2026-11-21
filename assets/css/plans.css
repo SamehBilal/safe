@@ -677,3 +677,87 @@
 .fm__src { margin: 14px 0 0; font-size: .72rem; color: #8a8f99; }
 /* the list pages' bands stretch their drawings to the band's width (more.css); the board keeps its doodles small */
 .fm-band.lp-band svg { width: auto; height: auto; }
+
+/* ---------- «برا»: the kinds of place as tabs, the places down the side in a scrolling list, the open menu beside
+   them, today's offers on top, each place's weekly offers under its menu, and our favourite dishes ---------- */
+.fd-cats { justify-content: center; margin: 0 0 18px; }
+.fd-cats .chip { display: inline-flex; align-items: center; gap: 6px; }
+.fd-cats .chip small { opacity: .7; }
+.fd-cats .chip.is-on { background: #2f3d35; border-color: #2f3d35; color: #fdf6dc; }
+.fd-grid { display: grid; grid-template-columns: minmax(230px, 290px) minmax(0, 1fr); gap: clamp(16px, 3vw, 34px); align-items: start; }
+.fd-list { position: sticky; top: calc(var(--hd) + 14px); max-height: min(700px, calc(100vh - var(--hd) - 40px)); overflow: auto; padding: 12px 10px; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 16px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--ink, #37353f) 22%, transparent); scrollbar-width: thin; }
+.fd-list__h { position: sticky; top: -12px; z-index: 1; margin: -12px -10px 8px; padding: 12px 14px 8px; font-weight: 800; background: var(--card); border-bottom: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 30%, transparent); }
+.fd-list__h small { color: var(--muted); }
+.fd-list ul { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.fd-place { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; font: inherit; color: var(--text); text-align: start; background: none; border: 1.5px solid transparent; border-radius: 12px; cursor: pointer; transition: background .2s, border-color .2s; }
+.fd-place:hover { background: color-mix(in srgb, var(--c) 8%, var(--card)); }
+.fd-place.is-on { background: color-mix(in srgb, var(--c) 14%, var(--card)); border-color: var(--c); }
+.fd-place__logo { flex: none; display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; font: 800 1rem/1 var(--f-body); color: #fff; background: var(--c, #8a5a2b); box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px color-mix(in srgb, var(--c) 60%, transparent); }
+.fd-place__logo.has-pic { background: #fff; }
+.fd-place__logo img { width: 100%; height: 100%; object-fit: cover; }
+.fd-place__tx { display: grid; min-width: 0; }
+.fd-place__tx b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fd-place__tx small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; color: var(--muted); }
+.fd-place__tags { display: flex; gap: 4px; }
+.fd-tag { padding: 1px 7px; font: 800 .7rem/1.6 var(--f-body); font-style: normal; color: var(--coral-deep, #d9534f); background: color-mix(in srgb, var(--coral) 12%, var(--card)); border-radius: 999px; white-space: nowrap; }
+.fd-tag--offer { background: color-mix(in srgb, var(--hl-yellow, #fdc830) 40%, var(--card)); }
+.fd-tag--dim { color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, var(--card)); font-weight: 700; }
+.fd-main { min-width: 0; }
+.fd-main .fm { width: 33.33%; }
+@media (max-width: 960px) {
+	.fd-grid { grid-template-columns: 1fr; }
+	.fd-list { position: static; max-height: none; overflow: visible; padding: 10px; }
+	.fd-list__h { position: static; margin: -10px -10px 8px; }
+	.fd-list ul { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x proximity; }
+	.fd-list li { flex: 0 0 min(240px, 72vw); scroll-snap-align: start; }
+	.fd-main .fm { width: 100%; }
+}
+
+.fd-today { display: grid; gap: 8px; width: min(820px, 100%); margin: 0 auto 18px; padding: 12px 18px; background: color-mix(in srgb, var(--hl-yellow, #fdc830) 30%, var(--card)); border: 1.5px dashed var(--ink, #37353f); border-radius: var(--sketch-sm, 16px); rotate: -.4deg; }
+.fd-today__h { margin: 0; font-weight: 800; }
+.fd-today ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fd-today button { padding: 6px 12px; font: inherit; font-size: .88rem; color: var(--text); text-align: start; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; cursor: pointer; }
+.fd-today button b { color: var(--coral-deep, #d9534f); }
+
+.fd-offers { width: min(560px, 100%); margin: 4px auto 14px; padding: 12px 16px; background: var(--card); border: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); border-radius: var(--sketch-sm, 16px); }
+.fd-offers__h { margin: 0 0 8px; font-weight: 800; }
+.fd-offers ul { display: grid; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+.fd-offers li { font-size: .9rem; }
+.fd-offers li.is-today { padding: 4px 8px; background: color-mix(in srgb, var(--hl-yellow, #fdc830) 35%, var(--card)); border-radius: 8px; }
+.fd-offers li i { font-style: normal; font-weight: 800; color: var(--coral-deep, #d9534f); }
+.fd-offers .muted { margin: 0 0 10px; font-size: .85rem; }
+.fd-offers__add, .fd-favs__add { display: flex; flex-wrap: wrap; gap: 8px; }
+.fd-offers__add select, .fd-offers__add input, .fd-favs__add select, .fd-favs__add input { flex: 1 1 140px; min-width: 0; padding: 7px 10px; font: inherit; font-size: .88rem; color: var(--text); background: var(--paper); border: 1.5px solid color-mix(in srgb, var(--ink, #37353f) 40%, transparent); border-radius: 10px; }
+.fd-offers__add select, .fd-favs__add select { flex: 0 1 150px; }
+.fd-kinds { width: 100%; text-align: center; }
+.fd-kinds summary { cursor: pointer; font-size: .85rem; font-weight: 800; color: var(--blue); }
+.fd-kinds[open] { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.fd-kinds[open] summary { width: 100%; margin-bottom: 4px; }
+.fd-kinds .chip, .fd-catpick .chip { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.fd-catpick { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 4px 0 10px; }
+.fd-catpick legend { width: 100%; margin-bottom: 6px; font-weight: 800; font-size: .85rem; }
+
+.fd-favs { margin-top: clamp(36px, 6vw, 64px); }
+.fd-favs__list { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0 0 18px; padding: 0; list-style: none; }
+.fd-fav { position: relative; display: grid; gap: 1px; min-width: 170px; max-width: 260px; padding: 10px 14px; font: inherit; color: var(--text); text-align: start; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 16px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 color-mix(in srgb, var(--c, var(--coral)) 60%, transparent); cursor: pointer; transition: transform .2s; }
+.fd-fav:hover { transform: translateY(-2px) rotate(-1deg); }
+.fd-fav--free { cursor: default; --c: var(--hl-lime, #cddc39); }
+.fd-fav small { font-size: .76rem; color: var(--muted); }
+.fd-fav i { font-style: normal; font-size: .76rem; font-weight: 800; color: var(--coral-deep, #d9534f); }
+.fd-fav .link--danger { position: absolute; top: 4px; inset-inline-end: 8px; }
+.fd-favs__add { justify-content: center; width: min(680px, 100%); margin: 0 auto; }
+.fm__card-love { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0 0; font-size: .8rem; }
+.fm__card-love span { font-weight: 800; }
+.fm__card-love .chip { padding: 2px 10px; font-size: .78rem; }
+.fm__card-love .chip.is-on { background: var(--coral); border-color: var(--coral); color: #fff; }
+
+/* «في البيت»: the steaming pot back over «نطبخ إيه», and a little one chalked by «مطبخنا» on the board */
+.fd-recipes > .fd-pot { display: flex; width: min(520px, 100%); margin: clamp(18px, 3vw, 30px) auto 0; min-height: 0; text-decoration: none; color: inherit; }
+.fd-pot .rc-pot { width: clamp(170px, 22vw, 240px); }
+.fd-recipes > .fd-pot + .sec { padding-top: 6px; }
+.fm-board__pot { display: block; width: 74px; height: auto; margin: -6px auto -4px; overflow: visible; }
+.fm-band.lp-band .fm-board__pot { width: 74px; }
+.fm-board__pot rect, .fm-board__pot path { fill: none; stroke: rgba(241, 239, 230, .85); stroke-width: 3; stroke-linecap: round; }
+.fm-board__pot rect:first-of-type { fill: rgba(242, 114, 111, .35); }
+.fm-board__steam { stroke-dasharray: 3 6; animation: rc-wave 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fm-board__steam { animation: none; } }
