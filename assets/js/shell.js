@@ -576,7 +576,7 @@ export const PAGES = [
 	{ href: 'chats.html', id: 'chats', ic: 'chat', ar: 'محادثاتنا', en: 'Our chats', dar: 'أحلى رسايلنا باسكرينشوت', den: 'Our best messages, screenshotted', group: 'memories' },
 	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'فهد وعبد الرحمن وإحنا', den: 'Fahd, Abdulrahman and us', group: 'family' },
 	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد عن بعض قد إيه', den: 'How far apart the four of us are', group: 'family' },
-	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'عربية، بيت، سفر… خطوة خطوة', den: 'A car, a home, a trip… step by step', group: 'family' },
+	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'كل حاجة نفسنا فيها على ورقة، واللي نجيبها نشطبها', den: 'Everything we want on one sheet, crossed out as we get it', group: 'family' },
 	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور، بنجوم', den: 'House jobs in turns, with stars', group: 'family' },
 	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'أكلته وكرتونه ولعبته في كل سن', den: 'Their food, cartoon and toy at every age', group: 'family' },
 	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسومات الولاد', en: 'The boys’ drawings', dar: 'باب التلاجة: كل رسمة رسموها', den: 'The fridge door: every drawing they made', group: 'family' },

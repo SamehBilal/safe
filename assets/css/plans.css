@@ -124,35 +124,47 @@
 .cm-card--cream .cm-card__tiles { filter: grayscale(1) brightness(1.47) contrast(8) sepia(.7); opacity: .86; }
 .cm-card--cream .cm-poster__en { padding-bottom: 4px; border-bottom: 1.5px solid currentColor; letter-spacing: .1em; }
 
-/* ---------- goals ---------- */
-.goal-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 14px; margin-bottom: 28px; }
-.goal-stat { display: grid; gap: 2px; text-align: center; padding: 14px 10px; background: var(--card); border: 1.5px solid var(--ink, var(--line)); border-radius: var(--sketch, var(--radius)); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-yellow, var(--blush)); }
-.goal-stat b { font: 2rem/1.1 var(--f-label); letter-spacing: 0.04em; color: var(--blue); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.goal-stat small { color: var(--muted); font-weight: 700; font-size: 0.82rem; }
-.goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 22px; align-items: start; }
-.goal { position: relative; display: grid; gap: 10px; padding: 18px 18px 14px; background: var(--card); border: 1.5px solid var(--ink, var(--line)); border-top: 6px solid var(--c); border-radius: var(--sketch, var(--radius)); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 45%, transparent); }
-.goal__top { display: flex; align-items: center; gap: 10px; }
-.goal__ic { width: 46px; height: 46px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--c); background: color-mix(in srgb, var(--c) 14%, var(--card)); }
-.goal__cat { font: 1.05rem var(--f-label); letter-spacing: 0.08em; color: var(--c); }
-.goal__stamp { margin-inline-start: auto; rotate: -8deg; display: grid; text-align: center; padding: 4px 10px; border: 2.5px double var(--coral-deep); border-radius: 8px; color: var(--coral-deep); font: 800 0.9rem/1.2 var(--f-body); }
-.goal__stamp small { font-size: 0.66rem; font-weight: 700; }
-.goal__t { margin: 0; font-size: 1.3rem; line-height: 1.35; }
-.goal__when, .goal__note, .goal__money { margin: 0; color: var(--muted); font-size: 0.9rem; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.goal__note { font: 1.15rem/1.35 var(--f-hand); color: var(--text); }
-.goal__money b { color: var(--text); font-size: 1.05rem; }
-.goal__bar { position: relative; height: 20px; border: 1.5px solid var(--ink, var(--line)); border-radius: 20px 6px 18px 8px / 8px 18px 6px 20px; overflow: hidden; background: var(--card-2, var(--paper)); }
-.goal__bar i { position: absolute; inset-block: 0; inset-inline-start: 0; width: calc(var(--p) * 100%); background: repeating-linear-gradient(-45deg, var(--c) 0 8px, color-mix(in srgb, var(--c) 75%, #fff) 8px 14px); transition: width 0.6s var(--ease-out); }
-.goal__bar b { position: absolute; inset: 0; display: grid; place-items: center; font: 0.95rem var(--f-label); letter-spacing: 0.06em; color: var(--text); text-shadow: 0 0 4px var(--card), 0 0 2px var(--card); }
-.goal__save, .goal__add, .bk-now__go { display: flex; gap: 8px; }
-.goal__save input, .goal__add input, .bk-now__go input { flex: 1; min-width: 0; font: inherit; padding: 6px 10px; color: var(--text); background: var(--card-2, var(--paper)); border: 1.5px dashed var(--ink, var(--line)); border-radius: 10px; }
-.goal__steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
-.goal__steps .check { font-weight: 600; }
-.goal__steps .check.is-on span { text-decoration: line-through wavy var(--coral) 1px; color: var(--muted); }
-.goal__foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1.5px dashed var(--line); padding-top: 10px; }
-.goal__foot small { color: var(--muted); }
-.goal__acts { margin-inline-start: auto; display: flex; gap: 10px; align-items: center; }
-.goal.is-done { opacity: 0.92; }
-.goals-done-h { margin-top: 44px; }
+/* ---------- goals: one white sheet with everything we want cut out and scattered over it; whatever we get is crossed
+   out with a red marker (the X draws itself), with the day under it. «شطبنا كام» on top with a marker line ---------- */
+.gl-count { display: grid; justify-items: center; gap: 6px; margin: 0 auto 26px; text-align: center; }
+.gl-count__t { margin: 0; font: 700 clamp(1.5rem, 4vw, 2.2rem)/1.2 var(--f-hand); color: var(--text); }
+:lang(ar) .gl-count__t { font-family: 'Aref Ruqaa', var(--f-body); }
+.gl-count__t b { color: var(--coral-deep, #d9534f); font-family: var(--f-label); font-weight: 400; font-size: 1.25em; padding: 0 .12em; }
+.gl-count__line { display: block; width: min(420px, 80%); height: 12px; border: 2px solid var(--ink, #37353f); border-radius: 999px; overflow: hidden; background: var(--paper, #fff); }
+.gl-count__line i { display: block; width: calc(var(--p) * 100%); height: 100%; background: repeating-linear-gradient(-45deg, var(--coral, #f2726f) 0 6px, var(--coral-deep, #d9534f) 6px 12px); transition: width .6s var(--ease-pop, ease); }
+.gl-count small { color: var(--muted); font-weight: 700; }
+.gl-tools { justify-content: flex-end; }
+.gl-tools .chip .dd { vertical-align: -3px; }
+.gl-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); grid-auto-flow: dense; gap: clamp(10px, 2vw, 22px) clamp(8px, 1.6vw, 18px); padding: clamp(16px, 3vw, 36px);
+	color: #2b2b33; background: #fff; border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--hl-yellow, #fdc830), 0 18px 40px rgba(40, 30, 10, .08); }
+.gl-sheet > .empty { grid-column: 1 / -1; color: #6a6560; }
+.gl-it { position: relative; display: grid; justify-items: center; align-content: start; gap: 4px; rotate: var(--r); }
+.gl-it.is-wide { grid-column: span 2; }
+.gl-it__btn { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; min-height: 0; overflow: visible; padding: 4px; font: inherit; color: inherit; background: none; border: 0; cursor: pointer; transition: scale .2s var(--ease-pop, ease); }
+.gl-it.is-wide .gl-it__btn { aspect-ratio: 2 / 1; }
+.gl-it__btn:disabled { cursor: default; }
+.gl-it__btn:not(:disabled):hover, .gl-it__btn:focus-visible { scale: 1.07; }
+.gl-it__btn img { position: absolute; inset: 4px; width: calc(100% - 8px); height: calc(100% - 8px); object-fit: contain; mix-blend-mode: multiply; transition: opacity .4s, filter .4s; }
+.gl-it__ic { display: grid; place-items: center; width: 74%; aspect-ratio: 1; border: 2px dashed #b8b2a6; border-radius: 50%; color: #6a6560; }
+.gl-x { position: absolute; inset: 4%; width: 92%; height: 92%; overflow: visible; pointer-events: none; }
+.gl-x { visibility: hidden; }
+.gl-it.is-done .gl-x { visibility: visible; }
+.gl-x path { fill: none; stroke: #e0312b; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: .9; }
+.gl-it.is-done .gl-x path { animation: gl-draw .35s ease-out forwards; }
+.gl-it.is-done .gl-x path + path { animation-delay: .3s; }
+@keyframes gl-draw { to { stroke-dashoffset: 0; } }
+.gl-it.is-done .gl-it__btn img, .gl-it.is-done .gl-it__ic { opacity: .42; filter: grayscale(.7); }
+.gl-it__t { max-width: 100%; font-size: .78rem; font-weight: 700; line-height: 1.25; text-align: center; color: #3a3a44; }
+.gl-it.is-done .gl-it__t { text-decoration: line-through 2px #e0312b; color: #8a8580; }
+.gl-it__d { font: 700 .95rem/1 var(--f-hand); color: #c0392b; }
+:lang(ar) .gl-it__d { font: 700 .7rem/1.2 var(--f-body); }
+.gl-it__del { position: absolute; top: -6px; inset-inline-end: -4px; z-index: 2; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; color: var(--coral-deep, #d9534f); background: #fff; border: 2px solid var(--ink, #37353f); border-radius: 50%; cursor: pointer; }
+.gl-sheet.is-edit .gl-it { animation: gl-wobble .5s ease-in-out infinite alternate; }
+@keyframes gl-wobble { from { rotate: calc(var(--r) - 1.5deg); } to { rotate: calc(var(--r) + 1.5deg); } }
+@media (max-width: 560px) { .gl-sheet { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); padding: 14px 10px; } .gl-it__t { font-size: .7rem; } }
+@media (prefers-reduced-motion: reduce) { .gl-it.is-done .gl-x path { animation: none; stroke-dashoffset: 0; } .gl-sheet.is-edit .gl-it { animation: none; } }
+.bk-now__go { display: flex; gap: 8px; }
+.bk-now__go input { flex: 1; min-width: 0; font: inherit; padding: 6px 10px; color: var(--text); background: var(--card-2, var(--paper)); border: 1.5px dashed var(--ink, var(--line)); border-radius: 10px; }
 
 /* ---------- books ---------- */
 .bk-reading { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 22px; }
