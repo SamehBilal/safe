@@ -1,4 +1,4 @@
-import { L, Y, T, esc, pageHead, related, App, $, $$, num, longDate } from '../shell.js';
+import { L, Y, T, esc, pageHead, related, App, $, $$, num, longDate, mediaURL } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
@@ -24,7 +24,7 @@ function reading(b) {
 	const p = +b.pages ? Math.min(1, (+b.page || 0) / +b.pages) : 0;
 	const ok = live.canWrite();
 	return `<article class="bk-now reveal" id="${esc(b.id)}" style="--bk:${ink};--bk-p:${paper};--p:${p.toFixed(3)}">
-		<span class="bk-now__cover" aria-hidden="true"><b dir="auto">${esc(b.title)}</b>${b.author ? `<small dir="auto">${esc(b.author)}</small>` : ''}</span>
+		${b.cover ? `<img class="bk-now__cover bk-now__img" data-cover="${esc(b.cover)}" alt="">` : `<span class="bk-now__cover" aria-hidden="true"><b dir="auto">${esc(b.title)}</b>${b.author ? `<small dir="auto">${esc(b.author)}</small>` : ''}</span>`}
 		<div class="bk-now__tx">
 			<h3 dir="auto">${esc(b.title)}</h3>
 			${b.author ? `<p class="bk-now__au" dir="auto">${esc(b.author)}</p>` : ''}
@@ -51,6 +51,7 @@ function details(b) {
 	const ok = live.canWrite();
 	return `<div class="bk-card" style="--bk:${spine(b)[0]}">
 		<button class="bk-card__x" type="button" data-close aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button>
+		${b.cover ? `<img class="bk-card__cover zoom" data-cover="${esc(b.cover)}" alt="">` : ''}
 		<h3 dir="auto">${esc(b.title)}</h3>
 		${b.author ? `<p class="bk-card__au" dir="auto">${esc(b.author)}</p>` : ''}
 		<p class="bk-card__meta">${[whoName(b.who), +b.pages ? L(`${num(+b.pages)} صفحة`, `${+b.pages} pages`) : '', b.finished ? `${L('خلصناه', 'Finished')} ${longDate(b.finished)}` : ''].filter(Boolean).map(esc).join(' · ')}</p>
@@ -150,6 +151,7 @@ export default {
 			$('#bkb-stack', main).innerHTML = [...Array.from({ length: Math.max(0, 3 - pile.length) }, (_, k) => ({ title: '', id: 'blank' + k })), ...pile]
 				.map((b, i) => { const [ink, paper] = spine(b); return `<span class="bkb__spine" style="--bk:${ink};--bk-p:${paper};--i:${i}"><b dir="auto">${esc(b.title)}</b></span>`; }).join('');
 			$('#bkb-n', main).innerHTML = `<b>${num(read.length)}</b> ${L('كتاب خلصناهم', read.length === 1 ? 'book finished' : 'books finished')}<br><b>${num(pages)}</b> ${L('صفحة', 'pages')}`;
+			for (const im of $$('#bk-reading img[data-cover]', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
 			if (open) showBook(open);
 		};
 
@@ -159,6 +161,7 @@ export default {
 			detail.hidden = !b;
 			if (!b) return;
 			detail.innerHTML = details(b);
+			for (const im of $$('img[data-cover]', detail)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
 			for (const el of $$('[data-book]', main)) el.classList.toggle('is-on', el.dataset.book === id);
 		};
 

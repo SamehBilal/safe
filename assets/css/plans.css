@@ -598,3 +598,5 @@
 .bk-card__about { margin: 2px 0 0; line-height: 1.7; }
 @media (max-width: 560px) { .bkb__stack { display: none; } .bkb__book { width: 200px; height: 124px; } }
 @media (prefers-reduced-motion: reduce) { .bkb__flip, .bkb__mug i { animation: none; } }
+.bk-card__cover { float: inline-end; width: 110px; aspect-ratio: 2 / 3; object-fit: cover; margin-inline-start: 14px; border: 1.5px solid var(--ink, #37353f); border-radius: 3px 6px 6px 3px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--bk, var(--coral)); rotate: 2deg; cursor: zoom-in; }
+.bk-now__img { width: 100%; object-fit: cover; padding: 0; }
