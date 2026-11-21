@@ -8,12 +8,13 @@ import { shrinkPhoto } from './trips.js';
    this year), and photos of the night; and the video games we played together, each with its box and photos of us
    playing it. Above the title a hand of cards fans out and is dealt while a die tumbles, a gamepad's buttons light up
    beside a few of our games' boxes, and the year's score between the two of us sits in the middle. We play on the PC and
-   the Nintendo Switch: the band has both (the Switch with its red and blue Joy-Cons, the PC's screen with a game on it),
+   the Nintendo Switch (and had a PS4 before): the band has them (the Switch with its red and blue Joy-Cons, the PC's
+   screen with a game on it, the old PS4 controller),
    each video game says which it's on, and the list can show one at a time. */
 
 const IDEAS = [['كوتشينة', 'Cards'], ['دومينو', 'Dominoes'], ['طاولة', 'Backgammon'], ['شطرنج', 'Chess'], ['أونو', 'UNO'], ['بنك الحظ', 'Monopoly'], ['سكرابل', 'Scrabble'], ['بلايستيشن', 'PlayStation'], ['فيفا', 'FIFA'], ['بازل', 'Puzzle'], ['كلمات متقاطعة', 'Crossword']];
 /* what we play video games on */
-const PLATFORMS = { pc: ['الكمبيوتر', 'PC', '#0e6990'], switch: ['نينتندو سويتش', 'Nintendo Switch', '#e60012'], ps: ['بلايستيشن', 'PlayStation', '#2e3f9e'] };
+const PLATFORMS = { pc: ['الكمبيوتر', 'PC', '#0e6990'], switch: ['نينتندو سويتش', 'Nintendo Switch', '#e60012'], ps: ['بلايستيشن ٤ (زمان)', 'PS4 (we used to have one)', '#2e3f9e'] };
 const CARDS = [['A', '♥'], ['K', '♠'], ['Q', '♦'], ['J', '♣'], ['10', '♥']];
 const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
 
@@ -40,6 +41,7 @@ export default {
 						<svg class="gm-pc" viewBox="0 0 120 100"><rect class="gm-mon" x="4" y="4" width="112" height="70" rx="6"/><rect class="gm-scr" x="12" y="12" width="96" height="54" rx="2"/>
 							<path class="gm-stand" d="M50 74h20l4 14H46Z"/><rect class="gm-stand" x="34" y="88" width="52" height="7" rx="3"/>
 							<g class="gm-scr__play"><path d="M20 58l14-16 10 10 16-20 14 14 12-8" fill="none" stroke="#fdc830" stroke-width="3"/><circle cx="34" cy="42" r="4" fill="#f2726f"/></g></svg>
+						<svg class="gm-ps" viewBox="0 0 120 80"><path class="gm-ps__body" d="M30 10h60c14 0 22 10 26 26l3 22c2 14-10 20-18 12L88 56H32L19 70c-8 8-20 2-18-12l3-22C8 20 16 10 30 10Z"/><rect class="gm-ps__pad" x="46" y="16" width="28" height="16" rx="3"/><path class="gm-ps__d" d="M24 30h6v-6h6v6h6v6h-6v6h-6v-6h-6Z"/><g class="gm-ps__btn"><circle cx="94" cy="24" r="4"/><circle cx="103" cy="33" r="4"/><circle cx="85" cy="33" r="4"/><circle cx="94" cy="42" r="4"/></g><circle class="gm-ps__st" cx="44" cy="46" r="7"/><circle class="gm-ps__st" cx="76" cy="46" r="7"/><rect x="52" y="8" width="16" height="3" rx="1.5" fill="#4aa3ff"/></svg>
 					</div>
 				</div>
 			</div>`
