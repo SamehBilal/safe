@@ -833,3 +833,27 @@
 .pm__pen { inset-inline-end: auto; left: -3%; transform: scaleX(-1); }
 /* on a phone the note on the map keeps only the distance (who and how are in the hint and the list around it) */
 @media (max-width: 640px) { .pm__read { top: 3%; max-width: none; padding: 2px 9px 3px; rotate: -3deg; } .pm__pair, .pm__feel { display: none; } .pm__km { font-size: 1.35rem; } }
+
+/* the list of places: no scrollbar — it scrolls with the wheel or a finger, and arrows on its top and bottom edges
+   (only when there's more that way) move it a page at a time */
+.fd-list { position: sticky; overflow: visible; max-height: none; padding-bottom: 12px; }
+.fd-list ul { max-height: min(600px, calc(100vh - var(--hd) - 120px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; scroll-behavior: smooth; }
+.fd-list ul::-webkit-scrollbar { display: none; }
+.fd-list__h { position: static; margin: -12px -10px 8px; }
+.fd-list__arrow { position: absolute; left: 50%; z-index: 2; display: grid; place-items: center; width: 34px; height: 34px; translate: -50% 0; font-size: .8rem; color: var(--text); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--hl-yellow, #fdc830); cursor: pointer; transition: transform .15s; }
+.fd-list__arrow:hover { transform: scale(1.1); }
+.fd-list__arrow[hidden] { display: none; }
+.fd-list__arrow--up { top: 46px; }
+.fd-list__arrow--down { bottom: -16px; }
+@media (max-width: 960px) {
+	.fd-list { position: relative; }
+	.fd-list ul { max-height: none; overflow-y: hidden; overflow-x: auto; }
+	.fd-list__arrow { top: 50%; bottom: auto; translate: 0 -50%; }
+	.fd-list__arrow--up { left: auto; inset-inline-start: -10px; rotate: 90deg; }
+	.fd-list__arrow--down { left: auto; inset-inline-end: -10px; rotate: 90deg; }
+	[dir='ltr'] .fd-list__arrow--up, [dir='ltr'] .fd-list__arrow--down { rotate: -90deg; }
+}
+/* the pot over «نطبخ إيه», in the middle */
+.fd-recipes > .fd-pot { justify-content: center; }
+.fd-recipes > .fd-pot .rc-band { margin-inline: auto; }
+@media (max-width: 960px) { .fd-list { top: auto; } }

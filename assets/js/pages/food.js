@@ -209,10 +209,34 @@ export default {
 					${badge(r, 'fd-place__logo')}
 					<span class="fd-place__tx"><b dir="auto">${esc(App.t(r.name))}</b><small>${esc([App.t(r.cuisine), App.t(r.area)].filter(Boolean).join(' · '))}</small></span>
 					<span class="fd-place__tags">${(r.offers || []).some((o) => +o.day === today) ? `<i class="fd-tag fd-tag--offer" title="${L('عرض النهارده', 'An offer today')}">🎁</i>` : ''}${favsOf(r).length ? `<i class="fd-tag" title="${L('أكلات بنحبها', 'Dishes we love')}">♥ ${num(favsOf(r).length)}</i>` : ''}${(r.sections || []).length ? '' : `<i class="fd-tag fd-tag--dim">${L('من غير منيو', 'no menu')}</i>`}</span>
-				</button></li>`).join('')}</ul>`;
+				</button></li>`).join('')}</ul>
+				<button type="button" class="fd-list__arrow fd-list__arrow--up" data-step="-1" aria-label="${L('لفوق', 'Up')}" hidden>▲</button>
+				<button type="button" class="fd-list__arrow fd-list__arrow--down" data-step="1" aria-label="${L('لتحت', 'Down')}" hidden>▼</button>`;
 			live.hydrateSketches($('#fd-list', main));
-			$('.fd-place.is-on', main)?.scrollIntoView({ block: 'nearest' });
+			// the chosen place in view inside the list (only the list scrolls, never the page)
+			const ul = $('#fd-list ul', main), on = $('.fd-place.is-on', main);
+			if (on) { const u = ul.getBoundingClientRect(), o = on.getBoundingClientRect(); if (o.top < u.top || o.bottom > u.bottom) ul.scrollTop += o.top - u.top - u.height / 2 + o.height / 2; }
+			ul.onscroll = arrows;
+			arrows();
 		};
+		/* the list's arrows: up when there's more above, down when there's more below; no scrollbar */
+		const arrows = () => {
+			const ul = $('#fd-list ul', main);
+			if (!ul) return;
+			const can = ul.scrollHeight - ul.clientHeight > 2, row = phone();
+			const before = row ? Math.abs(ul.scrollLeft) > 2 : ul.scrollTop > 2;
+			const after = row ? Math.abs(ul.scrollLeft) < ul.scrollWidth - ul.clientWidth - 2 : ul.scrollTop < ul.scrollHeight - ul.clientHeight - 2;
+			$('.fd-list__arrow--up', main).hidden = !(row ? ul.scrollWidth > ul.clientWidth + 2 : can) || !before;
+			$('.fd-list__arrow--down', main).hidden = !(row ? ul.scrollWidth > ul.clientWidth + 2 : can) || !after;
+		};
+		$('#fd-list', main).addEventListener('click', (e) => {
+			const a = e.target.closest('[data-step]');
+			if (!a) return;
+			const ul = $('#fd-list ul', main), step = +a.dataset.step;
+			if (phone()) ul.scrollBy({ left: step * ul.clientWidth * 0.8 * (document.dir === 'rtl' ? -1 : 1), behavior: REDUCE ? 'auto' : 'smooth' });
+			else ul.scrollBy({ top: step * ul.clientHeight * 0.8, behavior: REDUCE ? 'auto' : 'smooth' });
+		});
+		addEventListener('resize', arrows);
 		$('#fd-cats', main).addEventListener('click', (e) => {
 			const b = e.target.closest('[data-cat]');
 			if (!b) return;
