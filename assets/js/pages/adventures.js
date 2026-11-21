@@ -23,6 +23,8 @@ export const KINDS = [
 ];
 const kindOf = (id) => KINDS.find((k) => k.id === id) || KINDS[6];
 const FIRST = 24;
+/* the route a paper plane flies across the top: up, down, a loop the loop, and on to the heart (a 1000×110 drawing) */
+const FLIGHT = 'M10 78 C110 18 190 96 300 66 C372 46 408 26 446 40 C482 54 476 90 446 92 C416 94 410 60 446 44 C500 22 560 92 660 78 C760 64 820 26 900 40 C940 47 966 56 988 54';
 const short = (s, n) => { const a = [...String(s)]; return a.length > n ? a.slice(0, n - 1).join('') + '…' : s; };
 
 export default {
@@ -100,9 +102,21 @@ export default {
 			const pct = total ? Math.round((done / total) * 100) : 0;
 			$('#adv-route', main).innerHTML = `
 				<p class="adv-count"><b>${num(done)}</b><span>${L(`من ${num(total)} اتحققت`, `of ${total} done`)}</span></p>
-				<div class="adv-track" style="--p:${Math.max(pct, 2)}%" role="img" aria-label="${esc(L(`عملنا ${num(done)} من ${num(total)}`, `${done} of ${total} done`))}">
-					<span class="adv-line"></span><span class="adv-plane">${doodle('plane', 30)}</span><span class="adv-end">${doodle('heart', 24)}</span>
+				<div class="adv-track" role="img" aria-label="${esc(L(`عملنا ${num(done)} من ${num(total)}`, `${done} of ${total} done`))}">
+					<svg class="adv-fly" viewBox="0 0 1000 110" preserveAspectRatio="none" aria-hidden="true"${App.lang === 'ar' ? ' style="transform:scaleX(-1)"' : ''}>
+						<path class="adv-fly__all" d="${FLIGHT}"/><path class="adv-fly__done" d="${FLIGHT}"/>
+					</svg>
+					<span class="adv-plane">${doodle('plane', 30)}</span><span class="adv-end">${doodle('heart', 24)}</span>
 				</div>`;
+			// the paper plane flies along the curve, as far as we've come, nose along the line
+			const track = $('.adv-track', main), path = $('.adv-fly__done', track), len = path.getTotalLength();
+			const at = Math.max(pct, 2) / 100 * len, p = path.getPointAtLength(at), q = path.getPointAtLength(Math.min(len, at + 2));
+			const rtl = App.lang === 'ar', deg = (Math.atan2(q.y - p.y, q.x - p.x) * 180) / Math.PI;
+			path.style.strokeDasharray = `${at} ${len}`;
+			const plane = $('.adv-plane', track);
+			plane.style.left = `${((rtl ? 1000 - p.x : p.x) / 10).toFixed(2)}%`;
+			plane.style.top = `${((p.y / 110) * 100).toFixed(2)}%`;
+			plane.style.transform = `translate(-50%, -50%) rotate(${(rtl ? -deg : deg).toFixed(1)}deg)${rtl ? ' scaleX(-1)' : ''}`;
 			// the band: four of the dreams as taped postcards (a different four every day, the ones we've done first)…
 			const ph = every.filter((x) => x.photo && !x.from && !x.done);
 			const day = Math.floor(Date.now() / 864e5);
