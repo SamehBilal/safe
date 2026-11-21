@@ -3,6 +3,9 @@
    the page's own title and description (from PAGES in assets/js/shell.js), the link-preview tags (WhatsApp, Telegram…),
    its stylesheets, and a modulepreload for every script the page needs, so they download side by side instead of
    one after another. Run it after adding a page or changing what a page imports:  node tools/heads.mjs
+   It also keeps the songs player's list of pages in shell.js (PAGE_IDS and OWN_CSS) up to date: a link to a page on
+   that list swaps the page in place so the song keeps playing, and a page left off it reloads and stops the music.
+   tools/build.mjs runs this first, so a new page joins the list on the next build.
    Only names of pages go in here: everything about us stays encrypted in content/. */
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -42,6 +45,7 @@ const rel = (f) => path.relative(ROOT, f).split(path.sep).join('/');
 
 const files = (await readdir(ROOT)).filter((f) => f.endsWith('.html'));
 let changed = 0;
+const soft = [];   // [id, its own stylesheet] for every page, for the songs player
 for (const file of files) {
 	const html = await readFile(path.join(ROOT, file), 'utf8');
 	const id = (html.match(/<body data-page="([\w-]+)"/) || [])[1];
@@ -53,6 +57,7 @@ for (const file of files) {
 	const url = SITE + (file === 'index.html' ? '' : file);
 	// the extra stylesheets this page had besides the shared ones
 	const extra = [...html.matchAll(/assets\/css\/([\w-]+)\.css/g)].map((m) => m[1]).filter((c) => !BASE_CSS.includes(c));
+	soft.push([id, extra[0] || '']);
 	const pageJS = path.join(JS, 'pages', id + '.js');
 	const scripts = [...await deps(path.join(JS, 'shell.js'))].concat([...await deps(pageJS)]);
 	const pre = [...new Set(scripts.map(rel))];
@@ -103,3 +108,17 @@ ${body.replace(/<\/script>\s+\n<\/body>/, '</script>\n</body>').replace(/[ \t]+\
 	if (out !== html) { await writeFile(path.join(ROOT, file), out); changed++; }
 }
 console.log(`✓ ${changed} of ${files.length} page(s) written`);
+
+/* the songs player's pages in shell.js: every page above, so moving to any of them keeps the music going */
+{
+	const file = path.join(JS, 'shell.js');
+	const src = await readFile(file, 'utf8');
+	const ids = soft.map(([id]) => `'${id}'`).join(', ');
+	const css = soft.filter(([, c]) => c).map(([id, c]) => `${id}: '${c}'`).join(', ');
+	if (!/^const PAGE_IDS = new Set\(\[.*\]\);$/m.test(src) || !/^const OWN_CSS = \{.*\};$/m.test(src)) console.warn('· shell.js: PAGE_IDS / OWN_CSS not found — the songs player may stop on new pages');
+	else {
+		const out = src.replace(/^const PAGE_IDS = new Set\(\[.*\]\);$/m, () => `const PAGE_IDS = new Set([${ids}]);`)
+			.replace(/^const OWN_CSS = \{.*\};$/m, () => `const OWN_CSS = { ${css} };`);
+		if (out !== src) { await writeFile(file, out); console.log(`✓ songs player: ${soft.length} pages in shell.js`); }
+	}
+}

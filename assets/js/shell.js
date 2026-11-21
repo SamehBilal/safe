@@ -1345,7 +1345,8 @@ function owl() {
    another page of ours doesn't load it afresh: it swaps the page's module, redraws the header and footer and renders
    the new page into <main>, and the address and the back button work as usual. With nothing playing, links load
    pages the ordinary way. */
-// every page of ours (all the same shell: tools/heads.mjs writes their heads) — a page left out of here reloads and the song stops
+// every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
+// joins by itself; a page left out of here would reload and stop the song
 const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'distances', 'draw', 'drawings', 'family', 'familytree', 'favorites', 'firsts', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'questions', 'ramadan', 'recipes', 'remember', 'sayings', 'search', 'secret', 'settings', 'soundtrack', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
 const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', drawings: 'more', familytree: 'more', favorites: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', offline: 'more', onthisday: 'more', ourfirsts: 'more', recipes: 'more', remember: 'more', sayings: 'more', secret: 'secret', soundtrack: 'more', tickets: 'more' };
