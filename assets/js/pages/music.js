@@ -205,7 +205,8 @@ export default {
 			for (const el of $$('.sleeve', list)) {
 				const r = el.getBoundingClientRect();
 				const room = (rtl ? r.left - box.left : box.right - r.right) + 16;
-				const edge = room < r.width * 0.58;
+				// a wide screen leaves room at the end of the row (the CSS), so only a phone needs the step back
+				const edge = innerWidth <= 640 && room < r.width * 0.58;
 				el.classList.toggle('is-edge', edge);
 				if (edge) el.style.setProperty('--room', `${Math.max(0, room - 16).toFixed(0)}px`); else el.style.removeProperty('--room');
 			}

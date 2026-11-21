@@ -1799,3 +1799,7 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 /* a game card: its rows packed at the top, so a tag or a year never stretches when the card beside it is taller */
 .game { align-content: start; }
 .game .gm-on, .game .game__year { align-self: center; height: auto; }
+
+/* on a wide screen every row keeps room at its end for the record to slide out into, so the last sleeve in a row does
+   just what the others do, uncropped */
+@media (min-width: 641px) { .shelf { padding-inline-end: clamp(90px, 9vw, 130px); overflow-clip-margin: 24px; } }
