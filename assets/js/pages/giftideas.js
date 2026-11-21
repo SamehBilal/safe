@@ -1,10 +1,10 @@
-import { L, Y, esc, $ } from '../shell.js';
+import { L, Y, esc, $, App } from '../shell.js';
 import { doodle } from '../doodles.js';
-import { listPage } from '../listpage.js';
+import { ctxOf } from '../listpage.js';
 import * as live from '../live.js';
 import { shrinkPhoto } from './trips.js';
 
-/* Gift ideas, two lists in one page.
+/* Gift ideas — a section of «هدايانا» (gifts.js) now, two lists in it.
    «نفسي في» — the wish list: what each of us would love to get, written by the one who wants it. Whoever writes a wish
    picks who sees it: everyone, only the other one, or just them (a note to self for now). The others can quietly say
    «أنا هجيبها 🤫» — the one who wished never sees who's getting it, so it stays a surprise — and the wisher ticks
@@ -13,7 +13,7 @@ import { shrinkPhoto } from './trips.js';
    wrote, so the other one doesn't stumble on them. Each idea or wish has its photo beside it, taped on like a polaroid
    (a wrapped box until one's added — tap it to add one).
    Both travel between the phones in the same list (wishes are the entries with type 'wish').
-   Band: wrapped boxes with question marks, their lids hopping, and a bow on top. */
+   (giftideas.html, the page it used to be, sends you to gifts.html#gi.) */
 
 const isWish = (x) => x.type === 'wish';
 const other = (w) => (w === 'him' ? 'her' : 'him');
@@ -69,44 +69,74 @@ function wishesHTML(items, c) {
 	<p class="muted gi-secret-sub">${L('أفكار هدايا للتاني وللولاد — بتبان على موبايلك إنت بس', 'Gift ideas for the other one and the boys — only on your phone')}</p>`;
 }
 
-export default listPage({
-	id: 'giftideas', kind: 'giftideas', icon: 'gift',
-	title: ['أفكار هدايا', 'Gift ideas'], sub: ['اللي نفس كل واحد فينا فيه، وقايمة سرية لكل واحد — أفكار للتاني طول السنة', 'What each of us would love, and a secret list each — ideas for the other, all year'],
-	add: ['ضيف فكرة سرية', 'Add a secret idea'],
-	fields: [
-		{ n: 'for', t: 'sel', l: ['لمين؟', 'For whom?'], opts: (s) => [['other', 'للتاني', 'For my other half'], ...(s.family?.members || []).filter((m) => m.kid).map((k) => [k.id, k.name?.ar || k.id, k.name?.en || k.id])] },
-		{ n: 'idea', t: 'text', l: ['الفكرة', 'The idea'], req: 1, grow: 1 },
-		{ n: 'photo', t: 'photo', l: ['صورتها (اختياري)', 'A photo of it (optional)'], full: 1 },
-		{ n: 'occ', t: 'sel', l: ['لمناسبة إيه؟', 'For what?'], opts: [['any', 'أي وقت', 'Any time'], ['birthday', 'عيد الميلاد', 'Birthday'], ['anniversary', 'عيد الجواز', 'Anniversary'], ['eid', 'العيد', 'Eid'], ['valentine', 'عيد الحب', 'Valentine’s']] },
-		{ n: 'price', t: 'num', l: ['سعرها تقريبًا', 'Rough price'] },
-		{ n: 'link', t: 'url', l: ['لينك (اختياري)', 'Link (optional)'], full: 1 },
-		{ n: 'note', t: 'text', l: ['ملاحظة (المقاس، اللون…)', 'Note (size, colour…)'], full: 1 }
-	],
-	note: ['الأفكار دي بتبان على موبايلك إنت بس ♥', 'These only show on your own phone ♥'],
-	// my own ideas; and the wishes I wrote, or that their writer lets me see
-	keep: (x) => (isWish(x) ? x.by === live.me() || (x.see || 'all') !== 'me' : x.by === live.me()),
-	toggle: { n: 'given' },
-	sort: (a, b) => (a.given ? 1 : 0) - (b.given ? 1 : 0) || (b.at || 0) - (a.at || 0),
-	band: (items) => { const n = items.filter((x) => !isWish(x) && !x.given).length, w = items.filter((x) => isWish(x) && !x.got).length; return `<div class="gi-band">${[0, 1, 2, 3].map((i) => `<span class="gi-box" style="--i:${i}"><i class="gi-lid"></i><b>?</b></span>`).join('')}<p class="gi-n"><span>${L(`${w} أمنية · ${n} فكرة مستنية`, `${w} wishes · ${n} ideas waiting`)}</span></p></div>`; },
-	top: (items, c) => wishesHTML(items, c),
-	card: (x, c) => (isWish(x) ? '' : `<article class="lp-card gi-card${x.given ? ' is-done' : ''}">
+const KIDS_OPTS = (s) => [['other', L('للتاني', 'For my other half')], ...(s.family?.members || []).filter((m) => m.kid).map((k) => [k.id, App.t(k.name)])];
+const OCC_OPTS = () => [['any', L('أي وقت', 'Any time')], ...Object.entries(OCC())];
+
+function ideaCard(x, c) {
+	return `<article class="lp-card gi-card${x.given ? ' is-done' : ''}">
 		${pic(x, x.idea)}
 		<div class="gi-tx">
 		<p class="lp-k">${x.for === 'other' || !x.for ? L('للتاني', 'For my other half') : esc(c.kidName(x.for))}${x.occ && x.occ !== 'any' ? ` · ${esc(OCC()[x.occ] || '')}` : ''}${x.price ? ` · ${esc(x.price)} ${L('ج', 'EGP')}` : ''}</p>
 		<h3 dir="auto">${esc(x.idea)}</h3>
 		${x.note ? `<p dir="auto">${esc(x.note)}</p>` : ''}
 		${x.link ? `<a class="link" href="${esc(x.link)}" target="_blank" rel="noopener noreferrer">${L('اللينك', 'Link')} ↗</a>` : ''}
-		<button class="btn btn--sm ${x.given ? 'btn--ghost' : 'btn--coral'}" type="button" data-tog="${esc(x.id)}">${x.given ? `✓ ${L('اتجابت', 'Given')} · ${c.date(x.given)}` : Y('جبتها ✓', 'جبتها ✓', 'Given ✓')}</button>
+		${live.canWrite() ? `<button class="btn btn--sm ${x.given ? 'btn--ghost' : 'btn--coral'}" type="button" data-gi-given="${esc(x.id)}">${x.given ? `✓ ${L('اتجابت', 'Given')} · ${c.date(x.given)}` : Y('جبتها ✓', 'جبتها ✓', 'Given ✓')}</button>` : ''}
 		${c.del(x)}
 		</div>
-	</article>`),
-	/* the wish form: a window of its own, made once */
-	ready: (main, c) => {
-		// the «add a secret idea» button (and its window) go under the wish list, with the secret ideas
-		const det = $('details.composer', main);
-		if (det) { const btn = det.nextElementSibling?.classList.contains('composer-btn') ? det.nextElementSibling : null; $('#lp-top', main).after(...[det, btn, $('dialog.cmodal', main)].filter(Boolean)); }
-		if (!live.canWrite()) return;
-		const me = live.me();
+	</article>`;
+}
+
+/** The wishes and the secret ideas, as a section of «هدايانا» (gifts.js). */
+export function ideasSection(s) {
+	const ok = live.canWrite();
+	const opt = (list) => list.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('');
+	return `<div id="gi">
+		<div id="gi-top"></div>
+		<details class="composer" id="gi-add"${ok ? '' : ' hidden'}>
+			<summary><span>${doodle('gift', 22)}</span> ${Y('ضيف فكرة سرية', 'ضيفي فكرة سرية', 'Add a secret idea')}</summary>
+			<form id="gi-form" autocomplete="off">
+				<div class="f-row">
+					<label class="f"><span>${L('لمين؟', 'For whom?')}</span><select name="for">${opt(KIDS_OPTS(s))}</select></label>
+					<label class="f f--grow"><span>${L('الفكرة', 'The idea')}</span><input name="idea" dir="auto" maxlength="140" required></label>
+				</div>
+				<div class="f-row">
+					<label class="f"><span>${L('لمناسبة إيه؟', 'For what?')}</span><select name="occ">${opt(OCC_OPTS())}</select></label>
+					<label class="f"><span>${L('سعرها تقريبًا', 'Rough price')}</span><input name="price" type="number" min="0" step="any" inputmode="decimal"></label>
+				</div>
+				<label class="f"><span>${L('ملاحظة (المقاس، اللون…)', 'Note (size, colour…)')}</span><input name="note" dir="auto" maxlength="200"></label>
+				<label class="f"><span>${L('لينك (اختياري)', 'Link (optional)')}</span><input name="link" type="url" dir="ltr"></label>
+				<label class="f"><span>${L('صورتها (اختياري)', 'A photo of it (optional)')}</span><input name="photo" type="file" accept="image/*"></label>
+				<p class="muted">${L('الأفكار دي بتبان على موبايلك إنت بس ♥', 'These only show on your own phone ♥')}</p>
+				<p class="form-msg" id="gi-msg" role="status"></p>
+				<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظ ♥', 'احفظي ♥', 'Save ♥')}</button></div>
+			</form>
+		</details>
+		<div class="lp-list lp-list--giftideas" id="gi-list"></div>
+	</div>`;
+}
+
+/** Its workings: the list «giftideas» — my own ideas, and the wishes I wrote or may see. `shared` are the old shared ideas
+    kept on the gifts list itself (entries with `idea`), shown with mine. */
+export async function ideasAfter(main, s, shared = () => []) {
+	const c = ctxOf(s);
+	let data = await live.load('giftideas').catch(() => ({ items: [] }));
+	const me = live.me();
+	const keep = (x) => (isWish(x) ? x.by === me || (x.see || 'all') !== 'me' : x.by === me);
+	const paint = () => {
+		const items = (data.items || []).filter(keep);
+		$('#gi-top', main).innerHTML = wishesHTML(items, c);
+		const ideas = items.filter((x) => !isWish(x)).sort((a, b) => (a.given ? 1 : 0) - (b.given ? 1 : 0) || (b.at || 0) - (a.at || 0));
+		const old = shared();
+		$('#gi-list', main).innerHTML = ideas.map((x) => ideaCard(x, c)).join('') + old.map((g) => `<article class="lp-card gi-card"><span class="gi-pic gi-pic--empty"><span class="gi-box" aria-hidden="true"><i class="gi-lid"></i><b>?</b></span><small>${L('فكرة مشتركة', 'A shared idea')}</small></span><div class="gi-tx"><p class="lp-k">${g.to ? `${L('لـ', 'For ')}${esc(g.to)}` : L('فكرة مشتركة', 'A shared idea')}</p><h3 dir="auto">${esc(g.what)}</h3>${live.canWrite() ? `<button class="btn btn--sm btn--coral" type="button" data-given="${esc(g.id)}">${L('اتجابت ✓', 'Given ✓')}</button>` : ''}</div></article>`).join('')
+			|| `<p class="empty">${L('اكتب أول فكرة — محدش هيشوفها غيرك ♥', 'Write the first idea — only you will see it ♥')}</p>`;
+		live.hydrateSketches($('#gi', main));
+	};
+	c.save = async (fn) => { data = await live.save('giftideas', fn); paint(); };
+	c.repaint = paint;
+	paint();
+
+	/* the wish form: a window of its own */
+	if (live.canWrite()) {
 		const dlg = document.createElement('dialog');
 		dlg.className = 'cmodal gw-modal';
 		dlg.setAttribute('aria-label', L('حاجة نفسي فيها', 'A wish'));
@@ -119,7 +149,7 @@ export default listPage({
 					<label><input type="radio" name="see" value="me"><span>🔒 ${L('أنا بس (لسه)', 'Just me (for now)')}</span></label>
 				</fieldset>
 				<div class="f-row">
-					<label class="f"><span>${L('لمناسبة إيه؟', 'For what?')}</span><select name="occ"><option value="any">${L('أي وقت', 'Any time')}</option>${Object.entries(OCC()).map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join('')}</select></label>
+					<label class="f"><span>${L('لمناسبة إيه؟', 'For what?')}</span><select name="occ">${OCC_OPTS().map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join('')}</select></label>
 					<label class="f"><span>${L('سعرها تقريبًا', 'Rough price')}</span><input name="price" type="number" min="0" step="any" inputmode="decimal"></label>
 				</div>
 				<label class="f"><span>${L('ملاحظة (المقاس، اللون، المكان…)', 'Note (size, colour, where to find it…)')}</span><input name="note" dir="auto" maxlength="200"></label>
@@ -128,7 +158,7 @@ export default listPage({
 				<p class="form-msg" id="gw-msg" role="status"></p>
 				<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظ ♥', 'احفظي ♥', 'Save ♥')}</button></div>
 			</form></div>`;
-		$('#lp-top', main).before(dlg);
+		$('#gi', main).append(dlg);
 		dlg.addEventListener('click', (e) => { if (e.target === dlg || e.target.closest('.cmodal__x')) dlg.close(); });
 		const f = $('#gw-form', dlg);
 		f.onsubmit = async (e) => {
@@ -147,12 +177,37 @@ export default listPage({
 				dlg.close();
 			} catch (err) { msg.textContent = live.why(err); }
 		};
-	},
-	click: (e, c) => {
-		if (e.target.closest('[data-gw-add]')) { const d = $('.gw-modal'); d?.showModal(); if (matchMedia('(hover: hover)').matches) d?.querySelector('input')?.focus(); return; }
-		const got = e.target.closest('[data-gw-got]'), claim = e.target.closest('[data-gw-claim]');
-		if (got) return c.save((d) => { const x = (d.items || []).find((y) => y.id === got.dataset.gwGot); if (x) x.got = live.today(); }).catch((err) => alert(live.why(err)));
-		if (claim) return c.save((d) => { const x = (d.items || []).find((y) => y.id === claim.dataset.gwClaim); if (x) x.claim = x.claim === live.me() ? undefined : x.claim || live.me(); }).catch((err) => alert(live.why(err)));
+		const gf = $('#gi-form', main);
+		gf.onsubmit = async (e) => {
+			e.preventDefault();
+			const msg = $('#gi-msg', main);
+			try {
+				msg.textContent = L('بنحفظ…', 'Saving…');
+				const x = { id: live.newId(), for: gf.for.value, idea: gf.idea.value.trim(), by: me, at: Date.now() };
+				if (!x.idea) return;
+				if (gf.occ.value !== 'any') x.occ = gf.occ.value;
+				if (gf.price.value !== '') x.price = +gf.price.value;
+				for (const k of ['note', 'link']) if (gf[k].value.trim()) x[k] = gf[k].value.trim();
+				if (gf.photo.files[0]) x.photo = await live.putSketch(await shrinkPhoto(gf.photo.files[0], 1200));
+				await c.save((d) => { (d.items = d.items || []).push(x); });
+				gf.reset(); msg.textContent = L('اتحفظت ♥', 'Saved ♥');
+			} catch (err) { msg.textContent = live.why(err); }
+		};
+	}
+
+	$('#gi', main).addEventListener('click', async (e) => {
+		if (e.target.closest('[data-gw-add]')) { const d = $('.gw-modal', main); d?.showModal(); if (matchMedia('(hover: hover)').matches) d?.querySelector('input')?.focus(); return; }
+		const got = e.target.closest('[data-gw-got]'), claim = e.target.closest('[data-gw-claim]'), given = e.target.closest('[data-gi-given]'), del = e.target.closest('[data-del]');
+		try {
+			if (got) return await c.save((d) => { const x = (d.items || []).find((y) => y.id === got.dataset.gwGot); if (x) x.got = live.today(); });
+			if (claim) return await c.save((d) => { const x = (d.items || []).find((y) => y.id === claim.dataset.gwClaim); if (x) x.claim = x.claim === me ? undefined : x.claim || me; });
+			if (given) return await c.save((d) => { const x = (d.items || []).find((y) => y.id === given.dataset.giGiven); if (x) x.given = x.given ? undefined : live.today(); });
+			if (del && (data.items || []).some((x) => x.id === del.dataset.del)) {
+				e.stopPropagation();
+				if (confirm(Y('تمسحها؟', 'تمسحيها؟', 'Delete it?'))) await c.save((d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); });
+				return;
+			}
+		} catch (err) { alert(live.why(err)); }
 		/* a photo for an idea or a wish that's already on the list */
 		const b = e.target.closest('[data-gi-photo]');
 		if (!b || !live.canWrite()) return;
@@ -168,7 +223,6 @@ export default listPage({
 			} catch (err) { alert(live.why(err)); b.disabled = false; b.classList.remove('is-busy'); }
 		};
 		pick.click();
-	},
-	empty: ['اكتب أول فكرة — محدش هيشوفها غيرك ♥', 'Write the first idea — only you will see it ♥'],
-	related: ['gifts', 'birthday', 'wishes']
-});
+	}, true);
+	return { repaint: paint };
+}

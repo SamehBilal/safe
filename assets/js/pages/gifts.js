@@ -3,9 +3,11 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { shrinkPhoto } from './trips.js';
+import { ideasSection, ideasAfter } from './giftideas.js';
 
-/* Our gifts: every gift given, to each other and to the boys and the family, for which occasion, with a photo; and a
-   list of ideas for next time. Above the title a gift box keeps popping its lid open, a tag with one of our gifts
+/* Our gifts: every gift given, to each other and to the boys and the family, for which occasion, with a photo; then
+   what's next — «نفسي في…», the wishes each of us writes (and picks who sees), and each phone's secret gift ideas
+   (giftideas.js, the page that used to be «أفكار هدايا»). Above the title a gift box keeps popping its lid open, a tag with one of our gifts
    floating up out of it each time. */
 
 const OCCS = [['birthday', 'عيد ميلاد', 'Birthday', 'cake'], ['anniversary', 'عيد جواز', 'Anniversary', 'ring'], ['eid', 'رمضان والعيد', 'Ramadan & Eid', 'moon'], ['valentine', 'عيد الحب', 'Valentine’s', 'heart'], ['mother', 'عيد الأم', 'Mother’s Day', 'love'], ['none', 'من غير مناسبة', 'Just because', 'gift']];
@@ -18,7 +20,7 @@ export default {
 		const ok = live.canWrite();
 		const names = [App.t(s.him), App.t(s.her), ...(s.family?.members || []).filter((m) => m.kid).map((m) => App.t(m.name))];
 		return `
-		${pageHead(L('هدايانا', 'Our gifts'), L('كل هدية جبناها، لمين، وفي أنهي مناسبة — وأفكار للجاية', 'Every gift we gave, to whom, and for what — and ideas for the next'), [{ href: 'gifts.html', ar: 'هدايانا', en: 'Our gifts' }], {
+		${pageHead(L('هدايانا', 'Our gifts'), L('كل هدية جبناها، لمين، وفي أنهي مناسبة — واللي نفسنا فيه، وأفكار سرية للجاية', 'Every gift we gave, to whom, and for what — what we’d love, and secret ideas for the next'), [{ href: 'gifts.html', ar: 'هدايانا', en: 'Our gifts' }], {
 			band: `<div class="gf-band" id="gf-band">
 				<div class="gf-box" aria-hidden="true">
 					<svg viewBox="0 0 200 200" class="gf-svg">
@@ -50,7 +52,6 @@ export default {
 						<label class="f f--grow"><span>${L('صورة (اختياري)', 'A photo (optional)')}</span><input name="photo" type="file" accept="image/*"></label>
 					</div>
 					<label class="f"><span>${L('كلمة عنها (اختياري)', 'A word about it (optional)')}</span><input name="note" dir="auto" maxlength="140"></label>
-					<label class="check"><input type="checkbox" name="idea"> ${L('دي لسه فكرة لهدية جاية', 'This is still an idea for a future gift')}</label>
 					<p class="form-msg" id="gf-msg" role="status"></p>
 					<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظها ♥', 'احفظيها ♥', 'Keep it ♥')}</button></div>
 				</form>
@@ -60,15 +61,14 @@ export default {
 				<select class="search" id="gf-to" aria-label="${L('لمين', 'For whom')}"><option value="">${L('لكل الناس', 'For everyone')}</option></select>
 			</div>
 			<div class="gf-tags" id="gf-list"></div>
-			<h2 class="sec__title">${L('أفكار للهدية الجاية', 'Ideas for the next gift')}</h2>
-			<ul class="gf-ideas" id="gf-ideas"></ul>
+			${ideasSection(s)}
 		</div></section>
 		${related(['birthday', 'calendar', 'wishes'])}`;
 	},
 
-	async after(main) {
+	async after(main, s) {
 		let data = await live.load('gifts');
-		let occ = '', to = '';
+		let occ = '', to = '', sharedIdeas = [], gi = null;
 		const mine = (x) => x.by === live.me() && live.canWrite();
 		const save = async (fn) => { data = await live.save('gifts', fn); paint(); };
 		let timer = 0, k = 0;
@@ -110,7 +110,9 @@ export default {
 				</article>`;
 			}).join('') || `<p class="empty">${gifts.length ? L('مفيش هدايا بالشكل ده', 'No gifts like that') : L('أول هدية هتتعلق هنا ♥', 'The first gift will hang here ♥')}</p>`;
 			live.hydrateSketches($('#gf-list', main));
-			$('#gf-ideas', main).innerHTML = ideas.map((g) => `<li><span aria-hidden="true">${doodle('sparkle', 18)}</span><b dir="auto">${esc(g.what)}</b>${g.to ? ` <small>${L('لـ', 'for ')}${esc(g.to)}</small>` : ''}${live.canWrite() ? `<button class="btn btn--sm" type="button" data-given="${esc(g.id)}">${L('اتجابت ✓', 'Given ✓')}</button>` : ''}${mine(g) ? `<button class="link link--danger" type="button" data-del="${esc(g.id)}">✕</button>` : ''}</li>`).join('') || `<li class="empty">${L('لسه مفيش أفكار', 'No ideas yet')}</li>`;
+			// the old shared ideas (from before the secret ones) show among the ideas below
+			sharedIdeas = ideas;
+			gi?.repaint();
 		};
 
 		$('#gf-occ', main).addEventListener('click', (e) => { const c = e.target.closest('[data-occ]'); if (!c) return; occ = c.dataset.occ; $$('#gf-occ .chip', main).forEach((x) => x.classList.toggle('is-on', x === c)); paint(); });
@@ -129,10 +131,12 @@ export default {
 			try {
 				msg.textContent = L('بنحفظ…', 'Saving…');
 				const photo = f.photo.files[0] ? await live.putSketch(await shrinkPhoto(f.photo.files[0], 1000)) : undefined;
-				await save((d) => { (d.items = d.items || []).push({ id: live.newId(), what: f.what.value.trim(), from: f.from.value.trim() || undefined, to: f.to.value.trim(), occ: f.occ.value, date: f.date.value || (f.idea.checked ? undefined : live.today()), photo, note: f.note.value.trim() || undefined, idea: f.idea.checked || undefined, by: live.me(), at: Date.now() }); });
+				await save((d) => { (d.items = d.items || []).push({ id: live.newId(), what: f.what.value.trim(), from: f.from.value.trim() || undefined, to: f.to.value.trim(), occ: f.occ.value, date: f.date.value || live.today(), photo, note: f.note.value.trim() || undefined, by: live.me(), at: Date.now() }); });
 				const fromV = f.from.value; f.reset(); f.from.value = fromV; msg.textContent = L('اتحفظت ♥', 'Kept ♥');
 			} catch (err) { msg.textContent = live.why(err); }
 		};
 		paint();
+		gi = await ideasAfter(main, s, () => sharedIdeas);
+		if (location.hash === '#gi') $('#gi', main)?.scrollIntoView();
 	}
 };

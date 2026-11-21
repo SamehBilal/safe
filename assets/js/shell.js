@@ -580,9 +580,8 @@ export const PAGES = [
 	{ href: 'yearly.html', id: 'yearly', ic: 'image', ar: 'صورة كل سنة', en: 'A photo every year', dar: 'نفس الصورة، سنة ورا سنة', den: 'The same photo, year after year', group: 'you' },
 	{ href: 'ramadan.html', id: 'ramadan', ic: 'moon', ar: 'رمضان والعيد', en: 'Ramadan & Eid', dar: 'العد التنازلي، وعاداتنا، والعيدية', den: 'Countdowns, our traditions, and the Eid money', group: 'you' },
 	{ href: 'firsts.html', id: 'firsts', ic: 'steps', ar: 'أول مرة', en: 'Firsts', dar: 'أول خطوة، أول كلمة', den: 'First step, first word', group: 'you' },
-	{ href: 'gifts.html', id: 'gifts', ic: 'gift', ar: 'هدايانا', en: 'Our gifts', dar: 'كل هدية، ومين جابها', den: 'Every gift, and who gave it', group: 'you' },
+	{ href: 'gifts.html', id: 'gifts', ic: 'gift', ar: 'هدايانا', en: 'Our gifts', dar: 'كل هدية، ومين جابها — واللي نفسنا فيه', den: 'Every gift, who gave it — and what we’d love', group: 'you' },
 	{ href: 'capsule.html', id: 'capsule', ic: 'hourglass', ar: 'كبسولة زمنية للولاد', en: 'The boys’ time capsule', dar: 'جوابات بتستنى لحد ما يكبروا', den: 'Letters waiting for them to grow up', group: 'you' },
-	{ href: 'giftideas.html', id: 'giftideas', ic: 'gift', ar: 'أفكار هدايا', en: 'Gift ideas', dar: 'قايمة سرية لكل واحد فينا', den: 'A secret list for each of us', group: 'you' },
 	{ href: 'hosting.html', id: 'hosting', ic: 'home', ar: 'عزايمنا', en: 'Hosting & visits', dar: 'مين جالنا، ورحنا لمين', den: 'Who came over, and who we visited', group: 'you' },
 	{ href: 'search.html', id: 'search', ic: 'search', ar: 'دوّر', en: 'Search', dar: 'دوّر في كل حاجة كتبناها', den: 'Look through everything we’ve written', group: 'app' },
 	{ href: 'settings.html', id: 'settings', ic: 'gear', ar: 'الإعدادات', en: 'Settings', dar: 'مين ماسك الموبايل، وإزاي الجديد يتبعت', den: 'Whose phone, and sharing what’s new', group: 'app' }
@@ -1336,7 +1335,7 @@ function owl() {
    pages the ordinary way. */
 const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'anniversaries', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more', remember: 'more' };
+const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more', remember: 'more', gifts: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
