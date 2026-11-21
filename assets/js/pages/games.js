@@ -7,9 +7,13 @@ import { shrinkPhoto } from './trips.js';
 /* Our games: every game night — cards, dominoes, backgammon, PlayStation — who won, the score that matters (who's ahead
    this year), and photos of the night; and the video games we played together, each with its box and photos of us
    playing it. Above the title a hand of cards fans out and is dealt while a die tumbles, a gamepad's buttons light up
-   beside a few of our games' boxes, and the year's score between the two of us sits in the middle. */
+   beside a few of our games' boxes, and the year's score between the two of us sits in the middle. We play on the PC and
+   the Nintendo Switch: the band has both (the Switch with its red and blue Joy-Cons, the PC's screen with a game on it),
+   each video game says which it's on, and the list can show one at a time. */
 
 const IDEAS = [['كوتشينة', 'Cards'], ['دومينو', 'Dominoes'], ['طاولة', 'Backgammon'], ['شطرنج', 'Chess'], ['أونو', 'UNO'], ['بنك الحظ', 'Monopoly'], ['سكرابل', 'Scrabble'], ['بلايستيشن', 'PlayStation'], ['فيفا', 'FIFA'], ['بازل', 'Puzzle'], ['كلمات متقاطعة', 'Crossword']];
+/* what we play video games on */
+const PLATFORMS = { pc: ['الكمبيوتر', 'PC', '#0e6990'], switch: ['نينتندو سويتش', 'Nintendo Switch', '#e60012'], ps: ['بلايستيشن', 'PlayStation', '#2e3f9e'] };
 const CARDS = [['A', '♥'], ['K', '♠'], ['Q', '♦'], ['J', '♣'], ['10', '♥']];
 const PIPS = { 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
 
@@ -27,9 +31,16 @@ export default {
 				<span class="gm-die" id="gm-die" aria-hidden="true"></span>
 				<div class="gm-video" aria-hidden="true">
 					<div class="gm-boxes" id="gm-boxes"></div>
-					<svg class="gm-pad" viewBox="0 0 160 100"><path class="gm-pad__body" d="M38 18h84c18 0 30 14 34 36l3 20c2 14-10 22-20 14l-16-14H37L21 88c-10 8-22 0-20-14l3-20C8 32 20 18 38 18Z"/>
-						<path class="gm-pad__dpad" d="M38 40h8v-8h8v8h8v8h-8v8h-8v-8h-8Z"/><circle class="gm-pad__b gm-pad__b--1" cx="112" cy="36" r="6"/><circle class="gm-pad__b gm-pad__b--2" cx="124" cy="48" r="6"/><circle class="gm-pad__b gm-pad__b--3" cx="100" cy="48" r="6"/><circle class="gm-pad__b gm-pad__b--4" cx="112" cy="60" r="6"/>
-						<circle class="gm-pad__stick" cx="62" cy="66" r="9"/><circle class="gm-pad__stick" cx="98" cy="66" r="9"/></svg>
+					<div class="gm-consoles">
+						<svg class="gm-switch" viewBox="0 0 200 90"><rect class="gm-jc gm-jc--l" x="2" y="6" width="34" height="78" rx="16"/><rect class="gm-jc gm-jc--r" x="164" y="6" width="34" height="78" rx="16"/>
+							<rect class="gm-tab" x="34" y="6" width="132" height="78" rx="4"/><rect class="gm-scr" x="44" y="14" width="112" height="62" rx="2"/>
+							<circle class="gm-stick" cx="19" cy="28" r="7"/><path class="gm-dbtn" d="M15 56h8M19 52v8"/><circle class="gm-stick" cx="181" cy="58" r="7"/>
+							<circle class="gm-abxy" cx="181" cy="22" r="3"/><circle class="gm-abxy" cx="188" cy="29" r="3"/><circle class="gm-abxy" cx="174" cy="29" r="3"/><circle class="gm-abxy" cx="181" cy="36" r="3"/>
+							<g class="gm-scr__play"><circle cx="78" cy="54" r="6" fill="#e60012"/><circle cx="122" cy="40" r="6" fill="#0ab9e6"/><path d="M58 66h84" stroke="#9fd36b" stroke-width="4"/></g></svg>
+						<svg class="gm-pc" viewBox="0 0 120 100"><rect class="gm-mon" x="4" y="4" width="112" height="70" rx="6"/><rect class="gm-scr" x="12" y="12" width="96" height="54" rx="2"/>
+							<path class="gm-stand" d="M50 74h20l4 14H46Z"/><rect class="gm-stand" x="34" y="88" width="52" height="7" rx="3"/>
+							<g class="gm-scr__play"><path d="M20 58l14-16 10 10 16-20 14 14 12-8" fill="none" stroke="#fdc830" stroke-width="3"/><circle cx="34" cy="42" r="4" fill="#f2726f"/></g></svg>
+					</div>
 				</div>
 			</div>`
 		})}
@@ -61,7 +72,8 @@ export default {
 			<ul class="gm-log" id="gm-log"></ul>
 			<div class="games" id="gm-played" hidden>
 				<h2 class="sec__title">${L('لعبنا سوا', 'Games we played together')}</h2>
-				<p class="sec__sub">${L('مش كل السهرات أفلام — ساعات كانت دراع في إيد كل واحد فينا', 'Not every night was a film — sometimes it was a controller each')}</p>
+				<p class="sec__sub">${L('مش كل السهرات أفلام — ساعات كانت دراع في إيد كل واحد فينا، على الكمبيوتر أو السويتش', 'Not every night was a film — sometimes it was a controller each, on the PC or the Switch')}</p>
+				<div class="chips" id="gm-plat" role="toolbar" aria-label="${L('بنلعب على إيه', 'Played on')}"></div>
 				<div class="games__grid" id="gm-played-grid"></div>
 			</div>
 		</div></section>
@@ -74,13 +86,21 @@ export default {
 		const players = ['him', 'her', ...kids.map((k) => k.id)];
 		// the video and PC games we played together (kept with the films, movies.json → games), with their box art
 		let mv = { games: [] };
+		let plat = '';
 		const paintPlayed = () => {
-			const list = (mv.games || []).slice().sort((a, b) => (b.year || 0) - (a.year || 0));
-			$('#gm-played', main).hidden = !list.length;
+			const every = (mv.games || []).slice().sort((a, b) => (b.year || 0) - (a.year || 0));
+			const list = every.filter((g) => !plat || g.platform === plat);
+			const on = Object.keys(PLATFORMS).filter((k) => every.some((g) => g.platform === k));
+			$('#gm-plat', main).innerHTML = on.length > 1 ? [['', L('الكل', 'All'), every.length], ...on.map((k) => [k, L(PLATFORMS[k][0], PLATFORMS[k][1]), every.filter((g) => g.platform === k).length])].map(([k, t, n]) => `<button class="chip${k === plat ? ' is-on' : ''}" type="button" data-plat="${k}" style="--c:${PLATFORMS[k]?.[2] || 'var(--coral)'}">${esc(t)} <small>${num(n)}</small></button>`).join('') : '';
+			// the games we play on screens are games to log too
+			const ideas = $('#gm-ideas', main);
+			for (const g of every) if (![...ideas.options].some((o) => o.value === g.title)) ideas.insertAdjacentHTML('beforeend', `<option value="${esc(g.title)}">`);
+			$('#gm-played', main).hidden = !every.length;
 			$('#gm-played-grid', main).innerHTML = list.map((g) => `
 				<article class="game">
 					${g.cover ? `<img class="game__cover" data-cover="${esc(g.cover)}" alt="" decoding="async">` : '<span class="game__pad" aria-hidden="true">🎮</span>'}
 					<h3 dir="auto">${esc(g.title)}</h3>
+					${g.platform && PLATFORMS[g.platform] ? `<span class="gm-on" style="--c:${PLATFORMS[g.platform][2]}">${esc(L(PLATFORMS[g.platform][0], PLATFORMS[g.platform][1]))}</span>` : ''}
 					${g.year ? `<p class="game__year">${num(g.year).replace(/[٬,]/g, '')}</p>` : ''}
 					${g.note ? `<p class="game__note" dir="auto">${esc(g.note)}</p>` : ''}
 					${(g.photos || []).length ? `<span class="gm-pics">${g.photos.map((ph) => `<img class="zoom" data-sketch="${esc(ph)}" alt="" loading="lazy">`).join('')}</span>` : ''}
@@ -89,11 +109,12 @@ export default {
 			for (const im of $$('#gm-played-grid img[data-cover]', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
 			live.hydrateSketches($('#gm-played-grid', main));
 			// the band: three of our games' boxes, fanned out beside the gamepad
-			const boxes = list.filter((g) => g.cover).slice(0, 3);
+			const boxes = every.filter((g) => g.cover).slice(0, 3);
 			$('#gm-boxes', main).innerHTML = boxes.map((g, i) => `<img data-cover="${esc(g.cover)}" alt="" style="--i:${i - 1}">`).join('');
 			for (const im of $$('#gm-boxes img', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
 		};
 		live.load('movies').then((m) => { mv = m; paintPlayed(); }).catch(() => {});
+		$('#gm-plat', main).addEventListener('click', (e) => { const c = e.target.closest('[data-plat]'); if (c) { plat = c.dataset.plat; paintPlayed(); } });
 		$('#gm-played-grid', main).addEventListener('click', async (e) => {
 			const b = e.target.closest('[data-game-pics]');
 			if (!b) return;

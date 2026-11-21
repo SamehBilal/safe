@@ -1758,3 +1758,22 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .game > .btn { margin-top: 6px; }
 @media (max-width: 640px) { .gm-video { display: none; } }
 @media (prefers-reduced-motion: reduce) { .gm-pad__b { animation: none; } }
+/* the Switch and the PC in the band, and which one each game is on */
+.gm-consoles { display: flex; align-items: flex-end; gap: 10px; }
+.gm-switch { width: 140px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
+.gm-pc { width: 84px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
+.gm-jc { stroke: var(--ink, #37353f); stroke-width: 2; }
+.gm-jc--l { fill: #0ab9e6; } .gm-jc--r { fill: #ff3c28; }
+.gm-tab, .gm-mon { fill: #2b2f36; stroke: var(--ink, #37353f); stroke-width: 2; }
+.gm-scr { fill: #1b2a3a; }
+.gm-stand { fill: #4a4f58; stroke: var(--ink, #37353f); stroke-width: 1.5; }
+.gm-stick { fill: #2b2f36; stroke: #1b1d22; stroke-width: 2; }
+.gm-dbtn { stroke: #1b1d22; stroke-width: 3; stroke-linecap: round; }
+.gm-abxy { fill: #1b1d22; }
+.gm-scr__play { animation: gm-blink 1.6s steps(2) infinite; }
+@keyframes gm-blink { 50% { opacity: .55; } }
+.gm-on { justify-self: center; width: fit-content; padding: 1px 10px; font-size: .74rem; font-weight: 800; color: #fff; background: var(--c); border-radius: 999px; }
+#gm-plat { margin-bottom: 14px; }
+#gm-plat .chip { cursor: pointer; }
+#gm-plat .chip.is-on { color: #fff; background: var(--c); border-color: var(--ink, #37353f); }
+@media (prefers-reduced-motion: reduce) { .gm-scr__play { animation: none; } }
