@@ -858,3 +858,14 @@
 .fd-offers__add .f-actions { margin-top: 6px; }
 .fd-favs__add { width: min(760px, 100%); margin: 0 auto; }
 .rc-kind svg, .fd-tag svg, .fd-today__h svg, .fd-offers__h svg { vertical-align: -3px; }
+
+/* our brothers' and sisters' children: little round faces on short strings under their parent's ribbon */
+.ftr-niece { position: absolute; left: var(--x); top: var(--y); z-index: 3; display: grid; justify-items: center; gap: 1px; padding: 0; font: inherit; color: inherit; background: none; border: 0; cursor: pointer; translate: -50% -20%; transition: scale .2s var(--ease-pop, ease); animation: fam-swing 4s ease-in-out infinite; animation-delay: calc(var(--i) * -.7s); transform-origin: 50% -10px; }
+.ftr-niece::before { content: ''; width: 1.5px; height: 10px; background: var(--ink, #37353f); opacity: .6; }
+.ftr-niece:hover, .ftr-niece:focus-visible { scale: 1.12; }
+.ftr-niece__pic { display: grid; place-items: center; width: clamp(28px, 3.4vw, 38px); aspect-ratio: 1; overflow: hidden; border-radius: 50%; border: 1.5px solid var(--ink, #37353f); background: color-mix(in srgb, var(--c) 14%, #fffdf8); color: var(--c); box-shadow: calc(var(--bujo-x, 1) * 1.5px) 1.5px 0 0 var(--ink, #37353f); }
+.ftr-niece__pic img, .ftr-niece__pic .ft__face { width: 100%; height: 100%; object-fit: cover; }
+.ftr-niece b { padding: 0 6px; font-size: clamp(.58rem, 1.1vw, .72rem); font-weight: 800; color: #fff; background: var(--c); border-radius: 999px; white-space: nowrap; }
+.ftr-niece.is-gone .ftr-niece__pic { filter: grayscale(1); }
+@keyframes fam-swing { 50% { rotate: 3deg; } }
+@media (prefers-reduced-motion: reduce) { .ftr-niece { animation: none; } }

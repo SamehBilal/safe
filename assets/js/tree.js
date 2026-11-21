@@ -5,7 +5,8 @@
    tenebrius «Family Tree» pen it keeps the rest: tap anyone for a card with their story; the tree keeps a spot for
    everyone in the family — his father and mother, two brothers and two sisters; her father and mother, brother and
    sister — shown as a dashed ribbon «waiting for a name» until it's filled from a phone (the shared list
-   content/live/tree.bin, encrypted like the rest). The four of us come from story.json. */
+   content/live/tree.bin, encrypted like the rest). The four of us come from story.json. Our brothers' and sisters'
+   children hang under their parent's ribbon as little round faces (rel son / daughter, with the parent's id). */
 import { L, Y, T, esc, img, App, $, $$, hydrate, age } from './shell.js';
 import { doodle } from './doodles.js';
 import * as live from './live.js';
@@ -15,8 +16,12 @@ const RELS = [
 	{ id: 'father', ar: 'الأب', en: 'Father', of: ['أبو', 'father'], gone: 'الله يرحمه' },
 	{ id: 'mother', ar: 'الأم', en: 'Mother', of: ['أم', 'mother'], gone: 'الله يرحمها' },
 	{ id: 'brother', ar: 'أخ', en: 'Brother', of: ['أخو', 'brother'], gone: 'الله يرحمه' },
-	{ id: 'sister', ar: 'أخت', en: 'Sister', of: ['أخت', 'sister'], gone: 'الله يرحمها' }
+	{ id: 'sister', ar: 'أخت', en: 'Sister', of: ['أخت', 'sister'], gone: 'الله يرحمها' },
+	// a brother's or sister's child: «ابن صافي», hanging under their parent
+	{ id: 'son', ar: 'ابن أخ أو أخت', en: 'Nephew', of: ['ابن', 'son'], gone: 'الله يرحمه', kid: true },
+	{ id: 'daughter', ar: 'بنت أخ أو أخت', en: 'Niece', of: ['بنت', 'daughter'], gone: 'الله يرحمها', kid: true }
 ];
+const SIBS = ['brother', 'sister'];
 const rel = (id) => RELS.find((x) => x.id === id) || RELS[2];
 
 /* the spots the tree keeps for each side, filled in this order */
@@ -32,11 +37,11 @@ function core(s) {
 const colour = (side) => (side === 'her' ? '#c2185b' : '#0e6990');
 const initials = (name) => [...String(name).trim()][0] || '♥';
 /** "Sameh's father" / «أبو سامح» */
-const relOf = (r, s, side) => { const x = rel(r); const n = App.t(side === 'her' ? s.her : s.him); return L(`${x.of[0]} ${n}`, `${n}’s ${x.of[1]}`); };
+const relOf = (r, s, side, parent) => { const x = rel(r); const n = parent ? parent.name : App.t(side === 'her' ? s.her : s.him); return L(`${x.of[0]} ${n}`, `${n}’s ${x.of[1]}`); };
 
 /* a face for everyone: the four of us from story.json; a relative's own photo (added from a phone, kept encrypted)
    or, until there is one, a drawn face — a man for fathers and brothers, a woman for mothers and sisters */
-const isWoman = (r) => r === 'mother' || r === 'sister';
+const isWoman = (r) => r === 'mother' || r === 'sister' || r === 'daughter';
 function face(p, member, size = 34) {
 	if (p.photo) return img(p.photo, '', '');
 	if (p.pic) return `<img data-sketch="${esc(p.pic)}" alt="">`;
@@ -91,6 +96,15 @@ function ribbon(s, p, side, [x, y, r]) {
 		<span class="ftr-person__pic">${face(p, false, 26)}</span>
 		<span class="ftr-rib"><b dir="auto">${esc(p.name)}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></span></button>`;
 }
+/** A brother's or sister's children, hanging in a row under their parent's ribbon. */
+function nieces(kids, side, [x, y]) {
+	const n = kids.length;
+	return kids.map((k, j) => {
+		const kx = x + (j - (n - 1) / 2) * 52, ky = y + 74;
+		return `<button type="button" class="ftr-niece${k.gone ? ' is-gone' : ''}" data-open="${esc(k.id)}" style="--x:${kx / 10}%;--y:${ky / 7}%;--c:${colour(side)};--i:${j}">
+			<span class="ftr-niece__pic">${face(k, false, 18)}</span><b dir="auto">${esc(k.name)}</b></button>`;
+	}).join('');
+}
 /** A spot still waiting for a name: tap it to fill it in. */
 function emptyRibbon(s, side, r, [x, y, rot]) {
 	const ok = live.canWrite();
@@ -119,6 +133,7 @@ export function treeHTML(s) {
 					<label class="f f--grow"><span>${L('الاسم', 'Name')}</span><input name="name" dir="auto" maxlength="40" required></label>
 					<label class="f"><span>${L('يبقى إيه؟', 'Who are they?')}</span><select name="rel">${RELS.map((r) => `<option value="${r.id}">${esc(L(r.ar, r.en))}</option>`).join('')}</select></label>
 				</div>
+				<label class="f ft__parent" hidden><span>${L('ابن أو بنت مين؟', 'Whose child?')}</span><select name="parent"></select></label>
 				<div class="f-row">
 					<label class="f"><span>${L('من ناحية مين؟', 'On whose side?')}</span><select name="side"><option value="him">${T(him.name)}</option><option value="her">${T(her.name)}</option></select></label>
 					<label class="f"><span>${L('سنة الميلاد (اختياري)', 'Year born (optional)')}</span><input name="born" type="number" inputmode="numeric" min="1900" max="2100"></label>
@@ -141,6 +156,8 @@ export async function wireTree(main, s) {
 	const { him, her, kids } = core(s);
 	if (!him || !her) { ft.closest('.ftree').hidden = true; return; }
 	let data = { items: [] };
+	const parentOf = (p) => (rel(p.rel).kid ? (data.items || []).find((x) => x.id === p.parent) : null);
+	const sideOf = (p) => parentOf(p)?.side || p.side;
 
 	const draw = () => {
 		const items = data.items || [];
@@ -149,7 +166,8 @@ export async function wireTree(main, s) {
 		const leftSide = rtl ? 'her' : 'him', rightSide = rtl ? 'him' : 'her';
 		$('#ft-art', main).innerHTML = art(leftSide, rightSide);
 		const at = (side, i) => { const [x, y, r] = SPOTS_AT[i]; return side === leftSide ? [x, y, r] : [1000 - x, y, -r]; };
-		const out = [], extra = [];
+		const out = [], extra = [], hung = new Set();
+		const kidsOf = (par) => items.filter((k) => rel(k.rel).kid && k.parent === par.id).sort((a, b) => String(a.born || 9999).localeCompare(String(b.born || 9999)));
 		for (const side of ['him', 'her']) {
 			// parents first (they take the top branches), then brothers and sisters, eldest first; empty spots after
 			const list = [];
@@ -159,10 +177,13 @@ export async function wireTree(main, s) {
 				for (let k = got.length; k < (SLOTS[side][r] || 0); k++) list.push({ r });
 			}
 			list.forEach((x, i) => {
-				if (i < SPOTS_AT.length) out.push(x.p ? ribbon(s, x.p, side, at(side, i)) : emptyRibbon(s, side, x.r, at(side, i)));
-				else if (x.p) extra.push(x);
+				if (i < SPOTS_AT.length) {
+					out.push(x.p ? ribbon(s, x.p, side, at(side, i)) : emptyRibbon(s, side, x.r, at(side, i)));
+					if (x.p && SIBS.includes(x.r)) { const ks = kidsOf(x.p); if (ks.length) { out.push(nieces(ks, side, at(side, i))); ks.forEach((k) => hung.add(k.id)); } }
+				} else if (x.p) extra.push(x);
 			});
 		}
+		for (const k of items.filter((p) => rel(p.rel).kid && !hung.has(p.id))) extra.push({ p: k, r: k.rel });
 		// the two of us hang inside the heart, the boys below us
 		const medX = (side) => (side === leftSide ? MED.x : 1000 - MED.x);
 		out.push(medallion(him, 'him', 'ftr-med--us', medX('him'), MED.y), medallion(her, 'her', 'ftr-med--us', medX('her'), MED.y));
@@ -173,7 +194,7 @@ export async function wireTree(main, s) {
 		rows.innerHTML = out.join('');
 		// anyone beyond the tree's spots gets a ribbon underneath
 		more.hidden = !extra.length;
-		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-person ftr-person--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" style="--c:${colour(p.side)}"><span class="ftr-person__pic">${face(p, false, 26)}</span><span class="ftr-rib"><b dir="auto">${esc(p.name)}</b><small dir="auto">${esc(relOf(p.rel, s, p.side))}</small></span></button>`).join('');
+		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-person ftr-person--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" style="--c:${colour(sideOf(p))}"><span class="ftr-person__pic">${face(p, false, 26)}</span><span class="ftr-rib"><b dir="auto">${esc(p.name)}</b><small dir="auto">${esc(relOf(p.rel, s, sideOf(p), parentOf(p)))}</small></span></button>`).join('');
 		hydrate(rows);
 		live.hydrateSketches(rows);
 		live.hydrateSketches(more);
@@ -187,9 +208,9 @@ export async function wireTree(main, s) {
 		const p = member || (data.items || []).find((x) => x.id === id);
 		if (!p) return;
 		back = from;
-		const side = member ? (p === her ? 'her' : p === him ? 'him' : '') : p.side;
+		const side = member ? (p === her ? 'her' : p === him ? 'him' : '') : sideOf(p);
 		const name = member ? App.t(p.name) : p.name;
-		const who = member ? (p.kid && p.born ? age(p.born) : App.t(p.role)) : relOf(p.rel, s, side);
+		const who = member ? (p.kid && p.born ? age(p.born) : App.t(p.role)) : relOf(p.rel, s, side, parentOf(p));
 		const born = p.born ? String(p.born).slice(0, 4) : '';
 		const mine = !member && live.canWrite() && (p.by === live.me() || !p.by);
 		card.style.setProperty('--c', p.color || colour(side));
@@ -235,6 +256,15 @@ export async function wireTree(main, s) {
 	});
 
 	const form = $('#ft-form', main);
+	/* son / daughter: pick which brother or sister they belong to (the side comes from the parent) */
+	const parentPick = () => {
+		if (!form) return;
+		const kid = rel(form.rel.value).kid;
+		$('.ft__parent', form).hidden = !kid;
+		form.side.closest('.f').hidden = kid;
+		if (kid) form.parent.innerHTML = (data.items || []).filter((x) => SIBS.includes(x.rel)).map((x) => `<option value="${esc(x.id)}">${esc(x.name)} — ${esc(relOf(x.rel, s, x.side))}</option>`).join('');
+	};
+	form?.rel.addEventListener('change', parentPick);
 	more.addEventListener('click', (e) => { const o = e.target.closest('[data-open]'); if (o) openCard(o.dataset.open, o); });
 	rows.addEventListener('click', (e) => {
 		const open = e.target.closest('[data-open]');
@@ -253,11 +283,14 @@ export async function wireTree(main, s) {
 	if (form) form.onsubmit = async (e) => {
 		e.preventDefault();
 		const msg = $('#ft-msg', main);
-		const p = { id: live.newId(), name: form.name.value.trim(), rel: form.rel.value, side: form.side.value, born: +form.born.value || undefined, note: form.note.value.trim() || undefined, gone: form.gone.checked || undefined, by: live.me(), at: Date.now() };
+		const kid = rel(form.rel.value).kid;
+		const par = kid ? (data.items || []).find((x) => x.id === form.parent.value) : null;
+		if (kid && !par) { msg.textContent = L('اختار الأب أو الأم الأول', 'Pick their parent first'); return; }
+		const p = { id: live.newId(), name: form.name.value.trim(), rel: form.rel.value, side: par ? par.side : form.side.value, parent: par?.id, born: +form.born.value || undefined, note: form.note.value.trim() || undefined, gone: form.gone.checked || undefined, by: live.me(), at: Date.now() };
 		if (!p.name) return;
 		try {
 			if (form.pic.files[0]) { msg.textContent = L('بنحفظ الصورة…', 'Saving the photo…'); p.pic = await live.putSketch(await shrinkPhoto(form.pic.files[0], 800)); }
-			data = await live.save('tree', (d) => { (d.items = d.items || []).push(p); }); form.reset(); msg.textContent = L('اتضاف للشجرة ♥', 'On the tree ♥'); draw();
+			data = await live.save('tree', (d) => { (d.items = d.items || []).push(p); }); form.reset(); parentPick(); msg.textContent = L('اتضاف للشجرة ♥', 'On the tree ♥'); draw();
 		}
 		catch (err) { msg.textContent = live.why(err); }
 	};
