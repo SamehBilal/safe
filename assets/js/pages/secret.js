@@ -447,7 +447,7 @@ async function room(main, s, data, lock) {
 				<div class="sx-result result" id="sx-res" hidden aria-live="polite"></div>
 			</div>
 			<h3 class="sx-sub">${L('ألعابنا', 'Our games')}</h3>
-			<ul class="pool sx-pool">${games.map((x) => `<li class="has-img">${x.img ? `<img class="pool__img zoom" data-secret="${esc(x.img)}" alt="${esc(t(x.text))}">` : ''}<span dir="auto">${esc(t(x.text))}</span>${addBtn(`games:${x.id}`)}</li>`).join('')}</ul>
+			<ul class="pool sx-pool sx-pool--games">${games.map((x) => `<li class="has-img">${x.img ? `<img class="pool__img zoom" data-secret="${esc(x.img)}" alt="${esc(t(x.text))}">` : ''}<span dir="auto">${esc(t(x.text))}</span>${addBtn(`games:${x.id}`)}</li>`).join('')}</ul>
 			<h3 class="sx-sub">${L('نلعب هنا', 'Play here')}</h3>
 			<div class="sx-plays">${PLAY.map((g) => `<article class="sx-play" data-play="${g.id}">
 				<header><span aria-hidden="true">${doodle(g.emoji, 30)}</span><div><b>${esc(L(g.ar, g.en))}</b><small>${esc(L(g.dar, g.den))}</small></div>${addBtn(`play:${g.id}`)}</header>
