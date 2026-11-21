@@ -67,6 +67,8 @@ const FTYPES = [
 ];
 const FLAGS = ['#f2726f', '#ffc94a', '#8fd1ef', '#b9e08a', '#c779d0', '#feac5e'];
 const ftype = (id) => FTYPES.find((t) => t.id === id) || FTYPES[2];
+/* a woman or girl: said so, or told by who she is to us (أخت، أم، بنت…) — for «هتكمّل» instead of «هيكمّل» */
+const isWoman = (f) => !!f.female || /^(أخت|أم|بنت|مرات|خالة|عمة|جدة|ماما|تيتا)/.test(String(f.rel || '').trim()) || /^(ماما|تيتا|طنط)/.test(String(f.name || '').trim());
 const ftitle = (f) => (f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.name);
 
 export default {
@@ -270,7 +272,7 @@ export default {
 					<div class="fd-card__tx">
 						<h3 dir="auto">${esc(ftitle(f))}</h3>
 						<p>${[f.rel, longDate(f.date).replace(f.noYear ? /\s*\S+$/ : /$^/, '')].filter(Boolean).map(esc).join(' · ')}</p>
-						${yrs > 0 ? `<p class="fd-card__yrs">${f.type === 'wedding' ? L(`${num(yrs)} سنة جواز`, `${yrs} years married`) : f.type === 'birthday' ? (f.late ? (f.female ? L(`كانت هتكمّل ${num(yrs)}`, `would have turned ${yrs}`) : L(`كان هيكمّل ${num(yrs)}`, `would have turned ${yrs}`)) : L(`هيكمّل ${num(yrs)}`, `turning ${yrs}`)) : L(`${num(yrs)} سنة`, `${yrs} years`)}</p>` : ''}
+						${yrs > 0 ? `<p class="fd-card__yrs">${f.type === 'wedding' ? L(`${num(yrs)} سنة جواز`, `${yrs} years married`) : f.type === 'birthday' ? (f.late ? (isWoman(f) ? L(`كانت هتكمّل ${num(yrs)}`, `would have turned ${yrs}`) : L(`كان هيكمّل ${num(yrs)}`, `would have turned ${yrs}`)) : isWoman(f) ? L(`هتكمّل ${num(yrs)}`, `turning ${yrs}`) : L(`هيكمّل ${num(yrs)}`, `turning ${yrs}`)) : L(`${num(yrs)} سنة`, `${yrs} years`)}</p>` : ''}
 						${f.note ? `<p class="fd-card__note" dir="auto">${esc(f.note)}</p>` : ''}
 					</div>
 					<em class="fd-card__in">${esc(inDays(dd))}</em>
