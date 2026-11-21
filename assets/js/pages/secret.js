@@ -2,7 +2,7 @@ import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey, pageHead } from
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
-import { figureSVG } from '../figure.js';
+import { figureSVG, at as onHer } from '../figure.js';
 
 /* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
    Header band: a closed door with a «ممنوع الإزعاج» sign swinging on its handle, two candles flickering and petals falling.
@@ -33,16 +33,16 @@ const PAGE = Infinity; // every position shows at once (the images load as they 
 /* the parts of the outfit figure: where its label sits (side, height in %), and the point on the figure it points at
    (in the figure's 600×600 drawing). Each outfit piece names its part in secret.json (`part`); one without is «body». */
 const PARTS = [
-	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: [300, 72] },
-	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: [300, 130] },
-	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: [228, 222] },
-	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: [300, 250] },
-	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: [230, 340] },
-	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: [358, 380] },
-	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: [300, 342] },
-	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: [326, 440] },
-	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: [286, 552] },
-	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: [316, 586] }
+	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: onHer(155, 60) },
+	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: onHer(152, 165) },
+	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: onHer(62, 232) },
+	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: onHer(156, 300) },
+	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: onHer(70, 386) },
+	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: onHer(200, 425) },
+	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: onHer(156, 410) },
+	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: onHer(190, 590) },
+	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: onHer(92, 772) },
+	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: onHer(160, 825) }
 ];
 const partOf = (x) => (PARTS.some((p) => p.id === x.part) ? x.part : 'body');
 
@@ -93,7 +93,8 @@ const photo = (id) => {
 	if (!urls.has(id)) urls.set(id, (async () => {
 		const r = await fetch(`content/secret/s/${id}.bin`);
 		if (!r.ok) throw new Error('missing');
-		return URL.createObjectURL(new Blob([await open(skey, fromB64((await r.text()).trim()))], { type: 'image/jpeg' }));
+		const bytes = await open(skey, fromB64((await r.text()).trim()));
+		return URL.createObjectURL(new Blob([bytes], { type: bytes[0] === 0x89 ? 'image/png' : 'image/jpeg' }));
 	})());
 	return urls.get(id);
 };
@@ -390,8 +391,10 @@ async function room(main, s, data, lock) {
 			<div class="sx-fig__acts"><button type="button" class="btn btn--coral" id="sx-take-outfit" disabled>${doodle('moon', 18)} ${L('ضيف اللبس ده لليلة', 'Add this outfit to tonight')}</button></div>`;
 		const fig = $('#sx-fig', pane);
 		let open = '';
+		let her = ''; // the picture of her, once it's opened
+		photo('figure-base').then((u) => { her = u; paint(); }).catch(() => {});
 		const paint = () => {
-			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean));
+			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean), her);
 			$('.sx-fig__lines', fig).innerHTML = parts.map((p) => {
 				const x = p.side === 'l' ? 170 : 430, y = (p.y / 100) * 600;
 				return `<path class="${dressed[p.id] ? 'is-on' : ''}" d="M${x} ${y} L${p.at[0]} ${p.at[1]}"/><circle class="${dressed[p.id] ? 'is-on' : ''}" cx="${p.at[0]}" cy="${p.at[1]}" r="7"/>`;
