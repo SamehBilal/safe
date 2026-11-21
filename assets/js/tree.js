@@ -96,11 +96,13 @@ function ribbon(s, p, side, [x, y, r]) {
 		<span class="ftr-person__pic">${face(p, false, 26)}</span>
 		<span class="ftr-rib"><b dir="auto">${esc(p.name)}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></span></button>`;
 }
-/** A brother's or sister's children, hanging in a row under their parent's ribbon. */
+/** A brother's or sister's children, hanging under their parent's ribbon, three to a row. */
 function nieces(kids, side, [x, y]) {
 	const n = kids.length;
 	return kids.map((k, j) => {
-		const kx = x + (j - (n - 1) / 2) * 52, ky = y + 74;
+		// rows of three, kept inside the ribbon's width so they never reach the ribbons beside or below
+		const row = Math.floor(j / 3), inRow = Math.min(3, n - row * 3);
+		const kx = x + ((j % 3) - (inRow - 1) / 2) * 44, ky = y + 30 + row * 56;
 		return `<button type="button" class="ftr-niece${k.gone ? ' is-gone' : ''}" data-open="${esc(k.id)}" style="--x:${kx / 10}%;--y:${ky / 7}%;--c:${colour(side)};--i:${j}">
 			<span class="ftr-niece__pic">${face(k, false, 18)}</span><b dir="auto">${esc(k.name)}</b></button>`;
 	}).join('');
