@@ -770,3 +770,82 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 @media (prefers-reduced-motion: reduce) { .sy-confetti i, .sy-ha, .sy-face, .sy-kid { animation: none; } }
 .lp-band--sayings .sy-comic { width: min(940px, 100%); margin: 0 auto; box-sizing: border-box; }
 .sy-face svg { width: 44px; height: 44px; }
+
+/* ---------- «النقطة»: the nokta book — an open notebook above the title (the newest line writes itself in, an envelope,
+   coins and a pen on the other page), three sticky notes with the totals, and a ledger page for every home, stamped
+   «اتردّت ♥» once we've given it back or with what's still on us ---------- */
+.nk-band { display: grid; place-items: center; padding: 6px var(--gutter) 0; }
+.nk-book { position: relative; display: grid; grid-template-columns: 1.3fr 1fr; width: min(560px, 100%); min-height: 190px; rotate: -1.5deg;
+	background: #fbf6ea; border: 2px solid var(--ink, #37353f); border-radius: 10px 10px 14px 14px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+.nk-book::after { content: ''; position: absolute; inset: 8px auto 8px 43.5%; width: 2px; background: linear-gradient(var(--ink, #37353f) 50%, transparent 0) 0 0 / 2px 8px; opacity: .45; }
+:root[dir='ltr'] .nk-book::after { inset: 8px 43.5% 8px auto; }
+.nk-page { position: relative; padding: 14px 18px; }
+.nk-page--a { background: linear-gradient(transparent 27px, rgba(14, 105, 144, .18) 28px) 0 34px / 100% 28px no-repeat, repeating-linear-gradient(transparent 0 27px, rgba(14, 105, 144, .18) 27px 28px) 0 34px / 100% calc(100% - 34px) no-repeat;
+	border-inline-end: 2px solid rgba(242, 114, 111, .45); }
+.nk-page__head { display: block; font: 400 1.35rem/1 var(--f-label); color: var(--coral-deep, #d9534f); letter-spacing: .03em; margin-bottom: 8px; }
+:lang(ar) .nk-page__head { font: 700 1.25rem/1.1 'Aref Ruqaa', var(--f-body); }
+.nk-lines { margin: 0; padding: 0; list-style: none; }
+.nk-lines li { display: flex; justify-content: space-between; gap: 10px; height: 28px; align-items: end; padding-bottom: 3px; font-family: var(--f-hand); font-size: 1.1rem; color: #3a3420; white-space: nowrap; overflow: hidden; }
+:lang(ar) .nk-lines li { font: 700 .95rem/1 'Aref Ruqaa', var(--f-body); }
+.nk-lines li span { overflow: hidden; text-overflow: ellipsis; }
+.nk-lines li b { flex: none; color: #1f6f8b; }
+.nk-lines li.is-new { animation: nk-write 2.4s steps(24, end) both; }
+@keyframes nk-write { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+:root[dir='ltr'] .nk-lines li.is-new { animation-name: nk-write-ltr; }
+@keyframes nk-write-ltr { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.nk-page--b { display: grid; place-items: center; }
+.nk-page--b .dd { stroke-width: 1.6; }
+.nk-env { color: var(--coral, #f2726f); rotate: 8deg; animation: nk-bob 4s ease-in-out infinite; }
+.nk-coins { position: absolute; bottom: 14px; inset-inline-start: 16px; color: #c99a1e; animation: nk-bob 4s ease-in-out -2s infinite; }
+.nk-pen { position: absolute; top: 12px; inset-inline-end: 12px; color: #1f3a5f; rotate: -20deg; }
+@keyframes nk-bob { 50% { translate: 0 -6px; } }
+
+.nk-sums { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: clamp(12px, 2.5vw, 24px); width: min(760px, 100%); margin: 0 auto 28px; }
+.nk-sum { display: grid; justify-items: center; gap: 2px; padding: 16px 14px 14px; text-align: center; color: #3a3420; background: color-mix(in srgb, var(--c) 45%, #fffdf5); rotate: var(--r); box-shadow: 0 4px 10px rgba(40, 30, 10, .14); }
+.nk-sum .dd { color: #3a3420; margin-bottom: 4px; }
+.nk-sum small { font-weight: 800; font-size: .85rem; }
+.nk-sum b { font: 400 clamp(1.6rem, 4vw, 2.2rem)/1.1 var(--f-label); color: #2b2b33; }
+.nk-sum span { font-size: .8rem; font-weight: 700; color: #6a5d3a; }
+
+.nk-dir { justify-content: center; margin: 0 0 14px; }
+.nk-occ { margin: -6px 0 18px; justify-content: flex-start; }
+.nk-occ .chip .dd { vertical-align: -3px; }
+.nk-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(16px, 3vw, 28px); align-items: start; }
+.nk-card { position: relative; padding: 16px 18px 14px; color: #2b2b33; rotate: var(--r);
+	background: repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .14) 31px 32px) 0 56px / 100% calc(100% - 56px) no-repeat, #fffdf5;
+	border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--c); }
+.nk-card header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.nk-card h3 { margin: 0; font-size: 1.2rem; }
+.nk-stamp { flex: none; padding: 3px 10px; font-weight: 800; font-size: .78rem; border: 2px solid currentColor; border-radius: 8px; rotate: -6deg; text-transform: uppercase; }
+.nk-stamp--owe { color: var(--coral-deep, #d9534f); }
+.nk-stamp--done { color: #3f8a56; }
+.nk-stamp--gave { color: #1f6f8b; }
+.nk-card__lines, .nk-ledger ol { margin: 0; padding: 0; list-style: none; }
+.nk-line { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px dashed rgba(55, 53, 63, .2); }
+.nk-line__ic { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: #fff; background: var(--coral, #f2726f); }
+.nk-line--out .nk-line__ic { background: #5a9e6f; }
+.nk-line__what { display: grid; line-height: 1.35; }
+.nk-line__what b { font-size: .9rem; }
+.nk-line__what small { font-size: .78rem; color: #6a6560; }
+.nk-line__amt { display: grid; justify-items: end; font: 400 1.25rem/1.1 var(--f-label); color: var(--coral-deep, #d9534f); white-space: nowrap; }
+.nk-line--out .nk-line__amt { color: #3f8a56; }
+.nk-line__amt i { font: 700 .78rem/1.3 var(--f-body); font-style: normal; color: #6a5d3a; }
+.nk-line__del { padding: 4px; }
+.nk-card footer { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 12px; font-size: .85rem; color: #5a5148; }
+.nk-card footer b { color: #2b2b33; }
+.nk-card footer .btn { margin-inline-start: auto; }
+
+.nk-ledger { width: min(760px, 100%); margin: 0 auto 24px; padding: 16px 20px; color: #2b2b33; background: repeating-linear-gradient(transparent 0 35px, rgba(14, 105, 144, .14) 35px 36px) 0 58px / 100% calc(100% - 58px) no-repeat, #fffdf5;
+	border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); border-inline-start: 8px double rgba(242, 114, 111, .6); }
+.nk-ledger h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 10px; font-size: 1.15rem; }
+.nk-ledger h3 small { font-size: .8rem; font-weight: 700; color: #6a6560; }
+.nk-ledger h3 > b { margin-inline-start: auto; font: 400 1.4rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
+.nk-ledger li { display: flex; align-items: baseline; gap: 8px; height: 36px; padding-top: 8px; }
+.nk-ledger li span { font-weight: 700; }
+.nk-ledger li i { flex: 1; border-bottom: 2px dotted rgba(55, 53, 63, .3); }
+.nk-ledger li b { font: 400 1.15rem/1 var(--f-label); color: #1f6f8b; }
+.nk-ledger li em { font: 700 .8rem var(--f-body); font-style: normal; color: #6a5d3a; }
+@media (max-width: 560px) { .nk-book { grid-template-columns: 1fr; } .nk-page--b, .nk-book::after { display: none; } }
+@media (prefers-reduced-motion: reduce) { .nk-lines li.is-new, .nk-env, .nk-coins { animation: none; } }
+.nk-ledger--out { border-inline-start-color: rgba(90, 158, 111, .6); }
+.nk-ledger--out h3 > b { color: #3f8a56; }

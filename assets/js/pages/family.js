@@ -70,7 +70,7 @@ export default {
 				</div>
 			</article>
 		</div></section>
-		${related(['distances', 'growth', 'sayings'])}`;
+		${related(['distances', 'nokta', 'growth', 'sayings'])}`;
 	},
 	after(main, s) { return wireTree(main, s); }
 };

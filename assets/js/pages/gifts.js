@@ -63,7 +63,7 @@ export default {
 			<div class="gf-tags" id="gf-list"></div>
 			${ideasSection(s)}
 		</div></section>
-		${related(['birthday', 'calendar', 'wishes'])}`;
+		${related(['birthday', 'calendar', 'nokta', 'wishes'])}`;
 	},
 
 	async after(main, s) {

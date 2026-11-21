@@ -582,6 +582,7 @@ export const PAGES = [
 	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسومات الولاد', en: 'The boys’ drawings', dar: 'باب التلاجة: كل رسمة رسموها', den: 'The fridge door: every drawing they made', group: 'family' },
 	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن، سنة ورا سنة', den: 'Height and weight, year by year', group: 'family' },
 	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'كل كلمة حلوة قالوها', den: 'Every funny thing they said', group: 'family' },
+	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا في فرحنا وولادة الولاد، وردّيناها إمتى', den: 'Who gave at our wedding and the boys’ births, and when we gave it back', group: 'family' },
 	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحة الولاد', en: 'Health book', dar: 'تطعيمات ودكاترة وأدوية', den: 'Vaccinations, doctors and medicines', group: 'family' },
 	{ href: 'birthday.html', id: 'birthday', ic: 'cake', ar: 'أعياد الميلاد', en: 'Birthdays', dar: 'عيد ميلاد كل واحد فينا', den: 'Every one of our birthdays', group: 'you' },
 	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'you' },
@@ -615,6 +616,7 @@ const ICONS = {
 	home: '<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/>',
 	book: '<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/>',
 	ring: '<circle cx="12" cy="14" r="6"/><path d="m9.5 8-2-3h9l-2 3"/>',
+	coins: '<ellipse cx="12" cy="7" rx="7" ry="2.5"/><path d="M5 7v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V7M5 11v4c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-4M5 15v2.5C5 18.9 8.1 20 12 20s7-1.1 7-2.5V15"/>',
 	pin: '<path d="M12 21s-6.5-6.2-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.8" r="2.3"/>',
 	image: '<rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>',
 	note: '<path d="M5 4h14v12l-4 4H5z"/><path d="M15 20v-4h4M8 9h8M8 12.5h5"/>',
@@ -1345,9 +1347,9 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'distances', 'draw', 'drawings', 'family', 'favorites', 'firsts', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'questions', 'ramadan', 'remember', 'sayings', 'search', 'secret', 'settings', 'soundtrack', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'distances', 'draw', 'drawings', 'family', 'favorites', 'firsts', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'questions', 'ramadan', 'remember', 'sayings', 'search', 'secret', 'settings', 'soundtrack', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', drawings: 'more', family: 'more', favorites: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', offline: 'more', onthisday: 'more', ourfirsts: 'more', remember: 'more', sayings: 'more', secret: 'secret', soundtrack: 'more', tickets: 'more' };
+const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', drawings: 'more', family: 'more', favorites: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', remember: 'more', sayings: 'more', secret: 'secret', soundtrack: 'more', tickets: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
