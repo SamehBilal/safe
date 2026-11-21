@@ -1737,3 +1737,24 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .adv-pc--list figcaption b { font: 400 1.3em/1 var(--f-label); color: var(--blue, #0e6990); }
 @keyframes bk-tick { from { transform: scale(0); } }
 .adv-note { color: var(--muted); font-size: .8rem; }
+
+/* «ألعابنا»: video games in the band too — a gamepad whose buttons light up, and a few of our games' boxes */
+.gm-video { position: relative; display: grid; justify-items: center; gap: 6px; }
+.gm-boxes { position: relative; width: 150px; height: 104px; }
+.gm-boxes img { position: absolute; left: 50%; bottom: 0; width: 72px; height: 96px; margin-left: -36px; object-fit: cover; border: 2px solid #fffdf8; border-radius: 4px; box-shadow: 0 4px 10px rgba(30, 20, 10, .3); rotate: calc(var(--i) * 12deg); translate: calc(var(--i) * 34px) calc(var(--i) * var(--i) * 6px); transition: rotate .3s, translate .3s; }
+.gm-video:hover .gm-boxes img { rotate: calc(var(--i) * 18deg); translate: calc(var(--i) * 46px) calc(var(--i) * var(--i) * 10px); }
+.gm-pad { width: 130px; overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f)); }
+.gm-pad__body { fill: #2f3a4a; stroke: var(--ink, #37353f); stroke-width: 2; }
+.gm-pad__dpad { fill: #9aa7b8; }
+.gm-pad__stick { fill: #1d2430; stroke: #9aa7b8; stroke-width: 2; }
+.gm-pad__b { stroke: #1d2430; stroke-width: 1.5; animation: gm-press 2.4s steps(1) infinite; }
+.gm-pad__b--1 { fill: #5a9e6f; } .gm-pad__b--2 { fill: #f2726f; animation-delay: .6s; } .gm-pad__b--3 { fill: #0e6990; animation-delay: 1.2s; } .gm-pad__b--4 { fill: #e39b2d; animation-delay: 1.8s; }
+@keyframes gm-press { 0%, 20% { filter: brightness(1.8); r: 5px; } 21%, 100% { filter: none; } }
+.gm-pics { display: flex; flex-wrap: wrap; gap: 6px; }
+.gm-pics img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink, #37353f); cursor: zoom-in; }
+.gm-log li .gm-pics { flex-basis: 100%; margin-top: 4px; }
+.gm-addpics { display: inline-flex; color: var(--muted); }
+.game .gm-pics { justify-content: center; margin: 6px 0; }
+.game > .btn { margin-top: 6px; }
+@media (max-width: 640px) { .gm-video { display: none; } }
+@media (prefers-reduced-motion: reduce) { .gm-pad__b { animation: none; } }

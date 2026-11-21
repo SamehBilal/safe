@@ -2,10 +2,12 @@ import { L, Y, esc, pageHead, related, App, $, $$, num, longDate, mediaURL } fro
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
+import { shrinkPhoto } from './trips.js';
 
-/* Our games: every game night — cards, dominoes, backgammon, PlayStation — who won, and the score that matters: who's
-   ahead this year. Above the title a hand of cards fans out and is dealt while a die tumbles, the year's score between
-   the two of us in the middle. */
+/* Our games: every game night — cards, dominoes, backgammon, PlayStation — who won, the score that matters (who's ahead
+   this year), and photos of the night; and the video games we played together, each with its box and photos of us
+   playing it. Above the title a hand of cards fans out and is dealt while a die tumbles, a gamepad's buttons light up
+   beside a few of our games' boxes, and the year's score between the two of us sits in the middle. */
 
 const IDEAS = [['كوتشينة', 'Cards'], ['دومينو', 'Dominoes'], ['طاولة', 'Backgammon'], ['شطرنج', 'Chess'], ['أونو', 'UNO'], ['بنك الحظ', 'Monopoly'], ['سكرابل', 'Scrabble'], ['بلايستيشن', 'PlayStation'], ['فيفا', 'FIFA'], ['بازل', 'Puzzle'], ['كلمات متقاطعة', 'Crossword']];
 const CARDS = [['A', '♥'], ['K', '♠'], ['Q', '♦'], ['J', '♣'], ['10', '♥']];
@@ -23,6 +25,12 @@ export default {
 				<div class="gm-hand" aria-hidden="true">${CARDS.map(([r, s2], i) => `<span class="gm-card${'♥♦'.includes(s2) ? ' is-red' : ''}" style="--i:${i - 2}"><b>${r}</b><i>${s2}</i><b class="gm-card__b">${r}</b></span>`).join('')}</div>
 				<div class="gm-score" id="gm-score"></div>
 				<span class="gm-die" id="gm-die" aria-hidden="true"></span>
+				<div class="gm-video" aria-hidden="true">
+					<div class="gm-boxes" id="gm-boxes"></div>
+					<svg class="gm-pad" viewBox="0 0 160 100"><path class="gm-pad__body" d="M38 18h84c18 0 30 14 34 36l3 20c2 14-10 22-20 14l-16-14H37L21 88c-10 8-22 0-20-14l3-20C8 32 20 18 38 18Z"/>
+						<path class="gm-pad__dpad" d="M38 40h8v-8h8v8h8v8h-8v8h-8v-8h-8Z"/><circle class="gm-pad__b gm-pad__b--1" cx="112" cy="36" r="6"/><circle class="gm-pad__b gm-pad__b--2" cx="124" cy="48" r="6"/><circle class="gm-pad__b gm-pad__b--3" cx="100" cy="48" r="6"/><circle class="gm-pad__b gm-pad__b--4" cx="112" cy="60" r="6"/>
+						<circle class="gm-pad__stick" cx="62" cy="66" r="9"/><circle class="gm-pad__stick" cx="98" cy="66" r="9"/></svg>
+				</div>
 			</div>`
 		})}
 		<section class="sec sec--top"><div class="wrap">
@@ -40,6 +48,7 @@ export default {
 						<label class="f"><span>${L('النتيجة (اختياري)', 'Score (optional)')}</span><input name="score" dir="ltr" maxlength="20" placeholder="51 – 38"></label>
 						<label class="f f--grow"><span>${L('حصل إيه؟ (اختياري)', 'What happened? (optional)')}</span><input name="note" dir="auto" maxlength="120"></label>
 					</div>
+					<label class="f"><span>${L('صور من السهرة (اختياري)', 'Photos of the night (optional)')}</span><input name="photos" type="file" accept="image/*" multiple></label>
 					<p class="form-msg" id="gm-msg" role="status"></p>
 					<div class="f-actions"><button type="submit" class="btn btn--coral">${L('سجّل ♥', 'Log it ♥')}</button></div>
 				</form>
@@ -64,7 +73,8 @@ export default {
 		const nameOf = (id) => (id === 'him' ? App.t(s.him) : id === 'her' ? App.t(s.her) : id === 'draw' ? L('تعادل', 'Draw') : App.t(kids.find((k) => k.id === id)?.name || ''));
 		const players = ['him', 'her', ...kids.map((k) => k.id)];
 		// the video and PC games we played together (kept with the films, movies.json → games), with their box art
-		live.load('movies').then((mv) => {
+		let mv = { games: [] };
+		const paintPlayed = () => {
 			const list = (mv.games || []).slice().sort((a, b) => (b.year || 0) - (a.year || 0));
 			$('#gm-played', main).hidden = !list.length;
 			$('#gm-played-grid', main).innerHTML = list.map((g) => `
@@ -73,9 +83,29 @@ export default {
 					<h3 dir="auto">${esc(g.title)}</h3>
 					${g.year ? `<p class="game__year">${num(g.year).replace(/[٬,]/g, '')}</p>` : ''}
 					${g.note ? `<p class="game__note" dir="auto">${esc(g.note)}</p>` : ''}
+					${(g.photos || []).length ? `<span class="gm-pics">${g.photos.map((ph) => `<img class="zoom" data-sketch="${esc(ph)}" alt="" loading="lazy">`).join('')}</span>` : ''}
+					${live.canWrite() ? `<button class="btn btn--sm btn--ghost" type="button" data-game-pics="${esc(g.id)}">${doodle('camera', 16)} ${L('صور وإحنا بنلعبها', 'Photos of us playing')}</button>` : ''}
 				</article>`).join('');
-			for (const im of $$('img[data-cover]', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
-		}).catch(() => {});
+			for (const im of $$('#gm-played-grid img[data-cover]', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
+			live.hydrateSketches($('#gm-played-grid', main));
+			// the band: three of our games' boxes, fanned out beside the gamepad
+			const boxes = list.filter((g) => g.cover).slice(0, 3);
+			$('#gm-boxes', main).innerHTML = boxes.map((g, i) => `<img data-cover="${esc(g.cover)}" alt="" style="--i:${i - 1}">`).join('');
+			for (const im of $$('#gm-boxes img', main)) mediaURL(im.dataset.cover).then((u) => { im.src = u; }).catch(() => im.remove());
+		};
+		live.load('movies').then((m) => { mv = m; paintPlayed(); }).catch(() => {});
+		$('#gm-played-grid', main).addEventListener('click', async (e) => {
+			const b = e.target.closest('[data-game-pics]');
+			if (!b) return;
+			const files = await (new Promise((done) => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.multiple = true; i.onchange = () => done([...i.files]); i.click(); }));
+			if (!files.length) return;
+			b.disabled = true;
+			try {
+				const ids = []; for (const f2 of files) ids.push(await live.putSketch(await shrinkPhoto(f2, 1200)));
+				mv = await live.save('movies', (d) => { const g = (d.games || []).find((x) => x.id === b.dataset.gamePics); if (g) g.photos = [...(g.photos || []), ...ids]; });
+				paintPlayed();
+			} catch (err) { alert(live.why(err)); b.disabled = false; }
+		});
 		let data = await live.load('games');
 		const thisYear = new Date().getFullYear();
 		let year = thisYear;
@@ -120,11 +150,24 @@ export default {
 				<li><span class="gm-log__d">${esc(longDate(g.date || ''))}</span><b dir="auto">${esc(g.game)}</b>
 					<span class="gm-log__w">${g.winner === 'draw' ? L('تعادل', 'A draw') : `${doodle('star', 14)} ${esc(nameOf(g.winner))}`}</span>
 					${g.score ? `<span class="gm-log__s" dir="ltr">${esc(g.score)}</span>` : ''}${g.note ? `<small dir="auto">${esc(g.note)}</small>` : ''}
+					${(g.photos || []).length ? `<span class="gm-pics">${g.photos.map((ph) => `<img class="zoom" data-sketch="${esc(ph)}" alt="" loading="lazy">`).join('')}</span>` : ''}
+					${live.canWrite() ? `<button class="link gm-addpics" type="button" data-pics="${esc(g.id)}" title="${L('ضيف صور', 'Add photos')}">${doodle('camera', 15)}</button>` : ''}
 					${g.by === live.me() && live.canWrite() ? `<button class="link link--danger" type="button" data-del="${esc(g.id)}">✕</button>` : ''}</li>`).join('') || `<li class="empty">${L('السهرة الجاية هتتسجل هنا', 'The next game night goes here')}</li>`;
+			live.hydrateSketches($('#gm-log', main));
 		};
 
 		$('#gm-years', main).addEventListener('click', (e) => { const c = e.target.closest('[data-year]'); if (c) { year = +c.dataset.year; paint(); } });
+		const pickPhotos = () => new Promise((done) => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.multiple = true; i.onchange = () => done([...i.files]); i.click(); });
+		const putAll = async (files) => { const out = []; for (const f2 of files) out.push(await live.putSketch(await shrinkPhoto(f2, 1200))); return out; };
 		$('#gm-log', main).addEventListener('click', async (e) => {
+			const pics = e.target.closest('[data-pics]');
+			if (pics) {
+				const files = await pickPhotos();
+				if (!files.length) return;
+				pics.disabled = true;
+				try { const ids = await putAll(files); data = await live.save('games', (d) => { const g = (d.items || []).find((x) => x.id === pics.dataset.pics); if (g) g.photos = [...(g.photos || []), ...ids]; }); paint(); } catch (err) { alert(live.why(err)); pics.disabled = false; }
+				return;
+			}
 			const del = e.target.closest('[data-del]');
 			if (!del || !confirm(Y('تمسح الدور ده؟', 'تمسحي الدور ده؟', 'Delete this game?'))) return;
 			try { data = await live.save('games', (d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); }); paint(); } catch (err) { alert(live.why(err)); }
@@ -135,7 +178,9 @@ export default {
 			const msg = $('#gm-msg', main);
 			const g = { id: live.newId(), game: f.game.value.trim(), date: f.date.value || live.today(), winner: f.winner.value, score: f.score.value.trim() || undefined, note: f.note.value.trim() || undefined, by: live.me(), at: Date.now() };
 			if (!g.game) return;
-			try { data = await live.save('games', (d) => { (d.items = d.items || []).push(g); }); year = yearOf(g); f.reset(); msg.textContent = L('اتسجل ♥', 'Logged ♥'); paint(); } catch (err) { msg.textContent = live.why(err); }
+			try {
+				if (f.photos.files.length) { msg.textContent = L('بنحفظ الصور…', 'Saving the photos…'); g.photos = await putAll([...f.photos.files]); }
+				data = await live.save('games', (d) => { (d.items = d.items || []).push(g); }); year = yearOf(g); f.reset(); msg.textContent = L('اتسجل ♥', 'Logged ♥'); paint(); } catch (err) { msg.textContent = live.why(err); }
 		};
 		paint();
 	}
