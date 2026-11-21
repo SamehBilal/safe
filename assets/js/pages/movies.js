@@ -89,26 +89,26 @@ export default {
 			<div class="binge" id="mv-board">
 				<h2 class="binge__title">${L('سهراتنا:', 'Binge:')} <br><span>${L('أحلى الأرقام', 'Top stats')}</span><small>${L('لما حد فينا يقول «حلقة كمان وننام»، ', 'When one of us says “one more episode”, ')}<span>${L('ماحدش بيصدق.', 'nobody believes it.')}</span></small></h2>
 				<div class="binge__legend" id="mv-legend" role="toolbar" aria-label="${L('اعرض', 'Show')}">${KINDS.map((k) => `<button type="button" data-lk="${k.id}" aria-pressed="false"><i class="mv--${k.id}"></i>${esc(L(k.ar, k.en))}</button>`).join('')}<button type="button" class="is-watch" data-lk="towatch" aria-pressed="false"><i class="mv--towatch"></i>${L('لسه هنتفرج عليه', 'To watch')}</button></div>
-				<p class="binge__only" id="mv-only" hidden>${doodle('popcorn', 22)} ${L('بنعرض بس اللي لسه ما اتفرجناش عليه — تحت في «نتفرج على إيه بعد كده؟»', 'Showing only what we haven’t watched yet — below, in «Up next for us»')}</p>
+				<p class="binge__only" id="mv-only" hidden>${doodle('popcorn', 22)} ${L('بنعرض بس اللي لسه ما اتفرجناش عليه', 'Showing only what we haven’t watched yet')}</p>
 				<p class="empty" id="mv-empty">${L('بنجيب السهرات…', 'Fetching our evenings…')}</p>
 				<div class="binge__field" id="mv-field"></div>
+				<section class="tw" id="mv-next" aria-labelledby="mv-next-t" hidden>
+					<h2 class="binge__title tw__title" id="mv-next-t">${L('نتفرج على إيه', 'Up next')} <span>${L('بعد كده؟', 'for us')}</span><small>${L('أفلام مستنيانا — ', 'Films waiting for us — ')}<span id="mv-next-n"></span></small></h2>
+					<div class="tw__bar">
+						<div class="chips" id="mv-next-kinds" role="group" aria-label="${L('النوع', 'Kind')}"></div>
+						<button class="btn btn--coral tw__pick" type="button" id="mv-next-pick">${doodle('dice', 20)} ${L('اختارولنا واحد', 'Pick one for us')}</button>
+					</div>
+					<p class="tw__picked" id="mv-next-picked" role="status" hidden></p>
+					<ul class="tw__grid" id="mv-next-list"></ul>
+					<p class="tw__more"><button class="btn btn--ghost" type="button" id="mv-next-more" hidden></button></p>
+					<form class="tw__add" id="mv-next-form" autocomplete="off"${ok ? '' : ' hidden'}>
+						<label class="f"><span>${Y('عايز تتفرج على إيه؟', 'عايزة تتفرجي على إيه؟', 'Something to watch?')}</span><input name="title" dir="auto" maxlength="80" required placeholder="${L('اسم الفيلم أو المسلسل', 'A film or series')}"></label>
+						<label class="f"><span>${L('نوعه', 'Kind')}</span><select name="kind">${KINDS.map((k) => `<option value="${k.id}"${k.id === 'foreign' ? ' selected' : ''}>${esc(L(k.ar, k.en))}</option>`).join('')}</select></label>
+						<button class="btn" type="submit">${L('ضيفه للقايمة', 'Add to the list')}</button>
+					</form>
+				</section>
 			</div>
 
-			<section class="tw" id="mv-next" aria-labelledby="mv-next-t">
-				<h2 class="binge__title tw__title" id="mv-next-t">${L('نتفرج على إيه', 'Up next')} <span>${L('بعد كده؟', 'for us')}</span><small>${L('أفلام مستنيانا — ', 'Films waiting for us — ')}<span id="mv-next-n"></span></small></h2>
-				<div class="tw__bar">
-					<div class="chips" id="mv-next-kinds" role="group" aria-label="${L('النوع', 'Kind')}"></div>
-					<button class="btn btn--coral tw__pick" type="button" id="mv-next-pick">${doodle('dice', 20)} ${L('اختارولنا واحد', 'Pick one for us')}</button>
-				</div>
-				<p class="tw__picked" id="mv-next-picked" role="status" hidden></p>
-				<ul class="tw__grid" id="mv-next-list"></ul>
-				<p class="tw__more"><button class="btn btn--ghost" type="button" id="mv-next-more" hidden></button></p>
-				<form class="tw__add" id="mv-next-form" autocomplete="off"${ok ? '' : ' hidden'}>
-					<label class="f"><span>${Y('عايز تتفرج على إيه؟', 'عايزة تتفرجي على إيه؟', 'Something to watch?')}</span><input name="title" dir="auto" maxlength="80" required placeholder="${L('اسم الفيلم أو المسلسل', 'A film or series')}"></label>
-					<label class="f"><span>${L('نوعه', 'Kind')}</span><select name="kind">${KINDS.map((k) => `<option value="${k.id}"${k.id === 'foreign' ? ' selected' : ''}>${esc(L(k.ar, k.en))}</option>`).join('')}</select></label>
-					<button class="btn" type="submit">${L('ضيفه للقايمة', 'Add to the list')}</button>
-				</form>
-			</section>
 		</div></section>
 		${related(['draw', 'music', 'journal'])}`;
 	},
@@ -119,6 +119,8 @@ export default {
 		const name = (w) => T(w === 'him' ? s.him : s.her);
 
 		let lk = '', watchOnly = false, next = null;
+		const lookingFor = decodeURIComponent((location.hash.match(/find=([^&]*)/) || [])[1] || '').trim().toLowerCase();
+		if (lookingFor && (data.towatch || []).some((x) => String(x.title).toLowerCase().includes(lookingFor))) watchOnly = true;
 		const paint = () => {
 
 			const items = (data.items || []).slice().sort((a, b) => (b.mins || 0) - (a.mins || 0));
@@ -126,6 +128,7 @@ export default {
 			const shownItems = watchOnly ? [] : items.filter((x) => !lk || (x.kind || 'other') === lk);
 			board.classList.toggle('is-towatch', watchOnly);
 			$('#mv-only', main).hidden = !watchOnly;
+			$('#mv-next', main).hidden = !watchOnly;
 			$$('#mv-legend [data-lk]', main).forEach((b) => { const on = b.dataset.lk === 'towatch' ? watchOnly : b.dataset.lk === lk; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on); });
 			$('#mv-empty', main).hidden = !!items.length;
 			$('#mv-empty', main).textContent = Y('لسه مسجلناش حاجة — ضيف أول فيلم ♥', 'لسه مسجلناش حاجة — ضيفي أول فيلم ♥', 'Nothing logged yet — add your first film ♥');
@@ -185,7 +188,7 @@ export default {
 			else lk = lk === b.dataset.lk ? '' : b.dataset.lk;
 			paint();
 			next?.setKind(lk);
-			if (watchOnly) $('#mv-next', main)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (watchOnly) $('#mv-legend', main)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		});
 
 		board.onclick = async (e) => {
@@ -248,7 +251,6 @@ function watchlist(main, get, set) {
 
 	const draw = () => {
 		const every = get().towatch || [];
-		box.hidden = !every.length && !live.canWrite();
 		$('#mv-next-n', box).textContent = L(`${num(every.length)} ${every.length > 10 || every.length < 3 ? 'فيلم' : 'أفلام'}`, `${every.length} of them`);
 		const count = (id) => every.filter((x) => (x.kind || 'other') === id).length;
 		$('#mv-next-kinds', box).innerHTML = [['', L('الكل', 'All'), every.length], ...KINDS.map((k) => [k.id, L(k.ar, k.en), count(k.id)]).filter((k) => k[2])]

@@ -1831,5 +1831,6 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .binge__legend .mv--towatch { background: repeating-linear-gradient(45deg, #fffdf8 0 3px, color-mix(in srgb, var(--coral, #f2726f) 45%, #fffdf8) 3px 6px); border-style: dashed !important; }
 .binge__only { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0 0 12px; padding: 6px 14px; font-weight: 800; background: color-mix(in srgb, var(--hl-pink, #fc8b93) 25%, var(--card)); border: 1.5px dashed var(--ink, #37353f); border-radius: 10px; }
 .binge.is-towatch .binge__field, .binge.is-towatch #mv-empty { display: none; }
-.binge.is-towatch { display: block; min-height: 0; }
-.binge.is-towatch > .binge__title { display: none; }
+.binge > .tw { margin-top: 0; padding-top: 0; border-top: 0; }
+.binge > .tw > .tw__title { display: none; }
+@media (min-width: 1024px) { .binge > .tw, .binge > .binge__only { grid-column: 2; } }
