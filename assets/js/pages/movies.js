@@ -88,7 +88,8 @@ export default {
 
 			<div class="binge" id="mv-board">
 				<h2 class="binge__title">${L('سهراتنا:', 'Binge:')} <br><span>${L('أحلى الأرقام', 'Top stats')}</span><small>${L('لما حد فينا يقول «حلقة كمان وننام»، ', 'When one of us says “one more episode”, ')}<span>${L('ماحدش بيصدق.', 'nobody believes it.')}</span></small></h2>
-				<div class="binge__legend">${KINDS.map((k) => `<span><i class="mv--${k.id}"></i>${esc(L(k.ar, k.en))}</span>`).join('')}</div>
+				<div class="binge__legend" id="mv-legend" role="toolbar" aria-label="${L('اعرض', 'Show')}">${KINDS.map((k) => `<button type="button" data-lk="${k.id}" aria-pressed="false"><i class="mv--${k.id}"></i>${esc(L(k.ar, k.en))}</button>`).join('')}<button type="button" class="is-watch" data-lk="towatch" aria-pressed="false"><i class="mv--towatch"></i>${L('لسه هنتفرج عليه', 'To watch')}</button></div>
+				<p class="binge__only" id="mv-only" hidden>${doodle('popcorn', 22)} ${L('بنعرض بس اللي لسه ما اتفرجناش عليه — تحت في «نتفرج على إيه بعد كده؟»', 'Showing only what we haven’t watched yet — below, in «Up next for us»')}</p>
 				<p class="empty" id="mv-empty">${L('بنجيب السهرات…', 'Fetching our evenings…')}</p>
 				<div class="binge__field" id="mv-field"></div>
 			</div>
@@ -117,12 +118,18 @@ export default {
 		let data = await live.load('movies');
 		const name = (w) => T(w === 'him' ? s.him : s.her);
 
+		let lk = '', watchOnly = false, next = null;
 		const paint = () => {
 
 			const items = (data.items || []).slice().sort((a, b) => (b.mins || 0) - (a.mins || 0));
+			// the legend's choices: one kind, or only what's still to watch (then the board of what we saw steps aside)
+			const shownItems = watchOnly ? [] : items.filter((x) => !lk || (x.kind || 'other') === lk);
+			board.classList.toggle('is-towatch', watchOnly);
+			$('#mv-only', main).hidden = !watchOnly;
+			$$('#mv-legend [data-lk]', main).forEach((b) => { const on = b.dataset.lk === 'towatch' ? watchOnly : b.dataset.lk === lk; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on); });
 			$('#mv-empty', main).hidden = !!items.length;
 			$('#mv-empty', main).textContent = Y('لسه مسجلناش حاجة — ضيف أول فيلم ♥', 'لسه مسجلناش حاجة — ضيفي أول فيلم ♥', 'Nothing logged yet — add your first film ♥');
-			$('#mv-field', main).innerHTML = items.map((x, k) => `
+			$('#mv-field', main).innerHTML = (lk && !shownItems.length && !watchOnly ? `<p class="empty">${L('مفيش حاجة من النوع ده لسه', 'Nothing of that kind yet')}</p>` : '') + shownItems.map((x, k) => `
 				<article class="binge__box mv--${esc(x.kind || 'other')}${x.cover ? ' has-cover' : ''}" style="--i:${k};${spot(k, x.id || x.title)}" id="${esc(x.id)}">
 					${x.cover ? `<img class="binge__poster" data-cover="${esc(x.cover)}" alt="" decoding="async">` : ''}
 					<h4 dir="auto">${esc(x.title)}</h4>
@@ -170,7 +177,16 @@ export default {
 			].map(([n, l]) => `<div class="counter"><b>${n}</b><span>${l}</span></div>`).join('');
 		};
 		paint();
-		watchlist(main, () => data, (d) => { data = d; paint(); });
+		next = watchlist(main, () => data, (d) => { data = d; paint(); });
+		$('#mv-legend', main).addEventListener('click', (e) => {
+			const b = e.target.closest('[data-lk]');
+			if (!b) return;
+			if (b.dataset.lk === 'towatch') watchOnly = !watchOnly;
+			else lk = lk === b.dataset.lk ? '' : b.dataset.lk;
+			paint();
+			next?.setKind(lk);
+			if (watchOnly) $('#mv-next', main)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		});
 
 		board.onclick = async (e) => {
 			const del = e.target.closest('[data-del]');
@@ -295,6 +311,8 @@ function watchlist(main, get, set) {
 			form.reset(); kind = ''; set(d); draw();
 		} catch (err) { alert(live.why(err)); }
 	};
+	// the legend above the board picks the kind here too
+	return { setKind(k) { kind = k || ''; all = false; picked = ''; $('#mv-next-picked', box).hidden = true; draw(); } };
 }
 
 /* The Top 10 drifts on its own in an endless loop (the list is there twice; past the first copy it jumps back one
