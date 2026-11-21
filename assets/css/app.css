@@ -810,3 +810,7 @@ body:not(.is-locked) .hearts { opacity: 0.45; }
 	.lb__play-tx { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .lb .lb__img { transition: none; } }
+/* the loader's anchor rocks gently on its ring instead of beating like the heart did */
+.loader__anchor { width: min(230px, 58vw); transform-origin: 50% 10%; animation: sway 3.2s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { rotate: -5deg; } 50% { rotate: 5deg; } }
+@media (prefers-reduced-motion: reduce) { .loader__anchor { animation: none; } }

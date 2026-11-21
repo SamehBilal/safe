@@ -385,19 +385,31 @@ async function enter({ key, story }, { intro, loader }) {
 
 	if (loader) {
 		const label = L('ثواني… وحكايتنا تبدأ', 'A few seconds… and our story begins');
-		// the lobes and their outline reach a little above y=0, so the box starts higher to keep them whole
+		// our anchor, filling up from the bottom as the pictures arrive: one shape (ring, shank, stock, arms, flukes) used three
+		// times — grown a little in blue for the outline, in blush underneath, and as the mask the coral wave rises inside
 		const el = stage(`
-			<svg class="loader__heart" viewBox="-4 -6 108 102" aria-hidden="true">
-				<defs><clipPath id="heart-clip"><path d="M50 90C20 70 2 52 2 30A24 24 0 0 1 50 18a24 24 0 0 1 48 12c0 22-18 40-48 60Z"/></clipPath></defs>
-				<path d="M50 90C20 70 2 52 2 30A24 24 0 0 1 50 18a24 24 0 0 1 48 12c0 22-18 40-48 60Z" fill="#fde3e0"/>
-				<g clip-path="url(#heart-clip)"><g id="loader-fill"><path class="loader__wave" d="M-100 92 Q-75 86 -50 92 T0 92 T50 92 T100 92 T150 92 T200 92 V200 H-100Z" fill="#F2726F"/></g></g>
-				<path d="M50 90C20 70 2 52 2 30A24 24 0 0 1 50 18a24 24 0 0 1 48 12c0 22-18 40-48 60Z" fill="none" stroke="#0E6990" stroke-width="3"/>
+			<svg class="loader__heart loader__anchor" viewBox="-10 -8 120 116" aria-hidden="true">
+				<defs>
+					<g id="anchor" transform="rotate(-10 50 52)" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="50" cy="13" r="8.5" fill="none" stroke-width="7"/>
+						<path d="M50 22V90" stroke-width="10"/>
+						<path d="M28 34H72" stroke-width="7"/>
+						<circle cx="26" cy="34" r="6.5"/><circle cx="74" cy="34" r="6.5"/>
+						<path d="M17 62Q22 88 50 92Q78 88 83 62" fill="none" stroke-width="10"/>
+						<path d="M7 68L15 47L28 64Z" stroke-width="3"/><path d="M93 68L85 47L72 64Z" stroke-width="3"/>
+					</g>
+					<mask id="anchor-mask" maskUnits="userSpaceOnUse" x="-10" y="-8" width="120" height="116"><use href="#anchor" fill="#fff" stroke="#fff"/></mask>
+					<filter id="anchor-line" x="-10%" y="-10%" width="120%" height="120%"><feMorphology operator="dilate" radius="2.6"/></filter>
+				</defs>
+				<use href="#anchor" fill="#0E6990" stroke="#0E6990" filter="url(#anchor-line)"/>
+				<use href="#anchor" fill="#fde3e0" stroke="#fde3e0"/>
+				<g mask="url(#anchor-mask)"><g id="loader-fill"><path class="loader__wave" d="M-100 104 Q-75 98 -50 104 T0 104 T50 104 T100 104 T150 104 T200 104 V220 H-100Z" fill="#F2726F"/></g></g>
 			</svg>
 			<p class="loader__text">${App.lang === 'ar' ? esc(label) : [...label].map((c, n) => `<span style="--i:${n};--r:${(n % 2 ? 1 : -1) * 8}deg">${c === ' ' ? '&nbsp;' : esc(c)}</span>`).join('')}</p>
 			<p class="loader__pct" id="loader-pct">0%</p>`, 'loader');
 		const fill = $('#loader-fill', el);
 		const pct = $('#loader-pct', el);
-		const set = (p) => { fill.style.transform = `translateY(${-p * 96}px)`; pct.textContent = Math.round(p * 100) + '%'; };
+		const set = (p) => { fill.style.transform = `translateY(${-p * 110}px)`; pct.textContent = Math.round(p * 100) + '%'; };
 		set(0);
 		const images = (story.$media || []).filter((r) => /^image\//.test(mimeOf(r)));
 		let done = 0;
