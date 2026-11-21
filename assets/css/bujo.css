@@ -13,8 +13,8 @@
 	--hl-lime: rgba(205, 220, 57, 0.55);
 	--bujo-shadow: 4px 4px 0 0 rgba(252, 139, 147, 0.8);
 }
-:root[data-theme='dark'] { --ink: rgba(226, 234, 240, 0.7); --hl-yellow: rgba(253, 200, 48, 0.32); --hl-pink: rgba(252, 139, 147, 0.32); --hl-lime: rgba(205, 220, 57, 0.3); --bujo-shadow: 4px 4px 0 0 rgba(252, 139, 147, 0.45); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --ink: rgba(226, 234, 240, 0.7); --hl-yellow: rgba(253, 200, 48, 0.32); --hl-pink: rgba(252, 139, 147, 0.32); --hl-lime: rgba(205, 220, 57, 0.3); --bujo-shadow: 4px 4px 0 0 rgba(252, 139, 147, 0.45); } }
+:root[data-theme='dark'] { --ink: rgba(242, 235, 223, 0.7); --hl-yellow: rgba(253, 200, 48, 0.32); --hl-pink: rgba(252, 139, 147, 0.32); --hl-lime: rgba(205, 220, 57, 0.3); --bujo-shadow: 4px 4px 0 0 rgba(252, 139, 147, 0.45); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) { --ink: rgba(242, 235, 223, 0.7); --hl-yellow: rgba(253, 200, 48, 0.32); --hl-pink: rgba(252, 139, 147, 0.32); --hl-lime: rgba(205, 220, 57, 0.3); --bujo-shadow: 4px 4px 0 0 rgba(252, 139, 147, 0.45); } }
 /* the offset falls to the reading side's end */
 [dir='rtl'] { --bujo-x: -1; }
 [dir='ltr'] { --bujo-x: 1; }
@@ -154,11 +154,11 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .btn--sm.btn--ghost { box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); }
 /* dark: the boxes keep their colours, the ink turns light */
 :root[data-theme='dark'] .lang-toggle { --pen-bg: #e0b12b; }
-:root[data-theme='dark'] .theme-toggle { --pen-bg: #24323d; }
+:root[data-theme='dark'] .theme-toggle { --pen-bg: #2c3560; }
 :root[data-theme='dark'] .install-app { --pen-bg: #aab82e; }
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme='light']) .lang-toggle { --pen-bg: #e0b12b; }
-	:root:not([data-theme='light']) .theme-toggle { --pen-bg: #24323d; }
+	:root:not([data-theme='light']) .theme-toggle { --pen-bg: #2c3560; }
 	:root:not([data-theme='light']) .install-app { --pen-bg: #aab82e; }
 }
 

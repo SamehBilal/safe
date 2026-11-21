@@ -67,9 +67,8 @@ for (const file of files) {
 	<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
 	<meta name="referrer" content="no-referrer">
 	<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-	<meta name="theme-color" content="#0E6990" media="(prefers-color-scheme: light)">
-	<meta name="theme-color" content="#121312" media="(prefers-color-scheme: dark)">
-	<meta name="color-scheme" content="light dark">
+	<meta name="theme-color" content="#0E6990">
+	<meta name="color-scheme" content="light">
 	<meta name="application-name" content="${attr(NAME)}">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
@@ -97,7 +96,7 @@ for (const file of files) {
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Bebas+Neue&family=Cairo:wght@400;600;800&family=Caveat:wght@500;700&family=Lalezar&family=Lobster&family=Nunito:wght@400;600;800&display=swap">
 ${BASE_CSS.concat(extra).map((c) => `\t<link rel="stylesheet" href="assets/css/${c}.css">`).join('\n')}
-	<script>try{if(localStorage.getItem('us.lang')==='en'){document.documentElement.lang='en';document.documentElement.dir='ltr'}var t=localStorage.getItem('us.theme');if(t)document.documentElement.dataset.theme=t}catch(e){}addEventListener('beforeinstallprompt',function(e){window.__bip=e})</script>
+	<script>document.documentElement.dataset.theme='light';try{if(localStorage.getItem('us.lang')==='en'){document.documentElement.lang='en';document.documentElement.dir='ltr'}if(localStorage.getItem('us.theme')==='dark')document.documentElement.dataset.theme='dark'}catch(e){}addEventListener('beforeinstallprompt',function(e){window.__bip=e})</script>
 ${pre.map((s) => `\t<link rel="modulepreload" href="${s}">`).join('\n')}
 </head>
 ${body.replace(/<\/script>\s+\n<\/body>/, '</script>\n</body>').replace(/[ \t]+\n/g, '\n')}`;

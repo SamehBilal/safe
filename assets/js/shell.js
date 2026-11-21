@@ -279,7 +279,7 @@ function fatal(msg) {
 }
 
 const THEME = 'us.theme';
-const isDark = () => document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+const isDark = () => document.documentElement.dataset.theme === 'dark';
 const themeBtn = () => `<button class="icon-btn theme-toggle" type="button" aria-pressed="${isDark()}" aria-label="${L('الوضع الليلي', 'Dark mode')}" title="${L('ليلي / نهاري', 'Dark / light')}"><span aria-hidden="true">${doodle(isDark() ? 'sun' : 'moon', 20)}</span></button>`;
 function toggleTheme() {
 	const next = isDark() ? 'light' : 'dark';

@@ -39,10 +39,10 @@ export function notify(msg, { title = '', type = '', ttl = 5000, html: asHTML = 
 }
 
 /* ---------- the browser bar follows the theme ---------- */
-const dark = () => html.dataset.theme === 'dark' || (!html.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+const dark = () => html.dataset.theme === 'dark';
 function syncThemeColor() {
 	const m = document.querySelector('meta[name="theme-color"]');
-	if (m) m.setAttribute('content', dark() ? '#11171c' : '#0E6990');
+	if (m) m.setAttribute('content', dark() ? '#141a2e' : '#0E6990');
 }
 
 /* ---------- install ---------- */
@@ -185,7 +185,6 @@ export function initPWA() {
 	if (standalone) html.classList.add('is-app');
 	syncThemeColor();
 	new MutationObserver(syncThemeColor).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
-	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeColor);
 
 	/* Chrome's offer to install. Each page's first script catches it (it can come before this module loads), and it is
 	   not held back, so the browser still shows its own install banner and icon as well as our button. */
