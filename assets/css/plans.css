@@ -605,15 +605,23 @@
 .bk-calm { display: grid; gap: 10px; justify-items: center; margin: 24px auto 0; padding: 16px 18px; max-width: 620px; text-align: center; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-lime, #c5e86c); }
 .bk-calm h3 { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 1.05rem; }
 .bk-calm p { margin: 0; font-size: .85rem; }
-.bk-calm__btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.bk-calm__b { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font: inherit; font-weight: 800; color: var(--text); cursor: pointer; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--ink, #37353f); transition: background .2s, translate .1s; }
-.bk-calm__b span { font-size: 1.1rem; }
-.bk-calm__b:active { translate: calc(var(--bujo-x, 1) * 2px) 2px; box-shadow: none; }
-.bk-calm__b.is-on { background: var(--hl-yellow, #fdc830); color: #2b2b33; }
-.bk-calm__b.is-on span { animation: bk-calm-bob 1.6s ease-in-out infinite; }
-@keyframes bk-calm-bob { 50% { transform: translateY(-3px); } }
 .bk-calm__row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 22px; font-size: .85rem; font-weight: 700; }
 .bk-calm__row label { display: inline-flex; align-items: center; gap: 8px; }
 .bk-calm__row input[type=range] { accent-color: var(--coral, #f2726f); }
 .bk-calm__row select { padding: 4px 8px; font: inherit; color: var(--text); background: var(--paper, #fffdf8); border: 1.5px solid var(--ink, #37353f); border-radius: 8px; }
-@media (prefers-reduced-motion: reduce) { .bk-calm__b.is-on span { animation: none; } }
+
+/* the sounds: little journal stickers — paper tinted by kind (music pink, outside lime, inside yellow), uneven ink edges,
+   a highlighter shadow, a slight tilt each, the emoji in a dashed bubble; one that's playing is coloured in and bobs */
+.bk-calm__b { --t: var(--hl-yellow, #fdc830); --on: #fde08a; position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 5px 6px; padding-inline: 6px 14px; font: inherit; font-weight: 800; color: var(--text); cursor: pointer; background: color-mix(in srgb, var(--t) 14%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-radius: 12px 8px 14px 9px / 9px 14px 8px 12px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--t); rotate: var(--r, -1deg); transition: rotate .2s, translate .1s, background .2s, box-shadow .1s; }
+.bk-calm__b:nth-child(3n + 2) { --r: 1.2deg; } .bk-calm__b:nth-child(3n) { --r: -.6deg; }
+.bk-calm__b:is([data-calm=piano], [data-calm=lofi], [data-calm=musicbox]) { --t: var(--hl-pink, #fc8b93); --on: #fdc2c6; }
+.bk-calm__b:is([data-calm=rain], [data-calm=waves], [data-calm=stream], [data-calm=wind], [data-calm=birds], [data-calm=crickets]) { --t: var(--hl-lime, #c5e86c); --on: #dcef9f; }
+.bk-calm__b > span { display: grid; place-items: center; width: 30px; height: 30px; font-size: 1rem; background: #fffdf8; border: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 55%, transparent); border-radius: 50%; }
+.bk-calm__b:hover { rotate: 0deg; }
+.bk-calm__b:active { translate: calc(var(--bujo-x, 1) * 3px) 3px; box-shadow: 0 0 0 0 var(--t); }
+.bk-calm__b.is-on { color: #2b2b33; background: var(--on); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink, #37353f); rotate: 0deg; }
+.bk-calm__b.is-on > span { border-style: solid; border-color: var(--ink, #37353f); animation: bk-calm-bob 1.6s ease-in-out infinite; }
+.bk-calm__b.is-on::after { content: '♪'; position: absolute; top: -12px; inset-inline-end: -6px; font: 800 1rem/1 var(--f-body); color: var(--ink, #37353f); animation: bk-calm-note 2s ease-in-out infinite; }
+@keyframes bk-calm-bob { 50% { transform: translateY(-3px) rotate(-6deg); } }
+@keyframes bk-calm-note { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px) rotate(14deg); } }
+@media (prefers-reduced-motion: reduce) { .bk-calm__b.is-on > span, .bk-calm__b.is-on::after { animation: none; } }
