@@ -90,8 +90,16 @@ export default {
 				<p class="muted">${L('شغّلوا واحد أو أكتر سوا — بيتعمل هنا على الموبايل، من غير نت', 'Play one or more together — made right here, no internet needed')}</p>
 				<div class="bk-calm__btns">
 					<button type="button" class="bk-calm__b" data-calm="piano" aria-pressed="false"><span>🎹</span>${L('بيانو هادي', 'Soft piano')}</button>
+					<button type="button" class="bk-calm__b" data-calm="lofi" aria-pressed="false"><span>🎧</span>${L('لو-فاي', 'Lo-fi beat')}</button>
+					<button type="button" class="bk-calm__b" data-calm="musicbox" aria-pressed="false"><span>🎠</span>${L('علبة موسيقى', 'Music box')}</button>
 					<button type="button" class="bk-calm__b" data-calm="rain" aria-pressed="false"><span>🌧️</span>${L('مطر على الشباك', 'Rain on the window')}</button>
+					<button type="button" class="bk-calm__b" data-calm="waves" aria-pressed="false"><span>🌊</span>${L('موج البحر', 'Sea waves')}</button>
+					<button type="button" class="bk-calm__b" data-calm="stream" aria-pressed="false"><span>💧</span>${L('مية بتجري', 'A stream')}</button>
+					<button type="button" class="bk-calm__b" data-calm="wind" aria-pressed="false"><span>🍃</span>${L('هوا برا', 'Wind outside')}</button>
 					<button type="button" class="bk-calm__b" data-calm="fire" aria-pressed="false"><span>🔥</span>${L('نار في الدفاية', 'A crackling fire')}</button>
+					<button type="button" class="bk-calm__b" data-calm="birds" aria-pressed="false"><span>🐦</span>${L('عصافير الصبح', 'Morning birds')}</button>
+					<button type="button" class="bk-calm__b" data-calm="crickets" aria-pressed="false"><span>🌙</span>${L('صراصير الليل', 'Night crickets')}</button>
+					<button type="button" class="bk-calm__b" data-calm="clock" aria-pressed="false"><span>🕰️</span>${L('تكة الساعة', 'A ticking clock')}</button>
 				</div>
 				<div class="bk-calm__row">
 					<label>${L('الصوت', 'Volume')} <input type="range" id="bk-vol" min="0" max="1" step="0.05" value="0.6"></label>
