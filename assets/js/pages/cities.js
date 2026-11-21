@@ -99,7 +99,7 @@ export default {
 				</form>
 			</details>
 		</div></section>
-		${related(['places', 'trips', 'distances'])}`;
+		${related(['places', 'anniversaries', 'distances'])}`;
 	},
 
 	async after(main, s) {

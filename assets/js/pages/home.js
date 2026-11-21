@@ -152,7 +152,7 @@ export default {
 		const latest = tl.filter((x) => String(x.date) <= now).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 5);
 		const occ = occasions(s);
 		const next = occ[0];
-		const occHref = (o) => (o.kind === 'birthday' ? `birthday.html?id=${o.id}` : o.kind === 'anniversary' ? 'trips.html' : 'story.html');
+		const occHref = (o) => (o.kind === 'birthday' ? `birthday.html?id=${o.id}` : o.kind === 'anniversary' ? 'anniversaries.html' : 'story.html');
 		const name = (w) => T(w === 'him' ? s.him : s.her);
 		const feed = this.feed || [];
 
@@ -200,7 +200,7 @@ export default {
 			[num(tl.length), L('ذكرى على حكايتنا', 'moments in our story')],
 			[num((s.gallery || []).length + tl.reduce((n, x) => n + photosOf(x).length, 0)), L('صورة', 'photos')]
 		].filter(Boolean);
-		const quick = [['journal.html', 'pen', L('صفحة في الدفتر', 'A journal page')], ['music.html', 'music', L('أغنية', 'A song')], ['draw.html', 'dice', L('سهرة الليلة', 'Tonight’s plan')], ['trips.html', 'suitcase', L('رحلة', 'A trip')], ['firsts.html', 'baby', L('أول مرة للولاد', 'A first for the boys')]];
+		const quick = [['journal.html', 'pen', L('صفحة في الدفتر', 'A journal page')], ['music.html', 'music', L('أغنية', 'A song')], ['draw.html', 'dice', L('سهرة الليلة', 'Tonight’s plan')], ['anniversaries.html', 'suitcase', L('رحلة', 'A trip')], ['firsts.html', 'baby', L('أول مرة للولاد', 'A first for the boys')]];
 		const page = (id) => PAGES.find((p) => p.id === id);
 		const firsts = (this.firsts || []).slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
 

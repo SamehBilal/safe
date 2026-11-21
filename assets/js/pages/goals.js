@@ -103,7 +103,7 @@ export default {
 			<h2 class="sec__title goals-done-h" id="gl-done-h" hidden>${L('حققناها ♥', 'We did it ♥')}</h2>
 			<div class="goals goals--done" id="gl-done"></div>
 		</div></section>
-		${related(['wishes', 'family', 'trips'])}`;
+		${related(['wishes', 'family', 'anniversaries'])}`;
 	},
 
 	async after(main) {

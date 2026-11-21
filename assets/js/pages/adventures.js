@@ -41,7 +41,7 @@ export default {
 				<button class="btn" type="submit">${L('ضيفوها ♥', 'Add it ♥')}</button>
 			</form>
 		</div></section>
-		${related(['bucket', 'trips', 'wishes'])}`;
+		${related(['bucket', 'anniversaries', 'wishes'])}`;
 	},
 
 	async after(main) {

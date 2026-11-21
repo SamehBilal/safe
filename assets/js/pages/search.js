@@ -10,7 +10,7 @@ import { doodle } from '../doodles.js';
 
 const HIDDEN = new Set(['secret', 'giftideas', 'capsule']);
 // which page shows each list (when it isn't the page of the same name)
-const PAGE_OF = { where: 'distances', spots: 'cities', tree: 'familytree' };
+const PAGE_OF = { where: 'distances', spots: 'cities', tree: 'familytree', trips: 'anniversaries' };
 const RECENT = 'us.search.recent';
 const MIN = 2;
 

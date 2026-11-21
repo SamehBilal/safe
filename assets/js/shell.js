@@ -535,7 +535,7 @@ export const PAGES = [
 	{ href: 'story.html', id: 'story', ic: 'book', ar: 'حكايتنا', en: 'Our story', dar: 'كل تاريخ عملنا إحنا', den: 'Every date that made us', group: 'story' },
 	{ href: 'chapters.html', id: 'chapters', ic: 'ring', ar: 'أيام فارقة', en: 'Big days', dar: 'الخطوبة، كتب الكتاب، الفرح', den: 'Engagement, wedding and more', group: 'story' },
 	{ href: 'places.html', id: 'places', ic: 'pin', ar: 'أماكننا', en: 'Our places', dar: 'أماكن فيها حتة مننا', den: 'Places that hold a piece of us', group: 'story' },
-	{ href: 'trips.html', id: 'trips', ic: 'map', ar: 'رحلات عيد جوازنا', en: 'Anniversary trips', dar: 'كل سنة محافظة جديدة على الخريطة', den: 'A new governorate every year, on the map', group: 'story' },
+	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'رحلة كل سنة على الخريطة، وكل سنة جواز عملنا فيها إيه', den: 'A trip every year on the map, and how we marked each one', group: 'story' },
 	{ href: 'journeys.html', id: 'journeys', ic: 'map', ar: 'رحلاتنا', en: 'Our trips', dar: 'كل رحلة طريق على الخريطة، محطة ورا محطة', den: 'Every trip a road on the map, stop by stop', group: 'story' },
 	{ href: 'cities.html', id: 'cities', ic: 'city', ar: 'خرايط مدننا', en: 'Our city maps', dar: 'كل مدينة رحناها، وأماكننا منورة فيها', den: 'Every city we’ve been to, our spots lit up', group: 'story' },
 	{ href: 'journal.html', id: 'journal', ic: 'pen', ar: 'دفترنا', en: 'Our journal', dar: 'بنكتب حكايتنا سوا، يوم بيوم', den: 'We write our story together, day by day', group: 'story' },
@@ -584,7 +584,6 @@ export const PAGES = [
 	{ href: 'gifts.html', id: 'gifts', ic: 'gift', ar: 'هدايانا', en: 'Our gifts', dar: 'كل هدية، ومين جابها', den: 'Every gift, and who gave it', group: 'you' },
 	{ href: 'capsule.html', id: 'capsule', ic: 'hourglass', ar: 'كبسولة زمنية للولاد', en: 'The boys’ time capsule', dar: 'جوابات بتستنى لحد ما يكبروا', den: 'Letters waiting for them to grow up', group: 'you' },
 	{ href: 'giftideas.html', id: 'giftideas', ic: 'gift', ar: 'أفكار هدايا', en: 'Gift ideas', dar: 'قايمة سرية لكل واحد فينا', den: 'A secret list for each of us', group: 'you' },
-	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'كل سنة جواز، وعملنا فيها إيه', den: 'Every year married, and how we marked it', group: 'you' },
 	{ href: 'hosting.html', id: 'hosting', ic: 'home', ar: 'عزايمنا', en: 'Hosting & visits', dar: 'مين جالنا، ورحنا لمين', den: 'Who came over, and who we visited', group: 'you' },
 	{ href: 'search.html', id: 'search', ic: 'search', ar: 'دوّر', en: 'Search', dar: 'دوّر في كل حاجة كتبناها', den: 'Look through everything we’ve written', group: 'app' },
 	{ href: 'settings.html', id: 'settings', ic: 'gear', ar: 'الإعدادات', en: 'Settings', dar: 'مين ماسك الموبايل، وإزاي الجديد يتبعت', den: 'Whose phone, and sharing what’s new', group: 'app' }
@@ -1336,7 +1335,7 @@ function owl() {
    another page of ours doesn't load it afresh: it swaps the page's module, redraws the header and footer and renders
    the new page into <main>, and the address and the back button work as usual. With nothing playing, links load
    pages the ordinary way. */
-const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'trips', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
+const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'anniversaries', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
 const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more', remember: 'more' };
 function ownCSS(id) {
@@ -1507,7 +1506,7 @@ const BAND = {
 	moment: [['calendar', 'اليوم ده', 'This day'], ['heart', 'فاكرينه', 'We remember'], ['star', 'ذكرى', 'A memory']],
 	chapter: [['ring', 'يوم فارق', 'A big day'], ['heart', 'إحنا', 'Us'], ['sparkle', 'للأبد', 'Forever']],
 	places: [['pin', 'هنا', 'Here'], ['couple', 'إحنا الاتنين', 'The two of us'], ['sun', 'مشوار', 'A day out'], ['walk', 'سوا', 'Together']],
-	trips: [['plane', 'يلا بينا', 'Let’s go'], ['suitcase', 'الشنط', 'Packed'], ['pin', 'محافظة جديدة', 'A new place'], ['camera', 'صور', 'Snapshots']],
+	anniversaries: [['plane', 'يلا بينا', 'Let’s go'], ['suitcase', 'الشنط', 'Packed'], ['pin', 'محافظة جديدة', 'A new place'], ['camera', 'صور', 'Snapshots']],
 	trip: [['suitcase', 'رحلتنا', 'Our trip'], ['camera', 'صورنا', 'Our photos'], ['pin', 'هنا', 'Here']],
 	journal: [['pen', 'بقلمنا', 'In our hand'], ['book', 'دفترنا', 'Our journal'], ['coffee', 'صباحية', 'Mornings'], ['heart', 'يوم بيوم', 'Day by day']],
 	draw: [['dress', 'لبس', 'Outfit'], ['dinner', 'عشا', 'Dinner'], ['dice', 'نصيبنا', 'Luck'], ['scooter', 'دليفري', 'Delivery'], ['clapper', 'فيلم', 'A film']],

@@ -15,7 +15,7 @@ export default {
 		const trips = this.trips || [];
 		const k = trips.findIndex((x) => x.id === qs('id'));
 		const x = trips[k];
-		if (!x) return `${pageHead(L('مش لاقي الرحلة دي', 'Trip not found'), '', [{ href: 'trips.html', ar: 'رحلاتنا', en: 'Our trips' }])}<p class="center"><a class="btn" href="trips.html">${L('كل الرحلات', 'All trips')}</a></p>`;
+		if (!x) return `${pageHead(L('مش لاقي الرحلة دي', 'Trip not found'), '', [{ href: 'anniversaries.html', ar: 'عيد جوازنا', en: 'Our anniversaries' }])}<p class="center"><a class="btn" href="anniversaries.html">${L('كل الرحلات', 'All trips')}</a></p>`;
 		this.title = { ar: `${govName(x.gov)} ${x.year}`, en: `${govName(x.gov)} ${x.year}` };
 		this.trip = x;
 		const prev = trips[k - 1], next = trips[k + 1];
@@ -25,7 +25,7 @@ export default {
 			...x.memories.filter((m) => m.img).map((m) => ({ html: `<img class="zoom" data-sketch="${esc(m.img)}" alt="">`, caption: m.text || '', sub: m.by ? App.t(m.by === 'him' ? s.him : s.her) : '' }))];
 		const notes = x.memories.filter((m) => !m.img || m.sketch);
 		return `
-		${pageHead(`${govName(x.gov)} ${x.year}`, [anniversary(s, x.year), x.place].filter(Boolean).join(' · '), [{ href: 'trips.html', ar: 'رحلاتنا', en: 'Our trips' }, { href: '#', label: govName(x.gov) }])}
+		${pageHead(`${govName(x.gov)} ${x.year}`, [anniversary(s, x.year), x.place].filter(Boolean).join(' · '), [{ href: 'anniversaries.html', ar: 'عيد جوازنا', en: 'Our anniversaries' }, { href: '#', label: govName(x.gov) }])}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="trip-hero panel reveal">
 				<div class="trip-hero__facts">
@@ -65,7 +65,7 @@ export default {
 				${next ? `<a class="pager__next" href="trip.html?id=${esc(next.id)}"><small>${L('اللي بعدها', 'After')}</small><b>${next.year} · ${esc(govName(next.gov))}</b></a>` : '<span></span>'}
 			</nav>
 		</div></section>
-		${related(['trips', 'gallery', 'journal'])}`;
+		${related(['anniversaries', 'gallery', 'journal'])}`;
 	},
 
 	after(main, s) {
