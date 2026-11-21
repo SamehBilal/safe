@@ -184,6 +184,22 @@
 @keyframes gi-lid { 0%, 60%, 100% { transform: none; } 70% { transform: translateY(-12px) rotate(-10deg); } }
 .gi-n { flex-basis: 100%; margin: 10px 0 0; text-align: center; }
 .gi-n span { padding: 0 8px; font-weight: 800; background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
+/* each idea with its photo beside it, taped on like a polaroid */
+.gi-card { grid-template-columns: clamp(96px, 30%, 150px) minmax(0, 1fr); column-gap: 16px; align-items: start; }
+.gi-tx { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.gi-pic { position: relative; display: grid; place-items: center; margin: 4px 0 0; aspect-ratio: 0.86; padding: 6px 6px 20px; background: #fffdf8; rotate: -3deg; box-shadow: 0 8px 16px -6px rgba(30, 20, 10, 0.4), 0 1px 2px rgba(30, 20, 10, 0.2); transition: rotate 0.3s, scale 0.3s; }
+.gi-card:nth-child(even) .gi-pic { rotate: 2.5deg; }
+.gi-pic::before { content: ''; position: absolute; z-index: 1; top: -9px; left: 50%; width: 54px; height: 18px; translate: -50% 0; rotate: 4deg; background: rgba(253, 200, 48, 0.75) repeating-linear-gradient(90deg, transparent 0 5px, rgba(255, 255, 255, 0.35) 5px 8px); }
+.gi-pic:hover { rotate: 0deg; scale: 1.04; }
+.gi-pic img { width: 100%; height: 100%; object-fit: cover; background: #f3ece0; }
+.gi-pic--empty { gap: 12px; align-content: center; font: inherit; color: #6f6a74; border: 0; cursor: pointer; background: repeating-linear-gradient(-45deg, #fffdf8 0 10px, #f7efe2 10px 20px); }
+.gi-pic--empty:disabled { cursor: default; }
+.gi-pic--empty .gi-box { width: 52px; height: 46px; animation: none; }
+.gi-pic--empty .gi-box b { font-size: 1.5rem; }
+.gi-pic--empty small { font-size: 0.75rem; font-weight: 800; }
+.gi-pic--empty.is-busy { opacity: 0.55; }
+.gi-card.is-done .gi-pic { filter: grayscale(0.6); }
+@media (max-width: 420px) { .gi-card { grid-template-columns: 92px minmax(0, 1fr); column-gap: 12px; } }
 
 /* ---- عزايمنا: a front door ---- */
 .hs-band { display: grid; justify-items: center; gap: 8px; }
