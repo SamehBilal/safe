@@ -14,7 +14,7 @@ const FOR = [['us', 'إحنا الاتنين', 'Just us'], ['family', 'إحنا 
 const forName = (k) => { const f = FOR.find((x) => x[0] === k); return f ? L(f[1], f[2]) : ''; };
 /* what it is: something to eat, something sweet, or something to drink */
 const KIND = [['dish', 'أكلة', 'A dish'], ['sweet', 'حلو', 'Something sweet'], ['drink', 'مشروب', 'A drink']];
-const kindIcon = { dish: '🍲', sweet: '🍰', drink: '🥤' };
+const kindIcon = { dish: 'dinner', sweet: 'cake', drink: 'coffee' };
 const madeOf = (x) => [...(x.made || [])].sort((a, b) => String(b.date).localeCompare(String(a.date)));
 const daysSince = (d) => Math.floor((Date.now() - new Date(d).getTime()) / 864e5);
 
@@ -63,8 +63,8 @@ export default listPage({
 		const pics = made.flatMap((m) => (m.photos || []).map((p) => ({ p, m })));
 		return `<article class="lp-card rc-card" id="rc-${esc(x.id)}">
 		${c.photo(x)}
-		<p class="lp-k">${x.best ? `${L('أحسن واحد بيعملها:', 'Best made by:')} ${esc(c.whoName(x.best))}` : ''}${x.time ? ` · ⏱ ${esc(x.time)}` : ''}</p>
-		<h3 dir="auto"><span aria-hidden="true">${kindIcon[x.kind || 'dish']}</span> ${esc(x.name)}</h3>
+		<p class="lp-k">${x.best ? `${L('أحسن واحد بيعملها:', 'Best made by:')} ${esc(c.whoName(x.best))}` : ''}${x.time ? ` · ${doodle('clock', 14)} ${esc(x.time)}` : ''}</p>
+		<h3 dir="auto"><span class="rc-kind" aria-hidden="true">${doodle(kindIcon[x.kind || 'dish'], 20)}</span> ${esc(x.name)}</h3>
 		<p class="rc-made">${made.length ? `${doodle('dinner', 16)} ${L(`عملناها ${num(made.length)} مرة · آخر مرة ${longDate(made[0].date)}`, `Made ${made.length} time${made.length === 1 ? '' : 's'} · last on ${longDate(made[0].date)}`)}` : L('لسه ما عملناهاش هنا', 'Not made here yet')}</p>
 		${pics.length ? `<div class="rc-pics">${pics.slice(0, 6).map(({ p, m }, i) => `<img class="zoom" data-sketch="${esc(p)}" alt="${esc(longDate(m.date))}" loading="lazy" style="--r:${[-4, 3, -2, 4, -3, 2][i]}deg">`).join('')}${pics.length > 6 ? `<span>+${num(pics.length - 6)}</span>` : ''}</div>` : ''}
 		${live.canWrite() ? `<button class="btn btn--sm btn--coral" type="button" data-rc-made="${esc(x.id)}">${doodle('dinner', 16)} ${Y('عملناها ♥ سجّل مرة', 'عملناها ♥ سجّلي مرة', 'We made it ♥ Log it')}</button>` : ''}

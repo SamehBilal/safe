@@ -208,7 +208,7 @@ export default {
 				<ul>${shown().map((r) => `<li><button type="button" class="fd-place${r.id === cur ? ' is-on' : ''}" data-r="${esc(r.id)}" style="--c:${esc(r.color || COLORS[0])}">
 					${badge(r, 'fd-place__logo')}
 					<span class="fd-place__tx"><b dir="auto">${esc(App.t(r.name))}</b><small>${esc([App.t(r.cuisine), App.t(r.area)].filter(Boolean).join(' · '))}</small></span>
-					<span class="fd-place__tags">${(r.offers || []).some((o) => +o.day === today) ? `<i class="fd-tag fd-tag--offer" title="${L('عرض النهارده', 'An offer today')}">🎁</i>` : ''}${favsOf(r).length ? `<i class="fd-tag" title="${L('أكلات بنحبها', 'Dishes we love')}">♥ ${num(favsOf(r).length)}</i>` : ''}${(r.sections || []).length ? '' : `<i class="fd-tag fd-tag--dim">${L('من غير منيو', 'no menu')}</i>`}</span>
+					<span class="fd-place__tags">${(r.offers || []).some((o) => +o.day === today) ? `<i class="fd-tag fd-tag--offer" title="${L('عرض النهارده', 'An offer today')}">${doodle('gift', 14)}</i>` : ''}${favsOf(r).length ? `<i class="fd-tag" title="${L('أكلات بنحبها', 'Dishes we love')}">♥ ${num(favsOf(r).length)}</i>` : ''}${(r.sections || []).length ? '' : `<i class="fd-tag fd-tag--dim">${L('من غير منيو', 'no menu')}</i>`}</span>
 				</button></li>`).join('')}</ul>
 				<button type="button" class="fd-list__arrow fd-list__arrow--up" data-step="-1" aria-label="${L('لفوق', 'Up')}" hidden>▲</button>
 				<button type="button" class="fd-list__arrow fd-list__arrow--down" data-step="1" aria-label="${L('لتحت', 'Down')}" hidden>▼</button>`;
@@ -251,7 +251,7 @@ export default {
 			const xs = all().flatMap((r) => (r.offers || []).filter((o) => +o.day === today).map((o) => ({ r, o })));
 			const box = $('#fd-today', main);
 			box.hidden = !xs.length;
-			box.innerHTML = xs.length ? `<p class="fd-today__h">🎁 ${L(`عروض النهارده — ${dayName(today)}`, `Today’s offers — ${dayName(today)}`)}</p>
+			box.innerHTML = xs.length ? `<p class="fd-today__h">${doodle('gift', 20)} ${L(`عروض النهارده — ${dayName(today)}`, `Today’s offers — ${dayName(today)}`)}</p>
 				<ul>${xs.map(({ r, o }) => `<li><button type="button" data-r="${esc(r.id)}"><b dir="auto">${esc(App.t(r.name))}</b> <span dir="auto">${esc(o.text)}</span></button></li>`).join('')}</ul>` : '';
 		};
 		$('#fd-today', main).addEventListener('click', (e) => { const b = e.target.closest('[data-r]'); if (b) { cat = ''; show(b.dataset.r); stage.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); } });
@@ -261,9 +261,12 @@ export default {
 			const box = $('#fd-offers', main);
 			const xs = (r.offers || []).slice().sort((a, b) => a.day - b.day);
 			box.hidden = !xs.length && !ok;
-			box.innerHTML = `<p class="fd-offers__h">🎁 ${L('عروضهم كل أسبوع', 'Their weekly offers')}</p>
+			box.innerHTML = `<p class="fd-offers__h">${doodle('gift', 20)} ${L('عروضهم كل أسبوع', 'Their weekly offers')}</p>
 				${xs.length ? `<ul>${xs.map((o) => `<li class="${+o.day === today ? 'is-today' : ''}"><b>${L('كل', 'Every')} ${esc(dayName(+o.day))}</b> <span dir="auto">${esc(o.text)}</span>${+o.day === today ? ` <i>${L('النهارده!', 'today!')}</i>` : ''}${ok ? ` <button type="button" class="link link--danger" data-offer-rm="${esc(o.id)}" aria-label="${L('شيل العرض', 'Remove the offer')}">✕</button>` : ''}</li>`).join('')}</ul>` : `<p class="muted">${L('مفيش عروض متسجلة لسه', 'No offers written down yet')}</p>`}
-				${ok ? `<form class="fd-offers__add" autocomplete="off"><select name="day" aria-label="${L('اليوم', 'Day')}">${DAYS.map((d, i) => `<option value="${i}"${i === today ? ' selected' : ''}>${L('كل', 'Every')} ${esc(L(...d))}</option>`).join('')}</select><input name="text" dir="auto" maxlength="90" required placeholder="${L('قهوة ببلاش مع التانية…', 'A second coffee free…')}"><button class="btn btn--sm" type="submit">${Y('ضيف', 'ضيفي', 'Add')}</button></form>` : ''}`;
+				${ok ? `<form class="fd-offers__add" autocomplete="off"><div class="f-row">
+					<label class="f"><span>${L('إمتى؟', 'When?')}</span><select name="day">${DAYS.map((d, i) => `<option value="${i}"${i === today ? ' selected' : ''}>${L('كل', 'Every')} ${esc(L(...d))}</option>`).join('')}</select></label>
+					<label class="f f--grow"><span>${L('العرض', 'The offer')}</span><input name="text" dir="auto" maxlength="90" required placeholder="${L('قهوة ببلاش مع التانية…', 'A second coffee free…')}"></label>
+				</div><div class="f-actions"><button class="btn btn--sm btn--coral" type="submit">${doodle('gift', 16)} ${Y('ضيف العرض', 'ضيفي العرض', 'Add the offer')}</button></div></form>` : ''}`;
 		};
 		$('#fd-offers', main).addEventListener('submit', (e) => {
 			e.preventDefault();
@@ -288,7 +291,14 @@ export default {
 					${free.map((x) => `<li><span class="fd-fav fd-fav--free"><b dir="auto">${esc(x.name)}</b><small dir="auto">${esc(x.where || L('من أي حتة', 'From anywhere'))}</small><i>♥ ${esc(who(x.who))}</i>${ok ? `<button type="button" class="link link--danger" data-fav-rm="${esc(x.id)}" aria-label="${L('شيل', 'Remove')}">✕</button>` : ''}</span></li>`).join('')}
 				</ul>
 				${!out.length && !free.length ? `<p class="empty">${L('لسه ما علّمناش أكلات — افتح منيو واضغط على أكلة', 'None marked yet — open a menu and tap a dish')}</p>` : ''}
-				${ok ? `<form class="fd-favs__add" autocomplete="off"><input name="name" dir="auto" maxlength="60" required placeholder="${L('أكلة بنحبها…', 'A dish we love…')}"><input name="where" dir="auto" maxlength="60" placeholder="${L('من فين؟ (اختياري)', 'From where? (optional)')}"><select name="who">${WHO.map(([v, n]) => `<option value="${v}">${esc(n())}</option>`).join('')}</select><button class="btn btn--sm btn--coral" type="submit">♥ ${Y('ضيفها', 'ضيفيها', 'Add it')}</button></form>` : ''}`;
+				${ok ? `<details class="composer fd-favs__add"><summary><span>${doodle('heart', 22)}</span> ${Y('ضيف أكلة بنحبها من أي حتة', 'ضيفي أكلة بنحبها من أي حتة', 'Add a dish we love, from anywhere')}</summary><form autocomplete="off">
+					<div class="f-row">
+						<label class="f f--grow"><span>${L('الأكلة', 'The dish')}</span><input name="name" dir="auto" maxlength="60" required placeholder="${L('كشري أبو طارق…', 'Abou Tarek’s koshary…')}"></label>
+						<label class="f f--grow"><span>${L('من فين؟ (اختياري)', 'From where? (optional)')}</span><input name="where" dir="auto" maxlength="60"></label>
+						<label class="f"><span>${L('مين بيحبها؟', 'Who loves it?')}</span><select name="who">${WHO.map(([v, n]) => `<option value="${v}">${esc(n())}</option>`).join('')}</select></label>
+					</div>
+					<div class="f-actions"><button class="btn btn--coral" type="submit">${Y('ضيفها ♥', 'ضيفيها ♥', 'Add it ♥')}</button></div>
+				</form></details>` : ''}`;
 		};
 		$('#fd-favs', main).addEventListener('click', (e) => {
 			const b = e.target.closest('[data-fav]');
@@ -322,7 +332,7 @@ export default {
 			const xs = all();
 			const yr = (r) => String(r.date || '').slice(0, 4);
 			const line = (r) => `<li><button type="button" data-r="${esc(r.id)}"${r.id === cur ? ' class="is-on"' : ''}>${badge(r, 'fm-board__logo')}<span dir="auto">${esc(App.t(r.name))}</span><i aria-hidden="true"></i><b>${yr(r) ? num(+yr(r)).replace(/[٬,]/g, '') : '♥'}</b></button></li>`;
-			const cooked = (x) => `<li><button type="button" data-rc="${esc(x.id)}"><span dir="auto">${{ dish: '🍲', sweet: '🍰', drink: '🥤' }[x.kind || 'dish']} ${esc(x.name)}</span><i aria-hidden="true"></i><b>${x.made?.length ? `×${num(x.made.length)}` : '♥'}</b></button></li>`;
+			const cooked = (x) => `<li><button type="button" data-rc="${esc(x.id)}"><span dir="auto">${doodle({ dish: 'dinner', sweet: 'cake', drink: 'coffee' }[x.kind || 'dish'], 16)} ${esc(x.name)}</span><i aria-hidden="true"></i><b>${x.made?.length ? `×${num(x.made.length)}` : '♥'}</b></button></li>`;
 			board.innerHTML = `<div class="fm-board fm-board--two">
 				<span class="fm-board__cup" aria-hidden="true">${doodle('coffee', 44)}</span>
 				<div class="fm-board__cols">
