@@ -664,3 +664,34 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 [dir='rtl'] .mo-strip__step--next b::after { content: ' ‹'; }
 .mo-strip__step:hover b { text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 4px; }
 @media (max-width: 640px) { .mo-strip__y.is-odd { display: none; } .mo-strip__pin small { display: none; } }
+/* offline nights: the timer and the month's goal, side by side */
+.ol-tools { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin-bottom: 34px; }
+.ol-timer, .ol-goal { display: grid; gap: 8px; justify-items: center; align-content: start; padding: 18px; text-align: center; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); }
+.ol-goal { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
+.ol-timer h3, .ol-goal h3 { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 1.05rem; }
+.ol-timer p, .ol-goal p { margin: 0; }
+.ol-timer__t { font: 400 3.2rem/1 var(--f-label); letter-spacing: .06em; color: var(--blue); direction: ltr; }
+.ol-timer.is-on { background: #1d2330; color: #f4efe6; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 #fdc830; }
+.ol-timer.is-on .ol-timer__t { color: #fdc830; text-shadow: 0 0 18px rgba(253, 200, 48, .45); }
+.ol-timer.is-on .muted { color: #c9c2b8; }
+.ol-timer.is-on .link { color: #c9c2b8; }
+.ol-goal__n { font-weight: 800; }
+.ol-goal__n b { font: 400 2.6rem/1 var(--f-label); color: var(--coral-deep, var(--coral)); }
+.ol-goal__bar { width: 100%; height: 12px; overflow: hidden; background: color-mix(in srgb, var(--ink) 10%, var(--card)); border: 1.5px solid var(--ink); border-radius: 999px; }
+.ol-goal__bar i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--coral) 0 7px, color-mix(in srgb, var(--coral) 70%, #fff) 7px 14px); transition: width .6s; }
+.ol-facts { display: grid; gap: 2px; margin: 6px 0 0; padding: 0; list-style: none; font-size: .88rem; }
+/* things to do with the phones away */
+.ol-ideas { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+.ol-idea { display: grid; justify-items: center; gap: 6px; padding: 14px 8px 12px; font: inherit; font-weight: 700; font-size: .9rem; color: var(--text); cursor: pointer; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-pink); rotate: var(--r); transition: rotate .25s, scale .25s, background .2s; }
+.ol-idea:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-lime); }
+.ol-idea:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-yellow); }
+.ol-idea svg { color: var(--coral-deep, var(--coral)); }
+.ol-idea:hover { rotate: 0deg; scale: 1.05; }
+.ol-idea.is-picked { rotate: 0deg; scale: 1.1; color: #fff; background: var(--coral); }
+.ol-idea.is-picked svg { color: #fff; }
+.ol-pick { margin: 16px 0 34px; text-align: center; }
+.ol-decks { margin-bottom: 16px; }
+.ol-decks .chip { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.ol-decks .chip small { padding: 0 6px; border-radius: 999px; background: var(--hl-yellow); color: #2b2b33; }
+.ol-decks .chip.is-on { color: #fff; background: var(--coral); }
+.ol-deck { margin-bottom: 34px; }
