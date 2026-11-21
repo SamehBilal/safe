@@ -626,14 +626,54 @@
 @keyframes bk-calm-note { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-8px) rotate(14deg); } }
 @media (prefers-reduced-motion: reduce) { .bk-calm__b.is-on > span, .bk-calm__b.is-on::after { animation: none; } }
 
-/* «أكلنا» with «نطبخ إيه» under it: the band puts the recipes' steaming pot beside the restaurants' chalkboard (under
-   it on a phone), and the pot is a way down to the recipes */
-.fd-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: clamp(10px, 3vw, 40px); width: min(1100px, 100% - 2 * var(--gutter)); margin: 0 auto; }
-.fd-band > .lp-band { width: auto; margin: 0; }
-.fd-band > .fd-pot { min-height: 0; padding: 0 0 34px; color: inherit; text-decoration: none; }
-.fd-pot .rc-pot { width: clamp(150px, 17vw, 220px); }
-.fd-pot .rc-steam { min-height: 36px; }
-@media (max-width: 760px) { .fd-band { grid-template-columns: 1fr; justify-items: center; } .fd-band > .fd-pot { padding: 18px 0 8px; } .fd-pot .rc-pot { width: 150px; } }
 .fd-recipes { scroll-margin-top: calc(var(--hd) + 16px); }
 .fd-recipes > .sec { padding-top: clamp(28px, 5vw, 56px); }
 .fd-recipes .sec__title svg { vertical-align: -4px; }
+
+/* «أكلنا» and «نطبخ إيه» on one board: the café chalkboard is wider, with two sides — «مطاعمنا» (two columns of
+   places, the year we first went) and, past a chalk line, «مطبخنا» (the dishes we cook, ×how many times) — and
+   «نأكل إيه النهارده؟» chalked at its foot. Under it, برا / في البيت: two cards that swap what's below */
+.fm-board--two { width: min(1080px, 100%); }
+.fm-board__cols { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 0 clamp(20px, 3vw, 40px); align-items: start; }
+.fm-board__col--home { position: relative; padding-inline-start: clamp(20px, 3vw, 40px); }
+.fm-board__col--home::before { content: ''; position: absolute; inset-block: 6px 0; inset-inline-start: 0; width: 3px; background: repeating-linear-gradient(180deg, rgba(241, 239, 230, .5) 0 10px, transparent 10px 16px); border-radius: 2px; }
+.fm-board__list--home { grid-template-columns: 1fr; }
+.fm-board__list--home b { color: #f9a8a4; }
+.fm-board__col .fm-board__wait { font-size: 1.05rem; padding-top: 8px; }
+.fm-board__foot { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 22px; }
+.fm-board__luck { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; color: #fdc830; background: none; border: 2px dashed rgba(253, 200, 48, .7); border-radius: 999px; cursor: pointer; font: 700 1.3rem/1.2 var(--f-hand); transition: background .2s, rotate .2s; }
+:lang(ar) .fm-board__luck { font: 800 .95rem/1.5 var(--f-body); }
+.fm-board__luck:hover { background: rgba(253, 200, 48, .12); rotate: -2deg; }
+.fm-board__luck:disabled { opacity: .6; cursor: default; }
+.fm-board__list button.is-lit { background: rgba(253, 200, 48, .28); }
+.fm-board__list button.is-lit span { color: #fff; }
+@media (max-width: 760px) {
+	.fm-board__cols { grid-template-columns: 1fr; }
+	.fm-board__col--home { padding: 14px 0 0; margin-top: 12px; }
+	.fm-board__col--home::before { inset: 0 8% auto; width: auto; height: 3px; background: repeating-linear-gradient(90deg, rgba(241, 239, 230, .5) 0 10px, transparent 10px 16px); }
+}
+
+.fd-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: min(640px, 100%); margin: clamp(6px, 2vw, 18px) auto 0; }
+.fd-side { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 12px; padding: 12px 18px; text-align: start; color: var(--text); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 16px); cursor: pointer; font: inherit;
+	box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--ink, #37353f) 25%, transparent); transition: transform .2s var(--ease-pop, ease), box-shadow .2s, background .2s; }
+.fd-side svg { grid-row: 1 / span 2; color: var(--coral); }
+.fd-side b { font: 400 1.5rem/1.1 var(--f-script); color: var(--blue); }
+:lang(ar) .fd-side b { font: 800 1.1rem/1.4 var(--f-body); }
+.fd-side small { font-size: .8rem; font-weight: 700; color: var(--muted); }
+.fd-side:hover { transform: translateY(-2px); }
+.fd-side.is-on { background: #2f3d35; color: #f1efe6; border-color: #8a5a2b; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--hl-yellow, #fdc830); }
+.fd-side.is-on b { color: #fff; } .fd-side.is-on small { color: rgba(241, 239, 230, .8); } .fd-side.is-on svg { color: #fdc830; }
+.fd-side:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.fd-recipes > .sec { padding-top: clamp(24px, 4vw, 44px); }
+.rc-card.is-picked { animation: fd-pick 1.6s ease-out; }
+@keyframes fd-pick { 0%, 40% { box-shadow: 0 0 0 4px var(--hl-yellow, #fdc830); } }
+
+/* a restaurant's cover: call them, order on elmenus, their site */
+.fm__acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.fm__act { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: .82rem; font-weight: 800; color: var(--fm); text-decoration: none; background: color-mix(in srgb, var(--fm) 10%, #fff); border: 1.5px solid color-mix(in srgb, var(--fm) 55%, transparent); border-radius: 999px; transition: background .2s; }
+.fm__act:hover { background: color-mix(in srgb, var(--fm) 20%, #fff); }
+.fm__act--call { color: #fff; background: var(--fm); border-color: var(--fm); }
+.fm__act--call:hover { background: color-mix(in srgb, var(--fm) 85%, #000); }
+.fm__src { margin: 14px 0 0; font-size: .72rem; color: #8a8f99; }
+/* the list pages' bands stretch their drawings to the band's width (more.css); the board keeps its doodles small */
+.fm-band.lp-band svg { width: auto; height: auto; }

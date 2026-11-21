@@ -56,7 +56,7 @@ export default listPage({
 		const lines = (s) => String(s || '').split('\n').map((l) => l.trim()).filter(Boolean);
 		const made = madeOf(x);
 		const pics = made.flatMap((m) => (m.photos || []).map((p) => ({ p, m })));
-		return `<article class="lp-card rc-card">
+		return `<article class="lp-card rc-card" id="rc-${esc(x.id)}">
 		${c.photo(x)}
 		<p class="lp-k">${x.best ? `${L('أحسن واحد بيعملها:', 'Best made by:')} ${esc(c.whoName(x.best))}` : ''}${x.time ? ` · ⏱ ${esc(x.time)}` : ''}</p>
 		<h3 dir="auto">${esc(x.name)}</h3>
@@ -140,6 +140,8 @@ export default listPage({
 			try { await c.save((d) => { const x = (d.items || []).find((y) => y.id === un.dataset.rcUnmade); if (x) x.made = (x.made || []).filter((m) => m.id !== un.dataset.m); }); } catch (err) { alert(live.why(err)); }
 		}
 	},
+	// the page around it (أكلنا) hears about the dishes each time they change, to chalk them on its board
+	painted: (root, items) => root.dispatchEvent(new CustomEvent('rc-items', { detail: items, bubbles: true })),
 	empty: ['أول أكلة تتكتب هنا ♥', 'The first recipe goes here ♥'],
 	related: ['food', 'draw', 'hosting']
 });
