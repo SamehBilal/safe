@@ -1287,7 +1287,7 @@ button.cal-d.is-on { box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--k); 
 .adv-pc:nth-child(even)::before { background: rgba(252, 139, 147, .7); rotate: 4deg; }
 .adv-pc-img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #dfe8ec; }
 .adv-pc figcaption { font: 400 clamp(.85rem, 1.6vw, 1.15rem)/1.9 var(--f-hand); color: #2b2b33; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-@media (max-width: 560px) { .adv-pc:nth-child(1), .adv-pc:nth-child(5) { display: none; } .adv-pc { width: 30vw; } }
+@media (max-width: 560px) { .adv-pc:nth-child(1), .adv-pc:nth-child(4) { display: none; } .adv-pc { width: 30vw; } }
 @keyframes adv-drop { from { opacity: 0; transform: translateY(-30px) rotate(-8deg); } }
 
 /* how far along we are: a dashed route with a little plane on it */
@@ -1722,3 +1722,17 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .bdw__film.is-start .bdw__arr--prev, .bdw__film.is-end .bdw__arr--next { opacity: 0; pointer-events: none; }
 @media (max-width: 600px) { .bdw__arr { width: 36px; height: 36px; font-size: 1.1rem; } .bdw__arr--prev { inset-inline-start: -8px; } .bdw__arr--next { inset-inline-end: -8px; } }
 @media (prefers-reduced-motion: reduce) { .bdw__arr { transition: none; } }
+
+/* «أحلامنا ومغامراتنا»: the last card in the band is the checklist on its clipboard */
+.adv-pc--list { display: grid; align-content: start; padding: 18px 10px 0; background: #fffdf8 repeating-linear-gradient(transparent 0 23px, rgba(14, 105, 144, .14) 23px 24px) 0 14px; }
+.adv-pc--list::before { display: none; }
+.adv-clip { position: absolute; top: -10px; left: 50%; width: 46%; height: 18px; translate: -50% 0; background: #8a6a4a; border: 1.5px solid #37353f; border-radius: 5px 5px 2px 2px; }
+.adv-pc--list ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; aspect-ratio: 1; align-content: center; }
+.adv-pc--list li { display: flex; align-items: center; gap: 6px; min-width: 0; font: 700 clamp(.62rem, 1.1vw, .8rem)/1.6 var(--f-body); color: #2b2b33; }
+.adv-pc--list li span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.adv-pc--list li i { position: relative; flex: none; width: 13px; height: 13px; border: 1.5px solid #37353f; border-radius: 2px; }
+.adv-pc--list li.is-done i::after { content: '✓'; position: absolute; inset: -8px 0 0 1px; color: #d9534f; font: 800 1.1rem/1 var(--f-body); animation: bk-tick .4s cubic-bezier(.34, 1.6, .5, 1) calc(var(--k) * .25s + .4s) both; }
+.adv-pc--list li.is-done span { text-decoration: line-through; text-decoration-color: #d9534f; text-decoration-thickness: 2px; }
+.adv-pc--list figcaption b { font: 400 1.3em/1 var(--f-label); color: var(--blue, #0e6990); }
+@keyframes bk-tick { from { transform: scale(0); } }
+.adv-note { color: var(--muted); font-size: .8rem; }
