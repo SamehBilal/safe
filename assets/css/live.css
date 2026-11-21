@@ -1739,7 +1739,7 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .adv-note { color: var(--muted); font-size: .8rem; }
 
 /* «ألعابنا»: video games in the band too — a gamepad whose buttons light up, and a few of our games' boxes */
-.gm-video { position: relative; display: grid; justify-items: center; gap: 6px; }
+.gm-video { position: relative; display: grid; justify-items: center; gap: 18px; }
 .gm-boxes { position: relative; width: 150px; height: 104px; }
 .gm-boxes img { position: absolute; left: 50%; bottom: 0; width: 72px; height: 96px; margin-left: -36px; object-fit: cover; border: 2px solid #fffdf8; border-radius: 4px; box-shadow: 0 4px 10px rgba(30, 20, 10, .3); rotate: calc(var(--i) * 12deg); translate: calc(var(--i) * 34px) calc(var(--i) * var(--i) * 6px); transition: rotate .3s, translate .3s; }
 .gm-video:hover .gm-boxes img { rotate: calc(var(--i) * 18deg); translate: calc(var(--i) * 46px) calc(var(--i) * var(--i) * 10px); }
@@ -1754,14 +1754,13 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .gm-consoles { display: flex; align-items: flex-end; gap: 10px; }
 .gm-scr__play { animation: gm-blink 1.6s steps(2) infinite; }
 @keyframes gm-blink { 50% { opacity: .55; } }
-.gm-on { justify-self: center; width: fit-content; padding: 1px 10px; font-size: .74rem; font-weight: 800; color: #fff; background: var(--c); border-radius: 999px; }
 #gm-plat { margin-bottom: 14px; }
 #gm-plat .chip { cursor: pointer; }
 #gm-plat .chip.is-on { color: #fff; background: var(--c); border-color: var(--ink, #37353f); }
 @media (prefers-reduced-motion: reduce) { .gm-scr__play { animation: none; } }
 /* the band's devices, in the journal's hand: paper and pastel fills, ink outlines, highlighter buttons, a hard shadow */
 .gm-switch, .gm-pc, .gm-ps { overflow: visible; filter: drop-shadow(calc(var(--bujo-x, 1) * 3px) 3px 0 color-mix(in srgb, var(--ink, #37353f) 85%, transparent)); transition: rotate .3s; }
-.gm-switch { width: 140px; rotate: -3deg; } .gm-pc { width: 84px; rotate: 2deg; } .gm-ps { width: 82px; rotate: 4deg; }
+.gm-switch { width: 140px; rotate: -3deg; } .gm-pc { width: 110px; rotate: 2deg; } .gm-ps { width: 82px; rotate: 4deg; }
 .gm-video:hover :is(.gm-switch, .gm-pc, .gm-ps) { rotate: 0deg; }
 :is(.gm-switch, .gm-pc, .gm-ps) :is(rect, path, circle) { stroke: var(--ink, #37353f); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .gm-jc--l { fill: color-mix(in srgb, var(--blue, #0e6990) 55%, #fffdf8); }
@@ -1782,3 +1781,17 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .gm-scr__play path { stroke: var(--coral-deep, #d6544f); stroke-dasharray: none; }
 .gm-scr__play circle { stroke-width: 1.4; }
 @media (prefers-reduced-motion: reduce) { .gm-ps__btn circle, .gm-abxy { animation: none; } }
+
+.gm-kb { fill: #fffdf8; }
+.gm-key { fill: #fffdf8; stroke-width: 1.4 !important; }
+.gm-key.is-lit { fill: var(--hl-yellow, #fdc830); animation: gm-press 2.4s steps(1) calc(var(--k) * .3s) infinite; transform-box: fill-box; }
+.gm-key--space { fill: color-mix(in srgb, var(--hl-pink, #fc8b93) 35%, #fffdf8); }
+.gm-mouse { fill: color-mix(in srgb, var(--blue, #0e6990) 22%, #fffdf8); }
+.gm-mouse__line { fill: none; }
+.gm-wheel { fill: var(--coral, #f2726f); }
+.gm-cord { fill: none; stroke-dasharray: 3 3; }
+@media (prefers-reduced-motion: reduce) { .gm-key.is-lit { animation: none; } }
+/* what a game is on: a little sticker, tilted, ink-edged, in the platform's colour like a highlighter */
+.gm-on { justify-self: center; width: fit-content; padding: 1px 10px; font: 800 .74rem/1.6 var(--f-body); color: var(--ink-text, #2b2b33); background: color-mix(in srgb, var(--c) 28%, #fffdf8); border: 1.5px solid var(--ink, #37353f); border-radius: 6px 10px 7px 9px / 9px 6px 10px 7px; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--c); rotate: -2deg; }
+.game:nth-child(even) .gm-on { rotate: 2deg; }
+:lang(en) .gm-on { font: 400 .95rem/1.4 var(--f-label); letter-spacing: .04em; }
