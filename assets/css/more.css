@@ -695,3 +695,23 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 .ol-decks .chip small { padding: 0 6px; border-radius: 999px; background: var(--hl-yellow); color: #2b2b33; }
 .ol-decks .chip.is-on { color: #fff; background: var(--coral); }
 .ol-deck { margin-bottom: 34px; }
+
+/* recipes: how we've been cooking, and every time we made a dish */
+.rc-stats { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); margin: 0 0 26px; }
+.rc-stats span { display: grid; gap: 2px; align-content: start; padding: 12px 14px; font-size: .82rem; font-weight: 700; color: var(--muted); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-yellow); }
+.rc-stats span:nth-child(2n) { box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-pink); }
+.rc-stats b { font: 400 1.9rem/1.1 var(--f-label); color: var(--coral-deep, var(--coral)); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.rc-stats .rc-name { font: 800 1.05rem/1.5 var(--f-body); white-space: normal; }
+.rc-stats .is-miss { box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-lime); }
+.rc-made { display: flex; align-items: center; gap: 6px; margin: 0; font-size: .85rem; font-weight: 700; color: var(--muted); }
+.rc-pics { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0; }
+.rc-pics img { width: 58px; height: 58px; object-fit: cover; padding: 3px 3px 9px; background: #fffdf8; rotate: var(--r); box-shadow: 0 3px 6px rgba(30, 20, 10, .25); cursor: zoom-in; transition: rotate .2s, scale .2s; }
+.rc-pics img:hover { rotate: 0deg; scale: 1.1; }
+.rc-pics span { font-weight: 800; color: var(--muted); }
+.rc-card > .btn { justify-self: start; }
+.rc-times ul { display: grid; gap: 10px; margin: 8px 0 0; padding: 0; list-style: none; }
+.rc-times li { padding: 8px 10px; font-size: .88rem; background: color-mix(in srgb, var(--hl-yellow) 18%, var(--card)); border: 1px dashed color-mix(in srgb, var(--ink) 35%, transparent); border-radius: 8px; }
+.rc-times li p { margin: 4px 0 0; }
+.rc-h { color: var(--coral); letter-spacing: 1px; }
+.rc-tpics { display: flex; gap: 6px; margin-top: 6px; }
+.rc-tpics img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink); cursor: zoom-in; }
