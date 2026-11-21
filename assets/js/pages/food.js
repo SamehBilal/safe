@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { shrinkPhoto } from './trips.js';
+import recipes from './recipes.js';
 
 /* Our food: the restaurants we love, each with its menu as a folded paper flyer, after Codrops' «3D Restaurant Menu»
    (tympanus.net/codrops, Mary Lou): the cover swings open on its hinge, the last panel unfolds the other way, and
@@ -10,7 +11,9 @@ import { shrinkPhoto } from './trips.js';
    other way, like an Arabic book. On a phone there's no room to open sideways, so the same flyer unfolds up and down:
    the cover lifts up over the top, the last panel drops down, and you scroll through it. Like the original, a dish
    can carry a photo (marked with a little eye) and a link out. The places live in the shared list
-   content/live/food.bin; the first one is an example to show how a menu reads (edit it away or keep it). */
+   content/live/food.bin; the first one is an example to show how a menu reads (edit it away or keep it).
+   Under the restaurants, «نطبخ إيه»: what we cook at home (recipes.js, its own list content/live/recipes.bin), so
+   what we eat out and what we make ourselves are on one page; the band puts its steaming pot beside the chalkboard. */
 
 const COLORS = ['#c2185b', '#0e6990', '#26706b', '#e39b2d', '#6d4bb3', '#d9534f', '#8a5a2b'];
 const FAV = { him: () => App.t(App.story.him), her: () => App.t(App.story.her), both: () => L('إحنا الاتنين', 'both of us') };
@@ -88,10 +91,10 @@ function menuHTML(r) {
 
 export default {
 	title: { ar: 'أكلنا', en: 'Our food' },
-	render() {
+	render(s) {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('أكلنا', 'Our food'), L('المطاعم اللي بنحبها، والمنيو بتاع كل واحد — واللي دايماً بنطلبه', 'The places we love, each with its menu — and what we always order'), [{ href: 'food.html', ar: 'أكلنا', en: 'Our food' }], { band: `<div class="lp-band fm-band" id="fm-band"><div class="fm-board"><p class="fm-board__h">${L('مطاعمنا', 'Our places')}</p><p class="fm-board__wait">${L('بنكتب المنيو…', 'Chalking the menu…')}</p></div></div>` })}
+		${pageHead(L('أكلنا', 'Our food'), L('المطاعم اللي بنحبها، والمنيو بتاع كل واحد — واللي دايماً بنطلبه', 'The places we love, each with its menu — and what we always order'), [{ href: 'food.html', ar: 'أكلنا', en: 'Our food' }], { band: `<div class="fd-band"><div class="lp-band fm-band" id="fm-band"><div class="fm-board"><p class="fm-board__h">${L('مطاعمنا', 'Our places')}</p><p class="fm-board__wait">${L('بنكتب المنيو…', 'Chalking the menu…')}</p></div></div><a class="lp-band lp-band--recipes fd-pot" id="lp-band" href="#recipes" aria-label="${L('نطبخ إيه', 'Our recipes')}"></a></div>` })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="chips fm-places" role="toolbar" aria-label="${L('المطاعم', 'Restaurants')}" id="fm-places"></div>
 			<div class="fm-stage" id="fm-stage"><p class="empty">${L('بنجيب المطاعم…', 'Fetching the restaurants…')}</p></div>
@@ -122,10 +125,13 @@ export default {
 				</form>
 			</details>
 		</div></section>
-		${related(['draw', 'places', 'cities'])}`;
+		<div id="recipes" class="fd-recipes">${recipes.section(s, `<h2 class="sec__title reveal">${doodle('dinner', 30)} ${L('نطبخ إيه', 'Our recipes')}</h2><p class="sec__sub fd-recipes__sub">${L('الأكلات اللي بنعملها سوا، ومين بيعملها أحسن — وكل مرة عملناها', 'What we cook together, who makes it best — and every time we made it')}</p>`)}</div>
+		${related(['hosting', 'draw', 'places', 'cities'])}`;
 	},
 
-	async after(main) {
+	async after(main, s) {
+		// our recipes, under the restaurants: their own list, kept inside their section
+		const cooking = recipes.after(main, s, $('#recipes', main));
 		const stage = $('#fm-stage', main), chips = $('#fm-places', main);
 		let data = { items: [] };
 		let cur = '';
@@ -326,6 +332,12 @@ export default {
 		};
 
 		data = await live.load('food');
-		show(decodeURIComponent(location.hash.slice(1)));
+		const hash = decodeURIComponent(location.hash.slice(1));
+		const find = hash.startsWith('find=') ? hash.slice(5).trim().toLowerCase() : '';
+		const place = find && all().find((x) => [x.name?.ar, x.name?.en, App.t(x.name)].some((n) => String(n || '').toLowerCase().includes(find)));
+		show(place ? place.id : hash === 'recipes' || find ? '' : hash);
+		await cooking;
+		// «#recipes», or a search result for one of the dishes we cook (not a restaurant): down to the recipes
+		if (hash === 'recipes' || (find && !place)) setTimeout(() => $('#recipes', main)?.scrollIntoView({ block: 'start' }), 350);
 	}
 };

@@ -39,5 +39,5 @@ export default listPage({
 		${c.del(x)}
 	</article>`,
 	empty: ['أول عزومة تتسجل هنا ♥', 'The first visit goes here ♥'],
-	related: ['recipes', 'calendar', 'family']
+	related: ['food', 'calendar', 'family']
 });

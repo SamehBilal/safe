@@ -15,7 +15,10 @@
      toggle: { n, on: [ar, en], off: [ar, en] }   a done/undone button on each card
      top(items, ctx) → html          something between the form and the list
      empty: [ar, en], related: [ids], note: [ar, en] (a line under the form)
-   } */
+   }
+   A list can also live inside another page (recipes inside «أكلنا»): that page puts section(s, head) where it wants
+   the list and an element #lp-band for the band, and calls after(main, s, root) with root = that section, so the
+   list's clicks and lookups stay inside it. */
 import { L, Y, T, esc, pageHead, related, App, $, $$, longDate, age } from './shell.js';
 import { doodle } from './doodles.js';
 import * as live from './live.js';
@@ -63,9 +66,16 @@ function input(f, s) {
 }
 
 export function listPage(cfg) {
-	return {
+	const page = {
 		title: { ar: cfg.title[0], en: cfg.title[1] },
 		render(s) {
+			return `
+			${pageHead(L(...cfg.title), L(...cfg.sub), [{ href: cfg.id + '.html', ar: cfg.title[0], en: cfg.title[1] }], { band: `<div class="lp-band lp-band--${cfg.id}" id="lp-band" aria-hidden="true"></div>` })}
+			${page.section(s)}
+			${related(cfg.related || ['story', 'journal', 'gallery'])}`;
+		},
+		/* the list itself — the form, what's on top, the chips and the cards — with an optional heading over it */
+		section(s, head = '') {
 			const ok = live.canWrite();
 			const rows = [];
 			let row = [];
@@ -76,8 +86,8 @@ export function listPage(cfg) {
 			if (row.length) rows.push(row);
 			const chips = cfg.chips ? `<div class="chips" id="lp-chips" role="toolbar"><button class="chip is-on" type="button" data-v="">${L('الكل', 'All')}</button>${optsOf(cfg.chips, s).map(([v, x]) => `<button class="chip" type="button" data-v="${esc(v)}">${esc(x)}</button>`).join('')}</div>` : '';
 			return `
-			${pageHead(L(...cfg.title), L(...cfg.sub), [{ href: cfg.id + '.html', ar: cfg.title[0], en: cfg.title[1] }], { band: `<div class="lp-band lp-band--${cfg.id}" id="lp-band" aria-hidden="true"></div>` })}
-			<section class="sec sec--top"><div class="wrap">
+			<section class="sec${head ? '' : ' sec--top'}" id="lp-sec-${cfg.id}"><div class="wrap">
+				${head}
 				${cfg.fields.length ? `${ok ? '' : `<div class="narrow" style="margin:0 auto 24px">${setupNote()}</div>`}
 				<details class="composer reveal"${ok ? '' : ' hidden'}>
 					<summary><span>${doodle(cfg.icon || 'pen', 22)}</span> ${esc(L(...cfg.add))}</summary>
@@ -91,11 +101,10 @@ export function listPage(cfg) {
 				<div id="lp-top"></div>
 				${chips}
 				<div class="lp-list lp-list--${cfg.id}" id="lp-list"></div>
-			</div></section>
-			${related(cfg.related || ['story', 'journal', 'gallery'])}`;
+			</div></section>`;
 		},
 
-		async after(main, s) {
+		async after(main, s, root = main) {
 			const ctx = ctxOf(s);
 			let data = await live.load(cfg.kind);
 			let chip = '';
@@ -106,16 +115,16 @@ export function listPage(cfg) {
 			const paint = () => {
 				let items = (data.items || []).filter((x) => !cfg.keep || cfg.keep(x, ctx));
 				if (cfg.sort) items = [...items].sort(cfg.sort);
-				$('#lp-band', main).innerHTML = cfg.band ? cfg.band(items, ctx) : '';
-				if (cfg.top) $('#lp-top', main).innerHTML = cfg.top(items, ctx);
+				{ const band = $('#lp-band', main); if (band) band.innerHTML = cfg.band ? cfg.band(items, ctx) : ''; }
+				if (cfg.top) $('#lp-top', root).innerHTML = cfg.top(items, ctx);
 				const shown = chip && cfg.chips ? items.filter((x) => String(x[cfg.chips.n]) === chip) : items;
-				$('#lp-list', main).innerHTML = shown.map((x) => cfg.card(x, ctx)).join('') || (cfg.empty === false ? '' : `<p class="empty">${esc(L(...(cfg.empty || ['لسه مفيش حاجة هنا ♥', 'Nothing here yet ♥'])))}</p>`);
+				$('#lp-list', root).innerHTML = shown.map((x) => cfg.card(x, ctx)).join('') || (cfg.empty === false ? '' : `<p class="empty">${esc(L(...(cfg.empty || ['لسه مفيش حاجة هنا ♥', 'Nothing here yet ♥'])))}</p>`);
 				live.hydrateSketches(main);
-				cfg.painted?.(main, items, ctx);
+				cfg.painted?.(root, items, ctx);
 			};
-			main.addEventListener('click', async (e) => {
+			root.addEventListener('click', async (e) => {
 				const c = e.target.closest('#lp-chips [data-v]');
-				if (c) { chip = c.dataset.v; $$('#lp-chips .chip', main).forEach((x) => x.classList.toggle('is-on', x === c)); return paint(); }
+				if (c) { chip = c.dataset.v; $$('#lp-chips .chip', root).forEach((x) => x.classList.toggle('is-on', x === c)); return paint(); }
 				const del = e.target.closest('[data-del]');
 				if (del) {
 					if (confirm(Y('تمسحها؟', 'تمسحيها؟', 'Delete it?'))) try { await save((d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); }); } catch (err) { alert(live.why(err)); }
@@ -128,10 +137,10 @@ export function listPage(cfg) {
 				}
 				cfg.click?.(e, ctx);
 			});
-			const f = $('#lp-form', main);
+			const f = $('#lp-form', root);
 			if (f) f.onsubmit = async (e) => {
 				e.preventDefault();
-				const msg = $('#lp-msg', main);
+				const msg = $('#lp-msg', root);
 				try {
 					msg.textContent = L('بنحفظ…', 'Saving…');
 					const x = { id: live.newId(), by: live.me(), at: Date.now() };
@@ -150,10 +159,11 @@ export function listPage(cfg) {
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
 				} catch (err) { msg.textContent = live.why(err); }
 			};
-			await cfg.ready?.(main, ctx);
+			await cfg.ready?.(root, ctx);
 			paint();
 		}
 	};
+	return page;
 }
 
 /* helpers for bands */
