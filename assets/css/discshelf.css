@@ -121,3 +121,20 @@
 .ds-title small { color: var(--muted); }
 .ds-keys { color: var(--muted); }
 .ds-keys kbd { color: var(--text); background: var(--card); border: 1.5px solid var(--ink); box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); }
+
+/* the shelf's name: a paper label taped onto the page, a little record drawn beside it in ink, the words in the
+   journal's script; and how far along the shelf we are, on a ticket stub */
+.ds .ds-brand { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 6px 16px 6px 10px; padding-inline: 10px 18px; background: #fffdf8; color: #2b2b33; border: 1.5px solid var(--ink); border-radius: 4px 9px 5px 8px / 8px 5px 9px 4px; box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-pink); rotate: -2deg; }
+.ds .ds-brand::before { content: ''; position: absolute; top: -10px; left: 50%; width: 54px; height: 18px; translate: -50% 0; rotate: 4deg; background: rgba(253, 200, 48, .75) repeating-linear-gradient(90deg, transparent 0 5px, rgba(255, 255, 255, .4) 5px 8px); }
+.ds .ds-brand span { font: 400 1.7rem/1 var(--f-script); color: var(--blue); }
+:lang(ar) .ds .ds-brand span { font: 400 1.5rem/1.2 var(--f-script); }
+.ds .ds-brand .ds-vinyl { width: 30px; height: 30px; -webkit-mask: none; mask: none; border-radius: 50%; background: radial-gradient(circle, #fffdf8 0 2px, var(--coral) 2.5px 7px, #2b2b33 7.5px) ; box-shadow: inset 0 0 0 4px #2b2b33, inset 0 0 0 5px rgba(255, 255, 255, .25), inset 0 0 0 9px #2b2b33, inset 0 0 0 10px rgba(255, 255, 255, .18); border: 1.5px solid var(--ink); animation: ds-vinyl 6s linear infinite; }
+@keyframes ds-vinyl { to { rotate: 360deg; } }
+.ds .ds-count { position: relative; padding: 4px 14px; font: 400 1.15rem/1.2 var(--f-label); color: #2b2b33; background: color-mix(in srgb, var(--hl-yellow) 40%, #fffdf8); border: 1.5px solid var(--ink); border-radius: 4px; rotate: 2deg; box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); -webkit-mask: radial-gradient(circle 5px at 0 50%, transparent 98%, #000) , radial-gradient(circle 5px at 100% 50%, transparent 98%, #000); -webkit-mask-composite: source-in; mask: radial-gradient(circle 5px at 0 50%, transparent 98%, #000), radial-gradient(circle 5px at 100% 50%, transparent 98%, #000); mask-composite: intersect; }
+.ds .ds-count b { color: var(--coral-deep, #d6544f); }
+@media (prefers-reduced-motion: reduce) { .ds .ds-brand .ds-vinyl { animation: none; } }
+/* the floor: a wooden shelf drawn in ink under the cases, instead of a glossy mirror */
+.ds .ds-mirror { opacity: 1; overflow: visible; height: 40px; }
+.ds .ds-reflect { visibility: hidden; }
+.ds .ds-mirror::before { inset: -2px 3% auto; height: 16px; opacity: 1; background: linear-gradient(#c79a6b, #a77a4d); border: 1.5px solid var(--ink); border-radius: 3px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 color-mix(in srgb, var(--ink) 85%, transparent), inset 0 3px 0 rgba(255, 255, 255, .25); }
+.ds .ds-mirror::after { content: ''; position: absolute; top: 14px; width: 14px; height: 22px; inset-inline-start: 8%; background: #a77a4d; border: 1.5px solid var(--ink); border-top: 0; border-radius: 0 0 3px 3px; box-shadow: calc(var(--bujo-x) * 3px) 0 0 0 color-mix(in srgb, var(--ink) 85%, transparent); }

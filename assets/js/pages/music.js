@@ -335,7 +335,7 @@ const hueOf = (x) => { let h = 0; for (const c of String(x.id || x.title)) h = (
 
 function shelfBand() {
 	return `<div class="lp-band ds" id="ds" style="--sel:0;--open:0">
-		<div class="ds-top"><p class="ds-brand"><i aria-hidden="true"></i>${L('رف الأسطوانات', 'The disc shelf')}</p><p class="ds-count"><b id="ds-n">·</b> / <span id="ds-of">·</span></p></div>
+		<div class="ds-top"><p class="ds-brand"><i class="ds-vinyl" aria-hidden="true"></i><span>${L('رف الأسطوانات', 'The disc shelf')}</span></p><p class="ds-count"><b id="ds-n">·</b> / <span id="ds-of">·</span></p></div>
 		<div class="ds-shelf" id="ds-shelf" tabindex="0" aria-label="${L('رف الأغاني: الأسهم تتنقل، وEnter يفتح الأسطوانة ويشغّلها', 'Song shelf: arrows browse, Enter opens and plays')}">
 			<ol class="ds-cases" id="ds-cases"></ol>
 			<div class="ds-mirror" aria-hidden="true"><ol class="ds-cases ds-reflect" id="ds-reflect"></ol></div>
