@@ -824,10 +824,10 @@ function calendarHTML(s) {
 	</a>`;
 }
 
-/* مناسباتنا, under the calendar: «وبعدها», a page of the planner with the occasions after the next one two to a row —
+/* مناسباتنا, under the calendar: «وبعدها», a page of the planner with the two occasions after the next one, side by side —
    each a torn-off calendar leaf (month and day), what it is, and how long is left */
 function nextTagsHTML(s) {
-	const after = occasions(s).slice(1, 5);
+	const after = occasions(s).slice(1, 3);
 	if (!after.length) return '';
 	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
 	const dateOf = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return d; };
