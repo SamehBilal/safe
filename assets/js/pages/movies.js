@@ -184,10 +184,11 @@ export default {
 		$('#mv-legend', main).addEventListener('click', (e) => {
 			const b = e.target.closest('[data-lk]');
 			if (!b) return;
-			if (b.dataset.lk === 'towatch') watchOnly = !watchOnly;
-			else lk = lk === b.dataset.lk ? '' : b.dataset.lk;
+			// one choice at a time: «To watch» is a filter like the kinds, so picking it lets go of the kind and the other way
+			// round; inside «To watch» its own chips (All, Foreign…) are the second level
+			if (b.dataset.lk === 'towatch') { watchOnly = !watchOnly; lk = ''; next?.setKind(''); }
+			else { lk = lk === b.dataset.lk ? '' : b.dataset.lk; watchOnly = false; }
 			paint();
-			next?.setKind(lk);
 			if (watchOnly) $('#mv-legend', main)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		});
 
@@ -313,7 +314,7 @@ function watchlist(main, get, set) {
 			form.reset(); kind = ''; set(d); draw();
 		} catch (err) { alert(live.why(err)); }
 	};
-	// the legend above the board picks the kind here too
+	// «To watch» in the legend opens the list from «All»
 	return { setKind(k) { kind = k || ''; all = false; picked = ''; $('#mv-next-picked', box).hidden = true; draw(); } };
 }
 
