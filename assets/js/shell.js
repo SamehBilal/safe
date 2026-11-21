@@ -1345,9 +1345,10 @@ function owl() {
    another page of ours doesn't load it afresh: it swaps the page's module, redraws the header and footer and renders
    the new page into <main>, and the address and the back button work as usual. With nothing playing, links load
    pages the ordinary way. */
-const PAGE_IDS = new Set(['home', 'story', 'chapters', 'chapter', 'moment', 'places', 'anniversaries', 'trip', 'journal', 'draw', 'movies', 'music', 'gallery', 'notes', 'letters', 'family', 'member', 'birthday', 'wishes', 'settings', 'goals', 'distances', 'cities', 'books', 'posts', 'food', 'search']);
+// every page of ours (all the same shell: tools/heads.mjs writes their heads) — a page left out of here reloads and the song stops
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'distances', 'draw', 'drawings', 'family', 'familytree', 'favorites', 'firsts', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'questions', 'ramadan', 'recipes', 'remember', 'sayings', 'search', 'secret', 'settings', 'soundtrack', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { home: 'home', music: 'discshelf', letters: 'letters', moment: 'more', remember: 'more', gifts: 'more' };
+const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', drawings: 'more', familytree: 'more', favorites: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', offline: 'more', onthisday: 'more', ourfirsts: 'more', recipes: 'more', remember: 'more', sayings: 'more', secret: 'secret', soundtrack: 'more', tickets: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
