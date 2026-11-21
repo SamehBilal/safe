@@ -35,14 +35,14 @@ const PAGE = Infinity; // every position shows at once (the images load as they 
 const PARTS = [
 	{ id: 'head', ar: 'الراس والوش', en: 'Head & face', side: 'l', y: 8, at: [300, 72] },
 	{ id: 'neck', ar: 'الرقبة', en: 'Neck', side: 'r', y: 17, at: [300, 130] },
-	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: [234, 224] },
+	{ id: 'arm', ar: 'الدراع', en: 'Arm', side: 'l', y: 30, at: [228, 222] },
 	{ id: 'body', ar: 'الطقم', en: 'The outfit', side: 'r', y: 33, at: [300, 250] },
-	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: [218, 334] },
-	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: [392, 368] },
-	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: [300, 340] },
-	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: [332, 432] },
-	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: [282, 552] },
-	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: [322, 586] }
+	{ id: 'wrist', ar: 'الرسغ والوسط', en: 'Wrists & waist', side: 'l', y: 47, at: [230, 340] },
+	{ id: 'hand', ar: 'الإيدين', en: 'Hands', side: 'r', y: 50, at: [358, 380] },
+	{ id: 'under', ar: 'تحت', en: 'Underneath', side: 'l', y: 61, at: [300, 342] },
+	{ id: 'leg', ar: 'الرجل', en: 'Legs', side: 'r', y: 72, at: [326, 440] },
+	{ id: 'ankle', ar: 'الكاحل', en: 'Ankles', side: 'l', y: 88, at: [286, 552] },
+	{ id: 'feet', ar: 'الرجلين', en: 'Feet', side: 'r', y: 93, at: [316, 586] }
 ];
 const partOf = (x) => (PARTS.some((p) => p.id === x.part) ? x.part : 'body');
 
