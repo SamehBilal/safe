@@ -1,6 +1,7 @@
-import { L, Y, T, esc, img, num, age, longDate, parseDate, yearsBetween, pageHead, related, App } from '../shell.js';
+import { L, Y, T, esc, img, num, age, longDate, parseDate, yearsBetween, pageHead, related, App, hydrate } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { treeHTML, wireTree } from '../tree.js';
+import * as live from '../live.js';
 
 /* Our family, and our family tree, on one page (the tree had a page of its own, familytree.html, which now sends you
    here). Band: the tree growing — the trunk draws itself, branches reach out, leaves and little hearts pop on them —
@@ -32,6 +33,134 @@ function band(members) {
 	</div>`;
 }
 
+/* ---------- «بيتنا بالحجارة»: the pebble frame hung on the wall by a string, and beside it the same thing drawn in
+   chalk — sticks for the house, and a pebble for each of us, from the family in story.json, so a new one of us gets a
+   pebble of their own; a baby under a year sits in Mum's arms, like Abdulrahman. Names in chalk under each pebble. ---------- */
+const PEBBLE = ['#cbb89c', '#e4d8c4', '#b9a387', '#d9c9ae', '#c2b29a', '#ddd0bb'];
+function pebbles(members) {
+	const grown = members.filter((m) => !m.kid), kids = members.filter((m) => m.kid);
+	const mum = grown.find((m) => m.female) || grown[1];
+	const months = (m) => (m.born ? (Date.now() - parseDate(m.born)) / (30.44 * 864e5) : 60);
+	const inArms = kids.filter((k) => months(k) < 12);
+	const row = [...grown, ...kids.filter((k) => !inArms.includes(k))];
+	const size = (m) => (m.kid ? Math.min(15, 9 + months(m) / 12) : 19);
+	const width = row.reduce((w, m) => w + size(m) * 2 + 6, -6);
+	let x = 150 - width / 2;
+	const at = new Map();
+	for (const m of row) { const r = size(m); at.set(m, { x: x + r, y: 186 - r * 1.25, rx: r, ry: r * 1.25 }); x += r * 2 + 6; }
+	inArms.forEach((k, i) => { const p = at.get(mum) || at.get(row[0]); at.set(k, { x: p.x + 7 + i * 9, y: p.y + 2, rx: 7.5, ry: 9, arms: true }); });
+	const peb = (m, i) => { const p = at.get(m); return `<g class="fh-peb" style="--i:${i}"><title>${esc(App.t(m.name))}</title>
+		<ellipse cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" rx="${p.rx.toFixed(1)}" ry="${p.ry.toFixed(1)}" fill="${PEBBLE[i % PEBBLE.length]}"/>
+		<ellipse class="fh-peb__shine" cx="${(p.x - p.rx * 0.35).toFixed(1)}" cy="${(p.y - p.ry * 0.4).toFixed(1)}" rx="${(p.rx * 0.28).toFixed(1)}" ry="${(p.ry * 0.18).toFixed(1)}"/>
+		<text class="fh-chalk" x="${p.x.toFixed(1)}" y="${p.arms ? (p.y - p.ry - 6).toFixed(1) : 206}">${esc(App.t(m.name))}</text></g>`; };
+	return `<svg class="fh-board" viewBox="0 0 300 220" role="img" aria-label="${esc(L('بيتنا بالحجارة', 'Our home in pebbles'))}">
+		<rect class="fh-frame" x="4" y="4" width="292" height="212" rx="6"/><rect class="fh-slate" x="16" y="16" width="268" height="188" rx="2"/>
+		<g class="fh-sticks"><rect x="88" y="98" width="10" height="88" rx="3" transform="rotate(-2 93 142)"/><rect x="202" y="98" width="10" height="88" rx="3" transform="rotate(2 207 142)"/>
+			<rect x="80" y="66" width="80" height="11" rx="3" transform="rotate(-30 120 72)"/><rect x="140" y="66" width="80" height="11" rx="3" transform="rotate(30 180 72)"/><rect x="184" y="44" width="11" height="22" rx="3"/></g>
+		<path class="fh-floor" d="M70 187h160"/>
+		${[...row, ...inArms].map(peb).join('')}
+	</svg>`;
+}
+function homeHTML(f, members) {
+	const p = f.portrait;
+	if (!p) return '';
+	return `<section class="fam-home reveal">
+		<figure class="fam-home__photo" data-media-box><span class="fam-home__nail" aria-hidden="true"></span>${img(p.photo, App.t(p.caption), 'zoom')}</figure>
+		<div class="fam-home__side">
+			${pebbles(members)}
+			<p class="fam-home__tag"><b>${T(p.title) || L('بيتنا', 'Our home')}</b><span>${T(p.text)}</span></p>
+		</div>
+	</section>`;
+}
+
+/* ---------- «جريدة بيتنا»: a real paper, new every day, written from what we have — the big news (a birthday or our
+   anniversary today, or the latest «first» of the boys), «النهارده من سنين» from our story, a saying of the boys, the
+   numbers of the day, what's coming up, and classified ads for the things on our goals sheet. Which story, saying and
+   ads it prints is picked by the date, so the paper changes at midnight and stays the same all day. ---------- */
+const DAY = Math.floor(Date.now() / 864e5);
+const pickOf = (arr, salt = 0) => (arr.length ? arr[(DAY * 31 + salt * 17) % arr.length] : null);
+const mdOf = (iso) => String(iso || '').slice(5, 10);
+const todayMD = () => { const d = new Date(); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(0, 0, 0, 0); const n = new Date(now.getFullYear(), d.getMonth(), d.getDate()); if (n < now) n.setFullYear(n.getFullYear() + 1); return Math.round((n - now) / 864e5); }
+function paperHTML(s, f) {
+	const today = new Date();
+	return `<article class="paper np reveal" id="np">
+		<h2 class="paper__name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
+		<div class="paper__bar"><div><span>${L('العدد', 'Issue')} #${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div></div>
+		<div id="np-body"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div>
+	</article>`;
+}
+async function fillPaper(main, s, f) {
+	const box = main.querySelector('#np-body');
+	if (!box) return;
+	const members = f.members || [];
+	const [firsts, sayings, goals] = await Promise.all(['firsts', 'sayings', 'goals'].map((k) => live.load(k).catch(() => ({ items: [] }))));
+	const nameOf = (id) => App.t(members.find((m) => m.id === id)?.name || id);
+	const md = todayMD();
+
+	/* the big news */
+	let head = T(f.headline), lead = T(f.lead), stamp = '';
+	const bday = members.find((m) => m.born && mdOf(m.born) === md);
+	const recent = (firsts.items || []).filter((x) => x.date && (Date.now() - parseDate(x.date)) / 864e5 <= 21).sort((a, b) => String(b.date).localeCompare(String(a.date)))[0];
+	if (bday) { head = L(`كل سنة و${App.t(bday.name)} ${bday.female ? 'طيبة' : 'طيب'}!`, `Happy birthday, ${App.t(bday.name)}!`); lead = L(`النهارده ${App.t(bday.name)} ${bday.female ? 'بتكمّل' : 'بيكمّل'} ${age(bday.born)} — والعيلة كلها بتحتفل`, `${App.t(bday.name)} turns ${age(bday.born)} today — the whole family is celebrating`); stamp = L('عيد ميلاد', 'Birthday'); }
+	else if (s.married && mdOf(s.married) === md) { head = L(`${num(yearsBetween(parseDate(s.married)))} سنين جواز — ولسه في البداية`, `${yearsBetween(parseDate(s.married))} years married — and still just beginning`); lead = L('عيد جواز سعيد للعريس والعروسة ♥', 'Happy anniversary to the bride and groom ♥'); stamp = L('عيد جواز', 'Anniversary'); }
+	else if (recent) { head = L(`عاجل: ${nameOf(recent.kid)} — ${recent.what}`, `Breaking: ${nameOf(recent.kid)} — ${recent.what}`); lead = recent.note || lead; stamp = L('عاجل', 'Breaking'); }
+
+	/* on this day, years ago — or a page from the archive */
+	const story = (s.timeline || []).filter((t) => /^\d{4}-\d{2}-\d{2}$/.test(t.date || ''));
+	const same = story.filter((t) => mdOf(t.date) === md);
+	const old = pickOf(same.length ? same : story, 1);
+	const oldPhoto = old && (old.photo || old.photos?.[0]);
+	const yrs = old ? new Date().getFullYear() - +old.date.slice(0, 4) : 0;
+
+	/* a saying of the boys, the numbers of the day, what's coming, the ads */
+	const say = pickOf(sayings.items || [], 2);
+	const kids = members.filter((m) => m.kid && m.born);
+	const nums = [
+		s.met && [num(Math.floor((Date.now() - parseDate(s.met)) / 864e5)), L('يوم من أول سلام', 'days since the first hello')],
+		s.married && [num(Math.floor((Date.now() - parseDate(s.married)) / 864e5)), L('يوم جواز', 'days married')],
+		...kids.map((k) => [age(k.born), L(`عمر ${App.t(k.name)}`, `${App.t(k.name)}’s age`)])
+	].filter(Boolean);
+	const coming = [
+		...members.filter((m) => m.born).map((m) => ({ t: L(`عيد ميلاد ${App.t(m.name)}`, `${App.t(m.name)}’s birthday`), d: nextOf(m.born) })),
+		s.married && { t: L('عيد جوازنا', 'Our anniversary'), d: nextOf(s.married) },
+		s.met && { t: L('ذكرى أول سلام', 'The day we met'), d: nextOf(s.met) }
+	].filter(Boolean).sort((a, b) => a.d - b.d).slice(0, 3);
+	const wants = (goals.items || []).filter((g) => !g.done);
+	const ads = [0, 1, 2].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i);
+	const when = (d) => (d === 0 ? L('النهارده!', 'today!') : d === 1 ? L('بكرة', 'tomorrow') : L(`بعد ${num(d)} يوم`, `in ${d} days`));
+
+	box.innerHTML = `
+		${stamp ? `<span class="np__stamp">${esc(stamp)}</span>` : ''}
+		<h3 class="paper__headline" dir="auto">${esc(head || '')}</h3>
+		${lead ? `<p class="paper__lead" dir="auto">${esc(lead)}</p>` : ''}
+		<div class="np__grid">
+			${old ? `<a class="np__story" href="moment.html?id=${encodeURIComponent(old.id)}">
+				<p class="np__kicker">${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
+				${oldPhoto ? `<span class="np__pic">${img(oldPhoto, App.t(old.title))}</span>` : ''}
+				<h4 dir="auto">${T(old.title)}</h4>
+				<em>${esc(longDate(old.date))}</em>
+				${old.text ? `<p dir="auto">${T(old.text)}</p>` : ''}
+			</a>` : ''}
+			<aside class="np__side">
+				<section class="np__box"><p class="np__kicker">${L('أرقام النهارده', 'Today’s numbers')}</p>
+					<ul class="np__nums">${nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
+				<section class="np__box"><p class="np__kicker">${L('قريب', 'Coming up')}</p>
+					<ul class="np__soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
+			</aside>
+			${say ? `<a class="np__quote" href="sayings.html"><p class="np__kicker">${L('كلمة اليوم', 'Quote of the day')}</p>
+				<blockquote dir="auto">«${esc(say.said)}»</blockquote><cite>— ${esc(nameOf(say.kid))}${say.means ? ` · ${L('يقصد', 'meaning')} «${esc(say.means)}»` : ''}</cite></a>` : ''}
+			${ads.length ? `<a class="np__ads" href="goals.html"><p class="np__kicker">${L('إعلانات مبوبة', 'Classifieds')}</p>
+				${ads.map((g) => `<p class="np__ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : ''}
+			<section class="np__family"><p class="np__kicker">${L('أخبار العيلة', 'Family notes')}</p>
+				<div class="np__cols">${members.map((m) => `<div><h4>${T(m.name)}</h4><em>${m.kid && m.born ? `${esc(age(m.born))} · ` : ''}${T(m.role)}</em>${m.text ? `<p>${T(m.text)}</p>` : ''}</div>`).join('')}</div>
+			</section>
+		</div>
+		<p class="np__foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>`;
+	hydrate(box);
+	live.hydrateSketches(box);
+}
+
 export default {
 	title: { ar: 'عيلتنا', en: 'Our family' },
 	render(s) {
@@ -51,26 +180,10 @@ export default {
 
 			<div id="tree" class="fam-tree">${treeHTML(s)}</div>
 
-			${f.portrait ? `<figure class="portrait reveal" data-media-box>
-				${img(f.portrait.photo, App.t(f.portrait.caption), 'zoom')}
-				<figcaption>${f.portrait.title ? `<b>${T(f.portrait.title)}</b>` : ''}${f.portrait.text ? `<span>${T(f.portrait.text)}</span>` : ''}</figcaption>
-			</figure>` : ''}
-			<article class="paper reveal">
-				<h2 class="paper__name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
-				<div class="paper__bar"><div><span>${L('العدد', 'Issue')} #${num(yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div></div>
-				${f.headline ? `<h3 class="paper__headline">${T(f.headline)}</h3>` : ''}
-				${f.lead ? `<p class="paper__lead">${T(f.lead)}</p>` : ''}
-				<div class="paper__cols">${members.map((m) => `
-					<section class="article" tabindex="0">
-						${m.photo ? `<div data-media-box>${img(m.photo, App.t(m.name), 'zoom')}</div>` : ''}
-						<h4>${T(m.name)}</h4>
-						<em>${T(m.role)}${m.born ? ` · ${L('مواليد', 'born')} ${longDate(m.born)}` : ''}</em>
-						${m.text ? `<p>${T(m.text)}</p>` : ''}
-					</section>`).join('')}
-				</div>
-			</article>
+			${homeHTML(f, members)}
+			${paperHTML(s, f)}
 		</div></section>
 		${related(['distances', 'nokta', 'growth', 'sayings'])}`;
 	},
-	after(main, s) { return wireTree(main, s); }
+	after(main, s) { fillPaper(main, s, s.family || {}); return wireTree(main, s); }
 };

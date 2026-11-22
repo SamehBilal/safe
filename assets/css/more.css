@@ -849,3 +849,68 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 @media (prefers-reduced-motion: reduce) { .nk-lines li.is-new, .nk-env, .nk-coins { animation: none; } }
 .nk-ledger--out { border-inline-start-color: rgba(90, 158, 111, .6); }
 .nk-ledger--out h3 > b { color: #3f8a56; }
+
+/* ---------- «عيلتنا»: the pebble frame on the wall, and the same thing drawn in chalk with a pebble for each of us ---------- */
+.fam-home { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 48px); align-items: center; max-width: 980px; margin: clamp(30px, 5vw, 56px) auto; }
+.fam-home__photo { position: relative; margin: 0; padding: 12px 12px 40px; background: #fbf8f1; border: 1.5px solid var(--ink, #37353f); border-radius: 3px; rotate: -2deg; box-shadow: calc(var(--bujo-x, 1) * 6px) 8px 0 0 var(--hl-pink, #fc8b93); transform-origin: 50% -30px; animation: fh-sway 6s ease-in-out infinite; }
+.fam-home__photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; cursor: zoom-in; }
+.fam-home__nail { position: absolute; top: -34px; left: 50%; width: 12px; height: 12px; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #d9dce3, #6b6f7a); border-radius: 50%; box-shadow: 0 2px 2px rgba(0, 0, 0, .3); }
+.fam-home__nail::before, .fam-home__nail::after { content: ''; position: absolute; top: 8px; width: 1.5px; height: 40px; background: #6b5a45; transform-origin: top center; }
+.fam-home__nail::before { left: 5px; rotate: 52deg; } .fam-home__nail::after { left: 5px; rotate: -52deg; }
+@keyframes fh-sway { 50% { rotate: -1deg; } }
+.fam-home__side { display: grid; gap: 16px; justify-items: center; }
+.fh-board { width: min(420px, 100%); height: auto; filter: drop-shadow(4px 8px 6px rgba(40, 30, 10, .25)); }
+.fh-frame { fill: #d9b273; stroke: #37353f; stroke-width: 2; }
+.fh-slate { fill: #26282d; stroke: #8a6a3a; stroke-width: 2; }
+.fh-sticks rect { fill: #e1c48f; stroke: #8a6a3a; stroke-width: 1.4; }
+.fh-floor { stroke: rgba(255, 255, 255, .25); stroke-width: 1.5; stroke-dasharray: 3 5; stroke-linecap: round; }
+.fh-peb ellipse:first-of-type { stroke: #37353f; stroke-width: 1.4; }
+.fh-peb__shine { fill: rgba(255, 255, 255, .55); }
+.fh-peb { transform-box: fill-box; transform-origin: center bottom; animation: fh-drop .6s calc(.3s + var(--i) * .25s) cubic-bezier(.3, 1.4, .6, 1) both; cursor: default; }
+.fh-peb:hover { translate: 0 -3px; }
+@keyframes fh-drop { from { translate: 0 -70px; opacity: 0; } }
+.fh-chalk { font: 700 13px var(--f-hand); fill: #f3efe2; text-anchor: middle; opacity: .9; }
+:lang(ar) .fh-chalk { font: 700 11.5px 'Aref Ruqaa', var(--f-body); }
+.fam-home__tag { position: relative; display: grid; gap: 4px; max-width: 380px; margin: 0; padding: 12px 18px 14px; text-align: center; color: #3a3420; background: #fff6b8; rotate: 1.5deg; box-shadow: 0 4px 10px rgba(40, 30, 10, .16); }
+.fam-home__tag::before { content: ''; position: absolute; top: -9px; left: 50%; width: 70px; height: 18px; translate: -50% 0; rotate: -3deg; background: rgba(255, 255, 255, .6); box-shadow: 0 1px 2px rgba(0, 0, 0, .1); }
+.fam-home__tag b { font: 400 1.7rem/1.2 var(--f-script); color: var(--blue, #0e6990); }
+.fam-home__tag span { font-size: .92rem; line-height: 1.6; }
+@media (max-width: 760px) { .fam-home { grid-template-columns: 1fr; } .fam-home__photo { max-width: 420px; margin-inline: auto; } }
+@media (prefers-reduced-motion: reduce) { .fam-home__photo, .fh-peb { animation: none; } }
+
+/* ---------- «جريدة بيتنا»: a new paper every day, from what we have ---------- */
+.np { position: relative; max-width: 980px; margin-inline: auto; }
+.np__wait { text-align: center; font-style: italic; opacity: .7; }
+.np__stamp { position: absolute; top: clamp(70px, 12vw, 110px); inset-inline-end: 22px; padding: 4px 14px; font: 800 .9rem var(--f-body); color: #c0392b; border: 3px solid #c0392b; border-radius: 8px; rotate: 8deg; text-transform: uppercase; letter-spacing: .08em; opacity: .85; }
+.np__grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px 26px; }
+.np__grid a { color: inherit; text-decoration: none; }
+.np__kicker { margin: 0 0 6px; padding-bottom: 4px; font: 800 .75rem var(--f-body); letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid; }
+.np__story { display: grid; align-content: start; gap: 6px; }
+.np__pic { display: block; overflow: hidden; border: 1px solid #1c1f33; }
+.np__pic img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; filter: grayscale(90%) contrast(1.08); transition: filter .4s; }
+.np__story:hover .np__pic img { filter: none; }
+.np__story h4 { margin: 4px 0 0; font: 700 clamp(1.3rem, 3vw, 1.7rem)/1.3 Georgia, 'Aref Ruqaa', serif; }
+.np__story em { font-size: .85rem; }
+.np__story p { margin: 0; text-align: justify; line-height: 1.6; }
+.np__side { display: grid; align-content: start; gap: 18px; padding-inline-start: 22px; border-inline-start: 1px solid; }
+.np__nums, .np__soon { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.np__nums li { display: grid; }
+.np__nums b { font: 700 1.5rem/1.1 Georgia, 'Cairo', serif; }
+.np__nums span, .np__soon span { font-size: .85rem; }
+.np__soon li { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 6px; border-bottom: 1px dotted; }
+.np__soon b { white-space: nowrap; }
+.np__quote { display: grid; align-content: center; padding: 14px 18px; text-align: center; background: rgba(28, 31, 51, .05); }
+.np__quote blockquote { margin: 6px 0; font: 700 clamp(1.6rem, 4vw, 2.2rem)/1.3 Georgia, 'Aref Ruqaa', serif; }
+.np__quote cite { font-size: .85rem; }
+.np__ads { display: grid; align-content: start; gap: 8px; padding: 12px 14px; border: 1px dashed; }
+.np__ad { display: flex; align-items: center; gap: 10px; margin: 0; padding-bottom: 8px; border-bottom: 1px dotted; font-size: .9rem; }
+.np__ad:last-child { border-bottom: 0; padding-bottom: 0; }
+.np__ad img { flex: none; width: 46px; height: 46px; object-fit: contain; mix-blend-mode: multiply; filter: grayscale(1); }
+.np__ad small { display: block; font-size: .75rem; opacity: .75; }
+.np__family { grid-column: 1 / -1; }
+.np__cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 18px; }
+.np__cols h4 { margin: 0; font: 700 1.15rem/1.3 Georgia, 'Aref Ruqaa', serif; }
+.np__cols em { display: block; font-size: .8rem; margin-bottom: 4px; }
+.np__cols p { margin: 0; font-size: .92rem; text-align: justify; }
+.np__foot { margin: 22px 0 0; padding-top: 8px; text-align: center; font-size: .8rem; font-style: italic; border-top: 2px solid; }
+@media (max-width: 760px) { .np__grid { grid-template-columns: 1fr; } .np__side { padding-inline-start: 0; border-inline-start: 0; } .np__stamp { position: static; display: inline-block; margin-bottom: 8px; } }
