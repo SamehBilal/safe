@@ -191,7 +191,7 @@ export default {
 		<section class="sec sec--top"><div class="wrap">
 			${paperHTML(s, f, members)}
 		</div></section>
-		${related(['routine', 'fixes', 'shopping', 'distances'])}`;
+		${related(['routine', 'expenses', 'fixes', 'debts'])}`;
 	},
 	after(main, s) { wirePaper(main); fillPaper(main, s, s.family || {}); return wireTree(main, s); }
 };

@@ -19,7 +19,8 @@ const KIND = {
 	family: { ar: 'العيلة', en: 'Family', c: '#5a9e6f' },
 	holy: { ar: 'رمضان والأعياد', en: 'Ramadan & Eid', c: '#6d4bb3' },
 	egypt: { ar: 'مواسم السنة', en: 'Days of the year', c: '#e39b2d' },
-	capsule: { ar: 'الكبسولة', en: 'Capsule', c: '#0e6990' }
+	capsule: { ar: 'الكبسولة', en: 'Capsule', c: '#0e6990' },
+	money: { ar: 'فلوس', en: 'Money', c: '#b38a1f' }
 };
 const MONTHS_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 const monthName = (m) => (App.lang === 'ar' ? MONTHS_AR[m] : new Date(2000, m, 1).toLocaleDateString('en-GB', { month: 'long' }));
@@ -28,7 +29,7 @@ const dayName = (d) => d.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB
 
 /* everything in the coming year, soonest first */
 const firstPhoto = (x) => x?.photo || x?.cover || (x?.photos || []).map((p) => (typeof p === 'string' ? p : p?.photo)).find(Boolean) || '';
-function gather(s, fam, caps) {
+function gather(s, fam, caps, debts = []) {
 	const from = today(), out = [];
 	const onDay = new Map();
 	for (const m of s.timeline || []) { const p = firstPhoto(m); if (p && m.date && !onDay.has(m.date)) onDay.set(m.date, p); }
@@ -47,6 +48,7 @@ function gather(s, fam, caps) {
 	for (const f of fam) if (f.date) out.push({ orig: f.date, late: !!f.late, date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: (f.late && f.note) || f.rel || '', icon: f.late ? 'heart' : f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: '#cal-fam', yearly: true });
 	for (const h of holyDays(from)) out.push({ date: h.date, title: L(h.ar, h.en), sub: L('بالتقويم الهجري، ممكن يفرق يوم', 'By the Hijri calendar, may differ by a day'), icon: h.icon, kind: 'holy', href: 'ramadan.html' });
 	for (const e of egyptDays(from)) out.push({ date: e.date, title: L(e.ar, e.en), sub: '', icon: e.icon, kind: 'egypt', yearly: e.id !== 'nessim' });
+	for (const d of debts) if (d.due && !d.over && parse(d.due) >= from && daysTo(parse(d.due)) <= 366) out.push({ date: parse(d.due), title: d.dir === 'in' ? L(`ميعاد ${d.whom} يرجّع اللي عليه`, `${d.whom} is due to pay us back`) : L(`آخر ميعاد لدين ${d.whom}`, `The debt to ${d.whom} is due`), sub: L('من «ديوننا»', 'From «Our debts»'), icon: 'scale', kind: 'money', href: 'debts.html' });
 	for (const c of caps) if (c.openOn && parse(c.openOn) >= from && daysTo(parse(c.openOn)) <= 366) out.push({ date: parse(c.openOn), title: L(`جواب الكبسولة لـ${c.kidName || ''} يتفتح`, `A capsule letter opens for ${c.kidName || ''}`), sub: c.title || '', icon: 'letter', kind: 'capsule', href: 'capsule.html' });
 	// this month's days that have already gone by stay on its page (faded), so a day like a memorial a few days ago
 	// isn't missing from the month it belongs to
@@ -116,7 +118,8 @@ export default {
 
 	async after(main, s) {
 		const kids = (s.family?.members || []).filter((m) => m.kid);
-		const [famData, caps, tree] = await Promise.all([live.load('famdays').catch(() => ({})), live.load('capsule').catch(() => ({})), live.load('tree').catch(() => ({ items: [] }))]);
+		const [famData, caps, tree, debtData] = await Promise.all([live.load('famdays').catch(() => ({})), live.load('capsule').catch(() => ({})), live.load('tree').catch(() => ({ items: [] })), live.load('debts').catch(() => ({}))]);
+		const debts = (debtData.items || []).map((d) => ({ ...d, over: (+d.amount || 0) > 0 && (d.paid || []).reduce((a, p) => a + (+p.a || 0), 0) >= +d.amount }));
 		let fam = famData;
 		const capsules = (caps.items || []).map((c) => ({ ...c, kidName: App.t(kids.find((k) => k.id === c.kid)?.name || '') }));
 		$('#fd-names', main).innerHTML = [...new Set((tree.items || []).map((p) => p.name).filter(Boolean))].map((n) => `<option value="${esc(n)}">`).join('');
@@ -283,7 +286,7 @@ export default {
 
 		/* everything again, from the lists as they are now */
 		const paint = () => {
-			events = gather(s, fam.items || [], capsules);
+			events = gather(s, fam.items || [], capsules, debts);
 			ahead = events.filter((e) => !e.past);
 			coming = ahead.slice(0, 8);
 			k = 0;

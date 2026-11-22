@@ -57,7 +57,7 @@ export default {
 			<div class="sh-bar" id="sh-bar"></div>
 			<div class="sh-aisles" id="sh-list"><p class="empty">${L('بنجيب الطلبات…', 'Fetching the list…')}</p></div>
 		</div></section>
-		${related(['fixes', 'food', 'routine'])}`;
+		${related(['expenses', 'fixes', 'food'])}`;
 	},
 
 	async after(main) {
