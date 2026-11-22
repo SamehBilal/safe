@@ -175,13 +175,16 @@ export async function wireTree(main, s) {
 		const out = [], extra = [], hung = new Set();
 		const kidsOf = (par) => items.filter((k) => rel(k.rel).kid && k.parent === par.id).sort((a, b) => String(a.born || 9999).localeCompare(String(b.born || 9999)));
 		for (const side of ['him', 'her']) {
-			// parents first (they take the top branches), then brothers and sisters, eldest first; empty spots after
-			const list = [];
-			for (const r of ['father', 'mother', 'brother', 'sister']) {
-				const got = items.filter((p) => p.side === side && p.rel === r).sort((a, b) => (+a.born || 9999) - (+b.born || 9999));
+			// parents first (they take the top branches), then the brothers and sisters together, eldest first
+			// (Ahmed, Safi, Osama, Nadine); empty spots after
+			const list = [], eldest = (a, b) => (+a.born || 9999) - (+b.born || 9999);
+			for (const r of ['father', 'mother']) {
+				const got = items.filter((p) => p.side === side && p.rel === r).sort(eldest);
 				got.forEach((p) => list.push({ p, r }));
 				for (let k = got.length; k < (SLOTS[side][r] || 0); k++) list.push({ r });
 			}
+			items.filter((p) => p.side === side && SIBS.includes(p.rel)).sort(eldest).forEach((p) => list.push({ p, r: p.rel }));
+			for (const r of SIBS) for (let k = items.filter((p) => p.side === side && p.rel === r).length; k < (SLOTS[side][r] || 0); k++) list.push({ r });
 			list.forEach((x, i) => {
 				if (i < SPOTS_AT.length) {
 					out.push(x.p ? ribbon(s, x.p, side, at(side, i)) : emptyRibbon(s, side, x.r, at(side, i)));
