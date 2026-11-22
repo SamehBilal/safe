@@ -6,7 +6,7 @@ import * as live from '../live.js';
 /* Offline nights: phones in the basket, and a log of the nights we did it.
    Above the log: a timer that runs while the phones are away (it keeps going if the page is closed — the start is kept
    on this phone — and stopping it fills in the log), this month's goal of offline nights, a board of things to do
-   with the phones gone (or one picked for us), and the question cards, now in four decks: deep, memories, laughs and
+   with the phones gone (or one picked for us), and the question cards, now in five decks: deep, memories, laughs, «would you rather» and
    dreams. The log also says what we do most and our longest night.
    Band: two phones sliding into a basket and going to sleep (zZz), a candle flickering beside them. */
 const DECKS = {
@@ -20,7 +20,22 @@ const DECKS = {
 		['إيه حاجة بتخاف منها ومحتاجني فيها؟', 'Something you worry about and need me for?'],
 		['إمتى حسيت إننا فريق واحد بجد؟', 'When did you really feel we were one team?'],
 		['إيه حاجة اتغيرت فيك من ساعة ما اتجوزنا؟', 'What has changed in you since we married?'],
-		['إيه اللي بيخليك تحس إنك متحب؟', 'What makes you feel loved?']
+		['إيه اللي بيخليك تحس إنك متحب؟', 'What makes you feel loved?'],
+		['إيه حاجة نفسك أفهمها عنك أكتر؟', 'What do you wish I understood better about you?'],
+		['إمتى آخر مرة حسيت إنك وحيد، حتى وأنا جنبك؟', 'When did you last feel alone, even with me there?'],
+		['إيه الكلمة اللي بتستناها مني ومش بقولها كفاية؟', 'What word do you wait to hear from me that I don’t say enough?'],
+		['إيه أكتر حاجة اتعلمتها من جوازنا؟', 'What has our marriage taught you most?'],
+		['لو عندك يوم واحد تقضيه معايا لوحدنا، تحب يبقى إزاي؟', 'One whole day alone with me — how would you spend it?'],
+		['إيه حاجة كانت صعبة عليك السنة دي ومحكتهاش؟', 'Something hard this year you never told me about?'],
+		['إيه اللي بتحبه فيا ومش بتقوله؟', 'What do you love about me but never say?'],
+		['إيه أكتر لحظة حسيت فيها إنك أب أو أم بجد؟', 'When did you first truly feel like a parent?'],
+		['إيه وعد نفسك نوعده لبعض النهارده؟', 'A promise you’d like us to make each other tonight?'],
+		['إيه حاجة بتعملها عشاني ومش باخد بالي منها؟', 'Something you do for me that I don’t notice?'],
+		['إيه اللي بيطمنك لما الدنيا تبقى صعبة؟', 'What comforts you when things get hard?'],
+		['لو تقدر تغير حاجة واحدة في يومنا العادي، تغير إيه؟', 'If you could change one thing in our ordinary day, what?'],
+		['إيه أكتر حاجة بتفتخر بيها في عيلتنا؟', 'What are you proudest of in our family?'],
+		['إمتى حسيت إني فهمتك من غير ما تتكلم؟', 'When did I understand you without a word?'],
+		['إيه اللي عايزنا نفضل عليه مهما كبرنا؟', 'What do you want us never to lose, however old we get?']
 	] },
 	memories: { ar: 'ذكريات', en: 'Memories', e: 'camera', q: [
 		['لو رجعنا لـ ٢٠٠٩، إيه اللي هتقوله لنفسك؟', 'If we went back to 2009, what would you tell yourself?'],
@@ -32,7 +47,22 @@ const DECKS = {
 		['إيه أصعب يوم عدّى علينا وعدّيناه سوا؟', 'The hardest day we got through together?'],
 		['إيه أول حاجة اشتريناها لبيتنا؟', 'The first thing we bought for our home?'],
 		['إيه أكتر رسالة مني فاكرها؟', 'Which message of mine do you remember most?'],
-		['إيه أحلى عيد ميلاد عدّى علينا؟', 'Our best birthday so far?']
+		['إيه أحلى عيد ميلاد عدّى علينا؟', 'Our best birthday so far?'],
+		['فاكر أول مكالمة طويلة بينا؟ قعدنا قد إيه؟', 'Remember our first long phone call? How long did it last?'],
+		['إيه أول أغنية تفكرك بيا؟', 'The first song that made you think of me?'],
+		['إيه أحلى سفرية عملناها لحد دلوقتي؟', 'Our best trip so far?'],
+		['فاكر لما فهد اتولد؟ إيه أول حاجة حسيتها؟', 'Remember when Fahd was born? What did you feel first?'],
+		['وأول ما شفت عبد الرحمن؟', 'And the first time you saw Abdulrahman?'],
+		['إيه أول خناقة بينا؟ وصالحنا إزاي؟', 'Our first fight — and how did we make up?'],
+		['إيه أكلة لما تاكلها بتفتكرني؟', 'A dish that always reminds you of me?'],
+		['إيه أحلى رمضان عدّى علينا سوا؟', 'Our best Ramadan together?'],
+		['إيه مكان لما بنعدي عليه بتفتكر حاجة بينا؟', 'A place that brings back something of ours whenever we pass it?'],
+		['إيه أكتر صورة لينا بتحبها؟ وليه؟', 'Your favourite photo of us — and why?'],
+		['إيه أول حاجة لاحظتها فيا؟', 'The first thing you noticed about me?'],
+		['فاكر يوم كتب الكتاب؟ إيه اللي كان في دماغك؟', 'Remember our katb el-ketab? What was on your mind?'],
+		['إيه أحلى مفاجأة عملتهالك؟', 'The best surprise I ever gave you?'],
+		['إيه أول كلمة قالها فهد وفاكرها؟', 'Fahd’s first word you remember?'],
+		['إيه يوم عادي خالص بقى من أحلى أيامنا؟', 'An ordinary day that turned into one of our best?']
 	] },
 	laughs: { ar: 'ضحك', en: 'Laughs', e: 'laugh', q: [
 		['إمتى آخر مرة ضحكنا لحد ما عيطنا؟', 'When did we last laugh till we cried?'],
@@ -44,7 +74,22 @@ const DECKS = {
 		['لو فهد بقى مدير البيت يوم، يحصل إيه؟', 'If Fahd ran the house for a day, what happens?'],
 		['إيه أوحش أكلة عملتها لك؟ وقلتلي حلوة؟', 'The worst dish I made that you said was good?'],
 		['احكيلي نكتة… ولازم أضحك', 'Tell me a joke — I have to laugh'],
-		['لو هنفتح مشروع سوا، يبقى إيه؟ واسمه إيه؟', 'If we opened a business together, what and what name?']
+		['لو هنفتح مشروع سوا، يبقى إيه؟ واسمه إيه؟', 'If we opened a business together, what and what name?'],
+		['قلّدني وأنا بتكلم في التليفون', 'Do an impression of me on the phone'],
+		['إيه أكتر حاجة بعملها وبتجننك… بس بتحبها؟', 'What do I do that drives you mad — but you love it?'],
+		['لو عبد الرحمن اتكلم دلوقتي، أول جملة هيقولها إيه؟', 'If Abdulrahman could talk now, what would he say first?'],
+		['لو هنتبادل الأدوار يوم، أول حاجة هتعملها إيه؟', 'If we swapped places for a day, what would you do first?'],
+		['إيه أسوأ هدية جبتهالك؟ قول الحقيقة', 'The worst gift I ever got you? Be honest'],
+		['لو حياتنا فيلم، اسمه إيه؟ ومين يمثلنا؟', 'If our life were a film — its title, and who plays us?'],
+		['غنّي أغنية بس بدل الكلام قول «مواء»', 'Sing a song, but every word is “meow”'],
+		['إيه أغرب حلم حلمته بيا؟', 'The strangest dream you’ve had about me?'],
+		['لو فهد كتب لنا رسالة شكوى، هيشتكي من إيه؟', 'If Fahd wrote us a complaint letter, what would it say?'],
+		['ارسمني في ١٠ ثواني من غير ما تبص', 'Draw me in ten seconds without looking'],
+		['لو بقينا مشهورين على السوشيال، هنبقى مشهورين بإيه؟', 'If we went viral, what would it be for?'],
+		['إيه أكتر حاجة بنتخانق عليها وهي تافهة خالص؟', 'The silliest thing we always argue about?'],
+		['لو لينا أغنية دخول زي المصارعين، تبقى إيه؟', 'If we had wrestler entrance music, what would it be?'],
+		['قول جملة بصوت شخصية كرتون، وأنا أخمن مين', 'Say a line in a cartoon voice — I’ll guess who'],
+		['إيه أطول مدة قعدناها ندور على حاجة كانت في إيدنا؟', 'The longest we spent hunting for something already in our hand?']
 	] },
 	dreams: { ar: 'أحلام', en: 'Dreams', e: 'sparkle', q: [
 		['إيه أكتر رحلة نفسك نعملها؟ وليه؟', 'Which trip do you most want us to take? Why?'],
@@ -56,7 +101,44 @@ const DECKS = {
 		['إيه اللي نفسنا الولاد يفتكروه عن طفولتهم؟', 'What do we want the boys to remember of their childhood?'],
 		['لو كسبنا مليون، أول حاجة نعملها إيه؟', 'If we won a million, the first thing we do?'],
 		['إيه عادة نفسك نبدأها سوا السنة دي؟', 'A habit you want us to start this year?'],
-		['إيه حاجة نفسك تعملها قبل ما تكمل ٤٠؟', 'Something you want to do before you turn 40?']
+		['إيه حاجة نفسك تعملها قبل ما تكمل ٤٠؟', 'Something you want to do before you turn 40?'],
+		['لو نقدر نعيش في أي بلد سنة، نختار فين؟', 'If we could live anywhere for a year, where?'],
+		['إيه شكل يوم الجمعة المثالي بعد ٥ سنين؟', 'Our perfect Friday five years from now?'],
+		['نفسك الولاد يطلعوا بيحبوا إيه؟', 'What do you hope the boys grow up loving?'],
+		['إيه حاجة نفسك نجربها سوا لأول مرة؟', 'Something you’d love us to try together for the first time?'],
+		['لو عملنا حفلة لعيد جوازنا العشرين، تبقى إزاي؟', 'Our 20th anniversary party — what is it like?'],
+		['إيه المهارة اللي نفسك تتقنها السنة الجاية؟', 'A skill you want to master next year?'],
+		['لو نقدر نطلع رحلة مع الولاد بكرة، نروح فين؟', 'If we could take the boys on a trip tomorrow, where?'],
+		['إيه أوضة نفسك تبقى في بيتنا ومش موجودة؟', 'A room you wish our home had?'],
+		['إيه الحاجة اللي نفسنا نحوش لها أولاً؟', 'What should we save for first?'],
+		['لو هنكتب كتاب سوا، يبقى عن إيه؟', 'If we wrote a book together, what would it be about?'],
+		['إيه تقليد نفسك نعمله كل سنة في نفس اليوم؟', 'A tradition you’d like us to keep on the same day every year?'],
+		['نفسك نبقى عاملين إزاي لما نبقى جدو وتيتا؟', 'What do you want us to be like as grandparents?'],
+		['إيه بلد نفسك نشوف فيها التلج؟', 'Where would you like us to see snow?'],
+		['إيه حاجة نفسك تقولها للولاد يوم فرحهم؟', 'What do you want to tell the boys on their wedding days?'],
+		['لو عندنا شهر إجازة، نقسمه إزاي؟', 'If we had a month off, how would we spend it?']
+	] },
+	rather: { ar: 'تختار إيه؟', en: 'Would you rather', e: 'dice', q: [
+		['بحر ولا جبل؟', 'The sea or the mountains?'],
+		['سفرية طويلة بعيد ولا خروجات كتير قريبة؟', 'One long trip far away, or lots of little outings close by?'],
+		['فطار في السرير ولا عشا برة؟', 'Breakfast in bed or dinner out?'],
+		['تعرف أفكاري ساعة ولا أعرف أفكارك ساعة؟', 'Read my mind for an hour, or I read yours?'],
+		['نرجع لأيام الخطوبة يوم ولا نشوف نفسنا بعد ٢٠ سنة يوم؟', 'A day back in our engagement, or a day twenty years ahead?'],
+		['شتا ولا صيف؟', 'Winter or summer?'],
+		['فيلم في البيت ولا سينما؟', 'A film at home or at the cinema?'],
+		['تطبخ إنت كل يوم ولا تغسل المواعين كل يوم؟', 'Cook every day, or do the dishes every day?'],
+		['بيت صغير على البحر ولا شقة كبيرة في المدينة؟', 'A small house by the sea or a big flat in the city?'],
+		['من غير قهوة أسبوع ولا من غير موبايل أسبوع؟', 'A week without coffee or a week without your phone?'],
+		['رحلة بالعربية ولا بالطيارة؟', 'A road trip or a flight?'],
+		['تسمع أغانينا القديمة بس ولا الجديدة بس؟', 'Only our old songs, or only new ones?'],
+		['حفلة كبيرة ولا قعدة صغيرة مع الحبايب؟', 'A big party or a small night with our closest?'],
+		['نصحى بدري ولا نسهر؟', 'Early mornings or late nights?'],
+		['تتكلم كل اللغات ولا تعزف كل الآلات؟', 'Speak every language or play every instrument?'],
+		['كشري ولا فول وطعمية؟', 'Koshary or ful and ta‘meya?'],
+		['تسافر للماضي ولا للمستقبل؟', 'Travel to the past or the future?'],
+		['ننام في خيمة في الصحرا ولا كوخ في الجبل؟', 'A tent in the desert or a cabin in the mountains?'],
+		['نفضل نضحك على نفس النكتة طول العمر ولا كل يوم نكتة جديدة؟', 'Laugh at the same joke forever, or a new joke every day?'],
+		['جواب بخط الإيد ولا رسالة صوتية طويلة؟', 'A handwritten letter or a long voice note?']
 	] }
 };
 /* things to do with the phones away: [ar, en, emoji] */
