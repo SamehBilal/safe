@@ -982,3 +982,35 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 .np__foot { border-top: 2px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); color: var(--muted); font: 600 1.1rem var(--f-hand); font-style: normal; }
 :lang(ar) .np__foot { font: 700 .85rem var(--f-body); }
 .np__pic:not(:has(img)) { display: none; }
+
+/* ---------- «رسومات الولاد», above the title: the art corner — an easel where a crayon drawing draws itself, the boys'
+   names across the top in crayon, a box of crayons, and the newest drawings on clothes pegs along a string ---------- */
+.dwb { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: clamp(16px, 4vw, 48px); padding: 10px var(--gutter) 0; }
+.dwb-easel { position: relative; width: clamp(200px, 30vw, 270px); aspect-ratio: 240 / 290; }
+.dwb-legs { position: absolute; inset: 30px 0 0; width: 100%; height: calc(100% - 30px); }
+.dwb-legs path { fill: none; stroke: #b07a3f; stroke-width: 9; stroke-linecap: round; }
+.dwb-paper { position: absolute; top: 0; left: 6%; right: 6%; height: 66%; display: grid; grid-template-rows: auto 1fr; padding: 8px 10px; background: #fffdf6; border: 2px solid var(--ink, #37353f); border-radius: 3px; box-shadow: 0 6px 14px rgba(40, 30, 10, .2); rotate: -1deg; }
+.dwb-paper::before { content: ''; position: absolute; top: -8px; left: 50%; width: 46px; height: 14px; translate: -50% 0; background: #b07a3f; border: 2px solid #7a5428; border-radius: 4px; }
+.dwb-names { display: flex; flex-wrap: wrap; justify-content: center; gap: 1px; font: 700 clamp(.9rem, 2vw, 1.15rem)/1.2 var(--f-hand); }
+:lang(ar) .dwb-names { font: 700 clamp(.85rem, 1.8vw, 1.05rem)/1.4 'Aref Ruqaa', var(--f-body); }
+.dwb-names span { color: var(--c); }
+.dwb-drawing { width: 100%; height: 100%; }
+.dwb-st { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: dwb-draw .7s calc(.4s + var(--i) * .55s) ease-out forwards; }
+@keyframes dwb-draw { to { stroke-dashoffset: 0; } }
+.dwb-tray { position: absolute; left: 2%; right: 2%; top: 66%; height: 12px; background: #c98d4e; border: 2px solid #7a5428; border-radius: 3px; }
+.dwb-crayons { position: absolute; top: calc(66% - 12px); left: 14%; display: flex; gap: 5px; }
+.dwb-crayons i { width: 9px; height: 30px; background: linear-gradient(var(--c) 0 0) 0 6px / 100% 100% no-repeat; clip-path: polygon(50% 0, 100% 22%, 100% 100%, 0 100%, 0 22%); rotate: calc(-8deg + var(--i) * 4deg); transform-origin: bottom; animation: dwb-hop 3s calc(var(--i) * .3s) ease-in-out infinite; }
+@keyframes dwb-hop { 50% { translate: 0 -4px; } }
+.dwb-line { position: relative; width: min(470px, 100%); padding-top: 4px; }
+.dwb-string { position: absolute; inset: 0 0 auto; width: 100%; height: 60px; }
+.dwb-string path { fill: none; stroke: #8a6a3a; stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+.dwb-hangs { display: flex; justify-content: space-between; gap: 10px; padding: 0 6%; }
+.dwb-hung { position: relative; width: 30%; margin: 0; padding: 7px 7px 4px; text-align: center; background: #fff; box-shadow: 0 6px 12px rgba(40, 30, 10, .18); transform-origin: 50% -10px; animation: dwb-sway 4s calc(var(--i) * -1.3s) ease-in-out infinite; }
+.dwb-hung:nth-child(2) { margin-top: 24px; } .dwb-hung:nth-child(1), .dwb-hung:nth-child(3) { margin-top: 12px; }
+.dwb-hung img, .dwb-hung svg { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: #fffdf6; }
+.dwb-hung small { display: block; padding-top: 3px; font: 700 .7rem var(--f-body); color: #5a5148; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dwb-peg { position: absolute; top: -12px; left: 50%; width: 10px; height: 26px; translate: -50% 0; background: #d9b273; border: 1.5px solid #7a5428; border-radius: 3px; }
+@keyframes dwb-sway { 50% { rotate: 3deg; } }
+@media (prefers-reduced-motion: reduce) { .dwb-st { animation: none; stroke-dashoffset: 0; } .dwb-hung, .dwb-crayons i { animation: none; } }
+.dwb-names { gap: 6px; } .dwb-names i { font-style: normal; color: #9a948c; }
+:lang(ar) .dwb-names, .dwb-names { font-size: clamp(1.05rem, 2.4vw, 1.4rem); }
