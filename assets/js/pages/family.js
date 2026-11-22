@@ -5,8 +5,8 @@ import * as live from '../live.js';
 
 /* Our family, and our family tree, on one page (the tree had a page of its own, familytree.html, which now sends you
    here). Band: the tree growing — the trunk draws itself, branches reach out, leaves and little hearts pop on them —
-   and the four of us hanging on its branches; under it the four of us as cards, the whole family tree (filled from
-   the shared list «tree»), and the family newspaper. */
+   and the four of us hanging on its branches; under it «جريدة بيتنا», folded, with the family tree (the shared list
+   «tree») and the four of us on its inside pages. */
 const leaf = (x, y, i, heart) => heart
 	? `<path class="fx-leaf fx-heart" style="--i:${i}" transform="translate(${x} ${y})" d="M0 6-7-1a4 4 0 0 1 7-5 4 4 0 0 1 7 5Z"/>`
 	: `<ellipse class="fx-leaf" style="--i:${i}" cx="${x}" cy="${y}" rx="9" ry="5" transform="rotate(${(i * 47) % 180 - 90} ${x} ${y})"/>`;
@@ -42,16 +42,73 @@ const pickOf = (arr, salt = 0) => (arr.length ? arr[(DAY * 31 + salt * 17) % arr
 const mdOf = (iso) => String(iso || '').slice(5, 10);
 const todayMD = () => { const d = new Date(); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(0, 0, 0, 0); const n = new Date(now.getFullYear(), d.getMonth(), d.getDate()); if (n < now) n.setFullYear(n.getFullYear() + 1); return Math.round((n - now) / 864e5); }
-function paperHTML(s, f) {
+/* The paper is the page: it comes first, folded in half the way it lands on the doorstep — the masthead and the front
+   page's top showing, «افتح الجريدة» to open it — and inside it has pages, turned with the arrows or the page numbers:
+   ١ the front page, ٢ the family tree (tree.js), ٣ family news (the four of us), ٤ odds and ends (the quote of the day
+   and the classifieds). */
+const PAGES = [['الصفحة الأولى', 'Front page'], ['شجرة العيلتين', 'The family tree'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
+function paperHTML(s, f, members) {
 	const today = new Date();
-	return `<article class="paper np reveal" id="np">
-		<h2 class="paper__name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
-		<div class="paper__bar"><div><span>${L('العدد', 'Issue')} #${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div></div>
-		<div id="np-body"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div>
+	return `<article class="np2 is-folded reveal" id="np" style="--n:${PAGES.length}">
+		<header class="np2-mast">
+			<p class="np2-mast__ear"><span>${L('أول جريدة عائلية', 'A family newspaper')}</span><span>${L('بتصدر كل يوم', 'Out every day')}</span></p>
+			<h2 class="np2-name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
+			<div class="np2-bar"><span>${L('العدد', 'Issue')} ${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div>
+		</header>
+		<div class="np2-sheet" id="np-sheet">
+			<section class="np2-page is-on" data-p="0"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
+			<section class="np2-page" data-p="1" id="tree"><h3 class="np2-sec">${L(...PAGES[1])}</h3><div class="fam-tree">${treeHTML(s)}</div></section>
+			<section class="np2-page" data-p="2"><h3 class="np2-sec">${L(...PAGES[2])}</h3>
+				<div class="np2-news">${members.map((m) => `<article class="np2-story">
+					${m.photo ? `<div class="np2-story__pic" data-media-box>${img(m.photo, App.t(m.name), 'zoom')}</div>` : `<span class="np2-story__ic">${doodle(m.emoji, 44)}</span>`}
+					<h4>${T(m.name)}</h4>
+					<em>${T(m.role)}${m.born ? ` · ${m.kid ? esc(age(m.born)) : `${L('مواليد', 'born')} ${esc(longDate(m.born))}`}` : ''}</em>
+					${m.text ? `<p dir="auto">${T(m.text)}</p>` : ''}
+					<a class="np2-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
+				</article>`).join('')}</div>
+			</section>
+			<section class="np2-page" data-p="3"><h3 class="np2-sec">${L(...PAGES[3])}</h3><div id="np-misc"></div></section>
+		</div>
+		<div class="np2-fold"><button class="btn btn--coral" type="button" id="np-open">${doodle('scroll', 18)} ${L('افتح الجريدة', 'Open the paper')}</button></div>
+		<nav class="np2-pager" aria-label="${L('صفحات الجريدة', 'The paper’s pages')}">
+			<button class="np2-turn" type="button" data-go="-1" aria-label="${L('الصفحة اللي قبلها', 'Previous page')}">${doodle(L('forward', 'back'), 18)}</button>
+			<span class="np2-tabs">${PAGES.map((p, i) => `<button type="button" class="np2-tab${i ? '' : ' is-on'}" data-p="${i}"><b>${num(i + 1)}</b><small>${esc(L(...p))}</small></button>`).join('')}</span>
+			<button class="np2-turn" type="button" data-go="1" aria-label="${L('الصفحة اللي بعدها', 'Next page')}">${doodle(L('back', 'forward'), 18)}</button>
+		</nav>
 	</article>`;
 }
+/* fold, unfold and turn */
+function wirePaper(main) {
+	const np = main.querySelector('#np');
+	if (!np) return;
+	let at = 0;
+	const pages = [...np.querySelectorAll('.np2-page')];
+	const go = (i, scroll) => {
+		i = Math.max(0, Math.min(pages.length - 1, i));
+		np.classList.remove('is-folded');
+		if (i !== at) {
+			const dir = i > at ? 'next' : 'prev';
+			pages.forEach((p, k) => { p.classList.toggle('is-on', k === i); p.classList.remove('turn-next', 'turn-prev'); });
+			void pages[i].offsetWidth;
+			pages[i].classList.add(`turn-${dir}`);
+			at = i;
+		}
+		np.querySelectorAll('.np2-tab').forEach((t) => t.classList.toggle('is-on', +t.dataset.p === at));
+		np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = (+b.dataset.go < 0 && at === 0) || (+b.dataset.go > 0 && at === pages.length - 1); });
+		if (scroll) np.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+	};
+	np.addEventListener('click', (e) => {
+		if (e.target.closest('#np-open')) return go(0);
+		const t = e.target.closest('.np2-tab, [data-goto]'), b = e.target.closest('[data-go]');
+		if (t) go(+(t.dataset.p ?? t.dataset.goto), true);
+		if (b) go(at + +b.dataset.go, true);
+	});
+	np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = +b.dataset.go < 0; });
+	// a link to the tree (family.html#tree, or the old familytree.html) opens the paper at the tree
+	if (location.hash === '#tree') setTimeout(() => go(1, true), 300);
+}
 async function fillPaper(main, s, f) {
-	const box = main.querySelector('#np-body');
+	const box = main.querySelector('#np-front'), misc = main.querySelector('#np-misc');
 	if (!box) return;
 	const members = f.members || [];
 	const [firsts, sayings, goals] = await Promise.all(['firsts', 'sayings', 'goals'].map((k) => live.load(k).catch(() => ({ items: [] }))));
@@ -87,38 +144,40 @@ async function fillPaper(main, s, f) {
 		s.met && { t: L('ذكرى أول سلام', 'The day we met'), d: nextOf(s.met) }
 	].filter(Boolean).sort((a, b) => a.d - b.d).slice(0, 3);
 	const wants = (goals.items || []).filter((g) => !g.done);
-	const ads = [0, 1, 2].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i);
+	const ads = [0, 1, 2, 3].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i);
 	const when = (d) => (d === 0 ? L('النهارده!', 'today!') : d === 1 ? L('بكرة', 'tomorrow') : L(`بعد ${num(d)} يوم`, `in ${d} days`));
 
 	box.innerHTML = `
 		${stamp ? `<span class="np__stamp">${esc(stamp)}</span>` : ''}
-		<h3 class="paper__headline" dir="auto">${esc(head || '')}</h3>
-		${lead ? `<p class="paper__lead" dir="auto">${esc(lead)}</p>` : ''}
-		<div class="np__grid">
-			${old ? `<a class="np__story" href="moment.html?id=${encodeURIComponent(old.id)}">
-				<p class="np__kicker">${doodle('calendar', 18)} ${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
-				${oldPhoto ? `<span class="np__pic">${img(oldPhoto, App.t(old.title))}</span>` : ''}
+		<h3 class="np2-head" dir="auto">${esc(head || '')}</h3>
+		${lead ? `<p class="np2-lead" dir="auto">${esc(lead)}</p>` : ''}
+		<div class="np2-front">
+			${old ? `<a class="np2-main" href="moment.html?id=${encodeURIComponent(old.id)}">
+				<p class="np2-kick">${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
+				${oldPhoto ? `<span class="np2-pic">${img(oldPhoto, App.t(old.title))}</span>` : ''}
 				<h4 dir="auto">${T(old.title)}</h4>
 				<em>${esc(longDate(old.date))}</em>
 				${old.text ? `<p dir="auto">${T(old.text)}</p>` : ''}
 			</a>` : ''}
-			<aside class="np__side">
-				<section class="np__box"><p class="np__kicker">${doodle('star', 18)} ${L('أرقام النهارده', 'Today’s numbers')}</p>
-					<ul class="np__nums">${nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
-				<section class="np__box"><p class="np__kicker">${doodle('cake', 18)} ${L('قريب', 'Coming up')}</p>
-					<ul class="np__soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
+			<aside class="np2-side">
+				<section><p class="np2-kick">${L('أرقام النهارده', 'Today’s numbers')}</p>
+					<ul class="np2-nums">${nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
+				<section><p class="np2-kick">${L('قريب', 'Coming up')}</p>
+					<ul class="np2-soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
+				<section class="np2-index"><p class="np2-kick">${L('في العدد ده', 'In this issue')}</p>
+					<ul>${PAGES.slice(1).map((p, i) => `<li><button type="button" data-goto="${i + 1}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 2)}</b></button></li>`).join('')}</ul></section>
 			</aside>
-			${say ? `<a class="np__quote" href="sayings.html"><p class="np__kicker">${doodle('chat', 18)} ${L('كلمة اليوم', 'Quote of the day')}</p>
-				<blockquote dir="auto">«${esc(say.said)}»</blockquote><cite>— ${esc(nameOf(say.kid))}${say.means ? ` · ${L('يقصد', 'meaning')} «${esc(say.means)}»` : ''}</cite></a>` : ''}
-			${ads.length ? `<a class="np__ads" href="goals.html"><p class="np__kicker">${doodle('gift', 18)} ${L('إعلانات مبوبة', 'Classifieds')}</p>
-				${ads.map((g) => `<p class="np__ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : ''}
-			<section class="np__family"><p class="np__kicker">${doodle('family', 18)} ${L('أخبار العيلة', 'Family notes')}</p>
-				<div class="np__cols">${members.map((m) => `<div style="--c:${esc(m.color || '#0e6990')}"><span class="np__face">${doodle(m.emoji, 22)}</span><h4>${T(m.name)}</h4><em>${m.kid && m.born ? `${esc(age(m.born))} · ` : ''}${T(m.role)}</em>${m.text ? `<p>${T(m.text)}</p>` : ''}</div>`).join('')}</div>
-			</section>
-		</div>
-		<p class="np__foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>`;
-	hydrate(box);
-	live.hydrateSketches(box);
+		</div>`;
+	if (misc) misc.innerHTML = `<div class="np2-misc">
+		${say ? `<a class="np2-quote" href="sayings.html"><p class="np2-kick">${L('كلمة اليوم', 'Quote of the day')}</p>
+			<blockquote dir="auto">«${esc(say.said)}»</blockquote><cite>— ${esc(nameOf(say.kid))}${say.means ? ` · ${L('يقصد', 'meaning')} «${esc(say.means)}»` : ''}</cite></a>` : ''}
+		${ads.length ? `<a class="np2-ads" href="goals.html"><p class="np2-kick">${L('إعلانات مبوبة', 'Classifieds')}</p>
+			${ads.map((g) => `<p class="np2-ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : ''}
+		<div class="np2-weather"><p class="np2-kick">${L('حالة الجو في البيت', 'Weather at home')}</p><p>${doodle('sun', 30)} <b>${L('دافي ومليان حب', 'Warm, with plenty of love')}</b></p><small>${L('فرصة حضن: ١٠٠٪', 'Chance of hugs: 100%')}</small></div>
+	</div>
+	<p class="np__foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>`;
+	hydrate(box); hydrate(misc || box);
+	live.hydrateSketches(main.querySelector('#np'));
 }
 
 export default {
@@ -130,19 +189,9 @@ export default {
 		return `
 		${pageHead(L('عيلتنا', 'Our family'), Y('خبر عاجل! اقرا كل حاجة عننا — وشجرة العيلتين اللي بقوا عيلة واحدة', 'خبر عاجل! اقري كل حاجة عننا — وشجرة العيلتين اللي بقوا عيلة واحدة', 'Extra! Extra! Read all about us — and the tree of two families that became one'), [{ href: 'family.html', ar: 'عيلتنا', en: 'Our family' }], { band: band(members) })}
 		<section class="sec sec--top"><div class="wrap">
-			<div class="fam-row">${members.map((m, k) => `
-				<a class="fam reveal" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')};--delay:${k * 0.08}s">
-					<span class="fam__pic">${m.photo ? `<span data-media-box>${img(m.photo, App.t(m.name))}</span>` : `<span class="fam__emoji">${doodle(m.emoji, 52)}</span>`}</span>
-					<b>${T(m.name)}</b>
-					<small>${m.kid && m.born ? `${age(m.born)} · ${T(m.role)}` : T(m.role)}</small>
-				</a>`).join('')}
-			</div>
-
-			<div id="tree" class="fam-tree">${treeHTML(s)}</div>
-
-			${paperHTML(s, f)}
+			${paperHTML(s, f, members)}
 		</div></section>
 		${related(['shopping', 'distances', 'nokta', 'growth'])}`;
 	},
-	after(main, s) { fillPaper(main, s, s.family || {}); return wireTree(main, s); }
+	after(main, s) { wirePaper(main); fillPaper(main, s, s.family || {}); return wireTree(main, s); }
 };
