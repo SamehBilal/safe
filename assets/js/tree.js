@@ -37,7 +37,10 @@ function core(s) {
 const colour = (side) => (side === 'her' ? '#c2185b' : '#0e6990');
 const initials = (name) => [...String(name).trim()][0] || '♥';
 /** "Sameh's father" / «أبو سامح» */
-const relOf = (r, s, side, parent) => { const x = rel(r); const n = parent ? parent.name : App.t(side === 'her' ? s.her : s.him); return L(`${x.of[0]} ${n}`, `${n}’s ${x.of[1]}`); };
+/* a name (and a line about them) in the language we're reading in: the English one when it's been written */
+const nm = (p) => L(p.name, p.en || p.name);
+const noteOf = (p) => L(p.note, p.noteEn || p.note);
+const relOf = (r, s, side, parent) => { const x = rel(r); const n = parent ? nm(parent) : App.t(side === 'her' ? s.her : s.him); return L(`${x.of[0]} ${n}`, `${n}’s ${x.of[1]}`); };
 
 /* a face for everyone: the four of us from story.json; a relative's own photo (added from a phone, kept encrypted)
    or, until there is one, a drawn face — a man for fathers and brothers, a woman for mothers and sisters */
@@ -94,7 +97,7 @@ function art(left, right) {
 function ribbon(s, p, side, [x, y, r]) {
 	return `<button type="button" class="ftr-person${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" data-side="${side}" style="--x:${x / 10}%;--y:${y / 7}%;--r:${r}deg;--c:${colour(side)}">
 		<span class="ftr-person__pic">${face(p, false, 26)}</span>
-		<span class="ftr-rib"><b dir="auto">${esc(p.name)}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></span></button>`;
+		<span class="ftr-rib"><b dir="auto">${esc(nm(p))}${p.gone ? ' ♡' : ''}</b><small dir="auto">${esc(relOf(p.rel, s, side))}</small></span></button>`;
 }
 /** A brother's or sister's children, hanging under their parent's ribbon, three to a row. */
 function nieces(kids, side, [x, y]) {
@@ -102,9 +105,9 @@ function nieces(kids, side, [x, y]) {
 	return kids.map((k, j) => {
 		// rows of three, kept inside the ribbon's width so they never reach the ribbons beside or below
 		const row = Math.floor(j / 3), inRow = Math.min(3, n - row * 3);
-		const kx = x + ((j % 3) - (inRow - 1) / 2) * 44, ky = y + 30 + row * 56;
+		const kx = x + ((j % 3) - (inRow - 1) / 2) * 44, ky = y + 38 + row * 54;
 		return `<button type="button" class="ftr-niece${k.gone ? ' is-gone' : ''}" data-open="${esc(k.id)}" style="--x:${kx / 10}%;--y:${ky / 7}%;--c:${colour(side)};--i:${j}">
-			<span class="ftr-niece__pic">${face(k, false, 18)}</span><b dir="auto">${esc(k.name)}</b></button>`;
+			<span class="ftr-niece__pic">${face(k, false, 18)}</span><b dir="auto">${esc(nm(k))}</b></button>`;
 	}).join('');
 }
 /** A spot still waiting for a name: tap it to fill it in. */
@@ -133,6 +136,7 @@ export function treeHTML(s) {
 			<form id="ft-form" autocomplete="off">
 				<div class="f-row">
 					<label class="f f--grow"><span>${L('الاسم', 'Name')}</span><input name="name" dir="auto" maxlength="40" required></label>
+					<label class="f f--grow"><span>${L('الاسم بالإنجليزي (اختياري)', 'Name in English (optional)')}</span><input name="en" dir="ltr" lang="en" maxlength="40"></label>
 					<label class="f"><span>${L('يبقى إيه؟', 'Who are they?')}</span><select name="rel">${RELS.map((r) => `<option value="${r.id}">${esc(L(r.ar, r.en))}</option>`).join('')}</select></label>
 				</div>
 				<label class="f ft__parent" hidden><span>${L('ابن أو بنت مين؟', 'Whose child?')}</span><select name="parent"></select></label>
@@ -196,7 +200,7 @@ export async function wireTree(main, s) {
 		rows.innerHTML = out.join('');
 		// anyone beyond the tree's spots gets a ribbon underneath
 		more.hidden = !extra.length;
-		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-person ftr-person--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" style="--c:${colour(sideOf(p))}"><span class="ftr-person__pic">${face(p, false, 26)}</span><span class="ftr-rib"><b dir="auto">${esc(p.name)}</b><small dir="auto">${esc(relOf(p.rel, s, sideOf(p), parentOf(p)))}</small></span></button>`).join('');
+		more.innerHTML = extra.map(({ p }) => `<button type="button" class="ftr-person ftr-person--flat${p.gone ? ' is-gone' : ''}" data-open="${esc(p.id)}" style="--c:${colour(sideOf(p))}"><span class="ftr-person__pic">${face(p, false, 26)}</span><span class="ftr-rib"><b dir="auto">${esc(nm(p))}</b><small dir="auto">${esc(relOf(p.rel, s, sideOf(p), parentOf(p)))}</small></span></button>`).join('');
 		hydrate(rows);
 		live.hydrateSketches(rows);
 		live.hydrateSketches(more);
@@ -211,7 +215,7 @@ export async function wireTree(main, s) {
 		if (!p) return;
 		back = from;
 		const side = member ? (p === her ? 'her' : p === him ? 'him' : '') : sideOf(p);
-		const name = member ? App.t(p.name) : p.name;
+		const name = member ? App.t(p.name) : nm(p);
 		const who = member ? (p.kid && p.born ? age(p.born) : App.t(p.role)) : relOf(p.rel, s, side, parentOf(p));
 		const born = p.born ? String(p.born).slice(0, 4) : '';
 		const mine = !member && live.canWrite() && (p.by === live.me() || !p.by);
@@ -222,7 +226,7 @@ export async function wireTree(main, s) {
 			<h3 id="ft-card-h" dir="auto">${esc(name)}</h3>
 			<p class="ft-card__rel" dir="auto">${esc([who, born && !p.kid ? L(`مواليد ${born}`, `born ${born}`) : ''].filter(Boolean).join(' · '))}</p>
 			${p.gone ? `<p class="ft-card__rel">♡ ${member ? L('الله يرحمه', 'In loving memory') : L(rel(p.rel).gone, 'In loving memory')}</p>` : ''}
-			${p.note ? `<p class="ft-card__note" dir="auto">${esc(p.note)}</p>` : ''}
+			${p.note ? `<p class="ft-card__note" dir="auto">${esc(member ? p.note : noteOf(p))}</p>` : ''}
 			<div class="ft-card__acts">
 				${member ? `<a class="btn btn--sm btn--coral" href="member.html?id=${esc(p.id)}">${L('صفحته', 'Their page')} ${App.arrow}</a>` : ''}
 				${!member && live.canWrite() ? `<label class="btn btn--sm ft-card__photo">${doodle('camera', 16)} ${p.pic ? L('غيّر الصورة', 'Change the photo') : L('ضيف صورة', 'Add a photo')}<input type="file" accept="image/*" data-pic="${esc(p.id)}" hidden></label>` : ''}
@@ -264,7 +268,7 @@ export async function wireTree(main, s) {
 		const kid = rel(form.rel.value).kid;
 		$('.ft__parent', form).hidden = !kid;
 		form.side.closest('.f').hidden = kid;
-		if (kid) form.parent.innerHTML = (data.items || []).filter((x) => SIBS.includes(x.rel)).map((x) => `<option value="${esc(x.id)}">${esc(x.name)} — ${esc(relOf(x.rel, s, x.side))}</option>`).join('');
+		if (kid) form.parent.innerHTML = (data.items || []).filter((x) => SIBS.includes(x.rel)).map((x) => `<option value="${esc(x.id)}">${esc(nm(x))} — ${esc(relOf(x.rel, s, x.side))}</option>`).join('');
 	};
 	form?.rel.addEventListener('change', parentPick);
 	more.addEventListener('click', (e) => { const o = e.target.closest('[data-open]'); if (o) openCard(o.dataset.open, o); });
@@ -288,7 +292,7 @@ export async function wireTree(main, s) {
 		const kid = rel(form.rel.value).kid;
 		const par = kid ? (data.items || []).find((x) => x.id === form.parent.value) : null;
 		if (kid && !par) { msg.textContent = L('اختار الأب أو الأم الأول', 'Pick their parent first'); return; }
-		const p = { id: live.newId(), name: form.name.value.trim(), rel: form.rel.value, side: par ? par.side : form.side.value, parent: par?.id, born: +form.born.value || undefined, note: form.note.value.trim() || undefined, gone: form.gone.checked || undefined, by: live.me(), at: Date.now() };
+		const p = { id: live.newId(), name: form.name.value.trim(), en: form.en.value.trim() || undefined, rel: form.rel.value, side: par ? par.side : form.side.value, parent: par?.id, born: +form.born.value || undefined, note: form.note.value.trim() || undefined, gone: form.gone.checked || undefined, by: live.me(), at: Date.now() };
 		if (!p.name) return;
 		try {
 			if (form.pic.files[0]) { msg.textContent = L('بنحفظ الصورة…', 'Saving the photo…'); p.pic = await live.putSketch(await shrinkPhoto(form.pic.files[0], 800)); }
