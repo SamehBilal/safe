@@ -1324,3 +1324,8 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 .hl-doc__acts .btn { justify-content: center; text-align: center; }
 .hl-docs__who { padding-inline-start: 0; }
 .hl-card h3 { overflow-wrap: anywhere; }
+/* a little room between the band and the breadcrumbs on «طلبات البيت» and «النقطة» */
+.sh-band { padding-bottom: 30px; }
+.nk-band { padding-bottom: 26px; }
+.sh-receipt__list li { min-width: 0; }
+.sh-receipt__list li > span[dir] { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
