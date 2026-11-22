@@ -1,6 +1,7 @@
 /* More party on «أعياد الميلاد»: the birthdays we've already had (from «حكايتنا»), the age counting up live in sticky
    notes, and a sky of balloons to pop — each one lets a photo from a past birthday fly out. */
 import { L, T, esc, img, num, App, $, $$, REDUCE, hydrate, parseDate } from './shell.js';
+import { doodle } from './doodles.js';
 
 const KEY = /birthday|ميلاد|cake|تورت/i;
 const md = (iso) => +iso.slice(5, 7) * 100 + +iso.slice(8, 10);
@@ -45,7 +46,7 @@ export function wallHTML(member, past) {
 		<ol class="bdw__line">${past.map(({ m, turned, shots }, i) => `<li style="--i:${i}">
 			<a class="bdw__snap" href="moment.html?id=${encodeURIComponent(m.id)}">
 				<span class="bdw__peg" aria-hidden="true"></span>
-				<span class="bdw__pic">${shots[0] ? img(shots[0], T(m.title)) : `<span class="bdw__ic" aria-hidden="true">🎂</span>`}${shots.length > 1 ? `<em>+${num(shots.length - 1)}</em>` : ''}</span>
+				<span class="bdw__pic">${shots[0] ? img(shots[0], T(m.title)) : `<span class="bdw__ic" aria-hidden="true">${doodle('cake', 36)}</span>`}${shots.length > 1 ? `<em>+${num(shots.length - 1)}</em>` : ''}</span>
 				<b dir="auto">${esc(T(m.title))}</b>
 				<small>${esc(tag(turned))} · ${num(+m.date.slice(0, 4)).replace(/[٬,]/g, '')}</small>
 			</a></li>`).join('')}</ol>
@@ -89,40 +90,60 @@ export function filmstrip(root) {
 }
 
 /* ---------- the age, counting up live ---------- */
+/* In the theme: one big counter of the seconds lived on a ruled strip, the next birthday counted down in four boxes
+   beside a drawn cake, and six cards (ink border, a coloured shadow, a drawn icon in a round badge) for the days, hours,
+   heartbeats, sunrises, full moons and the birthdays since we met. */
 export function tickerHTML(member, s) {
 	if (!member?.born) return '';
 	const nm = App.t(member.name);
-	const note = (k, ic, label) => `<li class="bdt__n" data-k="${k}"><span class="bdt__ic" aria-hidden="true">${ic}</span><b data-v>—</b><small>${label}</small></li>`;
 	const together = s.met && member.born < s.met;
+	const she = !!member.female;
+	const card = (k, ic, c, label) => `<li class="bdt__card" data-k="${k}" style="--c:${c}"><span class="bdt__badge">${doodle(ic, 26)}</span><b data-v>—</b><small>${label}</small></li>`;
+	const box = (k, label) => `<span class="bdt__cd" data-cd="${k}"><b>—</b><i>${label}</i></span>`;
 	return `<section class="sec bdt"><div class="wrap">
 		<h2 class="sec__title reveal">${L(`${esc(nm)} بالأرقام`, `${esc(nm)} in numbers`)}</h2>
 		<p class="sec__sub reveal">${L('بتعد دلوقتي، ثانية بثانية', 'Counting right now, second by second')}</p>
-		<ul class="bdt__notes">
-			${note('days', '📅', L('يوم عاشه', 'days lived'))}
-			${note('hours', '⏰', L('ساعة', 'hours'))}
-			${note('secs', '⏱️', L('ثانية — وبتزيد', 'seconds, and counting'))}
-			${note('beats', '💓', L('دقة قلب (تقريباً)', 'heartbeats (about)'))}
-			${note('suns', '🌅', L('شروق شمس', 'sunrises'))}
-			${note('moons', '🌕', L('قمر كامل', 'full moons'))}
-			${together ? note('together', '💞', L('عيد ميلاد عدّى وإحنا سوا', 'birthdays since we met')) : note('cakes', '🎂', L('تورتة عيد ميلاد', 'birthday cakes'))}
-			${note('next', '⏳', L('ثانية لعيد الميلاد الجاي', 'seconds to the next birthday'))}
+		<div class="bdt__top">
+			<div class="bdt__big" data-k="secs" style="--c:#f2726f">
+				<span class="bdt__badge">${doodle('clock', 30)}</span>
+				<small>${L(`ثانية ${she ? 'عاشتها' : 'عاشها'} لحد دلوقتي`, 'seconds lived so far')}</small>
+				<b data-v>—</b>
+				<span class="bdt__tick">${L('وبتزيد…', 'and counting…')}</span>
+			</div>
+			<div class="bdt__next" style="--c:#0e6990">
+				<span class="bdt__badge">${doodle('cake', 30)}</span>
+				<small>${L('لعيد الميلاد الجاي', 'to the next birthday')}</small>
+				<div class="bdt__cds">${box('d', L('يوم', 'days'))}${box('h', L('ساعة', 'hours'))}${box('m', L('دقيقة', 'min'))}${box('s', L('ثانية', 'sec'))}</div>
+			</div>
+		</div>
+		<ul class="bdt__cards">
+			${card('days', 'calendar', '#0e6990', L(`يوم ${she ? 'عاشته' : 'عاشه'}`, 'days lived'))}
+			${card('hours', 'clock', '#6d4bb3', L('ساعة', 'hours'))}
+			${card('beats', 'heart', '#f2726f', L('دقة قلب (تقريباً)', 'heartbeats (about)'))}
+			${card('suns', 'sun', '#e39b2d', L('شروق شمس', 'sunrises'))}
+			${card('moons', 'moon', '#26706b', L('قمر كامل', 'full moons'))}
+			${together ? card('together', 'couple', '#c2185b', L('عيد ميلاد عدّى وإحنا سوا', 'birthdays since we met')) : card('cakes', 'cake', '#c2185b', L('تورتة عيد ميلاد', 'birthday cakes'))}
 		</ul>
 	</div></section>`;
 }
 export function startTicker(root, member, s) {
-	const box = $('.bdt__notes', root);
-	if (!box || !member?.born) return () => {};
+	const sec = $('.bdt', root);
+	if (!sec || !member?.born) return () => {};
 	const born = parseDate(member.born), met = s.met ? parseDate(s.met) : null;
 	const fmt = (n) => num(Math.floor(n));
+	const two = (n) => num(Math.floor(n)).padStart(2, App.lang === 'ar' ? '٠' : '0');
 	const tick = () => {
 		const now = new Date(), ms = now - born, days = ms / 864e5;
 		const next = new Date(now.getFullYear(), born.getMonth(), born.getDate());
 		if (next < now) next.setFullYear(now.getFullYear() + 1);
-		let had = now.getFullYear() - born.getFullYear() - (now < new Date(now.getFullYear(), born.getMonth(), born.getDate()) ? 1 : 0);
+		const had = now.getFullYear() - born.getFullYear() - (now < new Date(now.getFullYear(), born.getMonth(), born.getDate()) ? 1 : 0);
 		let since = 0;
 		if (met) for (let y = met.getFullYear(); y <= now.getFullYear(); y++) { const d = new Date(y, born.getMonth(), born.getDate()); if (d >= met && d <= now) since++; }
-		const v = { days, hours: ms / 36e5, secs: ms / 1e3, beats: (ms / 6e4) * 80, suns: days, moons: days / 29.53, together: since, cakes: had, next: (next - now) / 1e3 };
-		for (const li of $$('.bdt__n', box)) { const b = $('[data-v]', li); const t = fmt(v[li.dataset.k]); if (b.textContent !== t) b.textContent = t; }
+		const v = { days, hours: ms / 36e5, secs: ms / 1e3, beats: (ms / 6e4) * 80, suns: days, moons: days / 29.53, together: since, cakes: had };
+		for (const el of $$('[data-k]', sec)) { const b = $('[data-v]', el); const t = fmt(v[el.dataset.k]); if (b && b.textContent !== t) b.textContent = t; }
+		const left = (next - now) / 1e3;
+		const cd = { d: fmt(left / 86400), h: two((left % 86400) / 3600), m: two((left % 3600) / 60), s: two(left % 60) };
+		for (const el of $$('[data-cd]', sec)) { const b = $('b', el); if (b.textContent !== cd[el.dataset.cd]) b.textContent = cd[el.dataset.cd]; }
 	};
 	tick();
 	const t = setInterval(tick, 1000);
@@ -135,7 +156,7 @@ export function gameHTML() {
 		<h2 class="sec__title reveal">${L('فرقع البلالين', 'Pop the balloons')}</h2>
 		<p class="sec__sub reveal">${L('كل بلونة جواها صورة من عيد ميلاد فات', 'Every balloon has a photo from a birthday gone by')}</p>
 		<div class="bdg" id="bdg" role="application" aria-label="${L('لعبة البلالين', 'The balloon game')}">
-			<p class="bdg__score" aria-live="polite"><span>🎈</span> <b id="bdg-n">${num(0)}</b></p>
+			<p class="bdg__score" aria-live="polite"><span>${doodle('party', 20)}</span> <b id="bdg-n">${num(0)}</b></p>
 		</div>
 	</div></section>`;
 }
@@ -177,7 +198,7 @@ export function balloonGame(root, photos) {
 		const snap = document.createElement('span');
 		snap.className = 'bdg__snap';
 		snap.style.cssText = `left:${Math.min(br.width - 70, Math.max(70, x))}px;top:${Math.min(br.height - 90, Math.max(80, y))}px;--r:${(Math.random() * 16 - 8).toFixed(1)}deg`;
-		snap.innerHTML = ph ? img(ph, '') : `<b>${['🎂', '🎁', '🥳', '💝', '🎉'][n % 5]}</b>`;
+		snap.innerHTML = ph ? img(ph, '') : `<b>${doodle(['cake', 'gift', 'party', 'heart', 'sparkle'][n % 5], 44)}</b>`;
 		if (ph) $('img', snap)?.setAttribute('data-eager', '');
 		box.append(snap);
 		hydrate(snap);

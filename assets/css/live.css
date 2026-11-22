@@ -1472,18 +1472,6 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 
 /* ---------- birthdays, more party (bdmore.js) ---------- */
 /* the age in numbers: sticky notes counting up */
-.bdt__notes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); gap: 22px 18px; margin: 0; padding: 0; list-style: none; }
-.bdt__n { position: relative; display: grid; justify-items: center; gap: 2px; padding: 22px 12px 16px; text-align: center; color: #2b2b33; background: #fff7c2; border-radius: 2px; rotate: -1.5deg; box-shadow: 0 10px 18px -8px rgba(30, 20, 10, 0.35), 0 1px 2px rgba(30, 20, 10, 0.15); transition: rotate 0.3s, translate 0.3s; }
-.bdt__n:nth-child(4n + 2) { background: #fde3e0; rotate: 1.5deg; }
-.bdt__n:nth-child(4n + 3) { background: #d9efe2; rotate: -0.5deg; }
-.bdt__n:nth-child(4n) { background: #dbeaf6; rotate: 2deg; }
-.bdt__n:hover { rotate: 0deg; translate: 0 -4px; }
-.bdt__n::before { content: ''; position: absolute; top: -9px; left: 50%; width: 64px; height: 20px; translate: -50% 0; rotate: -2deg; background: rgba(255, 255, 255, 0.55); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
-.bdt__ic { font-size: 1.6rem; line-height: 1; }
-.bdt__n b { font: 400 clamp(1.6rem, 3vw, 2.1rem)/1.1 var(--f-label); letter-spacing: 0.02em; font-variant-numeric: tabular-nums; word-break: break-all; }
-.bdt__n small { font: 600 1.15rem/1.2 var(--f-hand); color: #5b5560; }
-:lang(ar) .bdt__n small { font: 700 0.82rem/1.5 var(--f-body); }
-.bdt__n[data-k='secs'] b, .bdt__n[data-k='next'] b { color: #c2185b; }
 
 /* the birthdays so far: bunting, then polaroids pegged on a string */
 .bdw__bunting { display: flex; justify-content: space-between; height: 40px; margin: 6px -8px 0; background: linear-gradient(transparent 3px, #37353f 3px 5px, transparent 5px); }
@@ -1539,10 +1527,6 @@ a.cal-ev:hover .cal-ev__go i { translate: calc(var(--bujo-x, 1) * 3px) 0; }
 	.bdg__b { animation: bdg-rise var(--dur) linear forwards; }
 	.bdg__snap { animation-duration: 1.8s; animation-timing-function: linear; }
 }
-.bdt__notes { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 980px; margin-inline: auto; }
-.bdt__n b { white-space: nowrap; word-break: normal; font-size: clamp(1.4rem, 2.6vw, 2rem); }
-.bdt__n[data-k='secs'] b, .bdt__n[data-k='beats'] b, .bdt__n[data-k='next'] b { font-size: clamp(1.1rem, 1.9vw, 1.55rem); }
-@media (max-width: 760px) { .bdt__notes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; } }
 
 /* ---------- the wish jar, in the journal's hand: a slip of ruled paper to write on, taped to the page, and the jar
    drawn in wobbly ink with a gingham cloth tied over its lid and a paper tag ---------- */
@@ -1885,3 +1869,29 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .dr-linked__h a { margin-inline-start: auto; font-size: .8rem; }
 .dr-linked__list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; max-height: 220px; overflow: auto; }
 .dr-linked__list li { padding: 3px 10px; font-size: .82rem; font-weight: 700; background: color-mix(in srgb, var(--c) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); border-radius: 999px; }
+
+/* the age in numbers (bdmore.js): a big counter of the seconds lived, the next birthday counted down in four boxes, and
+   six theme cards — ink border, a coloured shadow, a drawn icon in a round badge */
+.bdt__top { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(16px, 3vw, 28px); max-width: 980px; margin: 0 auto clamp(22px, 4vw, 34px); }
+.bdt__big, .bdt__next, .bdt__card { position: relative; display: grid; justify-items: center; align-content: center; gap: 6px; text-align: center; color: var(--text);
+	background: var(--card-2, var(--paper)); border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--c) 60%, transparent); }
+.bdt__big, .bdt__next { padding: clamp(18px, 3vw, 28px) clamp(14px, 3vw, 26px); }
+.bdt__big { background: repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--blue, #0e6990) 12%, transparent) 31px 32px), var(--card-2, var(--paper)); rotate: -.6deg; }
+.bdt__next { rotate: .6deg; }
+.bdt__badge { display: grid; place-items: center; width: 52px; height: 52px; color: #fff; background: var(--c); border: 2px solid var(--ink, #37353f); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--ink, #37353f); }
+.bdt__badge .dd { stroke-width: 2; }
+.bdt__big small, .bdt__next small, .bdt__card small { font: 600 1.2rem/1.2 var(--f-hand); color: var(--muted); }
+:lang(ar) .bdt__big small, :lang(ar) .bdt__next small, :lang(ar) .bdt__card small { font: 700 .85rem/1.5 var(--f-body); }
+.bdt__big b { font: 400 clamp(2.2rem, 6vw, 3.8rem)/1 var(--f-label); letter-spacing: .03em; color: var(--coral-deep, #d9534f); font-variant-numeric: tabular-nums; white-space: nowrap;
+	background: linear-gradient(transparent 62%, color-mix(in srgb, var(--hl-yellow, #fdc830) 70%, transparent) 62% 92%, transparent 92%); padding: 0 .15em; }
+.bdt__tick { font: 700 1.1rem var(--f-hand); color: var(--muted); }
+.bdt__cds { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.bdt__cd { display: grid; justify-items: center; min-width: 64px; padding: 8px 6px 6px; background: var(--card, #fff); border: 2px dashed color-mix(in srgb, var(--c) 70%, transparent); border-radius: 14px; }
+.bdt__cd b { font: 400 clamp(1.6rem, 3.6vw, 2.3rem)/1 var(--f-label); color: var(--c); font-variant-numeric: tabular-nums; }
+.bdt__cd i { font-style: normal; font-size: .75rem; font-weight: 700; color: var(--muted); }
+.bdt__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2.6vw, 24px); max-width: 980px; margin: 0 auto; padding: 0; list-style: none; }
+.bdt__card { padding: 18px 12px 16px; transition: translate .2s var(--ease-pop, ease), rotate .2s; }
+.bdt__card:nth-child(odd) { rotate: -.8deg; } .bdt__card:nth-child(even) { rotate: .8deg; }
+.bdt__card:hover { rotate: 0deg; translate: 0 -4px; }
+.bdt__card b { font: 400 clamp(1.5rem, 3vw, 2.1rem)/1.05 var(--f-label); letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 760px) { .bdt__top { grid-template-columns: 1fr; } .bdt__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bdt__card b { font-size: clamp(1.15rem, 5vw, 1.6rem); } }
