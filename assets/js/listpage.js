@@ -60,6 +60,7 @@ function input(f, s) {
 		case 'area': el = `<textarea name="${f.n}" dir="auto" rows="${f.rows || 3}" maxlength="${f.max || 1200}"${req}${ph}></textarea>`; break;
 		case 'date': el = `<input name="${f.n}" type="date"${req}>`; break;
 		case 'num': el = `<input name="${f.n}" type="number" step="${f.step || 'any'}" min="${f.min ?? 0}" inputmode="decimal"${req}${ph}>`; break;
+		case 'tel': el = `<input name="${f.n}" type="tel" dir="ltr" inputmode="tel" maxlength="30"${req}${ph}>`; break;
 		case 'url': el = `<input name="${f.n}" type="url" dir="ltr"${req}${ph}>`; break;
 		case 'photo':
 			if (f.sketch) return `<div class="f lp-pic"><span>${esc(lab)}</span>

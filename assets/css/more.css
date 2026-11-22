@@ -1180,3 +1180,21 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 .sh-mode .chip .dd { vertical-align: -3px; }
 .sh-add [hidden] { display: none !important; }
 .sh-points textarea { line-height: 1.8; }
+
+/* «دفتر صحتنا»: drawn icons, the doctor on each entry with map and call buttons, and «دكاترتنا» */
+.hl-ic { font-size: 0; color: var(--coral-deep, #d9534f); }
+.lp-band--health svg.dd { width: auto; }
+.hl-card__k { display: flex; align-items: center; gap: 6px; }
+.hl-card__ic, .hl-due__ic { display: inline-grid; place-items: center; width: 28px; height: 28px; color: var(--coral-deep, #d9534f); background: color-mix(in srgb, var(--coral, #f2726f) 14%, var(--card)); border-radius: 50%; vertical-align: middle; }
+.hl-due h2 { display: flex; align-items: center; gap: 8px; }
+.hl-doc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; background: color-mix(in srgb, var(--blue, #0e6990) 7%, var(--card)); border: 1.5px dashed color-mix(in srgb, var(--blue, #0e6990) 45%, transparent); border-radius: 12px; }
+.hl-doc__ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; color: var(--blue, #0e6990); background: var(--card); border: 1.5px solid var(--blue, #0e6990); border-radius: 50%; }
+.hl-doc__tx { flex: 1; display: grid; min-width: 0; line-height: 1.35; }
+.hl-doc__tx b { font-size: .95rem; }
+.hl-doc__tx small { color: var(--muted); font-weight: 600; }
+.hl-doc__acts { display: flex; flex-wrap: wrap; gap: 6px; }
+.hl-doc__acts .btn .dd { vertical-align: -3px; }
+.hl-docs { margin: 8px 0 26px; }
+.hl-docs__list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.hl-docs__card { display: grid; gap: 6px; }
+.hl-docs__who { margin: 0; padding-inline-start: 56px; font-size: .78rem; font-weight: 700; color: var(--muted); }

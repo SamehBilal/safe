@@ -584,7 +584,7 @@ export const PAGES = [
 	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'كل كلمة حلوة قالوها', den: 'Every funny thing they said', group: 'family' },
 	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت، ونشطبه واحنا بنشتري', den: 'What the house needs, ticked off as we shop', group: 'family' },
 	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا في فرحنا وولادة الولاد، وردّيناها إمتى', den: 'Who gave at our wedding and the boys’ births, and when we gave it back', group: 'family' },
-	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحة الولاد', en: 'Health book', dar: 'تطعيمات ودكاترة وأدوية', den: 'Vaccinations, doctors and medicines', group: 'family' },
+	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحتنا', en: 'Our health book', dar: 'تطعيمات ودكاترة وأدوية لينا كلنا', den: 'Vaccinations, doctors and medicines for all of us', group: 'family' },
 	{ href: 'birthday.html', id: 'birthday', ic: 'cake', ar: 'أعياد الميلاد', en: 'Birthdays', dar: 'عيد ميلاد كل واحد فينا', den: 'Every one of our birthdays', group: 'you' },
 	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'you' },
 	{ href: 'wishes.html', id: 'wishes', ic: 'star', ar: 'برطمان الأمنيات', en: 'Wish jar', dar: 'أمنياتنا في أمان هنا', den: 'Our wishes, kept safe', group: 'you' },
