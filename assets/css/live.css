@@ -1918,3 +1918,14 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .lp-sketch__img { width: 64px; height: 64px; object-fit: contain; background: #fff; border: 1.5px solid var(--ink, #37353f); border-radius: 8px; }
 .sketch-dlg { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; }
 .sketch-dlg::backdrop { background: transparent; }
+
+/* chores: each job on the chart is a little tab — its drawing in a coloured badge, the job, and who does it, how often */
+.ch-chart tbody th { width: 250px; min-width: 190px; padding: 0; white-space: normal; }
+.ch-job { position: relative; display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 12px; padding-inline-end: 30px; background: color-mix(in srgb, var(--c) 22%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-inline-start: 6px solid var(--c); border-radius: 10px; }
+.ch-job__ic { flex: none; display: grid; place-items: center; width: 32px; height: 32px; color: var(--ink, #37353f); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 50%; }
+.ch-job__tx { display: grid; min-width: 0; line-height: 1.25; }
+.ch-job__tx b { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-job__tx small { font-size: .72rem; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch-job__del { position: absolute; top: 4px; inset-inline-end: 4px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; color: var(--muted); background: none; border: 0; border-radius: 50%; cursor: pointer; opacity: .5; transition: opacity .2s, color .2s; }
+.ch-job:hover .ch-job__del, .ch-job__del:focus-visible { opacity: 1; color: var(--coral-deep, #d9534f); }
+.ch-chart { table-layout: fixed; } .ch-chart thead th:first-child { width: 250px; } .ch-cell span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
