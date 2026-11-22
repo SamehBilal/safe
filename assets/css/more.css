@@ -1290,3 +1290,13 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 @media (prefers-reduced-motion: reduce) { .np2-page.turn-next, .np2-page.turn-prev, .np2:not(.is-folded) .np2-sheet { animation: none; } }
 .np2 .fam-tree > .sec__title, .np2 .fam-tree .sec__title:first-child { display: none; }
 .np2-misc { align-items: start; }
+
+/* «النقطة»: the totals as the site's cards — ink border, a coloured shadow, the drawing in a round badge, the number big */
+.nk-sum { gap: 4px; padding: 18px 14px 16px; color: var(--text); background: var(--card); border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--c) 60%, transparent); transition: translate .2s, rotate .2s; }
+.nk-sum:hover { rotate: 0deg; translate: 0 -4px; }
+.nk-sum__ic { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 4px; color: #fff; background: var(--c); border: 2px solid var(--ink, #37353f); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--ink, #37353f); }
+.nk-sum .nk-sum__ic .dd { color: #fff; margin: 0; }
+.nk-sum small { font: 700 1.2rem/1.2 var(--f-hand); color: var(--muted); }
+:lang(ar) .nk-sum small { font: 800 .9rem/1.4 var(--f-body); }
+.nk-sum b { color: var(--c); font-size: clamp(1.8rem, 4.5vw, 2.5rem); }
+.nk-sum span { color: var(--muted); }

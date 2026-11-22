@@ -144,9 +144,9 @@ export default {
 			const sum = (xs) => xs.reduce((n, x) => n + (+x.amount || 0), 0);
 			const oweN = ps.filter((p) => p.owe).length;
 			$('#nk-sums', main).innerHTML = `
-				<div class="nk-sum" style="--c:#f9a3a8;--r:-2deg">${doodle('coins', 30)}<small>${L('نقّطونا', 'Came in')}</small><b>${money(sum(ins))}</b><span>${L('من', 'from')} ${count(new Set(ins.map((x) => key(x.name))).size, ['بيت واحد', 'بيتين', 'بيوت', 'بيت'], 'home')}</span></div>
-				<div class="nk-sum" style="--c:#b9e08a;--r:1.5deg">${doodle('handshake', 30)}<small>${L('ردّينا', 'Given back')}</small><b>${money(sum(outs))}</b><span>${L('في', 'at')} ${count(outs.length, ['مناسبة واحدة', 'مناسبتين', 'مناسبات', 'مناسبة'], 'occasion')}</span></div>
-				<div class="nk-sum" style="--c:#ffd66b;--r:-1deg">${doodle('pen', 30)}<small>${L('لسه علينا', 'Still to return')}</small><b>${num(oweN)}</b><span>${oweN > 2 && oweN <= 10 ? L('بيوت', 'homes') : L('بيت', oweN === 1 ? 'home' : 'homes')}</span></div>`;
+				<div class="nk-sum" style="--c:#f2726f;--r:-1.2deg"><span class="nk-sum__ic">${doodle('coins', 26)}</span><small>${L('نقّطونا', 'Came in')}</small><b>${money(sum(ins))}</b><span>${L('من', 'from')} ${count(new Set(ins.map((x) => key(x.name))).size, ['بيت واحد', 'بيتين', 'بيوت', 'بيت'], 'home')}</span></div>
+				<div class="nk-sum" style="--c:#5a9e6f;--r:1deg"><span class="nk-sum__ic">${doodle('gift', 26)}</span><small>${L('ردّينا', 'Given back')}</small><b>${money(sum(outs))}</b><span>${L('في', 'at')} ${count(outs.length, ['مناسبة واحدة', 'مناسبتين', 'مناسبات', 'مناسبة'], 'occasion')}</span></div>
+				<div class="nk-sum" style="--c:#e39b2d;--r:-.6deg"><span class="nk-sum__ic">${doodle('pen', 26)}</span><small>${L('لسه علينا', 'Still to return')}</small><b>${num(oweN)}</b><span>${oweN > 2 && oweN <= 10 ? L('بيوت', 'homes') : L('بيت', oweN === 1 ? 'home' : 'homes')}</span></div>`;
 			$('#nk-names', main).innerHTML = ps.map((p) => `<option value="${esc(p.name)}">`).join('');
 
 			/* the open notebook: the last lines written, the newest writing itself in */
