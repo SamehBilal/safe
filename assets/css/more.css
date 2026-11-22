@@ -1407,6 +1407,54 @@
 .rt-tab.is-on > svg { color: #fff; }
 .rt-progress { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 18px; font-weight: 800; font-size: .92rem; color: var(--muted); }
 .rt-progress:empty { display: none; }
+/* the boys' boards on «روتيننا»: a sheet of teal card on the fridge — a handwritten title and a sun, a row of white
+   cards with crayoned drawings and dotted edges, a magnet over each, and under each a creased flap with a magnet at its
+   foot that folds up over the card once it's done */
+.rb-wrap:empty { display: none; }
+.rb-wrap { display: grid; gap: 22px; margin: 0 0 30px; }
+.rb-top { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 16px; }
+.rb-top .rt-part__h { margin: 0; }
+.rb-top__tip { flex-basis: 100%; margin: 0; text-align: center; font-size: .85rem; }
+.rb { --teal: color-mix(in srgb, var(--c) 12%, #2a8399); position: relative; padding: clamp(14px, 3vw, 26px) clamp(12px, 3vw, 30px) clamp(18px, 3vw, 28px); color: #1c2a30; background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, .12), transparent 60%), var(--teal); border-radius: 6px 14px 8px 10px; box-shadow: 0 2px 0 rgba(0, 0, 0, .15), calc(var(--bujo-x, 1) * 8px) 10px 0 rgba(0, 0, 0, .12); }
+.rb__h { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 0 0 clamp(14px, 3vw, 26px); font: 600 clamp(1.9rem, 5vw, 3.2rem)/1.1 var(--f-hand); color: #15181a; text-align: center; }
+:lang(ar) .rb__h { font: 700 clamp(1.5rem, 4.4vw, 2.5rem)/1.5 'Aref Ruqaa', var(--f-body); }
+.rb__sun { flex: none; color: #15181a; stroke-width: 1.6; animation: rb-spin 18s linear infinite; }
+@keyframes rb-spin { to { rotate: 360deg; } }
+.rb__row { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(30%, 118px), 1fr)); gap: 0 clamp(8px, 1.6vw, 16px); margin: 0; padding: 0; list-style: none; }
+.rb-col { position: relative; display: grid; justify-items: center; perspective: 900px; }
+.rb-mag { display: block; width: 46%; height: 18px; margin-bottom: 8px; background: linear-gradient(#3a302c, #1f1917); border-radius: 2px; box-shadow: 0 1px 0 rgba(255, 255, 255, .15) inset, 0 2px 2px rgba(0, 0, 0, .3); }
+.rb-slot { position: relative; z-index: 1; display: block; width: 100%; padding: 0; color: inherit; font: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.rb-slot:disabled { cursor: default; }
+.rb-slot:focus-visible { outline: 3px solid var(--hl-yellow, #fdc830); outline-offset: 3px; border-radius: 12px; }
+.rb-card { display: grid; grid-template-rows: 1fr auto auto; justify-items: center; align-items: center; gap: 2px; aspect-ratio: 3 / 4; padding: 10px 6px 8px; background: #fff; border-radius: 12px; outline: 2px dotted #444; outline-offset: -6px; box-shadow: 0 2px 3px rgba(0, 0, 0, .2); transition: translate .2s; }
+.rb-slot:not(:disabled):hover .rb-card { translate: 0 -3px; }
+.rb-card__ic { position: relative; display: grid; place-items: center; width: 70%; aspect-ratio: 1; }
+.rb-card__ic::before { content: ''; position: absolute; inset: 14% 10% 10% 14%; background: repeating-linear-gradient(-32deg, var(--k) 0 2.5px, transparent 2.5px 5px), repeating-linear-gradient(58deg, color-mix(in srgb, var(--k) 60%, transparent) 0 1.5px, transparent 1.5px 6px); border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%; opacity: .75; rotate: calc(var(--i) * 37deg); }
+.rb-card__ic svg { position: relative; width: 100%; height: 100%; color: #15181a; stroke-width: 1.7; }
+.rb-card b { max-width: 100%; font-size: clamp(.72rem, 1.6vw, .88rem); font-weight: 800; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+.rb-card small { font-size: .68rem; font-weight: 700; color: #6b6b6b; }
+/* the flap: hinged at the card's foot; folded up (rotateX 180°) it lies exactly over the card */
+.rb-under { position: relative; z-index: 2; display: block; width: 100%; aspect-ratio: 3 / 4; pointer-events: none; }
+.rb-flap { position: absolute; inset: 0; transform-origin: top center; transform-style: preserve-3d; transition: transform .75s cubic-bezier(.3, 1.35, .5, 1); }
+.rb-col.is-done .rb-flap { transform: rotateX(180deg); }
+.rb-face { position: absolute; inset: 0; display: grid; justify-items: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 0 0 4px 4px; }
+.rb-face--front { align-content: end; padding-bottom: 10px; background: repeating-linear-gradient(transparent 0 7px, rgba(255, 255, 255, .13) 7px 8px) 0 0 / 100% 40px no-repeat, var(--teal); border-inline: 1px solid rgba(255, 255, 255, .25); border-top: 1px solid rgba(255, 255, 255, .35); box-shadow: inset 0 6px 6px -4px rgba(0, 0, 0, .25); }
+.rb-face--back { align-content: center; gap: 4px; transform: rotateX(180deg); color: #fff; background: var(--teal); border-radius: 12px 12px 4px 4px; box-shadow: 0 3px 5px rgba(0, 0, 0, .25); }
+.rb-face--back svg { color: #fdc830; fill: color-mix(in srgb, #fdc830 45%, transparent); stroke-width: 1.8; }
+.rb-face--back b { font: 600 1.4rem/1 var(--f-hand); }
+:lang(ar) .rb-face--back b { font: 700 1.1rem/1.3 'Aref Ruqaa', var(--f-body); }
+.rb-mag--low { margin: 0; }
+.rb-mag--top { position: absolute; top: -26px; margin: 0; }
+.rb-col.is-done .rb-slot { pointer-events: auto; }
+.rb__empty { margin: 0; padding: 18px; text-align: center; font-weight: 700; color: #fff; background: rgba(0, 0, 0, .12); border-radius: 10px; }
+.rb__yay { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font: 600 1.6rem/1.2 var(--f-hand); color: #fff; }
+:lang(ar) .rb__yay { font: 700 1.25rem/1.6 'Aref Ruqaa', var(--f-body); }
+.rb__yay:empty { display: none; }
+.rb.is-all .rb__yay { margin-top: 12px; animation: rb-yay .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+.rb__yay svg { color: #fdc830; }
+@keyframes rb-yay { from { scale: .4; opacity: 0; } }
+@media (max-width: 560px) { .rb__row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 31%; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 4px; } .rb-col { scroll-snap-align: start; } .rb-mag { height: 12px; margin-bottom: 6px; } .rb-mag--top { top: -18px; } .rb-card { padding: 6px 4px; border-radius: 9px; outline-offset: -4px; } .rb-face--back b { font-size: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .rb__sun { animation: none; } .rb-flap { transition: none; } }
 .rt-progress__bar { width: 140px; height: 10px; overflow: hidden; background: color-mix(in srgb, var(--ink) 10%, var(--card)); border: 1.5px solid var(--ink); border-radius: 999px; }
 .rt-progress__bar i { display: block; height: 100%; background: #5a9e6f; transition: width .4s; }
 .rt-day-list { max-width: 760px; margin: 0 auto; }

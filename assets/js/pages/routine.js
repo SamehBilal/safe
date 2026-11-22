@@ -10,7 +10,9 @@ import { mark, markSVG } from '../checkfx.js';
    hand on the time now — with what each of us is doing now and what comes next. Below, a day of the week to look at
    (today first), tabs for everyone / the family / each of us, and the day split into its parts (morning, noon,
    afternoon, evening, bedtime) with a «now» line through it. On today, each thing can be ticked with a pen
-   checkmark (checkfx.js); the ticks are kept for two weeks. Shared like every list: content/live/routine.bin. */
+   checkmark (checkfx.js); the ticks are kept for two weeks. For each of the boys, a paper board like the ones on a
+   fridge: his morning (or bedtime) as a row of cards with their drawings, a magnet over each, and a flap under each that
+   folds up over the card when he's done it — the same tick as in the list. Shared like every list: content/live/routine.bin. */
 
 const DAYS = [6, 0, 1, 2, 3, 4, 5]; // the week starts on Saturday
 const DAY = { ar: ['الحد', 'الاتنين', 'التلات', 'الأربع', 'الخميس', 'الجمعة', 'السبت'], en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] };
@@ -101,6 +103,7 @@ export default {
 				<button class="rt-tab" type="button" role="tab" data-who="all" style="--c:${FAMILY.c}">${doodle('family', 22)}<span>${L('العيلة', 'Family')}</span></button>
 				${members.map((m) => `<button class="rt-tab" type="button" role="tab" data-who="${esc(m.id)}" style="--c:${esc(m.color)}"><span class="rt-tab__av">${m.photo ? img(m.photo, '', '') : doodle(m.emoji, 20)}</span><span>${esc(App.t(m.name))}</span></button>`).join('')}
 			</div>
+			<div class="rb-wrap" id="rt-boards"></div>
 			<p class="rt-progress" id="rt-progress"></p>
 			<div class="rt-day-list" id="rt-list"><p class="empty">${L('بنجيب الروتين…', 'Fetching the routine…')}</p></div>
 		</div></section>
@@ -114,6 +117,7 @@ export default {
 		const person = (id) => (id === 'all' ? { ...FAMILY, name: L('العيلة', 'Family') } : (() => { const m = members.find((x) => x.id === id); return m ? { id, c: m.color, ic: m.emoji, photo: m.photo, name: App.t(m.name) } : { id, c: '#5b7282', ic: 'star', name: '' }; })());
 		let data = await live.load('routine');
 		let day = new Date().getDay(), who = '';
+		let half = dayMins(nowT()) < 15 * 60 ? 'am' : 'pm';
 		const items = () => data.items || [];
 		const onDay = (x, d) => !x.days || !x.days.length || x.days.includes(d);
 		const todayKey = live.today();
@@ -170,8 +174,38 @@ export default {
 			</li>`;
 		};
 
+		/* the boys' boards: today's cards for each boy, a flap under each that folds up over it once it's done */
+		const CRAYON = ['#f39c4a', '#e8608a', '#4fb3d9', '#9b7fd1', '#6cc070', '#f2c230', '#ef6f5e'];
+		const boards = () => {
+			const box = $('#rt-boards', main);
+			const kids = members.filter((m) => m.kid && (!who || who === m.id));
+			if (day !== new Date().getDay() || !kids.length || !items().length) { box.innerHTML = ''; return; }
+			const inHalf = (x) => (half === 'am' ? dayMins(x.time) < 15 * 60 : dayMins(x.time) >= 15 * 60);
+			const one = (m) => {
+				const list = items().filter((x) => x.who === m.id && onDay(x, day) && inHalf(x)).sort((a, b) => dayMins(a.time) - dayMins(b.time));
+				const name = App.t(m.name), all = list.length && list.every((x) => x.done?.[todayKey]);
+				return `<article class="rb${all ? ' is-all' : ''}" style="--c:${esc(m.color || '#2f7f94')}">
+					<h3 class="rb__h">${half === 'am' ? L(`روتين ${name} الصبح`, `${name}’s morning routine`) : L(`روتين ${name} بالليل`, `${name}’s bedtime routine`)} ${doodle(half === 'am' ? 'sun' : 'moon', 44, 'rb__sun')}</h3>
+					${list.length ? `<ol class="rb__row">${list.map((x, i) => { const done = !!x.done?.[todayKey]; return `<li class="rb-col${done ? ' is-done' : ''}" style="--k:${CRAYON[i % CRAYON.length]}; --i:${i}">
+						<span class="rb-mag"></span>
+						<button class="rb-slot" type="button" data-flip="${esc(x.id)}" aria-pressed="${done}"${ok ? '' : ' disabled'} aria-label="${esc(x.what)}">
+							<span class="rb-card"><span class="rb-card__ic">${doodle(x.icon || 'clock', 46)}</span><b dir="auto">${esc(x.what)}</b><small>${fmtT(x.time)}</small></span>
+						</button>
+						<span class="rb-under"><span class="rb-flap"><span class="rb-face rb-face--front"><span class="rb-mag rb-mag--low"></span></span><span class="rb-face rb-face--back">${doodle('star', 34)}<b>${L('خلص!', 'Done!')}</b><span class="rb-mag rb-mag--top"></span></span></span></span>
+					</li>`; }).join('')}</ol>`
+					: `<p class="rb__empty">${L(`لسه مفيش حاجة في روتين ${name} ${half === 'am' ? 'الصبح' : 'بالليل'} — ضيفوها من «ضيف للروتين»`, `Nothing on ${name}’s ${half === 'am' ? 'morning' : 'bedtime'} routine yet — add it with «Add to the routine»`)}</p>`}
+					<p class="rb__yay" aria-live="polite">${all ? `${doodle('trophy', 26)} ${L(`برافو يا ${name}! خلّصت كله`, `Well done, ${name}! All done`)} ${doodle('star', 22)}` : ''}</p>
+				</article>`;
+			};
+			box.innerHTML = `<div class="rb-top"><h2 class="rt-part__h">${doodle('teddy', 24)} ${L('لوحة الولاد', 'The boys’ boards')}</h2>
+				<div class="chips" role="tablist"><button class="chip${half === 'am' ? ' is-on' : ''}" type="button" data-half="am">${doodle('sun', 16)} ${L('الصبح', 'Morning')}</button><button class="chip${half === 'pm' ? ' is-on' : ''}" type="button" data-half="pm">${doodle('moon', 16)} ${L('بالليل', 'Bedtime')}</button></div>
+				<p class="muted rb-top__tip">${L('خلّص حاجة؟ دوس على الكارت والغطا يتقفل عليه', 'Done one? Tap its card and the flap folds up over it')}</p></div>
+				${kids.map(one).join('')}`;
+		};
+
 		const paint = () => {
 			clock();
+			boards();
 			const isToday = day === new Date().getDay();
 			const list = items().filter((x) => onDay(x, day) && (!who || x.who === who || (who !== 'all' && x.who === 'all'))).sort((a, b) => dayMins(a.time) - dayMins(b.time));
 			const nd = dayMins(nowT());
@@ -202,6 +236,19 @@ export default {
 		/* the day, the person */
 		$('#rt-week', main).onclick = (e) => { const b = e.target.closest('[data-day]'); if (!b) return; day = +b.dataset.day; $$('#rt-week .chip', main).forEach((c) => { c.classList.toggle('is-on', c === b); c.setAttribute('aria-selected', c === b); }); paint(); };
 		$('#rt-tabs', main).onclick = (e) => { const b = e.target.closest('[data-who]'); if (!b) return; who = b.dataset.who; $$('#rt-tabs .rt-tab', main).forEach((c) => c.classList.toggle('is-on', c === b)); paint(); };
+
+		/* the boards: morning or bedtime; a tap folds the flap up (or back down) and ticks it in the list */
+		$('#rt-boards', main).addEventListener('click', (e) => {
+			const h = e.target.closest('[data-half]');
+			if (h) { half = h.dataset.half; return boards(); }
+			const f = e.target.closest('[data-flip]');
+			if (!f || !ok) return;
+			const col = f.closest('.rb-col'), on = !col.classList.contains('is-done');
+			col.classList.toggle('is-done', on);
+			f.setAttribute('aria-pressed', on);
+			const cutoff = new Date(Date.now() - 14 * 864e5).toISOString().slice(0, 10);
+			setTimeout(() => save((d) => { const x = (d.items || []).find((i) => i.id === f.dataset.flip); if (!x) return; x.done = Object.fromEntries(Object.entries(x.done || {}).filter(([k]) => k >= cutoff)); if (on) x.done[todayKey] = live.me(); else delete x.done[todayKey]; }), 750);
+		});
 
 		/* ticking, editing, deleting, the starter */
 		const list = $('#rt-list', main);
