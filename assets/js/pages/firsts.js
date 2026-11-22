@@ -10,28 +10,33 @@ import { shrinkPhoto } from './trips.js';
    the firsts every little one has — stuck on, with whose and when, once it happens; a dashed outline while it's still
    to come (tap one to write it down). */
 
-/* [ar, en, emoji, words that mean the same first when it's written another way] */
+/* [ar, en, drawn icon (doodles.js), words that mean the same first when it's written another way] */
 const IDEAS = [
-	['أول ضحكة', 'First laugh', '😄', ['ضحك', 'laugh']],
-	['أول سنة', 'First tooth', '🦷', ['سنان', 'tooth']],
-	['أول مرة يقعد', 'First time sitting up', '🪑', ['يقعد', 'sitting']],
-	['أول حبو', 'First crawl', '🐢', ['حبو', 'crawl']],
-	['أول خطوة', 'First step', '👣', ['خطوة', 'step']],
-	['أول كلمة', 'First word', '💬', ['كلمة', 'word']],
-	['قال بابا', 'Said “Baba”', '👨', ['بابا', 'baba']],
-	['قال ماما', 'Said “Mama”', '👩', ['ماما', 'mama']],
-	['أول يوم حضانة', 'First day at nursery', '🎒', ['حضانة', 'nursery']],
-	['أول يوم مدرسة', 'First day at school', '🏫', ['مدرسة', 'school']],
-	['أول عجلة', 'First bike ride', '🚲', ['عجلة', 'bike']],
-	['أول مرة في البحر', 'First time at the sea', '🌊', ['بحر', 'sea']],
-	['أول صلاة', 'First prayer', '🕌', ['صلاة', 'pray']],
-	['أول مرة يصوم', 'First fast', '🌙', ['يصوم', 'صيام', 'fast']],
-	['أول جايزة', 'First prize', '🏆', ['جايزة', 'prize']]
+	['أول ضحكة', 'First laugh', 'laugh', ['ضحك', 'laugh']],
+	['أول سنة', 'First tooth', 'tooth', ['سنان', 'tooth']],
+	['أول مرة يقعد', 'First time sitting up', 'baby', ['يقعد', 'sitting']],
+	['أول حبو', 'First crawl', 'baby', ['حبو', 'crawl']],
+	['أول خطوة', 'First step', 'foot', ['خطوة', 'step']],
+	['أول كلمة', 'First word', 'chat', ['كلمة', 'word']],
+	['قال بابا', 'Said “Baba”', 'groom', ['بابا', 'baba']],
+	['قال ماما', 'Said “Mama”', 'bride', ['ماما', 'mama']],
+	['أول يوم حضانة', 'First day at nursery', 'pencil', ['حضانة', 'nursery']],
+	['أول يوم مدرسة', 'First day at school', 'book', ['مدرسة', 'school']],
+	['أول عجلة', 'First bike ride', 'scooter', ['عجلة', 'bike']],
+	['أول مرة في البحر', 'First time at the sea', 'wave', ['بحر', 'sea']],
+	['أول صلاة', 'First prayer', 'mosque', ['صلاة', 'pray']],
+	['أول مرة يصوم', 'First fast', 'moon', ['يصوم', 'صيام', 'fast']],
+	['أول جايزة', 'First prize', 'trophy', ['جايزة', 'prize']]
 ];
-/* emojis for firsts that aren't on the sheet already */
-const EMO = [[['سينما', 'cinema', 'movie'], '🎬'], [['مترو', 'metro'], '🚇'], [['ماتش', 'استاد', 'match', 'stadium'], '🏟️'], [['طيارة', 'plane', 'flight'], '✈️'], [['عيد', 'eid'], '🎉'], [['حلاق', 'شعر', 'haircut'], '💇'], [['سفر', 'رحلة', 'trip'], '🧳'], [['ملاهي', 'park'], '🎡'], [['عيد ميلاد', 'birthday'], '🎂']];
+/* drawn icons for firsts that aren't on the sheet already */
+const EMO = [[['رجليه', 'رجله', 'legs', 'feet'], 'foot'], [['سينما', 'cinema', 'movie'], 'clapper'], [['مترو', 'metro'], 'walk'], [['ماتش', 'استاد', 'match', 'stadium'], 'trophy'], [['طيارة', 'plane', 'flight'], 'plane'], [['عيد', 'eid'], 'party'], [['حلاق', 'شعر', 'haircut'], 'sparkle'], [['سفر', 'رحلة', 'trip'], 'suitcase'], [['ملاهي', 'park'], 'party'], [['عيد ميلاد', 'birthday'], 'cake']];
 const ideaOf = (what) => { const w = String(what || '').trim().toLowerCase(); return IDEAS.findIndex(([ar, en, , keys]) => w === ar || w === en.toLowerCase() || keys.some((k) => w.includes(k))); };
-const emojiOf = (what) => { const i = ideaOf(what); if (i >= 0) return IDEAS[i][2]; const w = String(what || '').toLowerCase(); return EMO.find(([ks]) => ks.some((k) => w.includes(k)))?.[1] || '⭐'; };
+const emojiOf = (what) => { const i = ideaOf(what); if (i >= 0) return IDEAS[i][2]; const w = String(what || '').toLowerCase(); return EMO.find(([ks]) => ks.some((k) => w.includes(k)))?.[1] || 'star'; };
+/* three photos at most on a card; the rest are counted on the last one */
+const shots = (x) => {
+	const all = x.photos?.length ? x.photos : x.photo ? [x.photo] : [];
+	return !all.length ? '' : '<div class="ft1-shots">' + all.slice(0, 3).map((p, i) => `<span class="ft1-shot${i ? ' ft1-more' : ''}"><img class="zoom" data-sketch="${esc(p)}" alt="" loading="lazy">${i === 2 && all.length > 3 ? `<b class="ft1-shot__n" dir="ltr">+${num(all.length - 3)}</b>` : ''}</span>`).join('') + '</div>';
+};
 const KID_C = ['#e39b2d', '#5a9e6f', '#0e6990', '#c2185b'];
 const tilt = (k) => ((k * 37) % 13) - 6;
 
@@ -106,12 +111,12 @@ export default {
 			/* a card for each boy, which is also the filter */
 			const of = (id) => every.filter((x) => x.kid === id).sort((a, b) => String(b.date).localeCompare(String(a.date)));
 			$('#ft1-kids', main).innerHTML = `<button class="ft1-kid ft1-kid--all${who ? '' : ' is-on'}" type="button" data-kid="" aria-pressed="${!who}">
-					<span class="ft1-kid__em">👣</span><b>${L('الكل', 'All')}</b>
+					<span class="ft1-kid__em">${doodle('foot', 26)}</span><b>${L('الكل', 'All')}</b>
 					<span class="ft1-kid__n"><i>${num(every.length)}</i> ${L('أول مرة', every.length === 1 ? 'first' : 'firsts')}</span>
 				</button>` + kids.map((k) => {
 				const fs = of(k.id), last = fs[0];
 				return `<button class="ft1-kid${who === k.id ? ' is-on' : ''}" type="button" data-kid="${esc(k.id)}" aria-pressed="${who === k.id}" style="--c:${color(k.id)}">
-					<span class="ft1-kid__em">${esc(k.emoji || '🧸')}</span>
+					<span class="ft1-kid__em">${doodle(k.emoji || 'baby', 26)}</span>
 					<b>${esc(App.t(k.name))}</b>${k.born ? `<small>${esc(age(k.born))}</small>` : ''}
 					<span class="ft1-kid__n"><i>${num(fs.length)}</i> ${L('أول مرة', fs.length === 1 ? 'first' : 'firsts')}</span>
 					<span class="ft1-kid__last" dir="auto">${last ? `${L('آخرها:', 'Latest:')} ${esc(last.what)}` : L('مستنيين أول «أول مرة» ليه ♥', 'Waiting for his first “first” ♥')}</span>
@@ -126,9 +131,9 @@ export default {
 				const k = kidOf(x.kid);
 				return `${rib}
 				<li class="ft1-item reveal is-in" data-id="${esc(x.id)}" style="--c:${color(x.kid)}">
-					<span class="ft1-item__dot" aria-hidden="true">${emojiOf(x.what)}</span>
+					<span class="ft1-item__dot" aria-hidden="true">${doodle(emojiOf(x.what), 18)}</span>
 					<article class="ft1-card">
-						${(x.photos?.length ? x.photos : x.photo ? [x.photo] : []).map((p, i) => `<img class="zoom${i ? ' ft1-more' : ''}" data-sketch="${esc(p)}" alt="" loading="lazy">`).join('')}
+						${shots(x)}
 						<p class="ft1-card__k">${esc(nameOf(x.kid))}${k?.born ? ` <span class="ft1-card__age">${L('وعنده', 'at')} ${esc(age(k.born, new Date(x.date)))}</span>` : ''}</p>
 						<h3 dir="auto">${esc(x.what)}</h3>
 						<p class="ft1-card__d">${esc(longDate(x.date))}</p>
@@ -148,9 +153,9 @@ export default {
 				const x = xs?.[0];
 				if (x) {
 					const names = [...new Set(xs.map((y) => nameOf(y.kid)))].join(' · ');
-					return `<button class="ft1-stk is-done" type="button" data-go="${esc(x.id)}" style="--c:${color(x.kid)};--r:${tilt(k)}deg" title="${esc(longDate(x.date))}"><span class="ft1-stk__em">${em}</span><b dir="auto">${esc(label)}</b><small>${esc(names)} · ${num(+String(x.date).slice(0, 4))}</small></button>`;
+					return `<button class="ft1-stk is-done" type="button" data-go="${esc(x.id)}" style="--c:${color(x.kid)};--r:${tilt(k)}deg" title="${esc(longDate(x.date))}"><span class="ft1-stk__em">${doodle(em, 26)}</span><b dir="auto">${esc(label)}</b><small>${esc(names)} · ${num(+String(x.date).slice(0, 4))}</small></button>`;
 				}
-				return `<button class="ft1-stk" type="button" data-idea="${esc(label)}" style="--r:${tilt(k)}deg"${live.canWrite() ? '' : ' disabled'}><span class="ft1-stk__em">${em}</span><b dir="auto">${esc(label)}</b><small>${L('لسه جاية', 'still to come')}</small></button>`;
+				return `<button class="ft1-stk" type="button" data-idea="${esc(label)}" style="--r:${tilt(k)}deg"${live.canWrite() ? '' : ' disabled'}><span class="ft1-stk__em">${doodle(em, 26)}</span><b dir="auto">${esc(label)}</b><small>${L('لسه جاية', 'still to come')}</small></button>`;
 			};
 			$('#ft1-sheet', main).innerHTML = `<div class="ft1-sheet__in">
 				<h3>${L('لوحة الاستيكرات', 'The sticker sheet')}</h3>

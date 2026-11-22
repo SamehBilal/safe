@@ -981,8 +981,11 @@ button.cal-d.is-on { box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--k); 
 .ft1-item { position: relative; margin-bottom: 18px; }
 .ft1-item__dot { position: absolute; top: 18px; inset-inline-start: -29px; width: 16px; height: 16px; border-radius: 50%; background: var(--c); border: 1.5px solid var(--ink, #37353f); }
 .ft1-card { padding: 14px 16px; border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); background: var(--card); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 70%, transparent); }
-.ft1-card img.ft1-more { rotate: -3deg; margin-top: -4px; }
-.ft1-card img { float: inline-end; width: 120px; aspect-ratio: 1; object-fit: cover; margin-inline-start: 12px; padding: 5px 5px 14px; background: #fbf8f1; rotate: 2deg; box-shadow: 0 4px 10px rgba(30, 20, 10, 0.2); }
+.ft1-shot.ft1-more { rotate: -3deg; }
+/* at most three photos on a card, in a row of polaroids; «+N» on the last when there are more */
+.ft1-shots { float: inline-end; display: flex; gap: 8px; margin: 0 0 8px 0; margin-inline-start: 12px; }
+.ft1-shot__n { position: absolute; inset: 5px 5px 14px; display: grid; place-items: center; font: 400 1.6rem var(--f-label); color: #fff; background: rgba(20, 20, 30, .45); pointer-events: none; }
+.ft1-shot { position: relative; display: block; width: 110px; padding: 5px 5px 14px; background: #fbf8f1; rotate: 2deg; box-shadow: 0 4px 10px rgba(30, 20, 10, 0.2); }
 .ft1-card__k { margin: 0; font-weight: 800; color: var(--c); font-size: 0.85rem; }
 .ft1-card h3 { margin: 2px 0; font: 400 1.7rem/1.15 var(--f-hand); }
 :lang(ar) .ft1-card h3 { font: 800 1.15rem/1.4 var(--f-body); }
@@ -1895,3 +1898,8 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .bdt__card:hover { rotate: 0deg; translate: 0 -4px; }
 .bdt__card b { font: 400 clamp(1.5rem, 3vw, 2.1rem)/1.05 var(--f-label); letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (max-width: 760px) { .bdt__top { grid-template-columns: 1fr; } .bdt__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bdt__card b { font-size: clamp(1.15rem, 5vw, 1.6rem); } }
+.ft1-shot img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.ft1-shot:nth-child(3) { rotate: 1deg; }
+.ft1-item__dot .dd, .ft1-kid__em .dd, .ft1-stk__em .dd { color: var(--c, var(--ink, #37353f)); }
+.ft1-item__dot .dd { color: var(--ink, #37353f); }
+@media (max-width: 640px) { .ft1-shots { float: none; margin: 0 0 10px; } .ft1-shot { width: calc((100% - 16px) / 3); max-width: 110px; } }
