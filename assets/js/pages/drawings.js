@@ -21,8 +21,8 @@ export default listPage({
 		{ n: 'kid', t: 'sel', l: ['مين رسمها؟', 'Who drew it?'], opts: 'all' },
 		{ n: 'date', t: 'date', l: ['إمتى؟', 'When?'], req: 1 },
 		{ n: 'photo', t: 'photo', l: ['صورة الرسمة', 'Photo of the drawing'], req: 1, sketch: true, sketchTitle: ['ارسم رسمتك', 'Draw your drawing'] },
-		{ n: 'title', t: 'text', l: ['دي رسمة إيه؟', 'What is it?'], ph: ['بابا وماما والعربية', 'Mum, Dad and the car'], full: 1 },
-		{ n: 'note', t: 'area', l: ['قال عليها إيه؟', 'What did he say about it?'], rows: 2 }
+		{ n: 'title', t: 'text', l: ['دي رسمة إيه؟', 'What is it?'], ph: ['بابا وماما والعربية', 'Mum, Dad and the car'] },
+		{ n: 'note', t: 'area', l: ['حكاية الرسمة (اختياري)', 'The story behind it (optional)'], rows: 2 }
 	],
 	chips: { n: 'kid', opts: 'all' },
 	sort: (a, b) => String(b.date || '').localeCompare(String(a.date || '')),

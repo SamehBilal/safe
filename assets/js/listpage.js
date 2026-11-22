@@ -61,7 +61,15 @@ function input(f, s) {
 		case 'date': el = `<input name="${f.n}" type="date"${req}>`; break;
 		case 'num': el = `<input name="${f.n}" type="number" step="${f.step || 'any'}" min="${f.min ?? 0}" inputmode="decimal"${req}${ph}>`; break;
 		case 'url': el = `<input name="${f.n}" type="url" dir="ltr"${req}${ph}>`; break;
-		case 'photo': el = `<input name="${f.n}" type="file" accept="image/*"${f.many ? ' multiple' : ''}${req}>${f.sketch ? `<span class="lp-sketch"><button class="btn btn--sm" type="button" data-sketch-field="${f.n}">${doodle('pencil', 16)} ${Y('أو ارسمها هنا', 'أو ارسميها هنا', 'Or draw it here')}</button><img class="lp-sketch__img" alt="" hidden></span>` : ''}`; break;
+		case 'photo':
+			if (f.sketch) return `<div class="f lp-pic"><span>${esc(lab)}</span>
+				<div class="lp-pic__opts">
+					<label class="lp-pic__opt">${doodle('camera', 30)}<b>${L('صورة ليها', 'A photo of it')}</b><small>${L('من الموبايل أو الكاميرا', 'from the phone or camera')}</small><input name="${f.n}" type="file" accept="image/*"${req}></label>
+					<button class="lp-pic__opt" type="button" data-sketch-field="${f.n}">${doodle('pencil', 30)}<b>${Y('ارسمها هنا', 'ارسميها هنا', 'Draw it here')}</b><small>${L('بإيدك على الشاشة', 'with a finger or pen')}</small></button>
+				</div>
+				<span class="lp-pic__show" hidden><img class="lp-sketch__img" alt=""><button class="link link--danger" type="button" data-pic-clear="${f.n}">${L('شيلها', 'Remove')}</button></span>
+			</div>`;
+			el = `<input name="${f.n}" type="file" accept="image/*"${f.many ? ' multiple' : ''}${req}>`; break;
 		case 'sel': el = `<select name="${f.n}"${req}>${optsOf(f, s).map(([v, x]) => `<option value="${esc(v)}">${esc(x)}</option>`).join('')}</select>`; break;
 		default: el = `<input name="${f.n}" dir="auto" maxlength="${f.max || 140}"${req}${ph}${f.ideas ? ` list="lp-${f.n}"` : ''}>${f.ideas ? `<datalist id="lp-${f.n}">${f.ideas.map(([ar, en]) => `<option value="${esc(L(ar, en ?? ar))}">`).join('')}</datalist>` : ''}`;
 	}
@@ -83,7 +91,7 @@ export function listPage(cfg) {
 			const rows = [];
 			let row = [];
 			for (const f of cfg.fields) {
-				if (f.t === 'area' || f.full) { if (row.length) rows.push(row); rows.push([f]); row = []; }
+				if (f.t === 'area' || f.full || f.sketch) { if (row.length) rows.push(row); rows.push([f]); row = []; }
 				else { row.push(f); if (row.length === 3) { rows.push(row); row = []; } }
 			}
 			if (row.length) rows.push(row);
@@ -95,7 +103,7 @@ export function listPage(cfg) {
 				<details class="composer reveal"${ok ? '' : ' hidden'}>
 					<summary><span>${doodle(cfg.icon || 'pen', 22)}</span> ${esc(L(...cfg.add))}</summary>
 					<form id="lp-form" autocomplete="off">
-						${rows.map((r) => (r.length === 1 && (r[0].t === 'area' || r[0].full) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
+						${rows.map((r) => (r.length === 1 && (r[0].t === 'area' || r[0].full || r[0].sketch) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
 						${cfg.note ? `<p class="muted">${esc(L(...cfg.note))}</p>` : ''}
 						<p class="form-msg" id="lp-msg" role="status"></p>
 						<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظ ♥', 'احفظي ♥', 'Save ♥')}</button></div>
@@ -150,10 +158,13 @@ export function listPage(cfg) {
 				const blob = await openSketch({ title: L(...(fd.sketchTitle || fd.l)) });
 				if (!blob) return;
 				sketched[n] = blob;
-				const im = $('.lp-sketch__img', b.parentNode);
-				im.src = URL.createObjectURL(blob); im.hidden = false;
+				showPic(n, URL.createObjectURL(blob));
+				f.elements[n].value = '';
 				f.elements[n].required = false;
 			});
+			const showPic = (n, url) => { const box = $(`[data-pic-clear="${n}"]`, f)?.parentNode; if (!box) return; $('img', box).src = url || ''; box.hidden = !url; };
+			f?.addEventListener('change', (e) => { const el = e.target; if (el.type !== 'file' || !el.closest('.lp-pic') || !el.files[0]) return; delete sketched[el.name]; showPic(el.name, URL.createObjectURL(el.files[0])); });
+			f?.addEventListener('click', (e) => { const c = e.target.closest('[data-pic-clear]'); if (!c) return; const n = c.dataset.picClear; delete sketched[n]; f.elements[n].value = ''; const fd = cfg.fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; showPic(n, ''); });
 			if (f) f.onsubmit = async (e) => {
 				e.preventDefault();
 				const msg = $('#lp-msg', root);
@@ -173,7 +184,7 @@ export function listPage(cfg) {
 					cfg.prepare?.(x, ctx);
 					await save((d) => { (d.items = d.items || []).push(x); });
 					f.reset();
-					for (const n of Object.keys(sketched)) { delete sketched[n]; const im = $(`[data-sketch-field="${n}"] + .lp-sketch__img`, f); if (im) im.hidden = true; const fd = cfg.fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; }
+					for (const fd of cfg.fields.filter((x) => x.sketch)) { delete sketched[fd.n]; showPic(fd.n, ''); if (fd.req) f.elements[fd.n].required = true; }
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
 				} catch (err) { msg.textContent = live.why(err); }
 			};

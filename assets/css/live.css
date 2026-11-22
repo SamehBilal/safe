@@ -1929,3 +1929,17 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .ch-job__del { position: absolute; top: 4px; inset-inline-end: 4px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; color: var(--muted); background: none; border: 0; border-radius: 50%; cursor: pointer; opacity: .5; transition: opacity .2s, color .2s; }
 .ch-job:hover .ch-job__del, .ch-job__del:focus-visible { opacity: 1; color: var(--coral-deep, #d9534f); }
 .ch-chart { table-layout: fixed; } .ch-chart thead th:first-child { width: 250px; } .ch-cell span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+
+/* a picture field that can be a photo or drawn here: two big choices, and the picture under them */
+.lp-pic__opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lp-pic__opt { position: relative; display: grid; justify-items: center; gap: 4px; padding: 16px 10px 14px; font: inherit; text-align: center; color: var(--text); cursor: pointer;
+	background: var(--card-2, var(--paper)); border: 2px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); border-radius: 14px; transition: border-color .2s, background .2s, translate .2s; }
+.lp-pic__opt:hover, .lp-pic__opt:focus-within, .lp-pic__opt:focus-visible { border-color: var(--coral, #f2726f); background: color-mix(in srgb, var(--coral, #f2726f) 8%, var(--card)); translate: 0 -2px; }
+.lp-pic__opt .dd { color: var(--coral-deep, #d9534f); }
+.lp-pic__opt b { font-size: .95rem; }
+.lp-pic__opt small { font-size: .75rem; color: var(--muted); font-weight: 600; }
+.lp-pic__opt input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.lp-pic__show { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.lp-pic__show[hidden] { display: none; }
+.lp-pic__show .lp-sketch__img { width: 84px; height: 84px; }
+.cmodal form { overflow-x: hidden; }
