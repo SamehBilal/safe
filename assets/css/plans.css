@@ -1061,3 +1061,13 @@
 .mu-eq__bar i { flex: none; }
 .mu-eq__bar.is-on i { height: calc(var(--h) - 26px); min-height: 30px; }
 .mu-eq__bar.is-on i { height: var(--h); }
+
+/* «رسايل حب»: the notes scattered, not in rows — they flow down uneven columns, each a different width, tilted its own
+   way and nudged off the line, so the page looks like notes left on a table */
+.notes__scatter { columns: 270px; column-gap: 34px; padding: 10px 0 30px; }
+.notes__scatter .note { display: inline-block; width: var(--w, 100%); margin: var(--dy, 0) 0 30px; translate: var(--dx, 0) 0; break-inside: avoid; transition: rotate .3s, translate .3s, scale .3s; }
+.notes__scatter .note:nth-child(3n) { margin-inline-start: calc(100% - var(--w, 100%)); }
+.notes__scatter .note:hover { rotate: 0deg; scale: 1.03; z-index: 2; }
+.notes__scatter .note:nth-child(4n+1)::before { rotate: 4deg; background: rgba(253, 200, 48, .5); }
+.notes__scatter .note:nth-child(4n+2)::before { left: 20%; background: rgba(143, 209, 239, .55); }
+.note__label { display: block; margin-bottom: 6px; font-size: .78rem; font-weight: 800; color: var(--muted); }
