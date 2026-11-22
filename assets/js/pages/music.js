@@ -9,7 +9,11 @@ import { colours, player, safeLink, searchLink } from '../radio.js';
    the songs are sleeves on a shelf; tap one and its vinyl slides out onto the turntable, the tonearm swings onto
    the record, the platter spins and the arm creeps inward while it plays, over a soft vinyl crackle
    (Vinyl Noise SFX by Chia, free to use). Sound comes from the song's own recording when it has one ("audio": a file in
-   private/media, encrypted by the build like the photos), else from its YouTube or Spotify link. */
+   private/media, encrypted by the build like the photos), else from its YouTube or Spotify link.
+   Under the shelf «أغنية كل سنة» (it was a page of its own, soundtrack.html): a song for every year of us since 2009 — any
+   record on the shelf can be a year's song (its «year»), shown as an equaliser and a row of year cards; tap one to
+   play it, or pick the song for a year still empty. The old year songs (the list «soundtrack») still show. */
+const FROM = 2009;
 
 /* The sound itself lives in radio.js, so a song keeps playing on other pages; the turntable here follows it. */
 export { player };
@@ -93,7 +97,10 @@ export default {
 					</div>
 					<label class="f"><span>${L('اللينك (يوتيوب، سبوتيفاي، أنغامي…)', 'Link (YouTube, Spotify, Anghami…)')}</span><input name="link" type="url" dir="ltr" placeholder="https://"></label>
 					<label class="f"><span>${L('بتفكرنا بإيه؟', 'Why is it ours?')}</span><textarea name="note" dir="auto" rows="3" maxlength="400"></textarea></label>
-					<label class="f"><span>${L('من إمتى بنسمعها؟ (اختياري)', 'Since when? (optional)')}</span><input name="date" type="date"></label>
+					<div class="f-row">
+						<label class="f"><span>${L('من إمتى بنسمعها؟ (اختياري)', 'Since when? (optional)')}</span><input name="date" type="date"></label>
+						<label class="f"><span>${L('أغنية سنة كام؟ (اختياري)', 'Song of which year? (optional)')}</span><input name="year" type="number" min="${FROM}" max="${new Date().getFullYear()}" step="1" inputmode="numeric" placeholder="${new Date().getFullYear()}"></label>
+					</div>
 					<p class="form-msg" id="mu-msg" role="status"></p>
 					<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('حطها على الرف ♥', 'حطيها على الرف ♥', 'Put it on the shelf ♥')}</button></div>
 				</form>
@@ -108,6 +115,13 @@ export default {
 				<button class="btn btn--sm" type="button" id="mu-shuffle">${doodle('shuffle', 18)} ${L('أي أسطوانة', 'Shuffle')}</button>
 			</div>
 			<ul class="shelf" id="mu-list"><li class="empty">${L('بنجيب الأسطوانات…', 'Fetching the records…')}</li></ul>
+
+			<section class="mu-years" id="years">
+				<h2 class="sec__title">${L('أغنية كل سنة', 'A song for every year')}</h2>
+				<p class="sec__sub">${L('من ٢٠٠٩ لحد النهارده — أغنية لكل سنة عشناها سوا', 'From 2009 to today — a song for every year we’ve lived together')}</p>
+				<div class="mu-eq" id="mu-eq" aria-hidden="true"></div>
+				<div class="mu-yrs" id="mu-yrs"></div>
+			</section>
 		</div></section>
 		${related(['draw', 'movies', 'journal'])}`;
 	},
@@ -287,8 +301,38 @@ export default {
 		// leaving the site stops the crackle (the song itself keeps going between our pages)
 		addEventListener('pagehide', () => crackle.pause(), { once: true });
 
+		/* «أغنية كل سنة» */
+		const old = await live.load('soundtrack').catch(() => ({ items: [] }));
+		const ok = live.canWrite();
+		const yearOf = (y) => (data.items || []).find((x) => +x.year === y) || (old.items || []).find((x) => +x.year === y && !(data.items || []).some((m) => +m.year === y));
+		const paintYears = () => {
+			const now = new Date().getFullYear();
+			const ys = Array.from({ length: now - FROM + 1 }, (_, i) => FROM + i);
+			$('#mu-eq', main).innerHTML = ys.map((y, i) => { const x = yearOf(y); return `<span class="mu-eq__bar${x ? ' is-on' : ''}" style="--i:${i};--h:${48 + ((i * 37) % 44)}px"><i></i><b>${num(y).replace(/[٬,]/g, '')}</b></span>`; }).join('');
+			$('#mu-yrs', main).innerHTML = ys.slice().reverse().map((y) => {
+				const x = yearOf(y), yy = num(y).replace(/[٬,]/g, '');
+				if (x && x.title) { const [ink, paper] = colours(x); return `<button class="mu-yr is-on" type="button" data-yr-play="${esc(x.id)}" style="--ink:${ink};--paper:${paper}"><span class="mu-yr__y">${yy}</span><span class="mu-yr__disc" aria-hidden="true">${doodle('music', 22)}</span><b dir="auto">${esc(x.title)}</b>${x.artist ? `<small dir="auto">${esc(x.artist)}</small>` : ''}</button>`; }
+				if (x) return `<a class="mu-yr is-on is-old" href="${esc(safeLink(x.link) || '#')}" target="_blank" rel="noopener noreferrer"><span class="mu-yr__y">${yy}</span><span class="mu-yr__disc" aria-hidden="true">${doodle('music', 22)}</span><b dir="auto">${esc(x.song)}</b>${x.artist ? `<small dir="auto">${esc(x.artist)}</small>` : ''}</a>`;
+				return `<div class="mu-yr is-empty"><span class="mu-yr__y">${yy}</span>${ok && (data.items || []).length ? `<label class="f mu-yr__pick"><span>${L('اختاروا أغنيتها', 'Pick its song')}</span><select data-yr="${y}"><option value="">—</option>${items().filter((m) => !m.year).map((m) => `<option value="${esc(m.id)}">${esc(m.title)}</option>`).join('')}</select></label>` : `<small>${L('لسه مختارناش', 'Not chosen yet')}</small>`}</div>`;
+			}).join('');
+		};
+		$('#mu-yrs', main).addEventListener('click', (e) => {
+			const b = e.target.closest('[data-yr-play]');
+			if (!b) return;
+			const x = data.items.find((i) => i.id === b.dataset.yrPlay);
+			if (x) { load(x, { autoplay: true }); deck.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }
+		});
+		$('#mu-yrs', main).addEventListener('change', async (e) => {
+			const sel = e.target.closest('[data-yr]');
+			if (!sel || !sel.value) return;
+			try { data = await live.save('music', (d) => { const x = (d.items || []).find((i) => i.id === sel.value); if (x) x.year = +sel.dataset.yr; }); paintYears(); }
+			catch (err) { alert(live.why(err)); }
+		});
+
 		data = await live.load('music');
 		paint();
+		paintYears();
+		if (location.hash === '#years') setTimeout(() => { const y = $('#years', main); if (y) scrollTo({ top: y.getBoundingClientRect().top + scrollY - 70, behavior: 'instant' }); }, 1200);
 		// the shelf in the header: the same songs as CD cases; opening one plays it
 		const shelf = discShelf(main, items(), s, (x) => radio.play(x, shown()));
 		let shelfId = '';
@@ -313,7 +357,7 @@ export default {
 		form.onsubmit = async (e) => {
 			e.preventDefault();
 			const msg = $('#mu-msg', main);
-			const item = { id: live.newId(), title: form.song.value.trim(), artist: form.artist.value.trim(), link: safeLink(form.link.value.trim()), note: form.note.value.trim(), date: form.date.value || undefined, by: live.me(), at: Date.now() };
+			const item = { id: live.newId(), title: form.song.value.trim(), artist: form.artist.value.trim(), link: safeLink(form.link.value.trim()), note: form.note.value.trim(), date: form.date.value || undefined, year: +form.year.value || undefined, by: live.me(), at: Date.now() };
 			if (!item.title) return;
 			msg.textContent = L('بنحفظ…', 'Saving…');
 			try {
@@ -321,6 +365,7 @@ export default {
 				form.reset();
 				msg.textContent = L('اتحطت على الرف ♥', 'On the shelf ♥');
 				paint();
+				paintYears();
 				load(item);
 			} catch (err) { msg.textContent = live.why(err); }
 		};

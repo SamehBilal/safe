@@ -1033,3 +1033,31 @@
 .mb-rel__chip small { color: var(--muted); font-weight: 700; }
 @media (max-width: 640px) { .mb-card { grid-template-columns: 1fr; } .mb-card__pic { max-width: 240px; margin: 0 auto; } .mb-fam__one { width: 100px; } }
 @media (prefers-reduced-motion: reduce) { .mb-scene *, .mb-ribbon { animation: none !important; } }
+
+/* «أغانينا» — «أغنية كل سنة» under the shelf: an equaliser (a bar for every year since 2009, standing tall when it has
+   its song), then a card for every year, newest first: its song to play, or a picker for a year still empty */
+.mu-years { margin-top: 48px; }
+.mu-eq { display: flex; align-items: flex-end; justify-content: center; gap: 6px; height: 120px; margin: 6px auto 22px; max-width: 860px; }
+.mu-eq__bar { position: relative; flex: 1; display: grid; align-content: end; justify-items: center; height: 100%; }
+.mu-eq__bar i { display: block; width: 100%; max-width: 30px; height: 12%; background: color-mix(in srgb, var(--ink, #37353f) 18%, transparent); border-radius: 6px 6px 2px 2px; }
+.mu-eq__bar.is-on i { height: var(--h); background: linear-gradient(var(--coral, #f2726f), var(--hl-yellow, #fdc830)); border: 1.5px solid var(--ink, #37353f); animation: mu-eq 1.6s calc(var(--i) * -.13s) ease-in-out infinite alternate; transform-origin: bottom; }
+@keyframes mu-eq { to { scale: 1 .72; } }
+.mu-eq__bar b { margin-top: 4px; font: 700 .62rem var(--f-body); color: var(--muted); writing-mode: vertical-rl; rotate: 180deg; }
+.mu-yrs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); gap: 14px; }
+.mu-yr { position: relative; display: grid; justify-items: start; align-content: start; gap: 4px; min-height: 130px; padding: 12px 14px; font: inherit; text-align: start; color: var(--text); text-decoration: none; background: var(--card); border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 16px); cursor: pointer; transition: translate .2s; }
+.mu-yr.is-on { background: linear-gradient(135deg, var(--paper, #fdf6e3) 0 60%, color-mix(in srgb, var(--ink, #0e6990) 18%, var(--paper, #fdf6e3)) 60%); color: #2b2b33; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--ink, #0e6990) 55%, transparent); }
+.mu-yr.is-on:hover { translate: 0 -3px; }
+.mu-yr__y { font: 400 1.8rem/1 var(--f-label); letter-spacing: .03em; color: var(--coral-deep, #d9534f); }
+.mu-yr__disc { position: absolute; top: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 40px; height: 40px; color: #fff; background: radial-gradient(circle, #f2726f 0 6px, #1c1c1f 7px 100%); border-radius: 50%; animation: mu-spin 6s linear infinite; }
+.mu-yr__disc .dd { opacity: 0; }
+@keyframes mu-spin { to { rotate: 360deg; } }
+.mu-yr b { font-size: 1rem; line-height: 1.3; }
+.mu-yr small { font-size: .8rem; font-weight: 700; color: #6a6560; }
+.mu-yr.is-empty { border-style: dashed; cursor: default; background: transparent; }
+.mu-yr.is-empty .mu-yr__y { color: var(--muted); }
+.mu-yr__pick { width: 100%; margin: 0; }
+@media (prefers-reduced-motion: reduce) { .mu-eq__bar.is-on i, .mu-yr__disc { animation: none; } }
+.mu-eq__bar { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.mu-eq__bar i { flex: none; }
+.mu-eq__bar.is-on i { height: calc(var(--h) - 26px); min-height: 30px; }
+.mu-eq__bar.is-on i { height: var(--h); }

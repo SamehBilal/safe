@@ -1,5 +1,5 @@
 /* One page that keeps a shared list: a header band of its own above the title, an «add» form built from the page's
-   fields, filter chips, and the cards. The pages that use it (ourfirsts, beforeus, soundtrack, chats, sayings, health,
+   fields, filter chips, and the cards. The pages that use it (ourfirsts, beforeus, chats, sayings, health,
    recipes, offline, giftideas, hosting, growth) only say what's different about them.
 
    cfg = {
