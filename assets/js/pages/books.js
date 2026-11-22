@@ -17,6 +17,11 @@ const WHO = [
 	{ id: 'her', ar: '', en: '' }
 ];
 const whoName = (w) => (w === 'him' ? App.t(App.story.him) : w === 'her' ? App.t(App.story.her) : L('إحنا الاتنين', 'Both of us'));
+/* who has read a book: each of us ticks it on its card; a book from before this was one reader (or both) */
+const READERS = ['him', 'her'];
+const readersOf = (b) => b.readers || (b.status === 'read' ? (b.who === 'both' ? READERS : b.who ? [b.who] : []) : []);
+const readersLabel = (b) => { const r = readersOf(b); return r.length === 2 ? L('قريناه إحنا الاتنين', 'We both read it') : r.length ? L(`قراه ${whoName(r[0])}`, `Read by ${whoName(r[0])}`) : ''; };
+const RCOL = { him: '#0e6990', her: '#d9534f' };
 const hearts = (n) => (n ? '♥'.repeat(n) + '♡'.repeat(5 - n) : '');
 const yr = (d) => (d ? +String(d).slice(0, 4) : 0);
 
@@ -45,6 +50,7 @@ function onShelf(b) {
 	const h = 150 + (hash(b.title) % 5) * 9;
 	return `<button class="bk-spine" type="button" data-book="${esc(b.id)}" style="--bk:${ink};--bk-p:${paper};--w:${w}px;--h:${h}px" aria-label="${esc(b.title)}${b.author ? ' — ' + esc(b.author) : ''}">
 		<b dir="auto">${esc(b.title)}</b>${b.hearts ? `<i aria-hidden="true">${'♥'.repeat(Math.min(3, b.hearts))}</i>` : ''}
+		<span class="bk-spine__who" aria-hidden="true">${readersOf(b).map((w) => `<em style="--rc:${RCOL[w]}" title="${esc(whoName(w))}"></em>`).join('')}</span>
 	</button>`;
 }
 
@@ -55,10 +61,11 @@ function details(b) {
 		${b.cover ? `<img class="bk-card__cover zoom" data-cover="${esc(b.cover)}" alt="">` : ''}
 		<h3 dir="auto">${esc(b.title)}</h3>
 		${b.author ? `<p class="bk-card__au" dir="auto">${esc(b.author)}</p>` : ''}
-		<p class="bk-card__meta">${[whoName(b.who), +b.pages ? L(`${num(+b.pages)} صفحة`, `${+b.pages} pages`) : '', b.finished ? `${L('خلصناه', 'Finished')} ${longDate(b.finished)}` : ''].filter(Boolean).map(esc).join(' · ')}</p>
+		<p class="bk-card__meta">${[readersLabel(b) || whoName(b.who), +b.pages ? L(`${num(+b.pages)} صفحة`, `${+b.pages} pages`) : '', b.finished ? `${L('خلصناه', 'Finished')} ${longDate(b.finished)}` : ''].filter(Boolean).map(esc).join(' · ')}</p>
 		${b.genre || b.publisher || b.year ? `<p class="bk-card__pub" dir="auto">${[b.genre, b.publisher, b.year ? num(+b.year).replace(/[٬,]/g, '') : ''].filter(Boolean).map(esc).join(' · ')}</p>` : ''}
 		${b.about ? `<p class="bk-card__about" dir="auto">${esc(b.about)}</p>` : ''}
 		${b.link ? `<a class="link" href="${esc(b.link)}" target="_blank" rel="noopener noreferrer">${L('صفحة الكتاب', 'The book’s page')} ↗</a>` : ''}
+		<div class="bk-card__readers"><span>${L('مين قراه؟', 'Who has read it?')}</span>${READERS.map((w) => { const on = readersOf(b).includes(w); return `<button class="chip${on ? ' is-on' : ''}" type="button" data-reader="${w}" data-rb="${esc(b.id)}" aria-pressed="${on}"${ok ? '' : ' disabled'} style="--rc:${RCOL[w]}">${on ? '✓ ' : ''}${esc(whoName(w))}</button>`; }).join('')}</div>
 		${b.hearts ? `<p class="bk-card__hearts" aria-label="${L(`${b.hearts} من ٥`, `${b.hearts} of 5`)}">${hearts(b.hearts)}</p>` : ''}
 		${b.note ? `<p class="bk-card__note" dir="auto">«${esc(b.note)}»</p>` : ''}
 		${ok ? `<div class="bk-card__acts">${b.status === 'want' ? `<button class="btn btn--sm btn--coral" type="button" data-start="${esc(b.id)}">${L('هنبدأ فيه', 'Start reading')}</button>` : ''}${b.by === live.me() ? `<button class="link link--danger" type="button" data-del="${esc(b.id)}">${L('مسح', 'Delete')}</button>` : ''}</div>` : ''}
@@ -133,6 +140,7 @@ export default {
 			<div class="bk-reading" id="bk-reading"></div>
 
 			<h2 class="sec__title">${L('على الرف', 'On the shelf')}</h2>
+			<div class="chips bk-readby" id="bk-readby" role="toolbar" aria-label="${L('مين قراه', 'Who read it')}"></div>
 			<div class="bk-shelf" id="bk-shelf"></div>
 			<div class="bk-detail" id="bk-detail" hidden></div>
 
@@ -155,11 +163,16 @@ export default {
 		let data = { items: [] };
 		const all = () => (data.items || []).slice();
 		const find = (d, id) => (d.items || []).find((b) => b.id === id);
-		let open = '';
+		let open = '', readBy = '';
+		/* the shelf by who read it */
+		const chips = $('#bk-readby', main);
+		const chipsPaint = () => { if (chips) chips.innerHTML = [['', L('الكل', 'All')], ['him', L(`قراه ${whoName('him')}`, `${whoName('him')} read`)], ['her', L(`قرأته ${whoName('her')}`, `${whoName('her')} read`)], ['both', L('قريناه إحنا الاتنين', 'We both read')]].map(([k, t]) => `<button class="chip${readBy === k ? ' is-on' : ''}" type="button" data-readby="${k}">${esc(t)}</button>`).join(''); };
+		chips?.addEventListener('click', (e) => { const c = e.target.closest('[data-readby]'); if (!c) return; readBy = c.dataset.readby; chipsPaint(); paint(); });
+		chipsPaint();
 
 		const paint = () => {
 			const now = all().filter((b) => b.status === 'reading').sort((a, b) => (b.at || 0) - (a.at || 0));
-			const read = all().filter((b) => b.status === 'read').sort((a, b) => String(a.finished || a.at).localeCompare(String(b.finished || b.at)));
+			const read = all().filter((b) => b.status === 'read' && (!readBy || (readBy === 'both' ? readersOf(b).length === 2 : readersOf(b).includes(readBy)))).sort((a, b) => String(a.finished || a.at).localeCompare(String(b.finished || b.at)));
 			const want = all().filter((b) => b.status === 'want').sort((a, b) => (a.at || 0) - (b.at || 0));
 			$('#bk-reading', main).innerHTML = now.length ? now.map(reading).join('') : `<p class="empty">${L('مفيش كتاب مفتوح دلوقتي… ', 'No book open right now… ')}${want.length ? Y('اختار واحد من اللي مستنيين تحت', 'اختاري واحد من اللي مستنيين تحت', 'pick one from the pile below') : Y('ضيف اللي هتبدأ فيه', 'ضيفي اللي هتبدأي فيه', 'add the one you’re starting')}</p>`;
 			// the shelf breaks into rows of about a metre of books
@@ -201,11 +214,13 @@ export default {
 		};
 
 		sec.addEventListener('click', (e) => {
+			const rd = e.target.closest('[data-reader]');
+			if (rd) { const w = rd.dataset.reader; save((d) => { const b = find(d, rd.dataset.rb); if (!b) return; const r = new Set(readersOf(b)); if (r.has(w)) r.delete(w); else r.add(w); b.readers = READERS.filter((x) => r.has(x)); }); return; }
 			const t = e.target.closest('[data-book], [data-close], [data-finish], [data-start], [data-del]');
 			if (!t) return;
 			if (t.dataset.book) { showBook(open === t.dataset.book ? '' : t.dataset.book); if (open) detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 			if ('close' in t.dataset) showBook('');
-			if (t.dataset.finish) save((d) => { const b = find(d, t.dataset.finish); if (b) { b.status = 'read'; b.finished = live.today(); if (+b.pages) b.page = +b.pages; } });
+			if (t.dataset.finish) save((d) => { const b = find(d, t.dataset.finish); if (b) { b.status = 'read'; b.finished = live.today(); if (+b.pages) b.page = +b.pages; if (!b.readers) b.readers = b.who === 'both' ? READERS : [b.who || live.me()].filter(Boolean); } });
 			if (t.dataset.start) { open = ''; save((d) => { const b = find(d, t.dataset.start); if (b) { b.status = 'reading'; b.started = live.today(); b.at = Date.now(); } }); }
 			if (t.dataset.del && confirm(Y('تشيل الكتاب ده؟', 'تشيلي الكتاب ده؟', 'Remove this book?'))) { open = ''; save((d) => { d.items = (d.items || []).filter((b) => b.id !== t.dataset.del); }); }
 		});
@@ -225,7 +240,7 @@ export default {
 			const b = {
 				id: live.newId(), title: form.title.value.trim(), author: form.author.value.trim() || undefined, status: st, who: form.who.value,
 				pages: Math.round(+form.pages.value) || undefined, hearts: +form.hearts.value || undefined, note: form.note.value.trim() || undefined,
-				finished: st === 'read' ? form.finished.value || live.today() : undefined, started: st === 'reading' ? live.today() : undefined,
+				finished: st === 'read' ? form.finished.value || live.today() : undefined, readers: st === 'read' ? (form.who.value === 'both' ? READERS : [form.who.value]) : undefined, started: st === 'reading' ? live.today() : undefined,
 				by: live.me(), at: Date.now()
 			};
 			if (!b.title) return;

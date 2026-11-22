@@ -2,7 +2,7 @@
 
 /* Ideas to start from — edit, remove or add your own on the page. */
 const DEFAULTS = {
-	outfit: [['ليلة بيجامات', 'Pyjama night'], ['ستايل التسعينات', '90s retro'], ['أبيض في أبيض', 'All white'], ['أحمر وأسود', 'Red & black'], ['زمن الفن الجميل', 'Golden-age Egyptian cinema'], ['لبس متطابق', 'Matching outfits'], ['شخصية من فيلم', 'A movie character'], ['سهرة شيك', 'Black tie at home']],
+	nightin: [['نطبخ أكلة جديدة سوا', 'Cook something new together'], ['ليلة سبا في البيت', 'A spa night at home'], ['بازل ألف حتة', 'A thousand-piece puzzle'], ['نرسم بعض', 'Draw each other'], ['خيمة بطاطين في الصالة', 'A blanket fort in the living room'], ['نرقص على أغانينا القديمة', 'Dance to our old songs'], ['نقلّب في الألبوم القديم', 'Leaf through the old album'], ['كاريوكي في البيت', 'Karaoke at home'], ['نكتب جوابات لبعض', 'Write each other letters'], ['شاي ونجوم في البلكونة', 'Tea and stars on the balcony']],
 	dining: [['مكان جديد عمرنا ما رحناه', 'Somewhere we’ve never been'], ['ستاربكس بتاعنا', 'Our Starbucks'], ['سمك وسي فود', 'Fish & seafood'], ['سوشي', 'Sushi'], ['مشويات', 'Grills'], ['إيطالي', 'Italian'], ['فطار برا', 'Breakfast out']],
 	delivery: [['بيتزا', 'Pizza'], ['برجر', 'Burgers'], ['كشري', 'Koshary'], ['شاورما', 'Shawarma'], ['فطير مشلتت', 'Feteer'], ['سوشي', 'Sushi'], ['حلويات بس', 'Only desserts']],
 	movie: [['كوميدي', 'A comedy'], ['فيلم عربي قديم', 'An old Arabic film'], ['رومانسي', 'Romance'], ['أنيميشن مع الولاد', 'Animated, with the boys'], ['إثارة', 'A thriller'], ['فيلم اتفرجنا عليه زمان', 'One we saw years ago'], ['اختيار إسراء', 'Esraa’s pick'], ['اختيار سامح', 'Sameh’s pick']],

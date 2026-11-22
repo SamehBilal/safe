@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
 import { figureSVG, anchor } from '../figure.js';
+import { shrinkPhoto as shrinkImage } from './trips.js';
 
 /* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
    Header band: a closed door with a «ممنوع الإزعاج» sign swinging on its handle, two candles flickering and petals falling.
@@ -100,6 +101,64 @@ const photo = (id) => {
 };
 const hydrate = (root) => $$('img[data-secret]:not([src])', root).forEach((el) => photo(el.dataset.secret).then((u) => { el.src = u; }).catch(() => el.remove()));
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const hostOf = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+
+/* The outfit as a picture to save, print or send (1080×1350): the figure dressed on one side, and each piece on the
+   other with its photo, the part it goes on, and — for one we wish for — the price and where to buy it. */
+const loadImg = (src) => new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = src; });
+const toData = async (url) => { const b = await (await fetch(url)).blob(); return new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(b); }); };
+async function outfitCard({ wish, wearer, who, her, looks, pieces }) {
+	const W = 1080, H = 1350, ar = App.lang === 'ar';
+	const c = document.createElement('canvas');
+	c.width = W; c.height = H;
+	const g = c.getContext('2d');
+	await document.fonts?.ready;
+	const font = (w, px, fam = "'Cairo', sans-serif") => `${w} ${px}px ${fam}`;
+	// the paper
+	g.fillStyle = '#fbf6ea'; g.fillRect(0, 0, W, H);
+	g.strokeStyle = 'rgba(14,105,144,.10)'; g.lineWidth = 2;
+	for (let y = 210; y < H - 80; y += 44) { g.beginPath(); g.moveTo(40, y); g.lineTo(W - 40, y); g.stroke(); }
+	g.strokeStyle = '#37353f'; g.lineWidth = 4; g.strokeRect(20, 20, W - 40, H - 40);
+	// the title
+	g.direction = ar ? 'rtl' : 'ltr'; g.textAlign = 'center'; g.fillStyle = '#c2185b';
+	g.font = font(800, 64, ar ? "'Aref Ruqaa', 'Cairo', serif" : "'Lobster', 'Cairo', serif");
+	g.fillText(wish ? L('طقم نفسنا فيه', 'An outfit we wish for') : L('طقم الليلة', 'Tonight’s outfit'), W / 2, 110);
+	g.fillStyle = '#5a5148'; g.font = font(700, 30);
+	g.fillText(`${who} · ${longDate(live.today())}`, W / 2, 160);
+	// the figure
+	const fx = ar ? W - 20 - 600 : 20, fy = (H - 600) / 2 + 40;
+	try {
+		const src = her ? await toData(her) : '';
+		const svg = figureSVG(looks, src, wearer).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="600" ');
+		const im = await loadImg(URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' })));
+		g.drawImage(im, fx, fy, 600, 600);
+	} catch { /* the pieces alone still make the picture */ }
+	// the pieces
+	const col = ar ? 40 : 620, colW = 420, row = Math.min(150, Math.floor((H - 330) / Math.max(1, pieces.length)) - 14);
+	let y = 210 + Math.max(0, (H - 300 - pieces.length * (row + 14)) / 2);
+	for (const { part, x } of pieces) {
+		const tx = ar ? col + colW - row - 18 : col + row + 18, ix = ar ? col + colW - row : col;
+		try {
+			const url = x.img ? await photo(x.img) : x.photo ? await live.sketchURL(x.photo) : '';
+			if (url) {
+				const im = await loadImg(url), k = Math.min(row / im.width, row / im.height);
+				g.fillStyle = '#fff'; g.fillRect(ix - 4, y - 4, row + 8, row + 8);
+				g.drawImage(im, ix + (row - im.width * k) / 2, y + (row - im.height * k) / 2, im.width * k, im.height * k);
+			}
+		} catch { /* a piece without its photo */ }
+		g.textAlign = ar ? 'right' : 'left';
+		g.fillStyle = '#c2185b'; g.font = font(800, 22); g.fillText(part, tx, y + 30);
+		g.fillStyle = '#2b2b33'; g.font = font(700, 28);
+		const name = String(t(x.text) || ''); g.fillText(name.length > 26 ? name.slice(0, 25) + '…' : name, tx, y + 68);
+		if (wish && (x.price || x.link)) { g.fillStyle = '#5a5148'; g.font = font(600, 20); g.fillText([x.price, x.link ? hostOf(x.link) : ''].filter(Boolean).join(' · '), tx, y + 100); }
+		y += row + 14;
+	}
+	// the foot
+	g.textAlign = 'center'; g.fillStyle = '#8a8580'; g.font = font(700, 26);
+	g.fillText(`${App.t(App.story.him)} ♥ ${App.t(App.story.her)}`, W / 2, H - 50);
+	return new Promise((ok) => c.toBlob(ok, 'image/png'));
+}
+
 
 export default {
 	title: { ar: 'أوضتنا', en: 'Our room' },
@@ -180,7 +239,8 @@ async function room(main, s, data, lock) {
 	const outfit = lists.outfit || [];
 	const games = lists.games || [];
 	const basket = []; // tonight: refs, in the order they were added (only while the room is open)
-	const dressedBy = { her: {}, him: {} }; // the outfit on each figure: part → item id
+	const dressedBy = {}; // the outfit on each figure, for each wardrobe («wearer-have», «wearer-wish»): part → item id
+	const srcBy = { her: 'have', him: 'have' }; // which wardrobe each of us is dressed from
 	let wearer = 'her'; // whose outfit the tab shows
 
 	const tab = qs('t') || 'pos';
@@ -376,17 +436,29 @@ async function room(main, s, data, lock) {
 		paint();
 	}
 
-	/* ---- the outfit, part by part ---- */
+	/* ---- the outfit, part by part ----
+	   Two wardrobes for each of us: «من الدولاب», the pieces we have (secret.json, behind the PIN), and «نفسنا فيه», pieces
+	   we'd love to buy — added here with a picture, where to buy it and the price, kept in the shared list «secret» under
+	   `wish`. Either can be dressed on the figure, and the outfit made into a picture to save or send to each other. */
 	function dress() {
 		const pane = $('#sx-pane', box);
 		const him = wearer === 'him';
-		const outfit = him ? lists.outfitHim || [] : lists.outfit || [];
+		const src = srcBy[wearer];
+		const wish = src === 'wish';
+		const outfit = wish ? (mine.wish || []).filter((x) => (x.who || 'her') === wearer) : him ? lists.outfitHim || [] : lists.outfit || [];
 		const kind = him ? 'outfitHim' : 'outfit';
-		const dressed = dressedBy[wearer];
-		const parts = PARTS.filter((p) => outfit.some((x) => partOf(x) === p.id)).map((p) => ({ ...p, at: anchor(p.id, wearer) }));
+		const dressed = dressedBy[`${wearer}-${src}`] = dressedBy[`${wearer}-${src}`] || {};
+		const parts = (wish ? PARTS : PARTS.filter((p) => outfit.some((x) => partOf(x) === p.id))).map((p) => ({ ...p, at: anchor(p.id, wearer) }));
 		const item = (id) => outfit.find((x) => x.id === id);
+		const pic = (x) => (x?.img ? `<img data-secret="${esc(x.img)}" alt="">` : x?.photo ? `<img data-sketch="${esc(x.photo)}" alt="">` : '');
+		const pics = (root) => { hydrate(root); live.hydrateSketches(root); };
 		pane.innerHTML = `
 			<div class="chips sx-who" role="tablist" aria-label="${L('لبس مين؟', 'Whose outfit?')}">${[['her', s.her], ['him', s.him]].map(([w, n]) => `<button type="button" class="chip${w === wearer ? ' is-on' : ''}" data-wearer="${w}" aria-pressed="${w === wearer}">${doodle(w === 'her' ? 'dress' : 'groom', 18)} ${esc(L(`لبس ${App.t(n)}`, `${App.t(n)}’s`))}</button>`).join('')}</div>
+			<div class="chips sx-src" role="tablist" aria-label="${L('من فين؟', 'From where?')}">
+				<button type="button" class="chip${wish ? '' : ' is-on'}" data-src="have" aria-pressed="${!wish}">${doodle('lock', 16)} ${L('من الدولاب', 'From the wardrobe')}</button>
+				<button type="button" class="chip${wish ? ' is-on' : ''}" data-src="wish" aria-pressed="${wish}">${doodle('gift', 16)} ${L('لبس نفسنا فيه', 'One we wish for')} <small>${(mine.wish || []).filter((x) => (x.who || 'her') === wearer && !x.got).length || ''}</small></button>
+			</div>
+			${wish ? `<p class="sx-wish-note">${L('حتت مش عندنا لسه — دوسوا على أي حتة وضيفوا اللي نفسكم فيه بصورته ولينكه وسعره، ولما نشتريها علّموا عليها', 'Pieces we don’t have yet — tap any part to add one you wish for, with its picture, link and price; tick it once it’s bought')}</p>` : ''}
 			<div class="sx-pick">
 				<button type="button" class="btn btn--coral" id="sx-dice-all">${doodle('dice', 20)} ${him ? L('لبّسوه بالحظ', 'Dress him by luck') : L('لبّسوني بالحظ', 'Dress me by luck')}</button>
 				<button type="button" class="btn btn--ghost" id="sx-undress">${L('من الأول', 'Start over')}</button>
@@ -394,11 +466,16 @@ async function room(main, s, data, lock) {
 			</div>
 			<div class="sx-fig" id="sx-fig"><div class="sx-fig__art"></div><svg class="sx-fig__lines" viewBox="0 0 600 600" aria-hidden="true" preserveAspectRatio="none"></svg><div class="sx-fig__tags"></div></div>
 			<div class="sx-choose" id="sx-choose" hidden></div>
-			<div class="sx-fig__acts"><button type="button" class="btn btn--coral" id="sx-take-outfit" disabled>${doodle('moon', 18)} ${L('ضيف اللبس ده لليلة', 'Add this outfit to tonight')}</button></div>`;
+			<div class="sx-fig__acts">
+				${wish ? '' : `<button type="button" class="btn btn--coral" id="sx-take-outfit" disabled>${doodle('moon', 18)} ${L('ضيف اللبس ده لليلة', 'Add this outfit to tonight')}</button>`}
+				<button type="button" class="btn" id="sx-card" disabled>${doodle('camera', 18)} ${L('صورة للطقم نبعتها', 'A picture to send')}</button>
+			</div>
+			<div class="sx-share" id="sx-share" hidden></div>`;
 		const fig = $('#sx-fig', pane);
 		let open = '';
 		let her = ''; // the picture of her (or him), once it's opened
 		photo(him ? 'figure-him' : 'figure-base').then((u) => { her = u; paint(); }).catch(() => {});
+		const on = () => parts.filter((p) => item(dressed[p.id]));
 		const paint = () => {
 			$('.sx-fig__art', fig).innerHTML = figureSVG(parts.map((p) => item(dressed[p.id])?.look).filter(Boolean), her, wearer);
 			$('.sx-fig__lines', fig).innerHTML = parts.map((p) => {
@@ -408,12 +485,14 @@ async function room(main, s, data, lock) {
 			$('.sx-fig__tags', fig).innerHTML = parts.map((p) => {
 				const x = item(dressed[p.id]);
 				return `<button type="button" class="sx-tag sx-tag--${p.side}${x ? ' is-on' : ''}${open === p.id ? ' is-open' : ''}" data-part="${p.id}" style="top:${p.y}%">
-					${x?.img ? `<img data-secret="${esc(x.img)}" alt="">` : '<i aria-hidden="true">?</i>'}
-					<span><small>${esc(L(p.ar, p.en))}</small><b dir="auto">${x ? esc(t(x.text)) : L('ولا حاجة', 'Nothing')}</b></span>
+					${x ? pic(x) || '<i aria-hidden="true">?</i>' : '<i aria-hidden="true">?</i>'}
+					<span><small>${esc(L(p.ar, p.en))}</small><b dir="auto">${x ? esc(t(x.text)) : wish ? L('ضيف حتة', 'Add a piece') : L('ولا حاجة', 'Nothing')}</b></span>
 				</button>`;
 			}).join('');
-			hydrate(fig);
-			$('#sx-take-outfit', pane).disabled = !Object.values(dressed).some(Boolean);
+			pics(fig);
+			const any = on().length > 0;
+			if ($('#sx-take-outfit', pane)) $('#sx-take-outfit', pane).disabled = !any;
+			$('#sx-card', pane).disabled = !any;
 		};
 		const choose = (pid) => {
 			open = open === pid ? '' : pid;
@@ -421,12 +500,40 @@ async function room(main, s, data, lock) {
 			const p = PARTS.find((x) => x.id === pid);
 			if (!open) { el.hidden = true; paint(); return; }
 			const list = outfit.filter((x) => partOf(x) === pid);
-			el.innerHTML = `<div class="sx-choose__h"><b>${esc(L(p.ar, p.en))}</b><button type="button" class="btn btn--sm btn--ghost" data-roll="${pid}">${doodle('dice', 16)} ${L('بالحظ', 'By luck')}</button></div>
-				<ul class="pool sx-pool">${list.map((x) => `<li class="has-img${dressed[pid] === x.id ? ' is-on' : ''}"><button type="button" data-wear="${esc(x.id)}">${x.img ? `<img class="pool__img" data-secret="${esc(x.img)}" alt="">` : ''}<span dir="auto">${esc(t(x.text))}</span></button></li>`).join('')}
-				<li class="sx-none${dressed[pid] ? '' : ' is-on'}"><button type="button" data-wear="">✕<span>${L('ولا حاجة', 'Nothing')}</span></button></li></ul>`;
+			const wishBits = (x) => (wish ? `<span class="sx-wish__bits">${x.price ? `<b>${esc(x.price)}</b>` : ''}${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer" data-stop>${L('فين نشتريها', 'Where to buy')} ↗</a>` : ''}${ok ? `<button type="button" class="link" data-got="${esc(x.id)}">${x.got ? L('✓ اشتريناها', '✓ Bought') : L('اشتريناها؟', 'Bought it?')}</button>${x.by === live.me() ? `<button type="button" class="link link--danger" data-unwish="${esc(x.id)}">${L('مسح', 'Delete')}</button>` : ''}` : ''}</span>` : '');
+			el.innerHTML = `<div class="sx-choose__h"><b>${esc(L(p.ar, p.en))}</b>${list.length ? `<button type="button" class="btn btn--sm btn--ghost" data-roll="${pid}">${doodle('dice', 16)} ${L('بالحظ', 'By luck')}</button>` : ''}</div>
+				<ul class="pool sx-pool">${list.map((x) => `<li class="has-img${dressed[pid] === x.id ? ' is-on' : ''}${x.got ? ' is-got' : ''}"><button type="button" data-wear="${esc(x.id)}">${pic(x).replace('<img', '<img class="pool__img"')}<span dir="auto">${esc(t(x.text))}</span></button>${wishBits(x)}</li>`).join('')}
+				<li class="sx-none${dressed[pid] ? '' : ' is-on'}"><button type="button" data-wear="">✕<span>${L('ولا حاجة', 'Nothing')}</span></button></li></ul>
+				${wish && ok ? `<details class="composer sx-wish-add"${list.length ? '' : ' open'}>
+					<summary><span>${doodle('gift', 20)}</span> ${L(`حتة لـ«${p.ar}» نفسنا فيها`, `A piece for “${p.en}” we wish for`)}</summary>
+					<form id="sx-wish-form" autocomplete="off">
+						<label class="f"><span>${L('اسمها', 'What is it?')}</span><input name="text" dir="auto" maxlength="60" required></label>
+						<div class="f-row">
+							<label class="f f--grow"><span>${L('لينك المحل (اختياري)', 'Shop link (optional)')}</span><input name="link" type="url" dir="ltr" maxlength="400" placeholder="https://"></label>
+							<label class="f"><span>${L('السعر (اختياري)', 'Price (optional)')}</span><input name="price" dir="auto" maxlength="20"></label>
+						</div>
+						<label class="f"><span>${L('صورتها', 'Its picture')}</span><input name="photo" type="file" accept="image/*"></label>
+						<p class="form-msg" id="sx-wish-msg" role="status"></p>
+						<div class="f-actions"><button type="submit" class="btn btn--coral">${L('ضيفها للي نفسنا فيه ♥', 'Add it to our wishes ♥')}</button></div>
+					</form>
+				</details>` : ''}`;
 			el.hidden = false;
-			hydrate(el);
+			pics(el);
 			paint();
+			const f = $('#sx-wish-form', el);
+			if (f) f.onsubmit = async (e) => {
+				e.preventDefault();
+				const msg = $('#sx-wish-msg', el);
+				try {
+					msg.textContent = L('بنحفظ…', 'Saving…');
+					const ph = f.photo.files[0] ? await live.putSketch(await shrinkImage(f.photo.files[0], 900)) : undefined;
+					const x = { id: live.newId(), who: wearer, part: pid, text: f.text.value.trim(), link: f.link.value.trim() || undefined, price: f.price.value.trim() || undefined, photo: ph, by: live.me(), at: Date.now() };
+					mine = await live.save('secret', (d) => { (d.wish = d.wish || []).push(x); });
+					dressed[pid] = x.id;
+					open = '';
+					dress();
+				} catch (err) { msg.textContent = live.why(err); }
+			};
 			el.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'nearest' });
 		};
 		const roll = (pid, keepEmpty) => {
@@ -434,17 +541,43 @@ async function room(main, s, data, lock) {
 			// the outfit itself always comes; the extras three times out of four
 			dressed[pid] = list.length && (pid === 'body' || !keepEmpty || Math.random() < 0.75) ? pick(list).id : '';
 		};
+		const keep = async (fn) => { try { mine = await live.save('secret', fn); dress(); } catch (err) { alert(live.why(err)); } };
 		pane.onclick = (e) => {
+			if (e.target.closest('[data-stop]')) return;
 			const tag = e.target.closest('[data-part]'), wear = e.target.closest('[data-wear]'), r = e.target.closest('[data-roll]');
-			const w = e.target.closest('[data-wearer]');
+			const w = e.target.closest('[data-wearer]'), sr = e.target.closest('[data-src]'), got = e.target.closest('[data-got]'), un = e.target.closest('[data-unwish]');
 			if (w) { wearer = w.dataset.wearer; return dress(); }
+			if (sr) { srcBy[wearer] = sr.dataset.src; return dress(); }
+			if (got) return keep((d) => { const x = (d.wish || []).find((y) => y.id === got.dataset.got); if (x) { if (x.got) delete x.got; else x.got = live.today(); } });
+			if (un) { if (confirm(L('نمسحها من اللي نفسنا فيه؟', 'Delete it from our wishes?'))) { for (const k of Object.keys(dressed)) if (dressed[k] === un.dataset.unwish) delete dressed[k]; keep((d) => { d.wish = (d.wish || []).filter((y) => y.id !== un.dataset.unwish); }); } return; }
 			if (tag) return choose(tag.dataset.part);
 			if (r) { roll(r.dataset.roll); open = ''; choose(r.dataset.roll); return; }
 			if (wear) { dressed[open] = wear.dataset.wear; open = ''; $('#sx-choose', pane).hidden = true; paint(); }
 		};
 		$('#sx-dice-all', pane).onclick = () => { for (const p of parts) roll(p.id, true); open = ''; $('#sx-choose', pane).hidden = true; fig.classList.remove('is-shuffle'); void fig.offsetWidth; fig.classList.add('is-shuffle'); paint(); };
 		$('#sx-undress', pane).onclick = () => { for (const k of Object.keys(dressed)) delete dressed[k]; open = ''; $('#sx-choose', pane).hidden = true; paint(); };
-		$('#sx-take-outfit', pane).onclick = () => add(parts.filter((p) => dressed[p.id]).map((p) => `${kind}:${dressed[p.id]}`));
+		if ($('#sx-take-outfit', pane)) $('#sx-take-outfit', pane).onclick = () => add(parts.filter((p) => dressed[p.id]).map((p) => `${kind}:${dressed[p.id]}`));
+		/* the outfit as a picture: the figure dressed, and each piece with its photo (and where to buy it) */
+		$('#sx-card', pane).onclick = async () => {
+			const out = $('#sx-share', pane), btn = $('#sx-card', pane);
+			btn.disabled = true;
+			try {
+				const pieces = on().map((p) => ({ part: L(p.ar, p.en), x: item(dressed[p.id]) }));
+				const blob = await outfitCard({ wish, wearer, who: App.t(wearer === 'him' ? s.him : s.her), her, looks: pieces.map((q) => q.x.look).filter(Boolean), pieces });
+				const url = URL.createObjectURL(blob);
+				const file = new File([blob], `outfit-${live.today()}.png`, { type: 'image/png' });
+				const canShare = navigator.canShare?.({ files: [file] });
+				out.innerHTML = `<img src="${url}" alt="${L('صورة الطقم', 'The outfit picture')}"><div class="sx-share__acts">
+					<a class="btn btn--coral" href="${url}" download="outfit-${live.today()}.png">${L('حمّل الصورة', 'Download')}</a>
+					${canShare ? `<button type="button" class="btn" id="sx-send">${L('ابعتها', 'Send it')}</button>` : ''}
+					<button type="button" class="btn btn--ghost" id="sx-print">${L('اطبعها', 'Print it')}</button></div>`;
+				out.hidden = false;
+				$('#sx-send', out)?.addEventListener('click', () => navigator.share({ files: [file], title: L('طقم الليلة', 'Tonight’s outfit') }).catch(() => {}));
+				$('#sx-print', out).onclick = () => { const w = window.open('', '_blank'); if (!w) return; w.document.write(`<title>outfit</title><img src="${url}" style="width:100%" onload="print()">`); w.document.close(); };
+				out.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'nearest' });
+			} catch (err) { alert(L('مقدرناش نعمل الصورة', 'Couldn’t make the picture')); }
+			btn.disabled = false;
+		};
 		paint();
 	}
 

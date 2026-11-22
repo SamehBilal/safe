@@ -218,7 +218,7 @@ export default {
 				for (const [n, file] of files.entries()) {
 					msg.textContent = L(`بنحفظ ${n + 1} من ${files.length}…`, `Saving ${n + 1} of ${files.length}…`);
 					const img = await live.putSketch(await shrinkPhoto(file, 1200));
-					const text = files.length === 1 && typed ? typed : `${k.id === 'outfit' ? L('طقم', 'Outfit') : L('اختيار', 'Option')} ${have + n + 1}`;
+					const text = files.length === 1 && typed ? typed : `${L('اختيار', 'Option')} ${have + n + 1}`;
 					added.push({ id: live.newId(), text, img, by: live.me(), at: Date.now() });
 				}
 				data = await live.save('draw', (d) => { d.lists = d.lists || init().lists; (d.lists[k.id] = d.lists[k.id] || init().lists[k.id] || []).push(...added); }, init);

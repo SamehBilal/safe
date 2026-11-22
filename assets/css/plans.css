@@ -938,3 +938,12 @@
 .gl-tab.is-on { background: #fffdf6; translate: 0 0; box-shadow: inset 0 4px 0 var(--c); padding-bottom: 10px; }
 .gl-sheet { box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 color-mix(in srgb, var(--c, var(--hl-yellow)) 55%, transparent), 0 18px 40px rgba(40, 30, 10, .08); }
 @media (max-width: 560px) { .gl-tabs { padding-inline: 8px; } .gl-tab { min-width: 0; flex: 1 1 30%; padding: 6px 6px 4px; } }
+
+/* books: who has read each one — a mark for each of us at the foot of its spine, chips on its card, and a filter */
+.bk-readby { justify-content: center; margin: -6px 0 14px; }
+.bk-spine { position: relative; }
+.bk-spine__who { position: absolute; bottom: 6px; left: 50%; display: flex; gap: 3px; translate: -50% 0; }
+.bk-spine__who em { width: 9px; height: 9px; border-radius: 50%; background: var(--rc); border: 1.5px solid var(--bk-p, #fff); }
+.bk-card__readers { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 8px 0; }
+.bk-card__readers > span { font-weight: 800; font-size: .9rem; }
+.bk-card__readers .chip.is-on { background: var(--rc); border-color: var(--rc); color: #fff; }

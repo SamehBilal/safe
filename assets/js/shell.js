@@ -600,7 +600,7 @@ export const PAGES = [
 
 /* What a night can be drawn for (draw.html?k=…). */
 export const DRAW_KINDS = [
-	{ id: 'outfit', emoji: 'dress', color: '#c2185b', ar: 'لبس الليلة', en: 'Tonight’s outfit', dar: 'ثيم نلبسه سوا الليلة', den: 'A theme we dress up in tonight', sketch: { ar: 'رسمة اللبس', en: 'Sketch the outfit' } },
+	{ id: 'nightin', emoji: 'house', color: '#c2185b', ar: 'سهرة في البيت', en: 'A night in', dar: 'نعمل إيه سوا في البيت الليلة؟', den: 'What shall we do together at home tonight?', sketch: { ar: 'رسمة السهرة', en: 'Sketch the night' } },
 	{ id: 'dining', emoji: 'dinner', color: '#e39b2d', ar: 'خروجة عشا', en: 'Dining out', dar: 'نتعشى برا فين؟', den: 'Where shall we eat out?', sketch: { ar: 'رسمة المكان', en: 'Sketch the place' } },
 	{ id: 'delivery', emoji: 'scooter', color: '#5a9e6f', ar: 'دليفري', en: 'Delivery night', dar: 'نطلب إيه النهارده؟', den: 'What shall we order in?', sketch: { ar: 'رسمة الأكلة', en: 'Sketch the meal' } },
 	{ id: 'movie', emoji: 'clapper', color: '#0e6990', ar: 'سهرة فيلم', en: 'Movie night', dar: 'هنتفرج على إيه؟', den: 'What are we watching?', sketch: { ar: 'رسمة بوستر الفيلم', en: 'Sketch the poster' } },
