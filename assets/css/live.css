@@ -1903,3 +1903,11 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .ft1-item__dot .dd, .ft1-kid__em .dd, .ft1-stk__em .dd { color: var(--c, var(--ink, #37353f)); }
 .ft1-item__dot .dd { color: var(--ink, #37353f); }
 @media (max-width: 640px) { .ft1-shots { float: none; margin: 0 0 10px; } .ft1-shot { width: calc((100% - 8px) / 2); max-width: 120px; } }
+
+/* chores: a pen ticks a job off (checkfx.js), drawn icons for the stars and the crown */
+.ch-tick { position: absolute; inset: -6px -2px; width: calc(100% + 4px); height: calc(100% + 12px); --cfx: #3f8a56; }
+.ch-tick path { stroke-width: 9px; }
+.ch-cell.is-done { background: color-mix(in srgb, var(--hl-lime) 30%, var(--card)); }
+.ch-star .dd, .ch-stars .gm-crown .dd { vertical-align: -4px; }
+.ch-stars .gm-crown { font-size: 0; }
+#ch-spin .dd { vertical-align: -3px; }

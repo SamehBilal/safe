@@ -2,10 +2,12 @@ import { L, Y, esc, pageHead, related, App, $, $$, num } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
+import { mark, unmark, markSVG } from '../checkfx.js';
 
 /* Who does what: the house jobs, whose turn each one is, and a star for every one that gets done. Above the title a
    wheel with everyone's names spins and lands on whoever's turn it is now, with their job for today (or spin it
-   yourself). Below, this week's chart — Saturday to Friday, a job in each row — tap a job to stick a star on it. */
+   yourself). Below, this week's chart — Saturday to Friday, a job in each row — tap a job and a pen ticks it off (checkfx.js, Codrops'
+   animated checkboxes), and it counts as a star for whoever did it. */
 
 const DAYS = [6, 0, 1, 2, 3, 4, 5];                // Saturday first, as the week goes in Egypt
 const ICONS = ['dinner', 'trash', 'eraser', 'coffee', 'walk', 'book', 'star', 'gift'];
@@ -32,7 +34,7 @@ export default {
 					<p class="ch-pick__k">${L('الدور على', 'It’s the turn of')}</p>
 					<p class="ch-pick__who" id="ch-who">…</p>
 					<p class="ch-pick__job" id="ch-job"></p>
-					<button class="btn btn--sm" type="button" id="ch-spin">${Y('لف العجلة', 'لفي العجلة', 'Spin the wheel')} ↻</button>
+					<button class="btn btn--sm" type="button" id="ch-spin">${doodle('refresh', 16)} ${Y('لف العجلة', 'لفي العجلة', 'Spin the wheel')}</button>
 				</div>
 			</div>`
 		})}
@@ -115,15 +117,16 @@ export default {
 			const stars = Object.fromEntries(people.map(([id]) => [id, 0]));
 			chores.forEach((c) => days.forEach((d, i) => { if ((c.days || []).includes(DAYS[i]) && done.has(key(c, d))) { const w = turn(c, i); if (w === 'all') people.forEach(([id]) => stars[id]++); else if (w in stars) stars[w]++; } }));
 			const top = Math.max(0, ...Object.values(stars));
-			$('#ch-stars', main).innerHTML = people.map(([id, name]) => `<div class="counter${top && stars[id] === top ? ' is-lead' : ''}">${top && stars[id] === top ? `<i class="gm-crown" aria-hidden="true">♛</i>` : ''}<b>${num(stars[id])} <span class="ch-star">★</span></b><span>${esc(name)}</span></div>`).join('');
+			$('#ch-stars', main).innerHTML = people.map(([id, name]) => `<div class="counter${top && stars[id] === top ? ' is-lead' : ''}">${top && stars[id] === top ? `<i class="gm-crown" aria-hidden="true">${doodle('crown', 22)}</i>` : ''}<b>${num(stars[id])} <span class="ch-star">${doodle('star', 22)}</span></b><span>${esc(name)}</span></div>`).join('');
 			/* the chart */
 			const head = `<tr><th></th>${days.map((d, i) => `<th class="${i === todayIdx ? 'is-today' : ''}">${esc(d.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'short' }))}<small>${num(d.getDate())}</small></th>`).join('')}</tr>`;
-			const rows = chores.map((c) => `<tr><th scope="row"><span class="ch-job">${doodle(c.icon || 'star', 20)} <b dir="auto">${esc(c.title)}</b></span>${c.by === live.me() && live.canWrite() ? `<button class="link link--danger" type="button" data-del="${esc(c.id)}" aria-label="${L('مسح', 'Delete')}">✕</button>` : ''}</th>${days.map((d, i) => {
+			const rows = chores.map((c) => `<tr><th scope="row"><span class="ch-job">${doodle(c.icon || 'star', 20)} <b dir="auto">${esc(c.title)}</b></span>${c.by === live.me() && live.canWrite() ? `<button class="link link--danger" type="button" data-del="${esc(c.id)}" aria-label="${L('مسح', 'Delete')}">${doodle('trash', 16)}</button>` : ''}</th>${days.map((d, i) => {
 				if (!(c.days || []).includes(DAYS[i])) return `<td class="is-off"></td>`;
 				const w = turn(c, i), on = done.has(key(c, d));
-				return `<td class="${i === todayIdx ? 'is-today' : ''}"><button type="button" class="ch-cell${on ? ' is-done' : ''}" data-tick="${esc(key(c, d))}" data-chore="${esc(c.id)}"${live.canWrite() ? '' : ' disabled'} aria-pressed="${on}" title="${esc(nameOf(w))}"><span>${esc(w === 'all' ? L('كلنا', 'All') : nameOf(w))}</span>${on ? '<i aria-hidden="true">★</i>' : ''}</button></td>`;
+				return `<td class="${i === todayIdx ? 'is-today' : ''}"><button type="button" class="ch-cell${on ? ' is-done' : ''}" data-tick="${esc(key(c, d))}" data-chore="${esc(c.id)}"${live.canWrite() ? '' : ' disabled'} aria-pressed="${on}" title="${esc(nameOf(w))}"><span>${esc(w === 'all' ? L('كلنا', 'All') : nameOf(w))}</span>${markSVG('checkmark', 'ch-tick')}</button></td>`;
 			}).join('')}</tr>`).join('');
 			$('#ch-chart', main).innerHTML = chores.length ? `<thead>${head}</thead><tbody>${rows}</tbody>` : `<tbody><tr><td class="empty">${Y('ضيف أول شغلانة — وهتظهر في الجدول', 'ضيفي أول شغلانة — وهتظهر في الجدول', 'Add the first job and it shows up on the chart')}</td></tr></tbody>`;
+			for (const el of $$('.ch-cell.is-done .ch-tick', main)) mark(el, 'checkmark', false);
 			$('#ch-week', main).textContent = L(`الأسبوع ده: من ${days[0].toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' })} لـ${days[6].toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' })}`, `This week: ${days[0].toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })} to ${days[6].toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`);
 		};
 
@@ -132,7 +135,10 @@ export default {
 			try {
 				if (t) {
 					const id = t.dataset.tick;
-					t.classList.toggle('is-done');           // the star goes on straight away
+					const on = t.classList.toggle('is-done');  // the pen ticks it straight away
+					if (on) mark($('.ch-tick', t), 'checkmark'); else unmark($('.ch-tick', t));
+					t.setAttribute('aria-pressed', on);
+					await new Promise((r) => setTimeout(r, on ? 350 : 0));
 					data = await live.save('chores', (d) => { d.items = d.items || []; if (d.items.some((x) => x.id === id)) d.items = d.items.filter((x) => x.id !== id); else d.items.push({ id, type: 'done', chore: t.dataset.chore, by: live.me(), at: Date.now() }); });
 					paint();
 				}
