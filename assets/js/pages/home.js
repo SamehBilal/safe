@@ -217,7 +217,7 @@ export default {
 		<section class="sec sec--tight" id="now"><div class="wrap">
 			<div class="hm-today">
 				${today.length ? today.map((x) => `<a class="otd otd--photo reveal" href="moment.html?id=${esc(x.id)}"><span class="otd__ph">${img(otdPhoto(s, x), '', 'otd__img')}<span class="otd__ic">${doodle(x.icon, 22)}</span></span><span><small>${L('النهارده', 'On this day')} · ${yearsAgo(x.date)}</small><b>${T(x.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>`).join('')
-					: `<a class="otd reveal" href="onthisday.html"><span class="otd__ic">${doodle('calendar', 28)}</span><span><small>${L('في اليوم ده', 'On this day')}</small><b>${L('مفيش ذكرى في تاريخ النهارده — شوف الأيام اللي جنبه', 'Nothing on today’s date — look at the days around it')}</b></span><span aria-hidden="true">${App.arrow}</span></a>`}
+					: `<a class="otd reveal" href="onthisday.html"><span class="otd__ic">${doodle('calendar', 28)}</span><span><small>${L('في اليوم ده', 'On this day')}</small><b>${L('مفيش ذكرى في تاريخ النهارده — شوف السنة كلها يوم يوم', 'Nothing on today’s date — see the whole year, day by day')}</b></span><span aria-hidden="true">${App.arrow}</span></a>`}
 			</div>
 			<h2 class="sec__title reveal" style="margin-top:24px">${Y('ضيف للنهارده', 'ضيفي للنهارده', 'Add to today')}</h2>
 			<div class="quick">${quick.map(([href, e, label]) => `<a class="quick__btn reveal" href="${href}"><span aria-hidden="true">${doodle(e, 22)}</span>${esc(label)}</a>`).join('')}</div>

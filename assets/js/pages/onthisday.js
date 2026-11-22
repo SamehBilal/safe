@@ -1,43 +1,121 @@
-import { L, esc, pageHead, related, App, $, $$, t, img, hydrate, num, longDate } from '../shell.js';
+import { L, Y, esc, pageHead, related, App, $, $$, t, img, hydrate, num } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 
-/* On this day: everything from today's date in earlier years — moments on «حكايتنا», journal pages, photos.
-   Any day can be looked at with the arrows. Band: a tear-off desk calendar showing today, its pages flipping back
-   through the years we have something for. */
+/* «سنة من الذكريات» — the home page already shows what happened on today's date, so this page shows the whole year
+   at once: a map of every date, January to December, each square as dark as the memories that fell on it in all our
+   years — moments on «حكايتنا», journal pages, our firsts and the boys', tickets, posts, letters, notes, places and
+   album photos. Tap a square to read that day, year by year. Above it the numbers: how many dates of the year hold a
+   memory, the fullest date, the fullest year, and the next date still empty (a day to make one). The tear-off desk
+   calendar on top shows the day being read, its pages flipping back through the years it has. Opens on today, or
+   on #MM-DD. */
 const pad = (n) => String(n).padStart(2, '0');
 const MONTHS = { ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'], en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] };
+const DAYS_IN = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const md = (x) => String(x || '').slice(5, 10);
+const ok = (x) => /^\d{4}-\d{2}-\d{2}/.test(String(x || ''));
+const cut = (x, n = 150) => { const a = [...String(x || '')]; return a.length > n ? a.slice(0, n - 1).join('') + '…' : a.join(''); };
+const tx = (x) => (x && typeof x === 'object' ? t(x) : String(x || ''));
+
+/* every dated memory we keep, as { date, src, icon, title, text, photo, sketch, href } */
+async function gather(s) {
+	const get = (k) => live.load(k).catch(() => ({ items: [] })).then((d) => d.items || []);
+	const [journal, ourfirsts, firsts, tickets, posts] = await Promise.all(['journal', 'ourfirsts', 'firsts', 'tickets', 'posts'].map(get));
+	const kid = (id) => (s.family?.members || []).find((m) => m.id === id);
+	const out = [];
+	const add = (date, src, icon, title, text, extra = {}) => { if (ok(date)) out.push({ date, src, icon, title: tx(title), text: tx(text), ...extra }); };
+	const inStory = new Set();
+	for (const x of s.timeline || []) if (!x.when) { inStory.add(x.id); add(x.date, ['حكايتنا', 'Our story'], x.icon || 'heart', x.title, x.text, { photo: x.photo, href: `moment.html?id=${encodeURIComponent(x.id)}` }); }
+	for (const x of journal) add(x.date, ['دفترنا', 'Our journal'], 'pen', x.title || L('صفحة من الدفتر', 'A journal page'), x.text, { href: 'journal.html' });
+	for (const x of ourfirsts) add(x.date, ['أول مرة لينا', 'Our firsts'], 'star', x.what, x.note || x.where, { sketch: x.photo, href: 'ourfirsts.html' });
+	for (const x of firsts) add(x.date, ['أول مرة للولاد', 'The boys’ firsts'], 'baby', `${kid(x.kid) ? tx(kid(x.kid).name) + ': ' : ''}${tx(x.what)}`, x.note, { sketch: x.photo, href: 'firsts.html' });
+	for (const x of tickets) add(x.date, ['تذاكر وفواتير', 'Tickets'], 'ticket', x.what, x.note || x.where, { sketch: x.photo, href: `tickets.html#tk-${encodeURIComponent(x.id)}` });
+	for (const x of posts) add(x.date, ['بوستاتنا', 'Our posts'], 'phone', cut(x.text, 70) || L('بوست', 'A post'), '', { sketch: x.img, href: `posts.html#${encodeURIComponent(x.id)}` });
+	for (const x of s.letters || []) add(x.date, ['جواباتنا', 'Letters'], 'letter', x.title, '', { href: `letters.html#${encodeURIComponent(x.id)}` });
+	for (const x of s.notes || []) add(x.date, ['رسايل حب', 'Love notes'], 'heart', cut(tx(x.orig && x.text?.[x.orig] ? x.text[x.orig] : x.text), 70), '', { href: 'notes.html' });
+	for (const x of s.places || []) if (!inStory.has(x.id)) add(x.date, ['أماكننا', 'Our places'], 'pin', x.title, x.place || x.where, { photo: x.photo, href: 'places.html' });
+	for (const x of s.gallery || []) add(x.date, ['ألبوم الصور', 'Photo album'], 'camera', x.caption || x.album, '', { photo: x.photo, href: 'gallery.html' });
+	return out;
+}
 
 export default {
-	title: { ar: 'في اليوم ده', en: 'On this day' },
+	title: { ar: 'سنة من الذكريات', en: 'A year of memories' },
 	render() {
-		return `${pageHead(L('في اليوم ده', 'On this day'), L('كل اللي حصل في نفس اليوم، في السنين اللي فاتت', 'Everything that happened on this date, in years gone by'), [{ href: 'onthisday.html', ar: 'في اليوم ده', en: 'On this day' }], { band: `<div class="lp-band lp-band--onthisday" id="od-band" aria-hidden="true"></div>` })}
+		return `${pageHead(L('سنة من الذكريات', 'A year of memories'), L('كل يوم في السنة، وإيه اللي حصل فيه في كل سنينّا', 'Every date of the year, and what it has held in all our years'), [{ href: 'onthisday.html', ar: 'سنة من الذكريات', en: 'A year of memories' }], { band: `<div class="lp-band lp-band--onthisday" id="od-band" aria-hidden="true"></div>` })}
 		<section class="sec sec--top"><div class="wrap">
-			<div class="od-nav"><button class="btn btn--sm btn--ghost" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">‹</button><b id="od-day"></b><button class="btn btn--sm btn--ghost" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">›</button><button class="btn btn--sm btn--ghost" type="button" id="od-today">${L('النهارده', 'Today')}</button></div>
+			<ul class="od-stats" id="od-stats"></ul>
+			<div class="od-map-wrap">
+				<div class="od-map" id="od-map" role="grid" aria-label="${L('خريطة السنة', 'The year’s map')}"></div>
+				<p class="od-legend" aria-hidden="true"><span>${L('فاضي', 'Empty')}</span><i style="--n:0"></i><i style="--n:1"></i><i style="--n:2"></i><i style="--n:3"></i><i style="--n:4"></i><span>${L('مليان', 'Full')}</span></p>
+			</div>
+			<div class="od-nav">
+				<button class="btn btn--sm btn--ghost" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">‹</button>
+				<b id="od-day" aria-live="polite"></b>
+				<button class="btn btn--sm btn--ghost" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">›</button>
+				<button class="btn btn--sm btn--ghost" type="button" id="od-today">${doodle('calendar', 18)} ${L('النهارده', 'Today')}</button>
+				<button class="btn btn--sm btn--ghost" type="button" id="od-luck">${doodle('dice', 18)} ${L('يوم عشوائي', 'A random day')}</button>
+			</div>
 			<div class="od-list" id="od-list"></div>
 		</div></section>
-		${related(['story', 'journal', 'gallery'])}`;
+		${related(['calendar', 'story', 'journal'])}`;
 	},
 	async after(main, s) {
-		const journal = await live.load('journal').catch(() => ({ items: [] }));
-		let d = new Date();
-		const md = (x) => String(x || '').slice(5, 10);
-		const paint = () => {
-			const key = `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-			const lang = App.lang === 'ar' ? 'ar' : 'en';
-			$('#od-day', main).textContent = `${num(d.getDate())} ${MONTHS[lang][d.getMonth()]}`;
-			const moments = (s.timeline || []).filter((x) => !x.when && md(x.date) === key).map((x) => ({ y: +x.date.slice(0, 4), html: `<a class="od-item" href="moment.html?id=${encodeURIComponent(x.id)}">${x.photo ? img(x.photo, '', 'od-img') : `<span class="od-ic">${doodle(x.icon || 'heart', 36)}</span>`}<span><small>${L('حكايتنا', 'Our story')}</small><b dir="auto">${esc(t(x.title))}</b>${x.text ? `<em dir="auto">${esc(t(x.text)).slice(0, 160)}</em>` : ''}</span></a>` }));
-			const pages = (journal.items || []).filter((x) => md(x.date) === key).map((x) => ({ y: +x.date.slice(0, 4), html: `<a class="od-item" href="journal.html"><span class="od-ic">${doodle('pen', 36)}</span><span><small>${L('دفترنا', 'Our journal')}</small><b dir="auto">${esc(x.title || L('صفحة من الدفتر', 'A journal page'))}</b>${x.text ? `<em dir="auto">${esc(x.text.slice(0, 160))}</em>` : ''}</span></a>` }));
-			const all = [...moments, ...pages].sort((a, b) => b.y - a.y);
-			const years = [...new Set(all.map((x) => x.y))];
-			const now = new Date().getFullYear();
-			$('#od-list', main).innerHTML = years.map((y) => `<section class="od-year"><h2>${num(y)} <small>${now - y > 0 ? L(`من ${num(now - y)} سنة`, `${now - y} year${now - y === 1 ? '' : 's'} ago`) : ''}</small></h2>${all.filter((x) => x.y === y).map((x) => x.html).join('')}</section>`).join('') || `<p class="empty">${L('مفيش حاجة متسجلة في اليوم ده لسه — يمكن السنة دي تبقى أول مرة ♥', 'Nothing on this date yet — maybe this year will be the first ♥')}</p>`;
-			hydrate(main);
-			$('#od-band', main).innerHTML = `<div class="od-cal"><span class="od-rings"><i></i><i></i></span>${[...years.slice(0, 4).reverse(), null].map((y, i, a) => `<div class="od-page${y ? ' is-flip' : ''}" style="--i:${a.length - 1 - i}"><small>${MONTHS[lang][d.getMonth()]}</small><b>${num(d.getDate())}</b><em>${y ? num(y) : num(now)}</em></div>`).join('')}</div>`;
+		const lang = () => (App.lang === 'ar' ? 'ar' : 'en');
+		const all = await gather(s);
+		const byDay = new Map();
+		for (const x of all) { const k = md(x.date); if (!byDay.has(k)) byDay.set(k, []); byDay.get(k).push(x); }
+		const now = new Date();
+		const todayKey = `${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+		const fromHash = /^#(\d{2})-(\d{2})$/.exec(location.hash);
+		let key = fromHash && +fromHash[1] >= 1 && +fromHash[1] <= 12 && +fromHash[2] >= 1 && +fromHash[2] <= DAYS_IN[+fromHash[1] - 1] ? `${fromHash[1]}-${fromHash[2]}` : todayKey;
+		const dayLabel = (k) => `${num(+k.slice(3))} ${MONTHS[lang()][+k.slice(0, 2) - 1]}`;
+		const level = (n) => (!n ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 5 ? 3 : 4);
+
+		/* the map: a row for each month, a square for each date */
+		$('#od-map', main).innerHTML = MONTHS[lang()].map((m, i) => `<div class="od-row" role="row"><span class="od-m" role="rowheader">${esc(m.slice(0, lang() === 'ar' ? 10 : 3))}</span>${Array.from({ length: 31 }, (_, d) => {
+			if (d >= DAYS_IN[i]) return '<span class="od-cell is-none"></span>';
+			const k = `${pad(i + 1)}-${pad(d + 1)}`, n = (byDay.get(k) || []).length;
+			return `<button class="od-cell${k === todayKey ? ' is-today' : ''}" type="button" role="gridcell" data-k="${k}" style="--n:${level(n)}" aria-label="${esc(`${dayLabel(k)} — ${n ? L(`${num(n)} ذكرى`, `${n} memor${n === 1 ? 'y' : 'ies'}`) : L('فاضي', 'empty')}`)}"></button>`;
+		}).join('')}</div>`).join('');
+
+		/* the numbers */
+		const filled = [...byDay.keys()].filter((k) => k !== '02-29' || byDay.get(k).length);
+		const fullest = [...byDay.entries()].sort((a, b) => b[1].length - a[1].length)[0];
+		const perYear = {};
+		for (const x of all) perYear[x.date.slice(0, 4)] = (perYear[x.date.slice(0, 4)] || 0) + 1;
+		const topYear = Object.entries(perYear).sort((a, b) => b[1] - a[1])[0];
+		let nextEmpty = null;
+		for (let i = 1; i <= 366 && !nextEmpty; i++) { const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i); const k = `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; if (!byDay.has(k)) nextEmpty = k; }
+		const stat = (ic, b, small, k) => `<li>${k ? `<button type="button" data-k="${k}">` : '<span>'}<span class="od-stats__ic">${doodle(ic, 22)}</span><b>${b}</b><small>${small}</small>${k ? '</button>' : '</span>'}</li>`;
+		$('#od-stats', main).innerHTML = [
+			stat('calendar', `${num(filled.length)} <i>/ ${num(366)}</i>`, L('يوم في السنة فيه ذكرى', 'dates of the year hold a memory')),
+			fullest ? stat('star', esc(dayLabel(fullest[0])), L(`أكتر يوم مليان · ${num(fullest[1].length)} ذكريات`, `the fullest date · ${fullest[1].length} memories`), fullest[0]) : '',
+			topYear ? stat('heart', num(+topYear[0]).replace(/[٬,]/g, ''), L(`أكتر سنة · ${num(topYear[1])} ذكرى`, `the fullest year · ${topYear[1]} memories`)) : '',
+			nextEmpty ? stat('pen', esc(dayLabel(nextEmpty)), Y('أقرب يوم لسه فاضي — اعمل فيه ذكرى', 'أقرب يوم لسه فاضي — اعملي فيه ذكرى', 'the next empty date — make a memory on it'), nextEmpty) : ''
+		].join('');
+
+		const paint = (scroll) => {
+			const items = (byDay.get(key) || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+			const years = [...new Set(items.map((x) => +x.date.slice(0, 4)))];
+			const y0 = now.getFullYear();
+			$('#od-day', main).textContent = dayLabel(key);
+			$$('.od-cell.is-on', main).forEach((c) => c.classList.remove('is-on'));
+			$(`.od-cell[data-k="${key}"]`, main)?.classList.add('is-on');
+			$('#od-list', main).innerHTML = years.map((y) => `<section class="od-year"><h2>${num(y).replace(/[٬,]/g, '')} <small>${y0 - y > 0 ? L(`من ${num(y0 - y)} سنة`, `${y0 - y} year${y0 - y === 1 ? '' : 's'} ago`) : L('السنة دي', 'this year')}</small></h2>${items.filter((x) => +x.date.slice(0, 4) === y).map((x) => `<a class="od-item" href="${esc(x.href)}">${x.photo ? img(x.photo, '', 'od-img') : x.sketch ? `<img class="od-img" data-sketch="${esc(x.sketch)}" alt="">` : `<span class="od-ic">${doodle(x.icon, 36)}</span>`}<span><small>${doodle(x.icon, 14)} ${esc(L(...x.src))}</small><b dir="auto">${esc(x.title)}</b>${x.text ? `<em dir="auto">${esc(cut(x.text))}</em>` : ''}</span></a>`).join('')}</section>`).join('')
+				|| `<p class="empty">${Y('مفيش حاجة متسجلة في اليوم ده لسه — اعمل فيه أول ذكرى ♥', 'مفيش حاجة متسجلة في اليوم ده لسه — اعملي فيه أول ذكرى ♥', 'Nothing on this date yet — make it the first ♥')}</p>`;
+			hydrate($('#od-list', main));
+			live.hydrateSketches($('#od-list', main));
+			$('#od-band', main).innerHTML = `<div class="od-cal"><span class="od-rings"><i></i><i></i></span>${[...years.slice(0, 4).reverse(), null].map((y, i, a) => `<div class="od-page${y ? ' is-flip' : ''}" style="--i:${a.length - 1 - i}"><small>${MONTHS[lang()][+key.slice(0, 2) - 1]}</small><b>${num(+key.slice(3))}</b><em>${num(y || y0).replace(/[٬,]/g, '')}</em></div>`).join('')}</div>`;
+			history.replaceState(null, '', key === todayKey ? location.pathname : `#${key}`);
+			if (scroll) $('.od-nav', main).scrollIntoView({ behavior: 'smooth', block: 'start' });
 		};
-		$('#od-prev', main).onclick = () => { d.setDate(d.getDate() - 1); paint(); };
-		$('#od-next', main).onclick = () => { d.setDate(d.getDate() + 1); paint(); };
-		$('#od-today', main).onclick = () => { d = new Date(); paint(); };
-		paint();
+		const go = (k, scroll) => { key = k; paint(scroll); };
+		const shift = (n) => { const d = new Date(2024, +key.slice(0, 2) - 1, +key.slice(3) + n); go(`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`); };
+		main.addEventListener('click', (e) => { const c = e.target.closest('#od-map [data-k], #od-stats [data-k]'); if (c) go(c.dataset.k, true); });
+		$('#od-prev', main).onclick = () => shift(-1);
+		$('#od-next', main).onclick = () => shift(1);
+		$('#od-today', main).onclick = () => go(todayKey);
+		$('#od-luck', main).onclick = () => { const ks = [...byDay.keys()].filter((k) => k !== key); if (ks.length) go(ks[Math.floor(Math.random() * ks.length)]); };
+		paint(false);
 	}
 };
