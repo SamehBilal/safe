@@ -32,10 +32,10 @@ const IDEAS = [
 const EMO = [[['رجليه', 'رجله', 'legs', 'feet'], 'foot'], [['سينما', 'cinema', 'movie'], 'clapper'], [['مترو', 'metro'], 'walk'], [['ماتش', 'استاد', 'match', 'stadium'], 'trophy'], [['طيارة', 'plane', 'flight'], 'plane'], [['عيد', 'eid'], 'party'], [['حلاق', 'شعر', 'haircut'], 'sparkle'], [['سفر', 'رحلة', 'trip'], 'suitcase'], [['ملاهي', 'park'], 'party'], [['عيد ميلاد', 'birthday'], 'cake']];
 const ideaOf = (what) => { const w = String(what || '').trim().toLowerCase(); return IDEAS.findIndex(([ar, en, , keys]) => w === ar || w === en.toLowerCase() || keys.some((k) => w.includes(k))); };
 const emojiOf = (what) => { const i = ideaOf(what); if (i >= 0) return IDEAS[i][2]; const w = String(what || '').toLowerCase(); return EMO.find(([ks]) => ks.some((k) => w.includes(k)))?.[1] || 'star'; };
-/* three photos at most on a card; the rest are counted on the last one */
+/* two photos at most on a card; the rest are counted on the last one */
 const shots = (x) => {
 	const all = x.photos?.length ? x.photos : x.photo ? [x.photo] : [];
-	return !all.length ? '' : '<div class="ft1-shots">' + all.slice(0, 3).map((p, i) => `<span class="ft1-shot${i ? ' ft1-more' : ''}"><img class="zoom" data-sketch="${esc(p)}" alt="" loading="lazy">${i === 2 && all.length > 3 ? `<b class="ft1-shot__n" dir="ltr">+${num(all.length - 3)}</b>` : ''}</span>`).join('') + '</div>';
+	return !all.length ? '' : '<div class="ft1-shots">' + all.slice(0, 2).map((p, i) => `<span class="ft1-shot${i ? ' ft1-more' : ''}"><img class="zoom" data-sketch="${esc(p)}" alt="" loading="lazy">${i === 1 && all.length > 2 ? `<b class="ft1-shot__n" dir="ltr">+${num(all.length - 2)}</b>` : ''}</span>`).join('') + '</div>';
 };
 const KID_C = ['#e39b2d', '#5a9e6f', '#0e6990', '#c2185b'];
 const tilt = (k) => ((k * 37) % 13) - 6;

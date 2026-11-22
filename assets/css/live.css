@@ -1899,7 +1899,7 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .bdt__card b { font: 400 clamp(1.5rem, 3vw, 2.1rem)/1.05 var(--f-label); letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (max-width: 760px) { .bdt__top { grid-template-columns: 1fr; } .bdt__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bdt__card b { font-size: clamp(1.15rem, 5vw, 1.6rem); } }
 .ft1-shot img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
-.ft1-shot:nth-child(3) { rotate: 1deg; }
+
 .ft1-item__dot .dd, .ft1-kid__em .dd, .ft1-stk__em .dd { color: var(--c, var(--ink, #37353f)); }
 .ft1-item__dot .dd { color: var(--ink, #37353f); }
-@media (max-width: 640px) { .ft1-shots { float: none; margin: 0 0 10px; } .ft1-shot { width: calc((100% - 16px) / 3); max-width: 110px; } }
+@media (max-width: 640px) { .ft1-shots { float: none; margin: 0 0 10px; } .ft1-shot { width: calc((100% - 8px) / 2); max-width: 120px; } }
