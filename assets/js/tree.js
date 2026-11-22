@@ -231,7 +231,7 @@ export async function wireTree(main, s) {
 			${p.gone ? `<p class="ft-card__rel">♡ ${member ? L('الله يرحمه', 'In loving memory') : L(rel(p.rel).gone, 'In loving memory')}</p>` : ''}
 			${p.note ? `<p class="ft-card__note" dir="auto">${esc(member ? p.note : noteOf(p))}</p>` : ''}
 			<div class="ft-card__acts">
-				${member ? `<a class="btn btn--sm btn--coral" href="member.html?id=${esc(p.id)}">${L('صفحته', 'Their page')} ${App.arrow}</a>` : ''}
+				<a class="btn btn--sm btn--coral" href="member.html?id=${esc(p.id)}">${(member ? p.female : isWoman(p.rel)) ? L('صفحتها', 'Her page') : L('صفحته', 'His page')} ${App.arrow}</a>
 				${!member && live.canWrite() ? `<label class="btn btn--sm ft-card__photo">${doodle('camera', 16)} ${p.pic ? L('غيّر الصورة', 'Change the photo') : L('ضيف صورة', 'Add a photo')}<input type="file" accept="image/*" data-pic="${esc(p.id)}" hidden></label>` : ''}
 				${mine ? `<button class="link link--danger" type="button" data-untree="${esc(p.id)}">${Y('شيله من الشجرة', 'شيليه من الشجرة', 'Take off the tree')}</button>` : ''}
 			</div>
@@ -307,4 +307,22 @@ export async function wireTree(main, s) {
 	draw();
 	data = await live.load('tree').catch(() => ({ items: [] }));
 	draw();
+}
+
+/** Everything a page needs to show one relative from the tree (member.html?id=…): their name, who they are to us,
+   their side's colour, their face, whose child they are, their children, and the line about them. */
+export function relative(id, items, s) {
+	const p = (items || []).find((x) => x.id === id);
+	if (!p) return null;
+	const parent = rel(p.rel).kid ? items.find((x) => x.id === p.parent) : null;
+	const side = parent?.side || p.side;
+	const kids = items.filter((k) => rel(k.rel).kid && k.parent === p.id).sort((a, b) => String(a.born || 9999).localeCompare(String(b.born || 9999)));
+	const sibs = SIBS.includes(p.rel) ? items.filter((x) => x !== p && x.side === p.side && SIBS.includes(x.rel)) : [];
+	return {
+		p, side, parent, kids, sibs,
+		name: nm(p), relation: relOf(p.rel, s, side, parent), colour: colour(side),
+		face: (size) => face(p, false, size), faceOf: (x, size) => face(x, false, size), nameOf: nm,
+		relationOf: (x) => relOf(x.rel, s, (x.parent && items.find((y) => y.id === x.parent)?.side) || x.side, rel(x.rel).kid ? items.find((y) => y.id === x.parent) : null),
+		gone: p.gone ? L(rel(p.rel).gone, 'In loving memory') : '', note: p.note ? noteOf(p) : '', woman: isWoman(p.rel)
+	};
 }
