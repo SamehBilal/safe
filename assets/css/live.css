@@ -1206,7 +1206,7 @@ button.cal-d.is-on { box-shadow: 0 0 0 2.5px var(--card), 0 0 0 4.5px var(--k); 
 .ch-pick__job { margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; font-weight: 800; color: var(--coral-deep); min-height: 1.4em; }
 .ch-stars { margin: 18px 0 22px; }
 .ch-star { color: #e3a008; }
-.ch-scroll { overflow-x: auto; padding-bottom: 6px; }
+.ch-scroll { overflow-x: auto; overflow-y: hidden; padding: 10px 10px 6px; scrollbar-width: thin; }
 .ch-chart { width: 100%; min-width: 640px; border-collapse: separate; border-spacing: 5px; }
 .ch-chart th { font-weight: 800; font-size: 0.85rem; padding: 4px; }
 .ch-chart thead th small { display: block; color: var(--muted); font-weight: 700; }
@@ -1905,7 +1905,7 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 @media (max-width: 640px) { .ft1-shots { float: none; margin: 0 0 10px; } .ft1-shot { width: calc((100% - 8px) / 2); max-width: 120px; } }
 
 /* chores: a pen ticks a job off (checkfx.js), drawn icons for the stars and the crown */
-.ch-tick { position: absolute; inset: -6px -2px; width: calc(100% + 4px); height: calc(100% + 12px); --cfx: #3f8a56; }
+.ch-tick { position: absolute; inset: -6px 0; width: 100%; height: calc(100% + 12px); --cfx: #3f8a56; }
 .ch-tick path { stroke-width: 9px; }
 .ch-cell.is-done { background: color-mix(in srgb, var(--hl-lime) 30%, var(--card)); }
 .ch-star .dd, .ch-stars .gm-crown .dd { vertical-align: -4px; }
