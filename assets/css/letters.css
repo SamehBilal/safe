@@ -88,3 +88,34 @@
 	.lv-hearts { display: none; }
 	.lv-card, .lv-flap, .lv-page, .lv-pages.is-in { transition: none; animation: none; }
 }
+
+/* ---- the top: our post office — a red pillar box, a letter sliding into it, and the letters posted as envelopes ---- */
+.lt-band { display: grid; place-items: center; padding: 10px var(--gutter) 18px; }
+.lt-office { display: flex; align-items: center; justify-content: center; gap: clamp(20px, 5vw, 56px); width: min(900px, 100%); }
+.lt-box { flex: none; width: clamp(110px, 16vw, 150px); height: auto; overflow: visible; }
+.lt-box__body { fill: #d9534f; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.lt-box__cap { fill: #b8403c; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.lt-box__slot { fill: var(--ink); }
+.lt-box__plate { fill: #fffdf8; stroke: var(--ink); stroke-width: 2.5; }
+.lt-box__heart { fill: #f08080; stroke: var(--ink); stroke-width: 2; }
+.lt-box__base { fill: #37353f; }
+.lt-box__letter { fill: #eae2b7; stroke: var(--ink); stroke-width: 2.5; }
+.lt-box__flap { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.lt-box__in { animation: lt-post 3.6s ease-in infinite; }
+@keyframes lt-post { 0% { translate: 0 -46px; opacity: 0; } 20% { opacity: 1; } 55% { translate: 0 0; opacity: 1; } 70%, 100% { translate: 0 34px; opacity: 0; } }
+.lt-posted { display: grid; gap: 14px; min-width: 0; }
+.lt-posted__h { margin: 0; font: 400 1.9rem/1.1 var(--f-hand); color: var(--blue); }
+:lang(ar) .lt-posted__h { font: 700 1.5rem/1.4 'Aref Ruqaa', var(--f-body); }
+.lt-posted__h b { display: inline-grid; place-items: center; min-width: 34px; height: 34px; margin-inline-start: 6px; font: 800 1rem var(--f-body); color: #fff; background: var(--coral); border: 1.5px solid var(--ink); border-radius: 50%; vertical-align: middle; }
+.lt-envs { display: flex; flex-wrap: wrap; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.lt-envs a { position: relative; display: grid; align-content: end; gap: 1px; width: 230px; aspect-ratio: 16 / 10; box-sizing: border-box; padding: 16px 18px 14px; color: #2b2b33; text-decoration: none; background: linear-gradient(to top right, transparent 49.6%, rgba(55, 53, 63, .14) 50%, transparent 50.4%) no-repeat 0 0 / 50% 50%, linear-gradient(to top left, transparent 49.6%, rgba(55, 53, 63, .14) 50%, transparent 50.4%) no-repeat 100% 0 / 50% 50%, #fbf3e4; border: 1.5px solid var(--ink); border-radius: 6px; rotate: var(--r); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 color-mix(in srgb, var(--s) 45%, transparent); transition: rotate .25s, translate .25s; }
+.lt-envs a:hover { rotate: 0deg; translate: 0 -4px; }
+.lt-env__stamp { position: absolute; top: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 38px; height: 46px; color: #fff; background: var(--s); outline: 3px dotted #fbf3e4; outline-offset: -5px; border: 1.5px solid var(--ink); }
+.lt-env__mark { position: absolute; top: 14px; inset-inline-end: 34px; display: grid; place-items: center; width: 64px; height: 64px; border: 2px solid color-mix(in srgb, var(--s) 70%, #37353f); border-radius: 50%; rotate: -14deg; opacity: .75; }
+.lt-env__mark span { font: 400 .72rem var(--f-label); letter-spacing: .04em; color: color-mix(in srgb, var(--s) 70%, #37353f); border-block: 1.5px solid currentColor; padding: 1px 2px; }
+.lt-envs small { font-size: .72rem; font-weight: 800; color: #8a8792; }
+.lt-envs b { font: 400 1.35rem/1.15 var(--f-hand); color: #0e6990; overflow-wrap: anywhere; }
+:lang(ar) .lt-envs b { font: 700 1rem/1.5 var(--f-body); }
+.lt-envs em { font-style: normal; font-size: .8rem; font-weight: 700; color: #6b6b75; }
+@media (max-width: 600px) { .lt-office { flex-direction: column; } .lt-posted { justify-items: center; text-align: center; } .lt-envs { justify-content: center; } .lt-envs a { width: min(240px, 74vw); text-align: start; } .lt-box { width: 92px; } }
+@media (prefers-reduced-motion: reduce) { .lt-box__in { animation: none; } }

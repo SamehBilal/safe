@@ -1071,3 +1071,80 @@
 .notes__scatter .note:nth-child(4n+1)::before { rotate: 4deg; background: rgba(253, 200, 48, .5); }
 .notes__scatter .note:nth-child(4n+2)::before { left: 20%; background: rgba(143, 209, 239, .55); }
 .note__label { display: block; margin-bottom: 6px; font-size: .78rem; font-weight: 800; color: var(--muted); }
+
+/* ---------- «رسايل حب» (notes.js): the top is our fridge door — magnet letters «B7BK ♥», three notes held up by
+   magnets, and a magnet that counts them ---------- */
+.nf-band { display: grid; place-items: center; padding: 10px var(--gutter) 18px; }
+.nf-door { position: relative; width: min(860px, 100%); box-sizing: border-box; padding: 26px clamp(18px, 4vw, 40px) 30px; padding-inline-end: clamp(46px, 7vw, 70px); background: linear-gradient(160deg, #fdfcf9, #eef0ef 70%, #e3e7e6); border: 2px solid var(--ink, #37353f); border-radius: 26px 26px 18px 18px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--blue, #0e6990) 35%, transparent); }
+.nf-handle { position: absolute; top: 34px; bottom: 34px; inset-inline-end: 18px; width: 12px; background: linear-gradient(90deg, #c9ced0, #f6f7f7, #b9bfc2); border: 2px solid var(--ink, #37353f); border-radius: 8px; }
+.nf-letters { display: flex; justify-content: center; gap: 6px; margin: 0 0 18px; direction: ltr; }
+.nf-letters b { display: grid; place-items: center; min-width: 46px; height: 54px; padding: 0 4px; font: 900 2.4rem/1 'Fredoka', 'Nunito', var(--f-body); color: var(--c); text-shadow: 2px 3px 0 rgba(0, 0, 0, .18); rotate: var(--r); filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--c) 60%, #000)); animation: nf-wob 4s calc(var(--r) * .1s) ease-in-out infinite; }
+@keyframes nf-wob { 50% { rotate: calc(var(--r) * -1); } }
+.nf-notes { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 22px 20px; }
+.nf-note { position: relative; display: grid; gap: 6px; width: 165px; padding: 22px 14px 12px; color: #2b2b33; background: #fff6b8; box-shadow: 0 6px 12px -6px rgba(0, 0, 0, .35); rotate: -3deg; }
+.nf-note--1 { background: #ffd9e2; rotate: 2.5deg; translate: 0 14px; }
+.nf-note--2 { background: #d4ecff; rotate: -1.5deg; }
+.nf-note span { font: 600 1.15rem/1.35 var(--f-hand); overflow-wrap: anywhere; }
+.nf-note span:lang(ar), :lang(ar) .nf-note span { font-family: var(--f-hand), var(--f-body); }
+.nf-note small { font-size: .78rem; font-weight: 800; color: #8a5a6a; }
+.nf-mag { position: absolute; top: -10px; left: 50%; width: 22px; height: 22px; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #fff8, transparent 45%), var(--m); border: 2px solid var(--ink, #37353f); border-radius: 50%; box-shadow: 0 3px 0 rgba(0, 0, 0, .2); }
+.nf-count { position: relative; display: grid; justify-items: center; gap: 0; padding: 20px 18px 12px; background: #fff; border: 2px solid var(--ink, #37353f); border-radius: 14px; rotate: 3deg; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-yellow, #fdc830); }
+.nf-count b { font: 400 2.2rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
+:lang(ar) .nf-count b { font: 800 1.9rem/1.2 var(--f-body); }
+.nf-count small { font-weight: 800; font-size: .85rem; }
+.nf-count em { margin-top: 4px; font-style: normal; font-size: .74rem; font-weight: 700; color: var(--muted, #6b6b75); }
+@media (max-width: 640px) { .nf-note { width: min(100%, 230px); } .nf-note--1 { translate: none; } .nf-letters b { min-width: 36px; font-size: 1.9rem; } }
+@media (prefers-reduced-motion: reduce) { .nf-letters b { animation: none; } }
+
+/* ---------- «بوستاتنا» (posts.js): the top is our profile on a phone — the two of us, the numbers, a highlight for
+   every network and the latest posts as a grid, with the newest hearts popping up beside it ---------- */
+.pp-band { position: relative; display: grid; place-items: center; min-height: 200px; padding: 14px var(--gutter) 22px; }
+.pp-phone { position: relative; display: grid; gap: 12px; width: min(330px, 100%); box-sizing: border-box; padding: 34px 16px 18px; background: var(--card, #fff); border: 2.5px solid var(--ink, #37353f); border-radius: 34px; box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 color-mix(in srgb, var(--coral, #f2726f) 45%, transparent); rotate: -1.5deg; }
+.pp-notch { position: absolute; top: 10px; left: 50%; width: 74px; height: 12px; translate: -50% 0; background: var(--ink, #37353f); border-radius: 999px; }
+.pp-head { display: flex; align-items: center; gap: 12px; }
+.pp-avs { display: flex; flex: none; }
+.pp-av { display: grid; place-items: center; width: 50px; height: 50px; overflow: hidden; color: var(--coral, #f2726f); background: #fff; border: 2.5px solid var(--card, #fff); outline: 2px solid var(--coral, #f2726f); border-radius: 50%; }
+.pp-av + .pp-av { margin-inline-start: -14px; outline-color: var(--blue, #0e6990); }
+.pp-av img { width: 100%; height: 100%; object-fit: cover; }
+.pp-name { display: grid; min-width: 0; text-align: start; }
+.pp-name b { font-size: 1.02rem; }
+.pp-name i { font-style: normal; color: var(--coral, #f2726f); }
+.pp-name small { font-size: .75rem; font-weight: 700; color: var(--muted, #6b6b75); text-align: start; }
+.pp-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 8px 0; list-style: none; border-block: 1.5px dashed var(--line, #ddd); }
+.pp-stats li { display: grid; justify-items: center; }
+.pp-stats b { font: 400 1.35rem/1.1 var(--f-label); }
+:lang(ar) .pp-stats b { font: 800 1.1rem/1.3 var(--f-body); }
+.pp-stats small { font-size: .74rem; font-weight: 700; color: var(--muted, #6b6b75); }
+.pp-hl { display: flex; justify-content: center; gap: 12px; margin: 0; padding: 0; list-style: none; flex-wrap: wrap; }
+.pp-hl li { display: grid; justify-items: center; gap: 3px; width: 62px; }
+.pp-hl span { display: grid; place-items: center; width: 46px; height: 46px; color: var(--c); background: color-mix(in srgb, var(--c) 12%, #fff); border: 2.5px solid var(--card, #fff); outline: 2px solid var(--c); border-radius: 50%; }
+.pp-hl small { font-size: .66rem; font-weight: 800; color: var(--muted, #6b6b75); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.pp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.pp-grid li { aspect-ratio: 1; overflow: hidden; background: color-mix(in srgb, var(--c, #ccc) 14%, #fff); border-radius: 6px; }
+.pp-grid a { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 6px; box-sizing: border-box; color: var(--ink, #37353f); text-decoration: none; }
+.pp-grid img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pp-grid span { font-size: .66rem; font-weight: 700; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.pp-grid .is-empty { background: repeating-linear-gradient(45deg, #f3eee6 0 6px, #fbf8f2 6px 12px); }
+.pp-ping { position: absolute; display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 10px; font-size: .82rem; color: var(--text); background: var(--card, #fff); border: 2px solid var(--ink, #37353f); border-radius: 16px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); animation: pp-pop 4s ease-in-out infinite; }
+.pp-ping svg { color: var(--coral-deep, #d9534f); flex: none; }
+.pp-ping--0 { top: 22%; inset-inline-start: calc(50% + 190px); rotate: 3deg; }
+.pp-ping--1 { bottom: 24%; inset-inline-end: calc(50% + 190px); rotate: -3deg; animation-delay: -2s; }
+@keyframes pp-pop { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+@media (max-width: 860px) { .pp-ping { display: none; } }
+@media (prefers-reduced-motion: reduce) { .pp-ping { animation: none; } }
+
+/* ---------- the album (gallery.js): filters next to the search — the kind of pile as chips, then the year, the city
+   and the order as little selects in the search field's own ink ---------- */
+.tp-bar .tp-find { flex: 1 1 520px; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+.tp-find .tp-find__field { flex: 0 1 260px; }
+.tp-filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.tp-kinds { display: flex; flex-wrap: wrap; gap: 6px; }
+.tp-kinds .chip { display: inline-flex; align-items: center; gap: 5px; min-height: 38px; padding: 4px 12px; font-size: .85rem; }
+.tp-sel { position: relative; display: flex; align-items: center; gap: 4px; padding-inline: 10px 4px; color: var(--blue, #0e6990); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); transition: box-shadow .15s, translate .15s; }
+.tp-sel:focus-within { translate: calc(var(--bujo-x, 1) * -1px) -1px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--coral); }
+.tp-sel svg { flex: none; }
+.tp-sel select { min-height: 38px; max-width: 150px; padding-inline: 2px 6px; color: var(--text); font: 700 .85rem var(--f-body); background: none; border: 0; outline: 0; cursor: pointer; }
+.tp-sel select option { color: #2b2b33; background: #fff; }
+@media (max-width: 760px) { .tp-bar .tp-find { flex: 1 1 100%; justify-content: stretch; } .tp-find .tp-find__field { flex: 1 1 100%; order: -1; } .tp-filters { justify-content: flex-start; } }
+.sec.notes { overflow-x: clip; }
+@media (max-width: 640px) { .notes__scatter .note { translate: calc(var(--dx, 0px) / 3) 0; } }

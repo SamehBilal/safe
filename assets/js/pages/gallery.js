@@ -1,26 +1,45 @@
-import { L, Y, T, esc, img, pageHead, related, App, $, $$, REDUCE, hydrate, icon } from '../shell.js';
+import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, REDUCE, hydrate, icon } from '../shell.js';
+import { doodle } from '../doodles.js';
 import { fold } from './search.js';
 
 /* Our photos in piles, after Codrops' «Adaptive Thumbnail Pile Effect» (Stapel, demo 3: a wide gutter, a little delay
    between photos and a random tilt). Every album, and every place on the map, is a pile of its photos with the top
    one wearing its name and how many there are; tap a pile and its photos fly out into a grid one after another,
-   the other piles fade away, and ← gathers them back. In a spread pile, tap a photo to see it big. */
+   the other piles fade away, and ← gathers them back. In a spread pile, tap a photo to see it big.
+   Next to the search, filters: what kind of pile (albums, places, gifts), which year, which city, and the order. */
 
 const firstOf = (o) => [...new Set([...(o.photos || []).map((p) => (typeof p === 'string' ? p : p?.photo)), o.photo].filter(Boolean))];
 
 function piles(s) {
 	const out = new Map();
-	const add = (name, photo, caption) => {
+	const add = (name, photo, caption, kind, date, area) => {
 		if (!photo) return;
-		if (!out.has(name)) out.set(name, []);
-		out.get(name).push({ photo, caption });
+		if (!out.has(name)) out.set(name, { items: [], kind, dates: [], area: '' });
+		const p = out.get(name);
+		p.items.push({ photo, caption });
+		if (date) p.dates.push(String(date));
+		if (area && !p.area) p.area = area;
 	};
-	for (const g of s.gallery || []) add(T(g.album) || L('صور', 'Photos'), g.photo, T(g.caption));
+	for (const g of s.gallery || []) add(T(g.album) || L('صور', 'Photos'), g.photo, T(g.caption), 'album', g.date);
 	// a place can join an album's pile ("album" in its info.json), so the same day isn't two piles
-	for (const p of s.places || []) if (p.at) for (const ph of firstOf(p)) add(T(p.album || p.title), ph, T(p.where));
+	for (const p of s.places || []) if (p.at) for (const ph of firstOf(p)) add(T(p.album || p.title), ph, T(p.where), p.album ? 'album' : 'place', p.date, T(p.area));
 	// the gifts we gave each other (private/media/gifts/…): one pile each
-	for (const g of s.gifts || []) for (const ph of g.photos || []) add(`🎁 ${T(g.title)}`, ph, [L('من', 'From'), T(g.from === 'her' ? s.her : s.him), g.note ? '— ' + T(g.note) : ''].join(' ').trim());
-	return [...out.entries()].map(([name, items]) => ({ name, items }));
+	for (const g of s.gifts || []) for (const ph of g.photos || []) add(T(g.title), ph, [L('من', 'From'), T(g.from === 'her' ? s.her : s.him), g.note ? '— ' + T(g.note) : ''].join(' ').trim(), 'gift', g.date);
+	return [...out.entries()].map(([name, p]) => ({ name, items: p.items, kind: p.kind, date: p.dates.sort()[0] || '', years: [...new Set(p.dates.map((d) => d.slice(0, 4)))], area: p.area }));
+}
+
+const KIND = { album: ['camera', 'ألبومات', 'Albums'], place: ['pin', 'أماكن', 'Places'], gift: ['gift', 'هدايا', 'Gifts'] };
+function filters(ps) {
+	const kinds = Object.keys(KIND).filter((k) => ps.some((p) => p.kind === k));
+	const years = [...new Set(ps.flatMap((p) => p.years))].sort().reverse();
+	const areas = [...new Set(ps.map((p) => p.area).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+	const sel = (id, ic, label, opts) => `<label class="tp-sel" title="${esc(label)}">${doodle(ic, 18)}<select id="${id}" aria-label="${esc(label)}">${opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('')}</select></label>`;
+	return `<div class="tp-filters">
+		${kinds.length > 1 ? `<div class="tp-kinds" role="group" aria-label="${L('نوع الكومة', 'Kind of pile')}"><button class="chip is-on" type="button" data-kind="">${L('الكل', 'All')}</button>${kinds.map((k) => `<button class="chip" type="button" data-kind="${k}">${doodle(KIND[k][0], 16)} ${L(KIND[k][1], KIND[k][2])}</button>`).join('')}</div>` : ''}
+		${years.length > 1 ? sel('tp-year', 'calendar', L('السنة', 'Year'), [['', L('كل السنين', 'Every year')], ...years.map((y) => [y, num(+y).replace(/[٬,]/g, '')])]) : ''}
+		${areas.length > 1 ? sel('tp-area', 'house', L('المدينة', 'City'), [['', L('كل المدن', 'Every city')], ...areas.map((a) => [a, a])]) : ''}
+		${sel('tp-sort', 'shuffle', L('الترتيب', 'Order'), [['', L('زي ما هي', 'As they are')], ['new', L('الأحدث الأول', 'Newest first')], ['old', L('الأقدم الأول', 'Oldest first')], ['big', L('الأكبر الأول', 'Biggest first')], ['az', L('بالاسم', 'By name')]])}
+	</div>`;
 }
 
 export default {
@@ -36,6 +55,7 @@ export default {
 				<h2 class="tp-bar__h">${L('صورنا', 'Our photos')}</h2>
 				<p class="tp-bar__name" id="tp-name" aria-live="polite"></p>
 				<div class="tp-find" id="tp-find" role="search">
+					${filters(ps)}
 					<label class="tp-find__field">${icon('search', 18)}<input id="tp-q" type="search" autocomplete="off" spellcheck="false" dir="auto" placeholder="${esc(Y('دوّر في الألبومات…', 'دوّري في الألبومات…', 'Search the albums…'))}" aria-label="${esc(L('دوّر في الألبومات', 'Search the albums'))}"><span class="tp-find__n" id="tp-n" aria-live="polite"></span></label>
 				</div>
 			</div>
@@ -175,20 +195,35 @@ export default {
 		back.onclick = gather;
 		/* the search: every word typed must be in a pile's name or one of its captions (Arabic letter forms and digits
 		   don't matter); the piles that don't match fade away and the rest close up */
+		let kind = '';
+		const year = $('#tp-year', main), area = $('#tp-area', main), sort = $('#tp-sort', main);
 		const filter = () => {
 			const words = fold(q.value).split(/\s+/).filter(Boolean);
-			shown = ps.map((_, k) => k).filter((k) => words.every((w) => hay[k].includes(w)));
+			const y = year?.value || '', a = area?.value || '', o = sort?.value || '';
+			shown = ps.map((_, k) => k).filter((k) => words.every((w) => hay[k].includes(w))
+				&& (!kind || ps[k].kind === kind) && (!y || ps[k].years.includes(y)) && (!a || ps[k].area === a));
+			const by = { new: (i, j) => ps[j].date.localeCompare(ps[i].date), old: (i, j) => (ps[i].date || '9').localeCompare(ps[j].date || '9'), big: (i, j) => ps[j].items.length - ps[i].items.length, az: (i, j) => ps[i].name.localeCompare(ps[j].name, App.lang) }[o];
+			if (by) shown.sort(by);
+			const narrowed = words.length || kind || y || a;
 			for (const el of items) {
 				const on = shown.includes(+el.dataset.pile);
 				el.classList.toggle('is-gone', !on);
 				const top = +el.dataset.i === ps[+el.dataset.pile].items.length - 1;
 				$('.tp__btn', el).tabIndex = top && on ? 0 : -1;
 			}
-			count.textContent = !words.length ? '' : shown.length ? L(`${shown.length.toLocaleString('ar-EG')} ${shown.length === 1 ? 'ألبوم' : 'ألبومات'}`, `${shown.length} album${shown.length === 1 ? '' : 's'}`) : L('ولا ألبوم', 'None');
+			count.textContent = !narrowed ? '' : shown.length ? L(`${shown.length.toLocaleString('ar-EG')} ${shown.length === 1 ? 'ألبوم' : 'ألبومات'}`, `${shown.length} album${shown.length === 1 ? '' : 's'}`) : L('ولا ألبوم', 'None');
 			place();
 		};
 		let ft = 0;
 		q.addEventListener('input', () => { clearTimeout(ft); ft = setTimeout(filter, 120); });
+		for (const el of [year, area, sort]) el?.addEventListener('change', filter);
+		$('.tp-kinds', main)?.addEventListener('click', (e) => {
+			const c = e.target.closest('[data-kind]');
+			if (!c) return;
+			kind = c.dataset.kind;
+			$$('.tp-kinds .chip', main).forEach((x) => x.classList.toggle('is-on', x === c));
+			filter();
+		});
 		q.addEventListener('keydown', (e) => { if (e.key === 'Enter' && shown.length === 1) { e.preventDefault(); spread(shown[0]); } });
 		main.onkeydown = ((e) => { if (e.key === 'Escape' && open >= 0 && !document.querySelector('.lightbox')) gather(); });
 		let w = grid.clientWidth;

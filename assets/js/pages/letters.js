@@ -1,4 +1,5 @@
-import { L, Y, T, esc, longDate, pageHead, related, REDUCE, App, $, $$ } from '../shell.js';
+import { L, Y, T, esc, num, longDate, fmtDate, pageHead, related, REDUCE, App, $, $$ } from '../shell.js';
+import { doodle } from '../doodles.js';
 
 /* Letters for you. Each letter waits in a pink envelope that floats over its shadow, its card peeking out on hover
    and little hearts rising from it (after Lena Stanley's «CSS Love letter»). The heart on the front opens it: the flap
@@ -19,12 +20,39 @@ function pagesOf(x) {
 		</blockquote>`).join('');
 }
 
+/* the top: our post office — a red pillar box with a letter sliding into its slot, and every letter posted beside it
+   as an envelope with its stamp, the postmark of its day and who it's for; tap one to go to it */
+const STAMP = ['#d9534f', '#0e6990', '#5a9e6f', '#8e5bd1', '#e39b2d'];
+function postbox(list) {
+	return `<div class="lt-band"><div class="lt-office">
+		<svg class="lt-box" viewBox="0 0 150 230" aria-hidden="true">
+			<g class="lt-box__in"><rect class="lt-box__letter" x="48" y="40" width="54" height="34" rx="3" /><path class="lt-box__flap" d="M48 40l27 18 27-18" /></g>
+			<path class="lt-box__body" d="M25 214V70a50 50 0 0 1 100 0v144Z" />
+			<path class="lt-box__cap" d="M18 72a57 57 0 0 1 114 0Z" />
+			<rect class="lt-box__slot" x="44" y="88" width="62" height="9" rx="4.5" />
+			<rect class="lt-box__plate" x="47" y="118" width="56" height="40" rx="4" />
+			<path class="lt-box__heart" d="M75 148c-8-5-12-9-12-13.4a5.8 5.8 0 0 1 12-2.6 5.8 5.8 0 0 1 12 2.6c0 4.4-4 8.4-12 13.4Z" />
+			<path class="lt-box__base" d="M15 214h120v12H15Z" />
+		</svg>
+		<div class="lt-posted">
+			<p class="lt-posted__h">${L('جوابات اتبعتت', 'Letters posted')} <b>${num(list.length)}</b></p>
+			<ul class="lt-envs">${list.map((x, k) => `<li style="--s:${STAMP[k % STAMP.length]};--r:${[-4, 3, -2, 5][k % 4]}deg"><a href="#${esc(x.id)}" tabindex="-1">
+				<span class="lt-env__stamp">${doodle('heart', 18)}</span>
+				${x.date ? `<span class="lt-env__mark"><span>${esc(fmtDate(x.date))}</span></span>` : ''}
+				<small>${L('إلى', 'To')}</small>
+				<b dir="auto">${T(x.to)}</b>
+				<em dir="auto">${T(x.title)}</em>
+			</a></li>`).join('')}</ul>
+		</div>
+	</div></div>`;
+}
+
 export default {
 	title: { ar: 'جوابات', en: 'Letters' },
 	render(s) {
 		const list = s.letters || [];
 		return `
-		${pageHead(L('جواباتنا', 'Letters for you'), Y('دوس على القلب عشان الجواب يتفتح', 'دوسي على القلب عشان الجواب يتفتح', 'Tap the heart to open a letter'), [{ href: 'letters.html', ar: 'جوابات', en: 'Letters' }])}
+		${pageHead(L('جواباتنا', 'Letters for you'), Y('دوس على القلب عشان الجواب يتفتح', 'دوسي على القلب عشان الجواب يتفتح', 'Tap the heart to open a letter'), [{ href: 'letters.html', ar: 'جوابات', en: 'Letters' }], { band: postbox(list) })}
 		<section class="sec sec--top"><div class="wrap">
 			${list.map((x, k) => `
 			<div class="lv-block" id="${esc(x.id)}">

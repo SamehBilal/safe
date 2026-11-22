@@ -64,6 +64,11 @@ const PATHS = {
 	gift: 'M4 10h16v4H4zM5 14v7h14v-7M12 10v11M12 10c-2-4-6-4-6-1.5S10 10 12 10Zm0 0c2-4 6-4 6-1.5S14 10 12 10Z',
 	phone: 'M5 4h4l1.5 4L8 9.5a11 11 0 0 0 6.5 6.5L16 13.5l4 1.5v4a2 2 0 0 1-2 2C10 20.5 3.5 14 3 6a2 2 0 0 1 2-2Z',
 	rain: 'M7 15a4 4 0 0 1 .5-8 5 5 0 0 1 9.5 1.5 3.3 3.3 0 0 1 0 6.5zM8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5',
+	train: 'M7 3.5h10a2.5 2.5 0 0 1 2.5 2.5v9.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5ZM4.5 10.5h15M12 3.5v7M8 14.5h.01M16 14.5h.01M8 18l-2.5 3M16 18l2.5 3',
+	bus: 'M6.5 3h11A1.5 1.5 0 0 1 19 4.5V18H5V4.5A1.5 1.5 0 0 1 6.5 3ZM5 11h14M5 6.5h14M8 14.5h.01M16 14.5h.01M7 18v2.5M17 18v2.5',
+	ticket: 'M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4ZM15 7.5v1.6M15 11.2v1.6M15 14.9v1.6M6.5 10.5h5M6.5 13.5h3.5',
+	mailbox: 'M4 20.5V11a4.5 4.5 0 0 1 9 0v9.5ZM13 6.5h3.5a4 4 0 0 1 4 4v10H8.5M6.5 11h4M15.5 20.5V3.5h3.5v2.5h-3.5',
+	magnet: 'M5 4h4v8a3 3 0 0 0 6 0V4h4v8a7 7 0 0 1-14 0ZM5 7.5h4M15 7.5h4',
 	coffee: 'M5 9h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 11h1.5a2.5 2.5 0 0 1 0 5H16M9 3c-1 1.5 1 2.5 0 4M12.5 3c-1 1.5 1 2.5 0 4',
 	walk: `${CIRCLE(13, 4.5, 1.8)}M12 8l-2 5 3 2 1 6M10 13l-3 7.5M12 8l3 3 3 1M12 8 9 10l-2 3`,
 	couple: `${CIRCLE(8, 5, 2)}${CIRCLE(16, 5, 2)}M5 21l1-9h4l1 9M13 21l1.5-9h3l1.5 9M10 13.5h3.5`,
@@ -96,7 +101,7 @@ const EMOJI = {
 	'🎵': 'music', '🎶': 'music', '🍿': 'popcorn', '☀️': 'sun', '🌙': 'moon', '🧡': 'heart', '❤️': 'heart', '❤': 'heart', '♥': 'heart', '💕': 'heart',
 	'📸': 'camera', '📷': 'camera', '🎲': 'dice', '👗': 'dress', '🍽️': 'dinner', '🍽': 'dinner', '🛵': 'scooter', '🎬': 'clapper', '🔒': 'lock', '🔐': 'lock',
 	'🧽': 'eraser', '🗑️': 'trash', '✈️': 'plane', '🔄': 'refresh', '🔀': 'shuffle', '📌': 'pin', '⚙️': 'gear', '💌': 'letter', '🤝': 'handshake',
-	'🗓️': 'calendar', '⭐': 'star', '👋': 'wave', '👀': 'eyes', '🙈': 'shy', '🎁': 'gift', '📞': 'phone', '🌧️': 'rain', '☕': 'coffee', '🚶': 'walk',
+	'🗓️': 'calendar', '⭐': 'star', '👋': 'wave', '👀': 'eyes', '🙈': 'shy', '🎁': 'gift', '📞': 'phone', '🌧️': 'rain', '☕': 'coffee', '🚆': 'train', '🚌': 'bus', '🎟️': 'ticket', '🎟': 'ticket', '🎤': 'music', '🧾': 'scroll', '📍': 'pin', '📮': 'mailbox', '🧲': 'magnet', '🚶': 'walk',
 	'👫': 'couple', '👨‍👩‍👧‍👦': 'family', '📖': 'book', '📜': 'scroll', '👰': 'bride', '👶': 'baby', '🍼': 'bottle', '🦁': 'lion', '🐣': 'chick',
 	'🤵': 'groom', '👸': 'princess', '😍': 'love', '🥰': 'smitten', '😂': 'laugh', '🥹': 'teary', '😌': 'calm', '😴': 'sleepy', '🤒': 'sick', '😤': 'angry'
 };

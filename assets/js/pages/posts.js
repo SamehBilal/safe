@@ -1,4 +1,4 @@
-import { L, Y, T, esc, img, pageHead, related, App, $, $$, longDate, hydrate } from '../shell.js';
+import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, longDate, fmtDate, hydrate } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
@@ -52,12 +52,39 @@ function post(s, p, k) {
 	</article>`;
 }
 
+/* the top: our profile on a phone — the two of us, how many posts, hearts and places we posted, a highlight circle for
+   every network, and the latest posts as a grid; beside it the newest hearts pop up as notifications */
+function profile(s, items) {
+	const him = author(s, 'him'), her = author(s, 'her');
+	const av = (a, cls) => `<span class="${cls}">${a?.photo ? img(a.photo, '', '') : doodle(a?.emoji || 'heart', 22)}</span>`;
+	const hearts = items.reduce((n, p) => n + Object.keys(p.likes || {}).length, 0);
+	const used = NETS.filter((n) => items.some((p) => p.net === n.id));
+	const sorted = items.slice().sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+	const tiles = sorted.slice(0, 3);
+	const liked = sorted.filter((p) => p.likes && Object.keys(p.likes).length).slice(0, 2);
+	return `<div class="pp-phone">
+		<span class="pp-notch"></span>
+		<div class="pp-head">
+			<span class="pp-avs">${av(him, 'pp-av')}${av(her, 'pp-av')}</span>
+			<span class="pp-name"><b>${T(s.him)} <i>♥</i> ${T(s.her)}</b><small dir="ltr">@us.since.2009</small></span>
+		</div>
+		<ul class="pp-stats">
+			<li><b>${num(items.length)}</b><small>${L('بوست', 'posts')}</small></li>
+			<li><b>${num(hearts)}</b><small>${L('قلب', 'hearts')}</small></li>
+			<li><b>${num(used.length)}</b><small>${L('مكان', 'places')}</small></li>
+		</ul>
+		${used.length ? `<ul class="pp-hl">${used.map((n) => `<li style="--c:${n.c}"><span>${doodle(n.id === 'whatsapp' ? 'chat' : n.id === 'other' ? 'pin' : 'phone', 20)}</span><small>${esc(L(n.ar, n.en))}</small></li>`).join('')}</ul>` : ''}
+		<ul class="pp-grid">${tiles.length ? tiles.map((p) => `<li style="--c:${net(p.net).c}"><a href="#${esc(p.id)}" tabindex="-1"><span dir="auto">${esc([...(p.text || '')].slice(0, 40).join(''))}</span>${p.img ? `<img data-sketch="${esc(p.img)}" alt="">` : ''}</a></li>`).join('') : Array.from({ length: 3 }, () => '<li class="is-empty"></li>').join('')}</ul>
+	</div>
+	${liked.map((p, i) => { const who = Object.keys(p.likes); return `<span class="pp-ping pp-ping--${i}">${doodle('heart', 18)}<span><b>${who.length > 1 ? L('إحنا الاتنين', 'Both of us') : T(who[0] === 'her' ? s.her : s.him)}</b> ${L('حط قلب', 'hearted')}${p.date ? ` · ${esc(fmtDate(p.date))}` : ''}</span></span>`; }).join('')}`;
+}
+
 export default {
 	title: { ar: 'بوستاتنا', en: 'Our posts' },
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('بوستاتنا', 'Our posts'), L('كل حاجة كتبناها لبعض على السوشيال ميديا — في مكان واحد ميضيعش', 'Everything we posted about each other — kept in one place, never lost in a feed'), [{ href: 'posts.html', ar: 'بوستاتنا', en: 'Our posts' }], [['phone', 'بوست', 'A post'], ['heart', 'لايك', 'Liked'], ['chat', 'كومنت', 'A comment'], ['smitten', 'ليكي', 'For you']])}
+		${pageHead(L('بوستاتنا', 'Our posts'), L('كل حاجة كتبناها لبعض على السوشيال ميديا — في مكان واحد ميضيعش', 'Everything we posted about each other — kept in one place, never lost in a feed'), [{ href: 'posts.html', ar: 'بوستاتنا', en: 'Our posts' }], { band: '<div class="pp-band" id="pp-band" aria-hidden="true"></div>' })}
 		<section class="sec sec--top"><div class="wrap">
 			${ok ? '' : `<div class="narrow" style="margin:0 auto 24px">${setupNote()}</div>`}
 			<details class="composer reveal narrow" style="margin:0 auto 28px"${ok ? '' : ' hidden'}>
@@ -92,6 +119,8 @@ export default {
 				: `<p class="empty">${all().length ? L('مفيش بوستات من هنا', 'No posts from here') : Y('لسه مفيش بوستات… ضيف أول بوست كتبناه لبعض ♥', 'لسه مفيش بوستات… ضيفي أول بوست كتبناه لبعض ♥', 'No posts yet… add the first one we wrote for each other ♥')}</p>`;
 			live.hydrateSketches(list);
 			hydrate(list);
+			const band = $('#pp-band');
+			if (band) { band.innerHTML = profile(s, data.items || []); live.hydrateSketches(band); hydrate(band); }
 			for (const el of $$('.reveal', list)) el.classList.add('is-in');
 			const used = NETS.filter((n) => all().some((p) => p.net === n.id));
 			chips.hidden = used.length < 2;
