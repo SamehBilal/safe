@@ -52,7 +52,7 @@ const curve = (a, b) => {
 const face = (p) => (p.photo ? img(p.photo, '', 'pm__img') : `<span class="pm__emoji">${doodle(p.emoji || 'heart', 26)}</span>`);
 const pt = (spot) => P(spot.lat, spot.lng);
 /* a fountain pen lying across the corner of the paper */
-const PEN = `<svg class="pm__pen" viewBox="0 0 240 40" aria-hidden="true"><g transform="rotate(-24 120 20)"><rect x="40" y="12" width="150" height="16" rx="8" fill="#1f3a5f"/><rect x="150" y="10" width="44" height="20" rx="6" fill="#16304f"/><rect x="186" y="14" width="34" height="3" rx="1.5" fill="#d9a93c"/><path d="M40 13 L8 20 L40 27Z" fill="#d9a93c"/><path d="M8 20 L24 20" stroke="#6a4b10" stroke-width="1.2"/><circle cx="62" cy="20" r="2" fill="#d9a93c"/></g></svg>`;
+const PEN = `<svg class="pm__pen" viewBox="0 -60 240 160" aria-hidden="true"><g transform="rotate(-24 120 20)"><rect x="40" y="12" width="150" height="16" rx="8" fill="#1f3a5f"/><rect x="150" y="10" width="44" height="20" rx="6" fill="#16304f"/><rect x="186" y="14" width="34" height="3" rx="1.5" fill="#d9a93c"/><path d="M40 13 L8 20 L40 27Z" fill="#d9a93c"/><path d="M8 20 L24 20" stroke="#6a4b10" stroke-width="1.2"/><circle cx="62" cy="20" r="2" fill="#d9a93c"/></g></svg>`;
 
 /** A paper map's box: the drawing, the arcs, the pins, the pen and the reading. */
 const paperBox = (id, f, read) => `<div class="pm" id="${id}" style="aspect-ratio:${(f.w / f.h).toFixed(3)};--r:${(f.w / f.h).toFixed(3)};direction:ltr">

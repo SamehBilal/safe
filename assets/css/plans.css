@@ -951,3 +951,11 @@
 .cfx { overflow: visible; pointer-events: none; }
 .cfx path { fill: none; stroke: var(--cfx, #e0312b); stroke-width: 10px; stroke-linecap: round; stroke-linejoin: round; }
 .cfx--list path { stroke-width: 3px; }
+
+/* the paper maps: the pen lies whole inside the corner; the governorates a pale wash so our faces stand out, and the
+   faces smaller, ringed in white */
+.pm__pen { bottom: 1%; left: 1%; inset-inline-end: auto; width: min(22%, 210px); transform: scaleX(-1); }
+.pm__gov { fill-opacity: .45; }
+.pm__face { width: clamp(24px, 3.6vw, 36px); border-width: 2px; box-shadow: 0 0 0 3px #fff, 0 3px 6px rgba(40, 30, 10, .35); }
+.pm__name b { box-shadow: 0 0 0 2px #fff; }
+.pm__name small { padding: 0 4px; background: rgba(251, 246, 234, .9); border-radius: 4px; }
