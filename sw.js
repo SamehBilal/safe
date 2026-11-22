@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-afe49ec241';
+var VERSION = 'us-664c6c1196';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -29,6 +29,7 @@ var SHELL = [
 	'familytree.html',
 	'favorites.html',
 	'firsts.html',
+	'fixes.html',
 	'food.html',
 	'gallery.html',
 	'games.html',
@@ -60,6 +61,7 @@ var SHELL = [
 	'ramadan.html',
 	'recipes.html',
 	'remember.html',
+	'routine.html',
 	'sayings.html',
 	'search.html',
 	'secret.html',
@@ -129,6 +131,7 @@ var SHELL = [
 	'assets/js/pages/family.js',
 	'assets/js/pages/favorites.js',
 	'assets/js/pages/firsts.js',
+	'assets/js/pages/fixes.js',
 	'assets/js/pages/food.js',
 	'assets/js/pages/gallery.js',
 	'assets/js/pages/games.js',
@@ -160,6 +163,7 @@ var SHELL = [
 	'assets/js/pages/ramadan.js',
 	'assets/js/pages/recipes.js',
 	'assets/js/pages/remember.js',
+	'assets/js/pages/routine.js',
 	'assets/js/pages/sayings.js',
 	'assets/js/pages/search.js',
 	'assets/js/pages/secret.js',

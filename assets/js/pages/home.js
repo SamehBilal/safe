@@ -92,7 +92,7 @@ const GROUPS = [
 
 /* the house itself, filling the row beside the last card: a drawn house with a window for every room
    (each opens that room's first page), a door that opens a page at random, and the newest corners pinned beside it */
-const NEWEST = ['shopping', 'nokta', 'tickets'];
+const NEWEST = ['routine', 'fixes', 'shopping'];
 const house = (page) => {
 	const rooms = GROUPS.map((g) => ({ g, p: page(g.top[0]) })).filter((r) => r.p);
 	const door = PAGES[Math.floor(Math.random() * PAGES.length)];
