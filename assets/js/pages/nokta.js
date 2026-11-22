@@ -119,8 +119,8 @@ export default {
 			const d = dateOf(x);
 			return `<li class="nk-line nk-line--${out ? 'out' : 'in'}">
 				<span class="nk-line__ic">${doodle(o.ic, 20)}</span>
-				<span class="nk-line__what"><b>${out ? L('ردّيناها في', 'We gave at') : L('نقّطونا في', 'Gave at')} ${esc(L(o.ar, o.en))}</b>${d ? `<small>${esc(longDate(d))}</small>` : ''}${x.note ? `<small dir="auto">${esc(x.note)}</small>` : ''}</span>
-				<span class="nk-line__amt">${x.amount ? money(x.amount) : ''}${x.what ? `<i dir="auto">${esc(x.what)}</i>` : ''}</span>
+				<span class="nk-line__top"><b>${out ? L('ردّيناها في', 'We gave at') : L('نقّطونا في', 'Gave at')} ${esc(L(o.ar, o.en))}</b>${x.amount ? `<span class="nk-line__amt">${money(x.amount)}</span>` : ''}</span>
+				<span class="nk-line__meta">${d ? `<small>${esc(longDate(d))}</small>` : ''}${x.what ? `<small class="nk-line__gift" dir="auto">${doodle('gift', 14)} ${esc(x.what)}</small>` : ''}${x.note ? `<small dir="auto">${esc(x.note)}</small>` : ''}</span>
 				${mine(x) ? `<button class="link link--danger nk-line__del" type="button" data-del="${esc(x.id)}" aria-label="${L('امسح السطر ده', 'Delete this line')}">${doodle('trash', 16)}</button>` : ''}
 			</li>`;
 		};
