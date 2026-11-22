@@ -886,3 +886,49 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 .np__cols p { margin: 0; font-size: .92rem; text-align: justify; }
 .np__foot { margin: 22px 0 0; padding-top: 8px; text-align: center; font-size: .8rem; font-style: italic; border-top: 2px solid; }
 @media (max-width: 760px) { .np__grid { grid-template-columns: 1fr; } .np__side { padding-inline-start: 0; border-inline-start: 0; } .np__stamp { position: static; display: inline-block; margin-bottom: 8px; } }
+
+
+/* ---------- «طلبات البيت»: a receipt above the title, and a notepad card for each aisle ---------- */
+.sh-band { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 10px; padding: 8px var(--gutter) 0; }
+.sh-receipt { position: relative; width: min(250px, 70vw); padding: 18px 20px 26px; color: #2b2b33; background: #fffdf6; rotate: -3deg; box-shadow: 0 8px 18px rgba(40, 30, 10, .16); font-family: 'Courier New', monospace; }
+.sh-receipt__h { display: block; margin-bottom: 8px; padding-bottom: 6px; text-align: center; font: 800 1rem var(--f-body); border-bottom: 2px dashed #b8b2a6; }
+.sh-receipt__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.sh-receipt__list li { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: .95rem; }
+.sh-receipt__tear { position: absolute; left: 0; right: 0; bottom: -10px; height: 12px; background: linear-gradient(135deg, #fffdf6 6px, transparent 0) 0 0 / 14px 12px repeat-x, linear-gradient(-135deg, #fffdf6 6px, transparent 0) 0 0 / 14px 12px repeat-x; }
+.sh-bag { color: var(--coral, #f2726f); rotate: 8deg; translate: 0 -6px; animation: sh-bob 3s ease-in-out infinite; }
+@keyframes sh-bob { 50% { translate: 0 -14px; } }
+.sh-add { margin: 0 auto 18px; padding: 18px 20px 12px; background: var(--card-2, var(--paper)); border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 18px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--hl-yellow, #fdc830); }
+.sh-add__qty { max-width: 130px; }
+.sh-again { justify-content: flex-start; margin: 8px 0 0; }
+.sh-again__h { align-self: center; font-weight: 800; font-size: .85rem; color: var(--muted); }
+.sh-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; max-width: 980px; margin: 0 auto 16px; }
+.sh-bar__n { margin: 0; font: 700 1.5rem/1.2 var(--f-hand); }
+:lang(ar) .sh-bar__n { font: 700 1.2rem/1.4 'Aref Ruqaa', var(--f-body); }
+.sh-bar__n b { color: var(--coral-deep, #d9534f); font-family: var(--f-label); font-weight: 400; font-size: 1.3em; }
+.sh-bar__acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.sh-aisles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: clamp(16px, 3vw, 26px); align-items: start; max-width: 980px; margin: 0 auto; }
+.sh-aisles > .empty { grid-column: 1 / -1; }
+.sh-aisle { position: relative; padding: 14px 18px 12px; color: #2b2b33; rotate: var(--r, 0deg);
+	background: repeating-linear-gradient(transparent 0 43px, rgba(14, 105, 144, .16) 43px 44px) 0 54px / 100% calc(100% - 54px) no-repeat, #fffdf6;
+	border: 2px solid var(--ink, #37353f); border-radius: 6px 6px 14px 14px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
+.sh-aisle:nth-child(odd) { --r: -.6deg; } .sh-aisle:nth-child(even) { --r: .6deg; }
+.sh-aisle h3 { display: flex; align-items: center; gap: 8px; height: 40px; margin: 0; font-size: 1.05rem; color: var(--c); }
+.sh-aisle h3 small { margin-inline-start: auto; min-width: 26px; padding: 2px 8px; text-align: center; font-size: .8rem; color: #fff; background: var(--c); border-radius: 999px; }
+.sh-aisle__ic { display: grid; place-items: center; width: 32px; height: 32px; color: var(--c); border: 1.5px solid currentColor; border-radius: 50%; }
+.sh-lines { margin: 0; padding: 0; list-style: none; }
+.sh-it { display: flex; align-items: center; gap: 6px; height: 44px; }
+.sh-it__lab { position: relative; flex: 1; display: flex; align-items: center; gap: 12px; height: 100%; cursor: pointer; }
+.sh-it__lab input { position: absolute; inset-inline-start: 0; width: 30px; height: 30px; margin: 0; opacity: 0; cursor: pointer; }
+.sh-it__box { position: relative; flex: none; display: grid; place-items: center; width: 26px; height: 26px; border: 2.5px solid var(--ink, #37353f); border-radius: 5px 7px 4px 6px; --cfx: #3f8a56; }
+.sh-it__box .cfx { position: absolute; inset: -8px -6px -4px -4px; width: calc(100% + 10px); height: calc(100% + 12px); }
+.sh-it__lab input:focus-visible + .sh-it__box { box-shadow: 0 0 0 3px var(--hl-yellow, #fdc830); }
+.sh-it__name { position: relative; font: 700 1.2rem/1 var(--f-hand); transition: color .3s; }
+:lang(ar) .sh-it__name { font: 700 1rem/1.2 var(--f-body); }
+.sh-it__name small { font: 600 .8rem var(--f-body); color: #6a6560; }
+.sh-it__strike { position: absolute; inset: 30% -6px auto; width: calc(100% + 12px); height: 26px; --cfx: #e0312b; }
+.sh-it.is-done .sh-it__name { color: #9a948c; }
+.sh-it__del { flex: none; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; color: #b8b2a6; background: none; border: 0; cursor: pointer; opacity: 0; transition: opacity .2s; }
+.sh-it:hover .sh-it__del, .sh-it__del:focus-visible { opacity: 1; color: var(--coral-deep, #d9534f); }
+@media (hover: none) { .sh-it__del { opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .sh-bag { animation: none; } }
+:lang(ar) .sh-receipt { font-family: var(--f-body); }

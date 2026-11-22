@@ -1,6 +1,7 @@
 import { L, Y, esc, pageHead, related, App, $, $$, num, longDate } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
+import { mark, unmark, markSVG } from '../checkfx.js';
 import { setupNote } from './journal.js';
 import { shrinkPhoto } from './trips.js';
 
@@ -91,7 +92,7 @@ export default {
 			return `<div class="gl-it${done ? ' is-done' : ''}" data-id="${esc(g.id)}" style="--r:${tilt(g.id)}deg">
 				<button class="gl-it__btn" type="button" data-cross="${esc(g.id)}"${ok ? '' : ' disabled'} aria-pressed="${done}" aria-label="${esc(name(g))}${done ? ` — ${L('اتشطبت', 'crossed out')}` : ''}">
 					${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="" loading="lazy">` : `<span class="gl-it__ic">${doodle(k.ic, 54)}</span>`}
-					<svg class="gl-x" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M10 12C35 38 62 66 90 88"/><path pathLength="1" d="M88 10C62 40 38 64 12 90"/></svg>
+					${markSVG('cross', 'gl-x')}
 				</button>
 				<span class="gl-it__t" dir="auto">${esc(name(g))}</span>
 				${done ? `<small class="gl-it__d">${L('جبناها', 'Got it')} · ${esc(longDate(g.done))}</small>` : ''}
@@ -122,6 +123,7 @@ export default {
 				: `<p class="empty">${items.length ? L('مفيش حاجة هنا', 'Nothing here') : L(`ورقة ${App.t(bd?.name)} لسه فاضية… أول حاجة ${board === 'family' ? 'نفسنا' : bd?.female ? 'نفسها' : 'نفسه'} فيها تتكتب من «ضيف حاجة للورقة» ♥`, `${App.t(bd?.name)}’s sheet is still empty… add the first wish above ♥`)}</p>`;
 			if (form && !form.title.value) form.board.value = board;
 			live.hydrateSketches(sheet);
+			for (const el of $$('.gl-it.is-done .gl-x', sheet)) mark(el, 'cross', false);
 		};
 
 		/* a wide picture (a car, a desk, a monitor) takes two places on the sheet */
@@ -154,7 +156,9 @@ export default {
 			const g = find(data, x.dataset.cross);
 			if (!g) return;
 			if (g.done && !confirm(L('نرجّعها تاني على الورقة؟', 'Put it back on the list?'))) return;
-			save((d) => { const y = find(d, g.id); if (!y) return; if (y.done) delete y.done; else y.done = live.today(); });
+			const it = x.closest('.gl-it'), svg = $('.gl-x', it);
+			if (g.done) { unmark(svg); it.classList.remove('is-done'); } else { it.classList.add('is-done'); mark(svg, 'cross'); }
+			setTimeout(() => save((d) => { const y = find(d, g.id); if (!y) return; if (y.done) delete y.done; else y.done = live.today(); }), g.done ? 0 : 450);
 		});
 
 		form.onsubmit = async (e) => {
@@ -184,9 +188,10 @@ export default {
 			const five = (pool.length ? pool : everything()).slice().sort(() => Math.random() - 0.5).slice(0, 5);
 			const ol = $('#gl-pad', main);
 			if (!ol) return;
-			ol.innerHTML = five.map((g, i) => `<li style="--i:${i}">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : `<span class="gl-pad__ic">${doodle(kindOf(g.kind).ic, 18)}</span>`}<span dir="auto">${esc(name(g))}</span></li>`).join('')
+			ol.innerHTML = five.map((g, i) => `<li style="--i:${i}">${markSVG('list', 'gl-pad__strike')}${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : `<span class="gl-pad__ic">${doodle(kindOf(g.kind).ic, 18)}</span>`}<span dir="auto">${esc(name(g))}</span></li>`).join('')
 				|| `<li style="--i:0"><span>${L('أول حاجة نفسنا فيها', 'The first thing we wish for')}</span></li>`;
 			live.hydrateSketches(ol);
+			$$('.gl-pad__strike', ol).forEach((svg, i) => setTimeout(() => svg.isConnected && mark(svg, 'list'), 1400 + i * 1200));
 		};
 
 		data = await live.load('goals');

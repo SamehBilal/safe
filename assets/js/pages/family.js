@@ -142,7 +142,7 @@ export default {
 
 			${paperHTML(s, f)}
 		</div></section>
-		${related(['distances', 'nokta', 'growth', 'sayings'])}`;
+		${related(['shopping', 'distances', 'nokta', 'growth'])}`;
 	},
 	after(main, s) { fillPaper(main, s, s.family || {}); return wireTree(main, s); }
 };

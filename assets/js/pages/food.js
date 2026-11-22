@@ -181,7 +181,7 @@ export default {
 			</details>
 		</div></section>
 		<div id="recipes" class="fd-recipes" role="tabpanel" hidden><a class="lp-band lp-band--recipes fd-pot" id="lp-band" href="#recipes" aria-hidden="true" tabindex="-1"></a>${recipes.section(s, `<h2 class="sec__title reveal">${doodle('cake', 30)} ${L('نطبخ إيه', 'Our recipes')}</h2><p class="sec__sub fd-recipes__sub">${L('الأكلات اللي بنعملها سوا، ومين بيعملها أحسن — وكل مرة عملناها', 'What we cook together, who makes it best — and every time we made it')}</p>`)}</div>
-		${related(['hosting', 'draw', 'places', 'cities'])}`;
+		${related(['shopping', 'hosting', 'draw', 'places'])}`;
 	},
 
 	async after(main, s) {

@@ -149,9 +149,6 @@
 .gl-x { position: absolute; inset: 4%; width: 92%; height: 92%; overflow: visible; pointer-events: none; }
 .gl-x { visibility: hidden; }
 .gl-it.is-done .gl-x { visibility: visible; }
-.gl-x path { fill: none; stroke: #e0312b; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: .9; }
-.gl-it.is-done .gl-x path { animation: gl-draw .35s ease-out forwards; }
-.gl-it.is-done .gl-x path + path { animation-delay: .3s; }
 @keyframes gl-draw { to { stroke-dashoffset: 0; } }
 .gl-it.is-done .gl-it__btn img, .gl-it.is-done .gl-it__ic { opacity: .42; filter: grayscale(.7); }
 .gl-it__t { max-width: 100%; font-size: .78rem; font-weight: 700; line-height: 1.25; text-align: center; color: #3a3a44; }
@@ -162,7 +159,7 @@
 .gl-sheet.is-edit .gl-it { animation: gl-wobble .5s ease-in-out infinite alternate; }
 @keyframes gl-wobble { from { rotate: calc(var(--r) - 1.5deg); } to { rotate: calc(var(--r) + 1.5deg); } }
 @media (max-width: 560px) { .gl-sheet { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); padding: 14px 10px; } .gl-it__t { font-size: .7rem; } }
-@media (prefers-reduced-motion: reduce) { .gl-it.is-done .gl-x path { animation: none; stroke-dashoffset: 0; } .gl-sheet.is-edit .gl-it { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .gl-sheet.is-edit .gl-it { animation: none; } }
 .bk-now__go { display: flex; gap: 8px; }
 .bk-now__go input { flex: 1; min-width: 0; font: inherit; padding: 6px 10px; color: var(--text); background: var(--card-2, var(--paper)); border: 1.5px dashed var(--ink, var(--line)); border-radius: 10px; }
 
@@ -908,10 +905,7 @@
 .gl-pad__list li { position: relative; display: flex; align-items: center; gap: 10px; height: 34px; font: 700 1.25rem/1 var(--f-hand); white-space: nowrap; overflow: hidden; animation: gl-in .4s calc(var(--i) * .12s) both; }
 :lang(ar) .gl-pad__list li { font: 700 .95rem/1 var(--f-body); }
 .gl-pad__list img, .gl-pad__ic { flex: none; width: 28px; height: 28px; object-fit: contain; mix-blend-mode: multiply; display: grid; place-items: center; color: #6a6560; }
-.gl-pad__list li::after { content: ''; position: absolute; inset-inline: 0 12%; top: 50%; height: 3px; border-radius: 3px; background: #e0312b; transform: scaleX(0); transform-origin: left center; animation: gl-strike .45s calc(1.4s + var(--i) * 1.2s) ease-out forwards; }
-:root[dir='rtl'] .gl-pad__list li::after { transform-origin: right center; }
 .gl-pad__list li span { overflow: hidden; text-overflow: ellipsis; }
-@keyframes gl-strike { to { transform: scaleX(1) rotate(-1.5deg); } }
 @keyframes gl-in { from { opacity: 0; translate: 0 6px; } }
 .gl-marker { position: absolute; bottom: -20px; left: calc(50% + min(150px, 36vw)); width: 150px; overflow: visible; translate: -50% 0; filter: drop-shadow(3px 6px 4px rgba(40, 30, 10, .25)); animation: gl-wiggle 1.2s ease-in-out infinite alternate; }
 @keyframes gl-wiggle { to { rotate: -6deg; translate: -54% -4px; } }
@@ -926,7 +920,7 @@
 		linear-gradient(-90deg, transparent calc(clamp(56px, 8vw, 78px) - 14px), rgba(224, 49, 43, .5) calc(clamp(56px, 8vw, 78px) - 14px) calc(clamp(56px, 8vw, 78px) - 12px), transparent 0),
 		repeating-linear-gradient(transparent 0 35px, rgba(14, 105, 144, .16) 35px 36px) 0 56px / 100% calc(100% - 56px) no-repeat, #fffdf6; }
 @media (max-width: 560px) { .gl-sheet { padding-inline-start: 54px; } .gl-marker { display: none; } }
-@media (prefers-reduced-motion: reduce) { .gl-pad__list li, .gl-marker { animation: none; } .gl-pad__list li::after { animation: none; transform: scaleX(1); } }
+@media (prefers-reduced-motion: reduce) { .gl-pad__list li, .gl-marker { animation: none; } }
 
 /* goals: a sheet for each of us and one for the whole family — tabs on top of the page, like a notebook's index */
 .gl-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-inline: clamp(56px, 8vw, 78px) 12px; margin-bottom: -2px; position: relative; z-index: 1; }
@@ -947,3 +941,13 @@
 .bk-card__readers { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 8px 0; }
 .bk-card__readers > span { font-weight: 800; font-size: .9rem; }
 .bk-card__readers .chip.is-on { background: var(--rc); border-color: var(--rc); color: #fff; }
+
+/* the pen (checkfx.js): a red cross drawn over what we got, and two wavy lines through each thing in the notebook */
+.gl-x { --cfx: #e0312b; }
+.gl-x path { stroke-width: 7px; }
+.gl-pad__strike { position: absolute; inset: 10px 0 auto; width: 88%; height: 24px; --cfx: #e0312b; }
+
+/* ---------- hand-drawn ticks (checkfx.js, Codrops' animated checkboxes): the pen strokes ---------- */
+.cfx { overflow: visible; pointer-events: none; }
+.cfx path { fill: none; stroke: var(--cfx, #e0312b); stroke-width: 10px; stroke-linecap: round; stroke-linejoin: round; }
+.cfx--list path { stroke-width: 3px; }
