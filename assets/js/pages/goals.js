@@ -28,7 +28,18 @@ export default {
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('أهدافنا', 'Our goals'), L('كل حاجة نفسنا فيها على ورقة واحدة — واللي نجيبها نشطبها', 'Everything we want on one sheet of paper — and whatever we get, we cross out'), [{ href: 'goals.html', ar: 'أهدافنا', en: 'Our goals' }], [['star', 'نفسنا', 'We wish'], ['pen', 'نشطب', 'Cross it out'], ['heart', 'سوا', 'Together'], ['sparkle', 'هنجيبها', 'We’ll get it']])}
+		${pageHead(L('أهدافنا', 'Our goals'), L('كل حاجة نفسنا فيها على ورقة واحدة — واللي نجيبها نشطبها', 'Everything we want on one sheet of paper — and whatever we get, we cross out'), [{ href: 'goals.html', ar: 'أهدافنا', en: 'Our goals' }], {
+			/* above the title: a little spiral notebook, «نفسنا في…» at the top and five of our things on its lines, a red
+			   marker crossing them out one after another; then the page turns to five more */
+			band: `<div class="gl-band" aria-hidden="true">
+				<div class="gl-pad">
+					<span class="gl-pad__rings">${'<i></i>'.repeat(9)}</span>
+					<b class="gl-pad__h">${L('نفسنا في…', 'We wish for…')}</b>
+					<ol class="gl-pad__list" id="gl-pad"></ol>
+				</div>
+				<svg class="gl-marker" viewBox="0 0 200 40"><g transform="rotate(-18 100 20)"><rect x="30" y="10" width="130" height="20" rx="6" fill="#e0312b" stroke="#37353f" stroke-width="2"/><rect x="150" y="8" width="34" height="24" rx="6" fill="#37353f"/><path d="M30 13 10 18v4l20 5Z" fill="#fbe9e7" stroke="#37353f" stroke-width="2" stroke-linejoin="round"/><path d="M10 18v4l-4-2Z" fill="#e0312b"/><rect x="60" y="14" width="60" height="4" rx="2" fill="#fff" opacity=".5"/></g></svg>
+			</div>`
+		})}
 		<section class="sec sec--top"><div class="wrap">
 			${ok ? '' : `<div class="narrow" style="margin:0 auto 24px">${setupNote()}</div>`}
 			<div class="gl-count" id="gl-count"></div>
@@ -142,7 +153,23 @@ export default {
 			} catch (err) { msg.textContent = live.why(err); }
 		};
 
+		/* the notebook above the title: five things on its lines, crossed out one after another, then five more */
+		let padTimer = 0;
+		this.leave = () => clearInterval(padTimer);
+		const pad = () => {
+			if (document.hidden) return;
+			const pool = all().filter((g) => !g.done);
+			const five = (pool.length ? pool : all()).slice().sort(() => Math.random() - 0.5).slice(0, 5);
+			const ol = $('#gl-pad', main);
+			if (!ol) return;
+			ol.innerHTML = five.map((g, i) => `<li style="--i:${i}">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : `<span class="gl-pad__ic">${doodle(kindOf(g.kind).ic, 18)}</span>`}<span dir="auto">${esc(name(g))}</span></li>`).join('')
+				|| `<li style="--i:0"><span>${L('أول حاجة نفسنا فيها', 'The first thing we wish for')}</span></li>`;
+			live.hydrateSketches(ol);
+		};
+
 		data = await live.load('goals');
+		pad();
+		padTimer = setInterval(pad, 9000);
 		paint();
 	}
 };

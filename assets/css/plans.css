@@ -893,3 +893,37 @@
 :lang(ar) .dt-band__name { font: 700 19px 'Aref Ruqaa', var(--f-body); }
 /* on the farthest map the reading sits on the right, over Iran, so it never covers her pin in Egypt */
 #pm-far .pm__read { inset-inline-start: auto; right: 3%; rotate: 2deg; }
+
+/* goals, above the title: a little spiral notebook with «نفسنا في…» and five of our things, a red marker crossing them out */
+.gl-band { position: relative; display: grid; place-items: center; padding: 18px var(--gutter) 0; }
+.gl-pad { position: relative; width: min(360px, 100%); padding: 30px 22px 16px; padding-inline-start: 44px; color: #2b2b33; rotate: -2deg;
+	background: linear-gradient(90deg, transparent 34px, rgba(224, 49, 43, .45) 34px 36px, transparent 36px), repeating-linear-gradient(transparent 0 33px, rgba(14, 105, 144, .2) 33px 34px) 0 62px / 100% calc(100% - 62px) no-repeat, #fffdf6;
+	border: 2px solid var(--ink, #37353f); border-radius: 6px 6px 14px 14px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+:root[dir='rtl'] .gl-pad { background: linear-gradient(-90deg, transparent 34px, rgba(224, 49, 43, .45) 34px 36px, transparent 36px), repeating-linear-gradient(transparent 0 33px, rgba(14, 105, 144, .2) 33px 34px) 0 62px / 100% calc(100% - 62px) no-repeat, #fffdf6; }
+.gl-pad__rings { position: absolute; top: -12px; inset-inline: 18px; display: flex; justify-content: space-between; }
+.gl-pad__rings i { width: 10px; height: 24px; border: 2.5px solid #6b6f7a; border-radius: 6px; background: linear-gradient(90deg, #d9dce3, #9aa0ab); }
+.gl-pad__h { display: block; height: 30px; font: 700 1.5rem/1 var(--f-hand); color: var(--coral-deep, #d9534f); }
+:lang(ar) .gl-pad__h { font: 700 1.3rem/1.1 'Aref Ruqaa', var(--f-body); }
+.gl-pad__list { margin: 0; padding: 0; list-style: none; }
+.gl-pad__list li { position: relative; display: flex; align-items: center; gap: 10px; height: 34px; font: 700 1.25rem/1 var(--f-hand); white-space: nowrap; overflow: hidden; animation: gl-in .4s calc(var(--i) * .12s) both; }
+:lang(ar) .gl-pad__list li { font: 700 .95rem/1 var(--f-body); }
+.gl-pad__list img, .gl-pad__ic { flex: none; width: 28px; height: 28px; object-fit: contain; mix-blend-mode: multiply; display: grid; place-items: center; color: #6a6560; }
+.gl-pad__list li::after { content: ''; position: absolute; inset-inline: 0 12%; top: 50%; height: 3px; border-radius: 3px; background: #e0312b; transform: scaleX(0); transform-origin: left center; animation: gl-strike .45s calc(1.4s + var(--i) * 1.2s) ease-out forwards; }
+:root[dir='rtl'] .gl-pad__list li::after { transform-origin: right center; }
+.gl-pad__list li span { overflow: hidden; text-overflow: ellipsis; }
+@keyframes gl-strike { to { transform: scaleX(1) rotate(-1.5deg); } }
+@keyframes gl-in { from { opacity: 0; translate: 0 6px; } }
+.gl-marker { position: absolute; bottom: -6px; left: calc(50% + min(150px, 36vw)); width: 130px; translate: -50% 0; filter: drop-shadow(3px 6px 4px rgba(40, 30, 10, .25)); animation: gl-wiggle 1.2s ease-in-out infinite alternate; }
+@keyframes gl-wiggle { to { rotate: -6deg; translate: -54% -4px; } }
+
+/* the sheet itself: a page torn out of a notebook — blue ruled lines, a red margin and punched holes down one side */
+.gl-sheet { --hole: var(--paper, #faf8f5); position: relative; padding-inline-start: clamp(56px, 8vw, 78px); border-width: 1.5px; border-radius: 4px 14px 14px 4px;
+	background: radial-gradient(circle at 50% 50%, var(--hole) 0 8px, rgba(55, 53, 63, .35) 8.5px 9.5px, transparent 10px) left 12px top 26px / 22px 96px repeat-y,
+		linear-gradient(90deg, transparent calc(clamp(56px, 8vw, 78px) - 14px), rgba(224, 49, 43, .5) calc(clamp(56px, 8vw, 78px) - 14px) calc(clamp(56px, 8vw, 78px) - 12px), transparent 0),
+		repeating-linear-gradient(transparent 0 35px, rgba(14, 105, 144, .16) 35px 36px) 0 56px / 100% calc(100% - 56px) no-repeat, #fffdf6; }
+:root[dir='rtl'] .gl-sheet { border-radius: 14px 4px 4px 14px;
+	background: radial-gradient(circle at 50% 50%, var(--hole) 0 8px, rgba(55, 53, 63, .35) 8.5px 9.5px, transparent 10px) right 12px top 26px / 22px 96px repeat-y,
+		linear-gradient(-90deg, transparent calc(clamp(56px, 8vw, 78px) - 14px), rgba(224, 49, 43, .5) calc(clamp(56px, 8vw, 78px) - 14px) calc(clamp(56px, 8vw, 78px) - 12px), transparent 0),
+		repeating-linear-gradient(transparent 0 35px, rgba(14, 105, 144, .16) 35px 36px) 0 56px / 100% calc(100% - 56px) no-repeat, #fffdf6; }
+@media (max-width: 560px) { .gl-sheet { padding-inline-start: 54px; } .gl-marker { display: none; } }
+@media (prefers-reduced-motion: reduce) { .gl-pad__list li, .gl-marker { animation: none; } .gl-pad__list li::after { animation: none; transform: scaleX(1); } }
