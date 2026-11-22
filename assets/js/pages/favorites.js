@@ -54,13 +54,22 @@ export default listPage({
 			<svg class="fvb-pencil" viewBox="0 -40 220 120" aria-hidden="true"><g transform="rotate(-20 110 20)"><rect x="40" y="10" width="140" height="20" fill="#fdc830" stroke="#37353f" stroke-width="2"/><path d="M40 10h140M40 17h140M40 23h140" stroke="#e39b2d" stroke-width="1.2"/><rect x="180" y="10" width="22" height="20" fill="#f9a3a8" stroke="#37353f" stroke-width="2"/><path d="M40 10 12 20l28 10Z" fill="#f3d9b1" stroke="#37353f" stroke-width="2" stroke-linejoin="round"/><path d="M12 20l9-3v6Z" fill="#37353f"/></g></svg>
 		</div>`;
 	},
-	card: (x, c) => `<article class="lp-card fv-card" style="--c:${esc(c.kidOf(x.kid)?.color || '#0e6990')}">
-		<header class="fv-card-h"><span class="fv-card-e">${doodle(c.kidOf(x.kid)?.emoji || 'star', 26)}</span><span><b>${esc(c.kidName(x.kid))}</b><small>${x.date ? c.date(x.date) : ''}${x.date && c.kidAge(x.kid, x.date) ? ` · ${esc(c.kidAge(x.kid, x.date))}` : ''}</small></span></header>
-		${c.photo(x)}
-		<ul class="fv-list">${THINGS.filter(([n]) => x[n]).map(([n, e, l]) => `<li><span class="fv-li-e">${doodle(e, 18)}</span><span class="fv-li-k">${esc(L(...l))}</span><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
-		${x.note ? `<p dir="auto">${esc(x.note)}</p>` : ''}
+	/* each page across the whole row: a coloured header with the boy, the day and how old he was; his photo on one side
+	   and a tile for every favourite on the other, its drawing, what it is and the answer in big; the note as a quote */
+	card: (x, c) => {
+		const got = THINGS.filter(([n]) => x[n]);
+		return `<article class="lp-card fv-card fv-page" style="--c:${esc(c.kidOf(x.kid)?.color || '#0e6990')}">
+		<header class="fv-page__h"><span class="fv-card-e">${doodle(c.kidOf(x.kid)?.emoji || 'star', 28)}</span>
+			<span><b>${esc(c.kidName(x.kid))}</b><small>${x.date && c.kidAge(x.kid, x.date) ? `${L('وعنده', 'at')} ${esc(c.kidAge(x.kid, x.date))}` : ''}</small></span>
+			<span class="fv-page__date">${x.date ? c.date(x.date) : ''}</span></header>
+		<div class="fv-page__body${x.photo ? ' has-photo' : ''}">
+			${x.photo ? `<div class="fv-page__photo">${c.photo(x)}</div>` : ''}
+			<ul class="fv-tiles">${got.map(([n, ic, l], j) => `<li style="--i:${j}"><span class="fv-tile__ic">${doodle(ic, 22)}</span><small>${esc(L(...l))}</small><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
+		</div>
+		${x.note ? `<p class="fv-page__note" dir="auto">«${esc(x.note)}»</p>` : ''}
 		${c.del(x)}
-	</article>`,
+	</article>`;
+	},
 	empty: ['أول صفحة «بيحب إيه» تتكتب هنا ♥', 'The first “what he loves” page goes here ♥'],
 	related: ['family', 'growth', 'sayings']
 });

@@ -22,7 +22,8 @@ const AISLES = [
 	{ id: 'other', ar: 'حاجات تانية', en: 'Everything else', ic: 'star', c: '#5b7282', k: [] }
 ];
 const aisleOf = (id) => AISLES.find((a) => a.id === id) || AISLES.at(-1);
-const guess = (name) => { const w = String(name).toLowerCase(); return (AISLES.find((a) => a.k.some((k) => w.includes(k))) || AISLES.at(-1)).id; };
+// the aisle whose word matches the longest (so «بامبرز» goes to the boys, not to «رز» in the pantry)
+const guess = (name) => { const w = String(name).toLowerCase(); let best = AISLES.at(-1).id, len = 0; for (const a of AISLES) for (const k of a.k) if (k.length > len && w.includes(k)) { best = a.id; len = k.length; } return best; };
 
 export default {
 	title: { ar: 'طلبات البيت', en: 'Shopping list' },
@@ -39,7 +40,12 @@ export default {
 		<section class="sec sec--top"><div class="wrap">
 			${ok ? '' : `<div class="narrow" style="margin:0 auto 24px">${setupNote()}</div>`}
 			<form class="sh-add narrow${ok ? '' : ' is-off'}" id="sh-form" autocomplete="off"${ok ? '' : ' hidden'}>
-				<div class="f-row">
+				<div class="chips sh-mode" role="tablist" aria-label="${L('إزاي نكتب؟', 'How to write it?')}">
+					<button class="chip is-on" type="button" data-mode="one" aria-pressed="true">${doodle('pen', 16)} ${L('حاجة واحدة', 'One thing')}</button>
+					<button class="chip" type="button" data-mode="list" aria-pressed="false">${doodle('scroll', 16)} ${L('كذا حاجة في نقط', 'A list of points')}</button>
+				</div>
+				<label class="f sh-points" hidden><span>${L('كل حاجة في سطر — والكمية بعد شرطة لو عايز', 'One thing per line — and the amount after a dash if you like')}</span><textarea name="points" dir="auto" rows="5" maxlength="2000" placeholder="${L('• لبن - ٢ علبة\n• طماطم - ٢ كيلو\n• عيش\n• بامبرز', '• Milk - 2 cartons\n• Tomatoes - 2 kg\n• Bread\n• Nappies')}"></textarea></label>
+				<div class="f-row sh-one">
 					<label class="f f--grow"><span>${L('ناقص إيه؟', 'What do we need?')}</span><input name="name" dir="auto" maxlength="60" required placeholder="${L('لبن، طماطم، بامبرز…', 'Milk, tomatoes, nappies…')}"></label>
 					<label class="f sh-add__qty"><span>${L('كام؟', 'How much?')}</span><input name="qty" dir="auto" maxlength="20" placeholder="${L('٢ كيلو', '2 kg')}"></label>
 					<label class="f"><span>${L('من أنهي قسم؟', 'Which aisle?')}</span><select name="aisle"><option value="">${L('خمّن لوحدك', 'Guess it')}</option>${AISLES.map((a) => `<option value="${a.id}">${esc(L(a.ar, a.en))}</option>`).join('')}</select></label>
@@ -148,8 +154,34 @@ export default {
 			const x = { id: live.newId(), name, qty: qty || undefined, aisle: aisle || guess(name), by: live.me(), at: Date.now() };
 			await save((d) => { (d.items = d.items || []).push(x); });
 		};
+		/* one thing, or a list of points: each line one thing, «• لبن - ٢ علبة», its aisle guessed */
+		let mode = 'one';
+		const setMode = (m) => {
+			mode = m;
+			$$('[data-mode]', form).forEach((b) => { const on = b.dataset.mode === m; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on); });
+			$('.sh-points', form).hidden = m !== 'list';
+			$('.sh-one', form).hidden = m === 'list';
+			form.name.required = m === 'one';
+			(m === 'list' ? form.points : form.name).focus();
+		};
+		form?.addEventListener('click', (e) => { const b = e.target.closest('[data-mode]'); if (b) setMode(b.dataset.mode); });
+		const parse = (line) => {
+			const t = line.replace(/^\s*(?:[•\-–—*·▪◦]|\d+[.)-]|[٠-٩]+[.)-])\s*/, '').trim();
+			if (!t) return null;
+			const m = t.match(/^(.+?)\s+[-–—:]\s+(.+)$/) || t.match(/^(.+?)\s*\((.+)\)$/);
+			return m ? { name: m[1].trim(), qty: m[2].trim() } : { name: t, qty: '' };
+		};
 		if (form) form.onsubmit = async (e) => {
 			e.preventDefault();
+			if (mode === 'list') {
+				const xs = form.points.value.split(/\n|،(?=\s*\S)/).map(parse).filter(Boolean).slice(0, 60);
+				if (!xs.length) return;
+				const at = Date.now();
+				await save((d) => { (d.items = d.items || []).push(...xs.map((x, i) => ({ id: live.newId() + i, name: x.name, qty: x.qty || undefined, aisle: guess(x.name), by: live.me(), at: at + i }))); });
+				form.points.value = '';
+				$('#sh-msg', main).textContent = L(`اتضاف ${num(xs.length)} ${xs.length === 1 ? 'حاجة' : xs.length === 2 ? 'حاجتين' : xs.length <= 10 ? 'حاجات' : 'حاجة'} ♥`, `${xs.length} added ♥`);
+				return;
+			}
 			await addItem(form.name.value.trim(), form.qty.value.trim(), form.aisle.value);
 			form.name.value = ''; form.qty.value = ''; form.aisle.value = '';
 			form.name.focus();
