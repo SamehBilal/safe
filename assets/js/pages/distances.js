@@ -97,6 +97,19 @@ export function drawFarthest(main, s) {
 	$('#far-feel', main).textContent = App.t(s.farthest.when);
 }
 
+/* above the title: two tin-can phones, his and hers, with the string between them looping into a heart, and a paper
+   plane flying along it from one to the other — however far apart, still on the line */
+const cans = (s) => {
+	const STR = 'M112 96C190 132 250 134 300 128C262 104 252 66 300 82C348 66 338 104 300 128C350 134 410 132 488 96';
+	const can = (x, c, flip) => `<g transform="translate(${x} 96)${flip ? ' scale(-1 1)' : ''}"><path class="dt-can" d="M-46 -30 4 -20 4 20 -46 30Z" fill="${c}"/><ellipse class="dt-can" cx="4" cy="0" rx="7" ry="20" fill="#fbf6ea"/><path class="dt-can__band" d="M-32 -27v54M-18 -24.5v49"/></g>`;
+	return `<div class="dt-band" aria-hidden="true"><svg viewBox="0 0 600 180" class="dt-band__svg">
+		<path class="dt-string" id="dt-string" d="${STR}"/>
+		${can(104, '#f2726f', true)}${can(496, '#0e6990', false)}
+		${REDUCE ? '' : `<g class="dt-plane"><path d="M-11 -6 12 0-11 6-6 0Z"/><animateMotion dur="7s" repeatCount="indefinite" rotate="auto" keyPoints="0;1;0" keyTimes="0;.5;1" calcMode="linear"><mpath href="#dt-string"/></animateMotion></g>`}
+		<text class="dt-band__name" x="76" y="158">${esc(App.t(s.him))}</text><text class="dt-band__name" x="524" y="158">${esc(App.t(s.her))}</text>
+	</svg></div>`;
+};
+
 /* the house drawn on the «nearest» tab */
 const HOUSE = '<svg class="dt-house" viewBox="0 0 48 44" aria-hidden="true"><path d="M5 22 24 5l19 17"/><path d="M10 18v22h28V18"/><path d="M20 40V28h8v12"/><path class="dt-house__heart" d="M24 24l-4-4a2.4 2.4 0 0 1 4-2.6 2.4 2.4 0 0 1 4 2.6z"/></svg>';
 
@@ -115,7 +128,8 @@ export default {
 			</button>` : ''}
 		</div>`;
 		return `
-		${pageHead(L('المسافات', 'Miles apart'), L('إحنا الأربعة بعاد عن بعض قد إيه — وأقرب ما يكون في القلب', 'How far apart the four of us are — and as close as ever at heart'), [{ href: 'family.html', ar: 'عيلتنا', en: 'Our family' }, { href: 'distances.html', ar: 'المسافات', en: 'Miles apart' }], { band: tabs })}
+		${pageHead(L('المسافات', 'Miles apart'), L('إحنا الأربعة بعاد عن بعض قد إيه — وأقرب ما يكون في القلب', 'How far apart the four of us are — and as close as ever at heart'), [{ href: 'family.html', ar: 'عيلتنا', en: 'Our family' }, { href: 'distances.html', ar: 'المسافات', en: 'Miles apart' }], { band: cans(s) })}
+		<div class="wrap">${tabs}</div>
 		<section class="sec sec--top dt-panel" id="dt-near" role="tabpanel"><div class="wrap">
 			<div id="dm-box"></div>
 			<p class="pm-hint">${Y('دوس على اتنين مننا عشان تشوف المسافة بينهم', 'دوسي على اتنين مننا عشان تشوفي المسافة بينهم', 'Tap two of us to see how far apart they are')}</p>

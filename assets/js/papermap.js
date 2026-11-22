@@ -25,6 +25,9 @@ const NAMES = [
 	[22.6, 37.4, 'البحر الأحمر', 'Red Sea', 'sea'], [27.2, 51.6, 'الخليج', 'The Gulf', 'sea'], [32.6, 29.5, 'البحر المتوسط', 'Mediterranean', 'sea'], [18.2, 60, 'بحر العرب', 'Arabian Sea', 'sea']
 ];
 
+/* a box of coloured pencils for the governorates, so neighbours rarely share one */
+const INKS = ['#9fd3c7', '#f7d774', '#f4a6b8', '#a7c7e7', '#c9b6e4', '#b8d98a', '#f6b98a'];
+
 /** The paper: the pen's wobble, the lands and Egypt's governorates, waves on the seas and the names. */
 export function paperSVG({ x, y, w, h }, { region = true, names = true, lang = 'ar', id = 'pm' } = {}) {
 	const waves = [];
@@ -38,7 +41,7 @@ export function paperSVG({ x, y, w, h }, { region = true, names = true, lang = '
 		<g class="pm__sea">${waves.join('')}</g>
 		<g filter="url(#${id}-pen)">
 			${region ? Object.entries(LANDS).map(([k, pts]) => `<path class="pm__land pm__land--${k}" d="${path(pts)}"/>`).join('') : ''}
-			<g class="pm__egypt">${GOVERNORATES.map((g) => `<path class="pm__gov" d="${g.d}"/>`).join('')}</g>
+			<g class="pm__egypt">${GOVERNORATES.map((g, i) => `<path class="pm__gov" d="${g.d}" style="fill:${INKS[(i * 3) % INKS.length]}"/>`).join('')}</g>
 		</g>
 		${names ? NAMES.filter((n) => region || n[4] === 'sea' || n[2] === 'مصر').map(label).join('') : ''}
 	</svg>`;

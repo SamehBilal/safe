@@ -794,11 +794,11 @@
 	border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-pink, #fc8b93), inset 0 0 60px rgba(160, 120, 60, .12); }
 .pm__paper, .pm__arcs { position: absolute; inset: 0; }
 .pm__svg, .pm__arcs { width: 100%; height: 100%; display: block; }
-.pm__land { fill: #efe2c4; stroke: #4a3f33; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.pm__land--iran { fill: #ece5d2; }
-.pm__gov { fill: #f6a76f; stroke: #fbf6ea; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.pm__land { fill: #eee7d6; stroke: #4a3f33; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.pm__land--arabia { fill: #e4eedb; } .pm__land--iran { fill: #ece3f1; }
+.pm__gov { stroke: #fbf6ea; stroke-width: 1; vector-effect: non-scaling-stroke; }
 .pm__egypt { stroke: #4a3f33; }
-.pm__egypt .pm__gov:nth-child(3n) { fill: #f39a5c; } .pm__egypt .pm__gov:nth-child(4n+1) { fill: #f7b27f; }
+
 .pm__wave { fill: none; stroke: rgba(14, 105, 144, .35); stroke-width: 1.3; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .pm__name { font-family: var(--f-hand); fill: #4a3f33; text-anchor: middle; opacity: .85; }
 :lang(ar) .pm__name { font-family: 'Aref Ruqaa', var(--f-body); font-weight: 700; }
@@ -881,3 +881,15 @@
 .ftr-niece.is-gone .ftr-niece__pic { filter: grayscale(1); }
 @keyframes fam-swing { 50% { rotate: 3deg; } }
 @media (prefers-reduced-motion: reduce) { .ftr-niece { animation: none; } }
+
+/* «المسافات» above the title: two tin-can phones joined by a string that loops into a heart, a paper plane flying along it */
+.dt-band { display: grid; place-items: center; padding: 0 var(--gutter); }
+.dt-band__svg { width: min(560px, 100%); height: auto; overflow: visible; }
+.dt-can { stroke: var(--ink, #37353f); stroke-width: 2.4; stroke-linejoin: round; }
+.dt-can__band { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 3; }
+.dt-string { fill: none; stroke: var(--ink, #37353f); stroke-width: 2; stroke-dasharray: 1 5; stroke-linecap: round; }
+.dt-plane path { fill: var(--hl-yellow, #fdc830); stroke: var(--ink, #37353f); stroke-width: 1.5; stroke-linejoin: round; }
+.dt-band__name { font: 700 22px var(--f-hand); fill: var(--text); text-anchor: middle; }
+:lang(ar) .dt-band__name { font: 700 19px 'Aref Ruqaa', var(--f-body); }
+/* on the farthest map the reading sits on the right, over Iran, so it never covers her pin in Egypt */
+#pm-far .pm__read { inset-inline-start: auto; right: 3%; rotate: 2deg; }
