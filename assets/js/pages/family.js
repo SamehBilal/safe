@@ -6,7 +6,7 @@ import * as live from '../live.js';
 /* Our family, and our family tree, on one page (the tree had a page of its own, familytree.html, which now sends you
    here). Band: the tree growing — the trunk draws itself, branches reach out, leaves and little hearts pop on them —
    and the four of us hanging on its branches; under it the four of us as cards, the whole family tree (filled from
-   the shared list «tree»), our portrait, and the family newspaper. */
+   the shared list «tree»), and the family newspaper. */
 const leaf = (x, y, i, heart) => heart
 	? `<path class="fx-leaf fx-heart" style="--i:${i}" transform="translate(${x} ${y})" d="M0 6-7-1a4 4 0 0 1 7-5 4 4 0 0 1 7 5Z"/>`
 	: `<ellipse class="fx-leaf" style="--i:${i}" cx="${x}" cy="${y}" rx="9" ry="5" transform="rotate(${(i * 47) % 180 - 90} ${x} ${y})"/>`;
@@ -31,46 +31,6 @@ function band(members) {
 		${members.slice(0, 4).map((m, i) => `<span class="fam-band__one" style="--x:${HANG[i][0] / 10}%;--y:${((HANG[i][1] + 14) / 220) * 100}%;--c:${esc(m.color || '#0e6990')};--i:${i}">
 			<span class="fam-band__pic">${m.photo ? img(m.photo, '') : doodle(m.emoji, 30)}</span><b>${T(m.name)}</b></span>`).join('')}
 	</div>`;
-}
-
-/* ---------- «بيتنا بالحجارة»: the pebble frame hung on the wall by a string, and beside it the same thing drawn in
-   chalk — sticks for the house, and a pebble for each of us, from the family in story.json, so a new one of us gets a
-   pebble of their own; a baby under a year sits in Mum's arms, like Abdulrahman. Names in chalk under each pebble. ---------- */
-const PEBBLE = ['#cbb89c', '#e4d8c4', '#b9a387', '#d9c9ae', '#c2b29a', '#ddd0bb'];
-function pebbles(members) {
-	const grown = members.filter((m) => !m.kid), kids = members.filter((m) => m.kid);
-	const mum = grown.find((m) => m.female) || grown[1];
-	const months = (m) => (m.born ? (Date.now() - parseDate(m.born)) / (30.44 * 864e5) : 60);
-	const inArms = kids.filter((k) => months(k) < 12);
-	const row = [...grown, ...kids.filter((k) => !inArms.includes(k))];
-	const size = (m) => (m.kid ? Math.min(15, 9 + months(m) / 12) : 19);
-	const width = row.reduce((w, m) => w + size(m) * 2 + 6, -6);
-	let x = 150 - width / 2;
-	const at = new Map();
-	for (const m of row) { const r = size(m); at.set(m, { x: x + r, y: 186 - r * 1.25, rx: r, ry: r * 1.25 }); x += r * 2 + 6; }
-	inArms.forEach((k, i) => { const p = at.get(mum) || at.get(row[0]); at.set(k, { x: p.x + 7 + i * 9, y: p.y + 2, rx: 7.5, ry: 9, arms: true }); });
-	const peb = (m, i) => { const p = at.get(m); return `<g class="fh-peb" style="--i:${i}"><title>${esc(App.t(m.name))}</title>
-		<ellipse cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" rx="${p.rx.toFixed(1)}" ry="${p.ry.toFixed(1)}" fill="${PEBBLE[i % PEBBLE.length]}"/>
-		<ellipse class="fh-peb__shine" cx="${(p.x - p.rx * 0.35).toFixed(1)}" cy="${(p.y - p.ry * 0.4).toFixed(1)}" rx="${(p.rx * 0.28).toFixed(1)}" ry="${(p.ry * 0.18).toFixed(1)}"/>
-		<text class="fh-chalk" x="${p.x.toFixed(1)}" y="${p.arms ? (p.y - p.ry - 6).toFixed(1) : 206}">${esc(App.t(m.name))}</text></g>`; };
-	return `<svg class="fh-board" viewBox="0 0 300 220" role="img" aria-label="${esc(L('بيتنا بالحجارة', 'Our home in pebbles'))}">
-		<rect class="fh-frame" x="4" y="4" width="292" height="212" rx="6"/><rect class="fh-slate" x="16" y="16" width="268" height="188" rx="2"/>
-		<g class="fh-sticks"><rect x="88" y="98" width="10" height="88" rx="3" transform="rotate(-2 93 142)"/><rect x="202" y="98" width="10" height="88" rx="3" transform="rotate(2 207 142)"/>
-			<rect x="80" y="66" width="80" height="11" rx="3" transform="rotate(-30 120 72)"/><rect x="140" y="66" width="80" height="11" rx="3" transform="rotate(30 180 72)"/><rect x="184" y="44" width="11" height="22" rx="3"/></g>
-		<path class="fh-floor" d="M70 187h160"/>
-		${[...row, ...inArms].map(peb).join('')}
-	</svg>`;
-}
-function homeHTML(f, members) {
-	const p = f.portrait;
-	if (!p) return '';
-	return `<section class="fam-home reveal">
-		<figure class="fam-home__photo" data-media-box><span class="fam-home__nail" aria-hidden="true"></span>${img(p.photo, App.t(p.caption), 'zoom')}</figure>
-		<div class="fam-home__side">
-			${pebbles(members)}
-			<p class="fam-home__tag"><b>${T(p.title) || L('بيتنا', 'Our home')}</b><span>${T(p.text)}</span></p>
-		</div>
-	</section>`;
 }
 
 /* ---------- «جريدة بيتنا»: a real paper, new every day, written from what we have — the big news (a birthday or our
@@ -180,7 +140,6 @@ export default {
 
 			<div id="tree" class="fam-tree">${treeHTML(s)}</div>
 
-			${homeHTML(f, members)}
 			${paperHTML(s, f)}
 		</div></section>
 		${related(['distances', 'nokta', 'growth', 'sayings'])}`;
