@@ -574,17 +574,17 @@ export const PAGES = [
 	{ href: 'remember.html', id: 'remember', ic: 'dice', ar: 'فاكر؟', en: 'Do you remember?', dar: 'لعبة من صورنا وحكايتنا: مين فاكر أكتر؟', den: 'A game made of our photos: who remembers more?', group: 'memories' },
 	{ href: 'soundtrack.html', id: 'soundtrack', ic: 'music', ar: 'أغنية كل سنة', en: 'Our soundtrack', dar: 'أغنية لكل سنة من حكايتنا', den: 'A song for every year of us', group: 'memories' },
 	{ href: 'chats.html', id: 'chats', ic: 'chat', ar: 'محادثاتنا', en: 'Our chats', dar: 'أحلى رسايلنا باسكرينشوت', den: 'Our best messages, screenshotted', group: 'memories' },
-	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'فهد وعبد الرحمن وإحنا', den: 'Fahd, Abdulrahman and us', group: 'family' },
-	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد عن بعض قد إيه', den: 'How far apart the four of us are', group: 'family' },
-	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'كل حاجة نفسنا فيها على ورقة، واللي نجيبها نشطبها', den: 'Everything we want on one sheet, crossed out as we get it', group: 'family' },
-	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور، بنجوم', den: 'House jobs in turns, with stars', group: 'family' },
-	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'أكلته وكرتونه ولعبته في كل سن', den: 'Their food, cartoon and toy at every age', group: 'family' },
-	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسوماتنا', en: 'Our drawings', dar: 'باب التلاجة: كل رسمة رسمناها، إحنا والولاد', den: 'The fridge door: every drawing we made, us and the boys', group: 'family' },
-	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن، سنة ورا سنة', den: 'Height and weight, year by year', group: 'family' },
-	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'كل كلمة حلوة قالوها', den: 'Every funny thing they said', group: 'family' },
-	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت، ونشطبه واحنا بنشتري', den: 'What the house needs, ticked off as we shop', group: 'family' },
-	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا في فرحنا وولادة الولاد، وردّيناها إمتى', den: 'Who gave at our wedding and the boys’ births, and when we gave it back', group: 'family' },
-	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحتنا', en: 'Our health book', dar: 'تطعيمات ودكاترة وأدوية لينا كلنا', den: 'Vaccinations, doctors and medicines for all of us', group: 'family' },
+	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'جريدتنا وشجرة العيلة', den: 'Our paper and family tree', group: 'family' },
+	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد قد إيه', den: 'How far apart we are', group: 'family' },
+	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'اللي نفسنا فيه، ونشطبه', den: 'What we want, crossed out', group: 'family' },
+	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور', den: 'House jobs in turns', group: 'family' },
+	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'بيحبوا إيه في كل سن', den: 'What they love at each age', group: 'family' },
+	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسوماتنا', en: 'Our drawings', dar: 'كل رسمة رسمناها', den: 'Every drawing we made', group: 'family' },
+	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن', den: 'Height and weight', group: 'family' },
+	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'قاموس كلامهم', den: 'Their own dictionary', group: 'family' },
+	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت', den: 'What the house needs', group: 'family' },
+	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا وردّيناها', den: 'Who gave, and what we gave back', group: 'family' },
+	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحتنا', en: 'Our health book', dar: 'تطعيمات ودكاترة وأدوية', den: 'Jabs, doctors and medicines', group: 'family' },
 	{ href: 'birthday.html', id: 'birthday', ic: 'cake', ar: 'أعياد الميلاد', en: 'Birthdays', dar: 'عيد ميلاد كل واحد فينا', den: 'Every one of our birthdays', group: 'you' },
 	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'you' },
 	{ href: 'wishes.html', id: 'wishes', ic: 'star', ar: 'برطمان الأمنيات', en: 'Wish jar', dar: 'أمنياتنا في أمان هنا', den: 'Our wishes, kept safe', group: 'you' },
@@ -656,7 +656,8 @@ const groupOf = (id) => DETAIL_OF[id] || PAGES.find((p) => p.id === id)?.group |
 
 function megaHTML(s) {
 	const here = currentFile();
-	const cur = (href) => (href === here ? ' aria-current="page"' : '');
+	const up = DETAIL_OF[pageId()] ? `${DETAIL_OF[pageId()]}.html` : '';
+	const cur = (href) => (href === here || href === up ? ' aria-current="page"' : '');
 	const item = (p) => `<a class="mg-item" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span></a>`;
 	const row = (p) => `<a class="mg-row" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span><span class="mg-arr" aria-hidden="true">${App.arrow}</span></a>`;
 	const panel = (id, label, inner) => `<div class="mega mega-${id}" id="mega-${id}" role="group" aria-label="${esc(label)}"><div class="mega-in">${inner}</div></div>`;
@@ -709,7 +710,7 @@ function megaHTML(s) {
 	const members = s.family?.members || [];
 	const family = panel('family', L('عيلتنا', 'Our family'),
 		`<div class="mg-figs">${members.map((m) => `
-			<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}">
+			<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
 				<span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span>
 				<span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span>
 			</a>`).join('')}</div>
@@ -762,7 +763,7 @@ function tapeHTML(members) {
 	const max = Math.max(10, Math.ceil((ages.at(-1).a + 1) / 5) * 5);
 	const ticks = Array.from({ length: max + 1 }, (_, i) => `<i class="${i % 5 ? '' : 'is-5'}" style="--p:${(i / max) * 100}%">${i % 5 ? '' : `<b>${num(i)}</b>`}</i>`).join('');
 	const pins = ages.map(({ m, a }, i) => `
-		<span class="mg-tape-pin ${i % 2 ? 'is-up' : 'is-down'}" style="--p:${(a / max) * 100}%;--c:${esc(m.color || '#0e6990')}">
+		<span class="mg-tape-pin ${i % 2 ? 'is-up' : 'is-down'}${a / max > 0.6 ? ' is-end' : ''}" style="--p:${(a / max) * 100}%;--c:${esc(m.color || '#0e6990')}">
 			<span class="mg-tape-dot">${doodle(m.emoji, 22)}</span><small><b>${T(m.name)}</b> ${m.kid ? age(m.born, now) : `${num(Math.floor(a))} ${L('سنة', 'yrs')}`}</small>
 		</span>`).join('');
 	return `<a class="mg-tape" href="growth.html" aria-label="${L('مين كبر قد إيه', 'How much each of us has grown')}">
