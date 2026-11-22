@@ -44,9 +44,9 @@ const todayMD = () => { const d = new Date(); return `${String(d.getMonth() + 1)
 function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(0, 0, 0, 0); const n = new Date(now.getFullYear(), d.getMonth(), d.getDate()); if (n < now) n.setFullYear(n.getFullYear() + 1); return Math.round((n - now) / 864e5); }
 /* The paper is the page: it comes first, folded in half the way it lands on the doorstep — the masthead and the front
    page's top showing, «افتح الجريدة» to open it — and inside it has pages, turned with the arrows or the page numbers:
-   ١ the front page, ٢ the family tree (tree.js), ٣ family news (the four of us), ٤ odds and ends (the quote of the day
+   ١ the family tree (tree.js), ٢ the front page, ٣ family news (the four of us), ٤ odds and ends (the quote of the day
    and the classifieds). */
-const PAGES = [['الصفحة الأولى', 'Front page'], ['شجرة العيلتين', 'The family tree'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
+const PAGES = [['شجرة العيلتين', 'The family tree'], ['الصفحة الأولى', 'Front page'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
 function paperHTML(s, f, members) {
 	const today = new Date();
 	return `<article class="np2 is-folded reveal" id="np" style="--n:${PAGES.length}">
@@ -56,8 +56,8 @@ function paperHTML(s, f, members) {
 			<div class="np2-bar"><span>${L('العدد', 'Issue')} ${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div>
 		</header>
 		<div class="np2-sheet" id="np-sheet">
-			<section class="np2-page is-on" data-p="0"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
-			<section class="np2-page" data-p="1" id="tree"><h3 class="np2-sec">${L(...PAGES[1])}</h3><div class="fam-tree">${treeHTML(s)}</div></section>
+			<section class="np2-page is-on" data-p="0" id="tree"><h3 class="np2-sec">${L(...PAGES[0])}</h3><div class="fam-tree">${treeHTML(s)}</div></section>
+			<section class="np2-page" data-p="1"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
 			<section class="np2-page" data-p="2"><h3 class="np2-sec">${L(...PAGES[2])}</h3>
 				<div class="np2-news">${members.map((m) => `<article class="np2-story">
 					${m.photo ? `<div class="np2-story__pic" data-media-box>${img(m.photo, App.t(m.name), 'zoom')}</div>` : `<span class="np2-story__ic">${doodle(m.emoji, 44)}</span>`}
@@ -105,7 +105,7 @@ function wirePaper(main) {
 	});
 	np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = +b.dataset.go < 0; });
 	// a link to the tree (family.html#tree, or the old familytree.html) opens the paper at the tree
-	if (location.hash === '#tree') setTimeout(() => go(1, true), 300);
+	if (location.hash === '#tree') setTimeout(() => go(0, true), 300);
 }
 async function fillPaper(main, s, f) {
 	const box = main.querySelector('#np-front'), misc = main.querySelector('#np-misc');
@@ -165,7 +165,7 @@ async function fillPaper(main, s, f) {
 				<section><p class="np2-kick">${L('قريب', 'Coming up')}</p>
 					<ul class="np2-soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
 				<section class="np2-index"><p class="np2-kick">${L('في العدد ده', 'In this issue')}</p>
-					<ul>${PAGES.slice(1).map((p, i) => `<li><button type="button" data-goto="${i + 1}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 2)}</b></button></li>`).join('')}</ul></section>
+					<ul>${PAGES.map((p, i) => (i === 1 ? '' : `<li><button type="button" data-goto="${i}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 1)}</b></button></li>`)).join('')}</ul></section>
 			</aside>
 		</div>`;
 	if (misc) misc.innerHTML = `<div class="np2-misc">
