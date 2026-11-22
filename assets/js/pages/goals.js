@@ -18,6 +18,10 @@ export const KINDS = [
 	{ id: 'ride', ar: 'عربيات وعجل', en: 'Rides', ic: 'scooter' },
 	{ id: 'kids', ar: 'من طفولتنا', en: 'From when we were kids', ic: 'star' }
 ];
+/* a sheet for each of us (the family in story.json) and one for the whole family; things saved before the boards
+   were on Sameh's sheet */
+const FAMILY = { id: 'family', name: { ar: 'العيلة كلها', en: 'The whole family' }, color: '#26706b' };
+const boardsOf = (s) => [...(s.family?.members || []), FAMILY];
 const kindOf = (id) => KINDS.find((k) => k.id === id) || KINDS[3];
 const name = (g) => L(g.title, g.en || g.title);
 // a steady little tilt for each thing, from its id
@@ -25,8 +29,9 @@ const tilt = (id) => { let h = 0; for (const c of String(id)) h = (h * 31 + c.ch
 
 export default {
 	title: { ar: 'أهدافنا', en: 'Our goals' },
-	render() {
+	render(s) {
 		const ok = live.canWrite();
+		const boards = boardsOf(s);
 		return `
 		${pageHead(L('أهدافنا', 'Our goals'), L('كل حاجة نفسنا فيها على ورقة واحدة — واللي نجيبها نشطبها', 'Everything we want on one sheet of paper — and whatever we get, we cross out'), [{ href: 'goals.html', ar: 'أهدافنا', en: 'Our goals' }], {
 			/* above the title: a little spiral notebook, «نفسنا في…» at the top and five of our things on its lines, a red
@@ -37,7 +42,7 @@ export default {
 					<b class="gl-pad__h">${L('نفسنا في…', 'We wish for…')}</b>
 					<ol class="gl-pad__list" id="gl-pad"></ol>
 				</div>
-				<svg class="gl-marker" viewBox="0 0 200 40"><g transform="rotate(-18 100 20)"><rect x="30" y="10" width="130" height="20" rx="6" fill="#e0312b" stroke="#37353f" stroke-width="2"/><rect x="150" y="8" width="34" height="24" rx="6" fill="#37353f"/><path d="M30 13 10 18v4l20 5Z" fill="#fbe9e7" stroke="#37353f" stroke-width="2" stroke-linejoin="round"/><path d="M10 18v4l-4-2Z" fill="#e0312b"/><rect x="60" y="14" width="60" height="4" rx="2" fill="#fff" opacity=".5"/></g></svg>
+				<svg class="gl-marker" viewBox="0 -40 200 120"><g transform="rotate(-18 100 20)"><rect x="30" y="10" width="130" height="20" rx="6" fill="#e0312b" stroke="#37353f" stroke-width="2"/><rect x="150" y="8" width="34" height="24" rx="6" fill="#37353f"/><path d="M30 13 10 18v4l20 5Z" fill="#fbe9e7" stroke="#37353f" stroke-width="2" stroke-linejoin="round"/><path d="M10 18v4l-4-2Z" fill="#e0312b"/><rect x="60" y="14" width="60" height="4" rx="2" fill="#fff" opacity=".5"/></g></svg>
 			</div>`
 		})}
 		<section class="sec sec--top"><div class="wrap">
@@ -48,6 +53,7 @@ export default {
 				<form id="gl-form" autocomplete="off">
 					<div class="f-row">
 						<label class="f f--grow"><span>${L('نفسنا في إيه؟', 'What do we want?')}</span><input name="title" dir="auto" maxlength="60" required placeholder="${L('بلايستيشن ٥', 'A PlayStation 5')}"></label>
+						<label class="f"><span>${L('على ورقة مين؟', 'Whose sheet?')}</span><select name="board">${boards.map((b) => `<option value="${esc(b.id)}">${esc(App.t(b.name))}</option>`).join('')}</select></label>
 						<label class="f"><span>${L('نوعها', 'Kind')}</span><select name="kind">${KINDS.map((k) => `<option value="${k.id}">${esc(L(k.ar, k.en))}</option>`).join('')}</select></label>
 					</div>
 					<label class="f"><span>${L('صورتها (على خلفية بيضا أحلى)', 'Its picture (best on white)')}</span><input name="photo" type="file" accept="image/*"></label>
@@ -62,16 +68,23 @@ export default {
 					${ok ? `<button class="chip" type="button" id="gl-edit" aria-pressed="false">${doodle('trash', 16)} ${L('نشيل حاجة', 'Remove things')}</button>` : ''}
 				</div>
 			</div>
+			<div class="gl-tabs" id="gl-tabs" role="tablist" aria-label="${L('ورقة مين', 'Whose sheet')}"></div>
 			<div class="gl-sheet" id="gl-sheet"><p class="empty">${L('بنجيب الورقة…', 'Fetching the sheet…')}</p></div>
 		</div></section>
 		${related(['wishes', 'gifts', 'adventures'])}`;
 	},
 
-	async after(main) {
-		const sheet = $('#gl-sheet', main);
+	async after(main, s) {
+		const sheet = $('#gl-sheet', main), form = $('#gl-form', main);
 		let data = { items: [] }, only = '', hide = false, edit = false;
 		const ok = live.canWrite();
-		const all = () => data.items || [];
+		const boards = boardsOf(s), first = boards[0]?.id || 'family';
+		const grown = (s.family?.members || []).filter((m) => !m.kid);
+		const boardOf = (g) => g.board || first;
+		// the sheet this phone opens on: its owner's, or the one in the link (goals.html#esraa)
+		let board = boards.find((b) => b.id === location.hash.slice(1))?.id || (live.me() === 'her' ? grown[1]?.id : grown[0]?.id) || first;
+		const everything = () => data.items || [];
+		const all = () => everything().filter((g) => boardOf(g) === board);
 
 		const item = (g) => {
 			const k = kindOf(g.kind), done = !!g.done;
@@ -88,6 +101,14 @@ export default {
 
 		const paint = () => {
 			const items = all();
+			/* the tabs on top of the sheet, like a notebook's index: whose sheet, and how many crossed out */
+			$('#gl-tabs', main).innerHTML = boards.map((b) => {
+				const mine = everything().filter((g) => boardOf(g) === b.id), got = mine.filter((g) => g.done).length;
+				return `<button class="gl-tab${b.id === board ? ' is-on' : ''}" type="button" role="tab" aria-selected="${b.id === board}" data-board="${esc(b.id)}" style="--c:${esc(b.color || '#0e6990')}">
+					<b>${esc(App.t(b.name))}</b><small>${mine.length ? `${num(got)}/${num(mine.length)}` : L('فاضية', 'empty')}</small></button>`;
+			}).join('');
+			const bd = boards.find((b) => b.id === board);
+			sheet.style.setProperty('--c', bd?.color || '#0e6990');
 			const got = items.filter((g) => g.done).length;
 			$('#gl-count', main).innerHTML = items.length ? `
 				<p class="gl-count__t">${L(`شطبنا <b>${num(got)}</b> من <b>${num(items.length)}</b>`, `Crossed out <b>${got}</b> of <b>${items.length}</b>`)}</p>
@@ -98,7 +119,8 @@ export default {
 			const shown = items.filter((g) => (!only || kindOf(g.kind).id === only) && (!hide || !g.done));
 			sheet.classList.toggle('is-edit', edit);
 			sheet.innerHTML = shown.length ? shown.map(item).join('')
-				: `<p class="empty">${items.length ? L('مفيش حاجة هنا', 'Nothing here') : Y('الورقة فاضية… ضيف أول حاجة نفسنا فيها ♥', 'الورقة فاضية… ضيفي أول حاجة نفسنا فيها ♥', 'The sheet is empty… add the first thing we want ♥')}</p>`;
+				: `<p class="empty">${items.length ? L('مفيش حاجة هنا', 'Nothing here') : L(`ورقة ${App.t(bd?.name)} لسه فاضية… أول حاجة ${board === 'family' ? 'نفسنا' : bd?.female ? 'نفسها' : 'نفسه'} فيها تتكتب من «ضيف حاجة للورقة» ♥`, `${App.t(bd?.name)}’s sheet is still empty… add the first wish above ♥`)}</p>`;
+			if (form && !form.title.value) form.board.value = board;
 			live.hydrateSketches(sheet);
 		};
 
@@ -116,6 +138,7 @@ export default {
 		};
 		const find = (d, id) => (d.items || []).find((g) => g.id === id);
 
+		$('#gl-tabs', main).addEventListener('click', (e) => { const t = e.target.closest('[data-board]'); if (!t || t.dataset.board === board) return; board = t.dataset.board; only = ''; history.replaceState(history.state, '', '#' + board); paint(); });
 		$('#gl-kinds', main).addEventListener('click', (e) => { const c = e.target.closest('[data-kind]'); if (c) { only = c.dataset.kind; paint(); } });
 		$('#gl-hide', main).onclick = (e) => { hide = !hide; e.currentTarget.classList.toggle('is-on', hide); e.currentTarget.setAttribute('aria-pressed', hide); paint(); };
 		const ed = $('#gl-edit', main);
@@ -134,7 +157,6 @@ export default {
 			save((d) => { const y = find(d, g.id); if (!y) return; if (y.done) delete y.done; else y.done = live.today(); });
 		});
 
-		const form = $('#gl-form', main);
 		form.onsubmit = async (e) => {
 			e.preventDefault();
 			const msg = $('#gl-msg', main);
@@ -143,11 +165,11 @@ export default {
 			try {
 				msg.textContent = L('بنحطها…', 'Adding…');
 				const photo = form.photo.files[0] ? await live.putSketch(await shrinkPhoto(form.photo.files[0], 600)) : undefined;
-				const g = { id: live.newId(), title, kind: form.kind.value, photo, by: live.me(), at: Date.now() };
+				const g = { id: live.newId(), title, kind: form.kind.value, board: form.board.value, photo, by: live.me(), at: Date.now() };
 				data = await live.save('goals', (d) => { (d.items = d.items || []).push(g); });
 				form.reset();
 				msg.textContent = L('اتحطت على الورقة ♥', 'On the sheet ♥');
-				only = ''; hide = false;
+				only = ''; hide = false; board = g.board;
 				paint();
 				$(`[data-id="${CSS.escape(g.id)}"]`, sheet)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 			} catch (err) { msg.textContent = live.why(err); }
@@ -158,8 +180,8 @@ export default {
 		this.leave = () => clearInterval(padTimer);
 		const pad = () => {
 			if (document.hidden) return;
-			const pool = all().filter((g) => !g.done);
-			const five = (pool.length ? pool : all()).slice().sort(() => Math.random() - 0.5).slice(0, 5);
+			const pool = everything().filter((g) => !g.done);
+			const five = (pool.length ? pool : everything()).slice().sort(() => Math.random() - 0.5).slice(0, 5);
 			const ol = $('#gl-pad', main);
 			if (!ol) return;
 			ol.innerHTML = five.map((g, i) => `<li style="--i:${i}">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : `<span class="gl-pad__ic">${doodle(kindOf(g.kind).ic, 18)}</span>`}<span dir="auto">${esc(name(g))}</span></li>`).join('')

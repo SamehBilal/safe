@@ -913,7 +913,7 @@
 .gl-pad__list li span { overflow: hidden; text-overflow: ellipsis; }
 @keyframes gl-strike { to { transform: scaleX(1) rotate(-1.5deg); } }
 @keyframes gl-in { from { opacity: 0; translate: 0 6px; } }
-.gl-marker { position: absolute; bottom: -6px; left: calc(50% + min(150px, 36vw)); width: 130px; translate: -50% 0; filter: drop-shadow(3px 6px 4px rgba(40, 30, 10, .25)); animation: gl-wiggle 1.2s ease-in-out infinite alternate; }
+.gl-marker { position: absolute; bottom: -20px; left: calc(50% + min(150px, 36vw)); width: 150px; overflow: visible; translate: -50% 0; filter: drop-shadow(3px 6px 4px rgba(40, 30, 10, .25)); animation: gl-wiggle 1.2s ease-in-out infinite alternate; }
 @keyframes gl-wiggle { to { rotate: -6deg; translate: -54% -4px; } }
 
 /* the sheet itself: a page torn out of a notebook — blue ruled lines, a red margin and punched holes down one side */
@@ -927,3 +927,14 @@
 		repeating-linear-gradient(transparent 0 35px, rgba(14, 105, 144, .16) 35px 36px) 0 56px / 100% calc(100% - 56px) no-repeat, #fffdf6; }
 @media (max-width: 560px) { .gl-sheet { padding-inline-start: 54px; } .gl-marker { display: none; } }
 @media (prefers-reduced-motion: reduce) { .gl-pad__list li, .gl-marker { animation: none; } .gl-pad__list li::after { animation: none; transform: scaleX(1); } }
+
+/* goals: a sheet for each of us and one for the whole family — tabs on top of the page, like a notebook's index */
+.gl-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding-inline: clamp(56px, 8vw, 78px) 12px; margin-bottom: -2px; position: relative; z-index: 1; }
+.gl-tab { display: grid; justify-items: center; gap: 0; min-width: 92px; padding: 8px 14px 6px; font: inherit; color: #2b2b33; cursor: pointer;
+	background: color-mix(in srgb, var(--c) 28%, #fffdf6); border: 1.5px solid var(--ink, #37353f); border-bottom: 0; border-radius: 12px 12px 0 0; translate: 0 6px; transition: translate .2s var(--ease-pop, ease), background .2s; }
+.gl-tab b { font-size: .95rem; }
+.gl-tab small { font: 700 .72rem var(--f-body); color: #5a5148; }
+.gl-tab:hover { translate: 0 2px; }
+.gl-tab.is-on { background: #fffdf6; translate: 0 0; box-shadow: inset 0 4px 0 var(--c); padding-bottom: 10px; }
+.gl-sheet { box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 color-mix(in srgb, var(--c, var(--hl-yellow)) 55%, transparent), 0 18px 40px rgba(40, 30, 10, .08); }
+@media (max-width: 560px) { .gl-tabs { padding-inline: 8px; } .gl-tab { min-width: 0; flex: 1 1 30%; padding: 6px 6px 4px; } }
