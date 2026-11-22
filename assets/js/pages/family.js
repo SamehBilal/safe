@@ -96,24 +96,24 @@ async function fillPaper(main, s, f) {
 		${lead ? `<p class="paper__lead" dir="auto">${esc(lead)}</p>` : ''}
 		<div class="np__grid">
 			${old ? `<a class="np__story" href="moment.html?id=${encodeURIComponent(old.id)}">
-				<p class="np__kicker">${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
+				<p class="np__kicker">${doodle('calendar', 18)} ${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
 				${oldPhoto ? `<span class="np__pic">${img(oldPhoto, App.t(old.title))}</span>` : ''}
 				<h4 dir="auto">${T(old.title)}</h4>
 				<em>${esc(longDate(old.date))}</em>
 				${old.text ? `<p dir="auto">${T(old.text)}</p>` : ''}
 			</a>` : ''}
 			<aside class="np__side">
-				<section class="np__box"><p class="np__kicker">${L('أرقام النهارده', 'Today’s numbers')}</p>
+				<section class="np__box"><p class="np__kicker">${doodle('star', 18)} ${L('أرقام النهارده', 'Today’s numbers')}</p>
 					<ul class="np__nums">${nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
-				<section class="np__box"><p class="np__kicker">${L('قريب', 'Coming up')}</p>
+				<section class="np__box"><p class="np__kicker">${doodle('cake', 18)} ${L('قريب', 'Coming up')}</p>
 					<ul class="np__soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
 			</aside>
-			${say ? `<a class="np__quote" href="sayings.html"><p class="np__kicker">${L('كلمة اليوم', 'Quote of the day')}</p>
+			${say ? `<a class="np__quote" href="sayings.html"><p class="np__kicker">${doodle('chat', 18)} ${L('كلمة اليوم', 'Quote of the day')}</p>
 				<blockquote dir="auto">«${esc(say.said)}»</blockquote><cite>— ${esc(nameOf(say.kid))}${say.means ? ` · ${L('يقصد', 'meaning')} «${esc(say.means)}»` : ''}</cite></a>` : ''}
-			${ads.length ? `<a class="np__ads" href="goals.html"><p class="np__kicker">${L('إعلانات مبوبة', 'Classifieds')}</p>
+			${ads.length ? `<a class="np__ads" href="goals.html"><p class="np__kicker">${doodle('gift', 18)} ${L('إعلانات مبوبة', 'Classifieds')}</p>
 				${ads.map((g) => `<p class="np__ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : ''}
-			<section class="np__family"><p class="np__kicker">${L('أخبار العيلة', 'Family notes')}</p>
-				<div class="np__cols">${members.map((m) => `<div><h4>${T(m.name)}</h4><em>${m.kid && m.born ? `${esc(age(m.born))} · ` : ''}${T(m.role)}</em>${m.text ? `<p>${T(m.text)}</p>` : ''}</div>`).join('')}</div>
+			<section class="np__family"><p class="np__kicker">${doodle('family', 18)} ${L('أخبار العيلة', 'Family notes')}</p>
+				<div class="np__cols">${members.map((m) => `<div style="--c:${esc(m.color || '#0e6990')}"><span class="np__face">${doodle(m.emoji, 22)}</span><h4>${T(m.name)}</h4><em>${m.kid && m.born ? `${esc(age(m.born))} · ` : ''}${T(m.role)}</em>${m.text ? `<p>${T(m.text)}</p>` : ''}</div>`).join('')}</div>
 			</section>
 		</div>
 		<p class="np__foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>`;

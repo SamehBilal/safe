@@ -932,3 +932,53 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 @media (hover: none) { .sh-it__del { opacity: .6; } }
 @media (prefers-reduced-motion: reduce) { .sh-bag { animation: none; } }
 :lang(ar) .sh-receipt { font-family: var(--f-body); }
+
+/* ---------- «جريدة بيتنا» in the theme: an ink-bordered sheet with a coloured shadow, the masthead in the script font
+   with a marker under it, the sections as taped labels, the numbers and what's coming on sticky notes, the quote in a
+   speech bubble, the ads on a cut-out coupon, and each of us on a little card in our colour ---------- */
+.paper.np { color: var(--text); background: repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--blue, #0e6990) 8%, transparent) 31px 32px), var(--card-2, var(--paper));
+	font-family: var(--f-body); border: 2px solid var(--ink, #37353f); border-radius: var(--sketch, 22px); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--hl-yellow, #fdc830); }
+.np .paper__name { width: fit-content; margin: 0 auto; padding: 0 .2em; font: 400 clamp(2.6rem, 9vw, 4.4rem)/1.2 var(--f-script); color: var(--blue, #0e6990);
+	background: linear-gradient(transparent 58%, color-mix(in srgb, var(--hl-yellow, #fdc830) 70%, transparent) 58% 90%, transparent 90%); }
+:lang(ar) .np .paper__name { font-family: 'Aref Ruqaa', var(--f-script); font-weight: 700; }
+.np .paper__bar { border: 0; margin: 10px 0 20px; padding: 0; font-size: .85rem; }
+.np .paper__bar div { border: 2px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); border-inline: 0; color: var(--muted); font-weight: 700; }
+.np .paper__headline { font: 800 clamp(1.5rem, 4.6vw, 2.3rem)/1.35 var(--f-body); color: var(--text); }
+:lang(ar) .np .paper__headline { font-family: 'Aref Ruqaa', var(--f-body); font-weight: 700; }
+.np .paper__lead { font: 600 1.25rem/1.4 var(--f-hand); color: var(--muted); font-style: normal; }
+:lang(ar) .np .paper__lead { font: 600 1rem/1.6 var(--f-body); }
+.np__stamp { color: var(--coral-deep, #d9534f); border-color: currentColor; border-radius: 10px; font-family: var(--f-body); background: color-mix(in srgb, var(--card-2, #fff) 80%, transparent); }
+.np__kicker { display: inline-flex; align-items: center; gap: 6px; width: fit-content; margin: 0 0 10px; padding: 4px 12px; font: 800 .82rem var(--f-body); letter-spacing: .02em; text-transform: none; color: #2b2b33;
+	background: color-mix(in srgb, var(--k, var(--hl-yellow, #fdc830)) 75%, #fff); border: 0; rotate: -1.5deg; box-shadow: 0 2px 4px rgba(40, 30, 10, .12); }
+.np__kicker .dd { width: 18px; height: 18px; }
+.np__story { --k: #8fd1ef; }
+.np__story h4 { font: 800 clamp(1.2rem, 3vw, 1.6rem)/1.35 var(--f-body); }
+.np__story em { color: var(--muted); font-style: normal; font-weight: 700; }
+.np__pic { border: 2px solid var(--ink, #37353f); border-radius: 6px; padding: 6px 6px 18px; background: #fbf8f1; rotate: -1deg; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-pink, #fc8b93); }
+.np__pic img { filter: none; border-radius: 2px; }
+.np__side { border: 0; padding: 0; }
+.np__box { padding: 14px 16px; color: #2b2b33; background: #fff6b8; rotate: 1deg; box-shadow: 0 4px 10px rgba(40, 30, 10, .14); }
+.np__box + .np__box { background: #fde3e0; rotate: -1deg; --k: #f9a3a8; }
+.np__nums b { font: 400 1.7rem/1.1 var(--f-label); color: var(--coral-deep, #d9534f); letter-spacing: .02em; }
+.np__soon li { border-bottom: 1.5px dashed rgba(55, 53, 63, .25); }
+.np__soon b { color: var(--blue, #0e6990); }
+.np__quote { --k: #b9e08a; position: relative; padding: 18px 20px; background: var(--card, #fff); border: 2px solid var(--ink, #37353f); border-radius: 26px; }
+.np__quote::after { content: ''; position: absolute; bottom: -14px; inset-inline-start: 40px; width: 22px; height: 22px; background: inherit; border: 2px solid var(--ink, #37353f); border-top: 0; border-inline-start: 0; rotate: 45deg; }
+:root[dir='rtl'] .np__quote::after { rotate: 135deg; }
+.np__quote blockquote { font: 700 clamp(1.7rem, 4vw, 2.3rem)/1.3 var(--f-hand); color: var(--blue, #0e6990); }
+:lang(ar) .np__quote blockquote { font-family: 'Aref Ruqaa', var(--f-body); }
+.np__quote cite { font-style: normal; font-weight: 700; color: var(--muted); }
+.np__ads { --k: #d6b4f0; padding: 14px 16px; background: var(--card, #fff); border: 2.5px dashed color-mix(in srgb, var(--ink, #37353f) 55%, transparent); border-radius: 12px; }
+.np__ad { border-bottom: 1.5px dotted rgba(55, 53, 63, .3); }
+.np__ad img { filter: none; }
+.np__ad b { color: var(--coral-deep, #d9534f); }
+.np__family { --k: #ffd66b; }
+.np__cols > div { position: relative; padding: 12px 14px; background: color-mix(in srgb, var(--c) 10%, var(--card, #fff)); border: 2px solid var(--ink, #37353f); border-radius: 14px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
+.np__cols > div:nth-child(odd) { rotate: -.8deg; } .np__cols > div:nth-child(even) { rotate: .8deg; }
+.np__face { float: inline-end; display: grid; place-items: center; width: 40px; height: 40px; color: var(--c); background: var(--card, #fff); border: 2px solid var(--c); border-radius: 50%; }
+.np__cols h4 { font: 800 1.15rem var(--f-body); color: var(--c); }
+.np__cols em { color: var(--muted); font-style: normal; font-weight: 700; }
+.np__cols p { text-align: start; }
+.np__foot { border-top: 2px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); color: var(--muted); font: 600 1.1rem var(--f-hand); font-style: normal; }
+:lang(ar) .np__foot { font: 700 .85rem var(--f-body); }
+.np__pic:not(:has(img)) { display: none; }
