@@ -579,7 +579,7 @@ export const PAGES = [
 	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'كل حاجة نفسنا فيها على ورقة، واللي نجيبها نشطبها', den: 'Everything we want on one sheet, crossed out as we get it', group: 'family' },
 	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور، بنجوم', den: 'House jobs in turns, with stars', group: 'family' },
 	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'أكلته وكرتونه ولعبته في كل سن', den: 'Their food, cartoon and toy at every age', group: 'family' },
-	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسومات الولاد', en: 'The boys’ drawings', dar: 'باب التلاجة: كل رسمة رسموها', den: 'The fridge door: every drawing they made', group: 'family' },
+	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسوماتنا', en: 'Our drawings', dar: 'باب التلاجة: كل رسمة رسمناها، إحنا والولاد', den: 'The fridge door: every drawing we made, us and the boys', group: 'family' },
 	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن، سنة ورا سنة', den: 'Height and weight, year by year', group: 'family' },
 	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'كل كلمة حلوة قالوها', den: 'Every funny thing they said', group: 'family' },
 	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت، ونشطبه واحنا بنشتري', den: 'What the house needs, ticked off as we shop', group: 'family' },

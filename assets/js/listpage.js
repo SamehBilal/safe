@@ -7,7 +7,8 @@
      title, sub, add: [ar, en],      the title, the line under it, the «add» button
      icon,                           doodle for the «add» button
      fields: [{ n, t, l: [ar, en], req, opts, ideas, grow, ph }]
-             t: text | area | date | num | sel | photo | url;  opts: 'kids' | 'who' | 'whoBoth' | [[value, ar, en]] | (s) => same
+             t: text | area | date | num | sel | photo | url;  opts: 'kids' | 'who' | 'whoBoth' | 'all' | [[value, ar, en]] | (s) => same
+             a photo field with sketch: true can also be drawn right here, on the sketch pad (sketch.js)
      band(items, ctx) → html         the header band (drawn again whenever the list changes)
      card(x, ctx) → html             one entry
      sort(a, b), keep(x, ctx)        order; which entries this phone shows
@@ -24,6 +25,7 @@ import { doodle } from './doodles.js';
 import * as live from './live.js';
 import { setupNote } from './pages/journal.js';
 import { shrinkPhoto } from './pages/trips.js';
+import { openSketch } from './sketch.js';
 
 const WHO = [['him', '', ''], ['her', '', '']];
 export function ctxOf(s) {
@@ -45,6 +47,7 @@ function optsOf(f, s) {
 	const o = typeof f.opts === 'function' ? f.opts(s) : f.opts;
 	if (o === 'kids') return (s.family?.members || []).filter((m) => m.kid).map((k) => [k.id, App.t(k.name)]);
 	if (o === 'who') return [['him', T(s.him)], ['her', T(s.her)]];
+	if (o === 'all') return [['him', T(s.him)], ['her', T(s.her)], ...(s.family?.members || []).filter((m) => m.kid).map((k) => [k.id, App.t(k.name)])];
 	if (o === 'whoBoth') return [['both', L('إحنا الاتنين', 'Both of us')], ['him', T(s.him)], ['her', T(s.her)]];
 	return (o || []).map(([v, ar, en]) => [v, L(ar, en ?? ar)]);
 }
@@ -58,7 +61,7 @@ function input(f, s) {
 		case 'date': el = `<input name="${f.n}" type="date"${req}>`; break;
 		case 'num': el = `<input name="${f.n}" type="number" step="${f.step || 'any'}" min="${f.min ?? 0}" inputmode="decimal"${req}${ph}>`; break;
 		case 'url': el = `<input name="${f.n}" type="url" dir="ltr"${req}${ph}>`; break;
-		case 'photo': el = `<input name="${f.n}" type="file" accept="image/*"${f.many ? ' multiple' : ''}${req}>`; break;
+		case 'photo': el = `<input name="${f.n}" type="file" accept="image/*"${f.many ? ' multiple' : ''}${req}>${f.sketch ? `<span class="lp-sketch"><button class="btn btn--sm" type="button" data-sketch-field="${f.n}">${doodle('pencil', 16)} ${Y('أو ارسمها هنا', 'أو ارسميها هنا', 'Or draw it here')}</button><img class="lp-sketch__img" alt="" hidden></span>` : ''}`; break;
 		case 'sel': el = `<select name="${f.n}"${req}>${optsOf(f, s).map(([v, x]) => `<option value="${esc(v)}">${esc(x)}</option>`).join('')}</select>`; break;
 		default: el = `<input name="${f.n}" dir="auto" maxlength="${f.max || 140}"${req}${ph}${f.ideas ? ` list="lp-${f.n}"` : ''}>${f.ideas ? `<datalist id="lp-${f.n}">${f.ideas.map(([ar, en]) => `<option value="${esc(L(ar, en ?? ar))}">`).join('')}</datalist>` : ''}`;
 	}
@@ -138,6 +141,19 @@ export function listPage(cfg) {
 				cfg.click?.(e, ctx);
 			});
 			const f = $('#lp-form', root);
+			/* «draw it here»: the sketch pad, and the drawing stands in for the photo */
+			const sketched = {};
+			f?.addEventListener('click', async (e) => {
+				const b = e.target.closest('[data-sketch-field]');
+				if (!b) return;
+				const n = b.dataset.sketchField, fd = cfg.fields.find((x) => x.n === n);
+				const blob = await openSketch({ title: L(...(fd.sketchTitle || fd.l)) });
+				if (!blob) return;
+				sketched[n] = blob;
+				const im = $('.lp-sketch__img', b.parentNode);
+				im.src = URL.createObjectURL(blob); im.hidden = false;
+				f.elements[n].required = false;
+			});
 			if (f) f.onsubmit = async (e) => {
 				e.preventDefault();
 				const msg = $('#lp-msg', root);
@@ -150,12 +166,14 @@ export function listPage(cfg) {
 							const files = [...el.files];
 							if (fd.many) { if (files.length) x[fd.n] = []; for (const file of files) x[fd.n].push(await live.putSketch(await shrinkPhoto(file, 1200))); }
 							else if (files[0]) x[fd.n] = await live.putSketch(await shrinkPhoto(files[0], 1200));
+							else if (sketched[fd.n]) { x[fd.n] = await live.putSketch(sketched[fd.n]); x.drawn = true; }
 						} else if (fd.t === 'num') { if (el.value !== '') x[fd.n] = +el.value; }
 						else if (el.value.trim()) x[fd.n] = el.value.trim();
 					}
 					cfg.prepare?.(x, ctx);
 					await save((d) => { (d.items = d.items || []).push(x); });
 					f.reset();
+					for (const n of Object.keys(sketched)) { delete sketched[n]; const im = $(`[data-sketch-field="${n}"] + .lp-sketch__img`, f); if (im) im.hidden = true; const fd = cfg.fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; }
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
 				} catch (err) { msg.textContent = live.why(err); }
 			};

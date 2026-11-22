@@ -1,7 +1,8 @@
 import { L, esc, App } from '../shell.js';
 import { listPage, shorten } from '../listpage.js';
 
-/* «رسومات الولاد» — the fridge door: every drawing the boys make, dated with how old they were, held up by magnets.
+/* «رسوماتنا» — the fridge door: every drawing any of us makes (the boys, dated with how old they were, and the two of
+   us too), held up by magnets — a photo of it, or drawn right here on the sketch pad.
    The cards are pages on the fridge door, each under its own magnet. */
 
 const MAGNETS = ['#d9534f', '#0e6990', '#e39b2d', '#5a9e6f', '#8e5bd1', '#f06292'];
@@ -14,27 +15,27 @@ const DOODLES = [
 
 export default listPage({
 	id: 'drawings', kind: 'drawings', icon: 'pencil',
-	title: ['رسومات الولاد', 'The boys’ drawings'], sub: ['باب التلاجة بتاعنا: كل رسمة رسموها، وكانوا قد إيه', 'Our fridge door: every drawing they made, and how old they were'],
+	title: ['رسوماتنا', 'Our drawings'], sub: ['باب التلاجة بتاعنا: كل رسمة رسمناها — إحنا والولاد', 'Our fridge door: every drawing we made — the boys and the two of us'],
 	add: ['علّقوا رسمة على التلاجة', 'Stick a drawing on the fridge'],
 	fields: [
-		{ n: 'kid', t: 'sel', l: ['مين رسمها؟', 'Who drew it?'], opts: 'kids' },
+		{ n: 'kid', t: 'sel', l: ['مين رسمها؟', 'Who drew it?'], opts: 'all' },
 		{ n: 'date', t: 'date', l: ['إمتى؟', 'When?'], req: 1 },
-		{ n: 'photo', t: 'photo', l: ['صورة الرسمة', 'Photo of the drawing'], req: 1 },
+		{ n: 'photo', t: 'photo', l: ['صورة الرسمة', 'Photo of the drawing'], req: 1, sketch: true, sketchTitle: ['ارسم رسمتك', 'Draw your drawing'] },
 		{ n: 'title', t: 'text', l: ['دي رسمة إيه؟', 'What is it?'], ph: ['بابا وماما والعربية', 'Mum, Dad and the car'], full: 1 },
 		{ n: 'note', t: 'area', l: ['قال عليها إيه؟', 'What did he say about it?'], rows: 2 }
 	],
-	chips: { n: 'kid', opts: 'kids' },
+	chips: { n: 'kid', opts: 'all' },
 	sort: (a, b) => String(b.date || '').localeCompare(String(a.date || '')),
 	/* above the title: the boys' art corner — an easel with a sheet of paper where a crayon drawing draws itself, stroke by
 	   stroke (a sun, our house, the four of us holding hands, a heart), the boys' names written across the top in crayon,
 	   a box of crayons at its foot; and beside it a string with the three newest drawings hung on clothes pegs, swaying */
 	band: (items, c) => {
-		const kids = c.kids.filter((k) => !k.born || new Date(k.born) <= new Date());
+		const kids = [{ name: c.s.him }, { name: c.s.her }, ...c.kids.filter((k) => !k.born || new Date(k.born) <= new Date())];
 		const names = kids.map((k, i) => `<span style="--c:${MAGNETS[(i * 3) % MAGNETS.length]}">${esc(App.t(k.name))}</span>`).join(`<i>${L('و', '&')}</i>`);
 		const latest = items.filter((x) => x.photo).slice(0, 3);
 		const hung = [0, 1, 2].map((i) => {
 			const x = latest[i];
-			const inner = x ? `<img data-sketch="${esc(x.photo)}" alt="${esc(x.title || '')}"><small dir="auto">${esc(shorten(x.title || c.kidName(x.kid), 16))}</small>`
+			const inner = x ? `<img data-sketch="${esc(x.photo)}" alt="${esc(x.title || '')}"><small dir="auto">${esc(shorten(x.title || c.whoName(x.kid), 16))}</small>`
 				: `<svg viewBox="0 0 100 90" aria-hidden="true">${DOODLES[i]}</svg>`;
 			return `<figure class="dwb-hung" style="--i:${i}"><span class="dwb-peg" aria-hidden="true"></span>${inner}</figure>`;
 		}).join('');
@@ -68,7 +69,7 @@ export default listPage({
 	card: (x, c) => `<article class="lp-card fd-card" style="--m:${MAGNETS[(String(x.id).length + (x.date || '').length) % MAGNETS.length]};--r:${((String(x.id).charCodeAt(0) || 0) % 5) - 2}deg">
 		<span class="fd-magnet" aria-hidden="true"></span>
 		${c.photo(x)}
-		<p class="lp-k">${esc(c.kidName(x.kid))}${x.date ? ` · ${c.date(x.date)}` : ''}${x.date && c.kidAge(x.kid, x.date) ? ` · ${esc(c.kidAge(x.kid, x.date))}` : ''}</p>
+		<p class="lp-k">${esc(c.whoName(x.kid))}${x.drawn ? ` · ${L('اترسمت هنا', 'drawn here')}` : ''}${x.date ? ` · ${c.date(x.date)}` : ''}${x.date && c.kidAge(x.kid, x.date) ? ` · ${esc(c.kidAge(x.kid, x.date))}` : ''}</p>
 		${x.title ? `<h3 dir="auto">${esc(x.title)}</h3>` : ''}
 		${x.note ? `<p dir="auto">«${esc(x.note)}»</p>` : ''}
 		${c.del(x)}

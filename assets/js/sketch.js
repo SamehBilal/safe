@@ -29,7 +29,13 @@ export function openSketch({ title = '', hint = '' } = {}) {
 					<button type="button" class="tool" data-act="clear" title="${Y('امسح الكل', 'امسحي الكل', 'Clear')}">${doodle('trash', 22)}</button>
 				</div>
 			</footer>`;
-		document.body.append(box);
+		// in a <dialog> of its own, so it opens on top even of another open dialog (an «add» form)
+		const dlg = document.createElement('dialog');
+		dlg.className = 'sketch-dlg';
+		dlg.append(box);
+		document.body.append(dlg);
+		dlg.showModal();
+		dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(null); });
 		document.body.classList.add('menu-lock');
 
 		const canvas = box.querySelector('canvas');
@@ -106,7 +112,8 @@ export function openSketch({ title = '', hint = '' } = {}) {
 		function close(v) {
 			ro.disconnect();
 			document.body.classList.remove('menu-lock');
-			box.remove();
+			dlg.close();
+			dlg.remove();
 			resolve(v);
 		}
 	});

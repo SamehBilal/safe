@@ -1911,3 +1911,10 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .ch-star .dd, .ch-stars .gm-crown .dd { vertical-align: -4px; }
 .ch-stars .gm-crown { font-size: 0; }
 #ch-spin .dd { vertical-align: -3px; }
+
+/* a photo field that can also be drawn here (listpage.js, sketch: true) */
+.lp-sketch { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.lp-sketch .btn .dd { vertical-align: -3px; }
+.lp-sketch__img { width: 64px; height: 64px; object-fit: contain; background: #fff; border: 1.5px solid var(--ink, #37353f); border-radius: 8px; }
+.sketch-dlg { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; }
+.sketch-dlg::backdrop { background: transparent; }
