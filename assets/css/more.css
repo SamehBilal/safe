@@ -1014,3 +1014,34 @@ a.tk-open:hover { rotate: 0deg; translate: 0 -3px; }
 @media (prefers-reduced-motion: reduce) { .dwb-st { animation: none; stroke-dashoffset: 0; } .dwb-hung, .dwb-crayons i { animation: none; } }
 .dwb-names { gap: 6px; } .dwb-names i { font-style: normal; color: #9a948c; }
 :lang(ar) .dwb-names, .dwb-names { font-size: clamp(1.05rem, 2.4vw, 1.4rem); }
+
+/* ---------- «بيحب إيه دلوقتي», above the title: an «All about me» worksheet for each boy — his drawing in a frame,
+   his name and age, and a line for each favourite with its icon, the answer in crayon in his colour ---------- */
+.fvb { position: relative; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: clamp(14px, 3vw, 30px); padding: 10px var(--gutter) 6px; }
+.fvb-sheet { width: min(300px, 100%); padding: 14px 16px 12px; color: #2b2b33; rotate: var(--r);
+	background: repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .15) 31px 32px) 0 118px / 100% calc(100% - 118px) no-repeat, #fffdf6;
+	border: 2px solid var(--ink, #37353f); border-radius: 6px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--c) 55%, transparent);
+	outline: 3px dashed color-mix(in srgb, var(--c) 45%, transparent); outline-offset: -9px; }
+.fvb-h { margin: 0 0 8px; text-align: center; font: 700 1.6rem/1 var(--f-script); color: var(--c); }
+:lang(ar) .fvb-h { font: 700 1.35rem/1.2 'Aref Ruqaa', var(--f-body); }
+.fvb-me { display: flex; align-items: center; gap: 12px; height: 74px; }
+.fvb-face { flex: none; display: grid; place-items: center; width: 64px; height: 64px; color: var(--c); background: #fff; border: 2.5px solid var(--c); border-radius: 50% 46% 52% 48%; box-shadow: 0 3px 0 0 color-mix(in srgb, var(--c) 40%, transparent); }
+.fvb-me p { margin: 0; font-size: .82rem; font-weight: 700; color: #6a6560; }
+.fvb-me b { font: 700 1.25rem/1.3 var(--f-hand); color: var(--c); }
+:lang(ar) .fvb-me b { font: 700 1rem/1.5 'Aref Ruqaa', var(--f-body); }
+.fvb-lines { margin: 10px 0 0; padding: 0; list-style: none; }
+.fvb-lines li { display: flex; align-items: flex-end; gap: 6px; height: 32px; padding-bottom: 3px; white-space: nowrap; overflow: hidden; animation: fvb-in .5s calc(.3s + var(--i) * .15s) both; }
+.fvb-ic { flex: none; display: grid; place-items: center; width: 24px; height: 24px; color: #6a6560; }
+.fvb-k { font-size: .78rem; font-weight: 800; color: #6a6560; }
+.fvb-lines b { overflow: hidden; text-overflow: ellipsis; font: 700 1.15rem/1 var(--f-hand); color: var(--c); }
+:lang(ar) .fvb-lines b { font: 700 .95rem/1.2 'Aref Ruqaa', var(--f-body); }
+@keyframes fvb-in { from { opacity: 0; translate: 0 4px; } }
+.fvb-pencil { position: absolute; bottom: -12px; inset-inline-end: calc(50% - min(330px, 46vw)); width: 140px; filter: drop-shadow(3px 6px 4px rgba(40, 30, 10, .25)); }
+.fv-card-e .dd, .fv-li-e .dd { vertical-align: -3px; }
+@media (max-width: 640px) { .fvb-pencil { display: none; } }
+@media (prefers-reduced-motion: reduce) { .fvb-lines li { animation: none; } }
+.lp-band--favorites { place-items: stretch; }
+.lp-band--favorites .fvb { width: 100%; }
+.lp-band--favorites svg.dd { width: auto; }
+.lp-band--favorites .fvb-pencil { width: 140px; height: auto; }
+:lang(ar) .fvb-lines b { font-size: 1.05rem; }

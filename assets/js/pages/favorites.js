@@ -1,15 +1,19 @@
 import { L, esc, age, App } from '../shell.js';
 import { listPage, shorten } from '../listpage.js';
+import { doodle } from '../doodles.js';
 
 /* «بيحب إيه دلوقتي» — every few months, what each boy loves right now: his food, cartoon, toy, song, the word he
    says all day and who he can't leave. Over the years it becomes who they were at every age.
-   Top: an «All about me» board — each boy's badge in his colour with his age today, and his latest favourites pinned
-   around it as crayon stickers. */
+   Top: an «All about me» worksheet for each boy, the kind they bring home from nursery — his drawing in a frame, «اسمي»
+   and «عندي» filled in, and a line for each favourite with its drawn icon, the answers written in crayon in his colour.
+   A pencil lies across the corner. */
 
+/* [field, drawn icon, [label], [label in his own words, for the worksheet]] */
 const THINGS = [
-	['food', '🍕', ['أكلته', 'Food']], ['show', '📺', ['كرتونه', 'Cartoon']], ['toy', '🧸', ['لعبته', 'Toy']],
-	['song', '🎵', ['أغنيته', 'Song']], ['word', '💬', ['كلمته', 'Word']], ['person', '🤗', ['متعلق بمين', 'Can’t leave']],
-	['color', '🎨', ['لونه', 'Colour']], ['place', '📍', ['مكانه', 'Place']]
+	['food', 'dinner', ['أكلته', 'Food'], ['أكلتي المفضلة', 'My favourite food']], ['show', 'tv', ['كرتونه', 'Cartoon'], ['كرتوني', 'My cartoon']],
+	['toy', 'teddy', ['لعبته', 'Toy'], ['لعبتي', 'My toy']], ['song', 'music', ['أغنيته', 'Song'], ['أغنيتي', 'My song']],
+	['word', 'chat', ['كلمته', 'Word'], ['كلمتي', 'My word']], ['person', 'love', ['متعلق بمين', 'Can’t leave'], ['متعلق بـ', 'I can’t leave']],
+	['color', 'palette', ['لونه', 'Colour'], ['لوني', 'My colour']], ['place', 'pin', ['مكانه', 'Place'], ['مكاني', 'My place']]
 ];
 const STICK = ['#fdc830', '#fdd5d8', '#e6efb4', '#cfe9f5', '#f9d3b4', '#e2d6f5'];
 
@@ -35,23 +39,25 @@ export default listPage({
 	sort: (a, b) => String(b.date || '').localeCompare(String(a.date || '')),
 	band: (items, c) => {
 		const kids = c.kids.filter((k) => !k.born || new Date(k.born) <= new Date());
-		return `<div class="fv-board">${kids.map((k, i) => {
+		const sheet = (k, i) => {
 			const last = items.find((x) => x.kid === k.id);
-			const got = last ? THINGS.filter(([n]) => last[n]).slice(0, 5) : [];
-			const stickers = got.length ? got.map(([n, e], j) => `<span class="fv-stick" style="--i:${j};--bg:${STICK[(j + i * 2) % STICK.length]}" dir="auto">${e} ${esc(shorten(last[n], 16))}</span>`).join('')
-				: [['🍼', L('بيحب إيه؟', 'Loves…?')], ['🧸', '…'], ['🎵', '…']].map(([e, t], j) => `<span class="fv-stick is-empty" style="--i:${j};--bg:${STICK[(j + i * 2) % STICK.length]}">${e} ${esc(t)}</span>`).join('');
-			return `<div class="fv-kid" style="--c:${esc(k.color || '#0e6990')};--r:${i % 2 ? 2 : -2}deg">
-				<span class="fv-badge"><span class="fv-emoji">${esc(k.emoji || '⭐')}</span></span>
-				<b class="fv-name">${esc(App.t(k.name))}</b>
-				<small class="fv-age">${k.born ? esc(age(k.born)) : ''}</small>
-				<span class="fv-sticks">${stickers}</span>
+			const lines = (last ? THINGS.filter(([n]) => last[n]) : []).slice(0, 5);
+			const rows = (lines.length ? lines : THINGS.slice(0, 4)).map(([n, ic, , mine], j) => `<li style="--i:${j}"><span class="fvb-ic">${doodle(ic, 18)}</span><span class="fvb-k">${esc(L(...mine))}:</span><b dir="auto">${last?.[n] ? esc(shorten(last[n], 18)) : '…'}</b></li>`).join('');
+			return `<div class="fvb-sheet" style="--c:${esc(k.color || '#0e6990')};--r:${i % 2 ? 2 : -2}deg">
+				<p class="fvb-h">${L('كل حاجة عني', 'All about me')}</p>
+				<div class="fvb-me"><span class="fvb-face">${doodle(k.emoji || 'star', 38)}</span>
+					<div><p>${L('اسمي', 'My name')}: <b>${esc(App.t(k.name))}</b></p><p>${L('عندي', 'I am')}: <b>${k.born ? esc(age(k.born)) : '…'}</b></p></div></div>
+				<ul class="fvb-lines">${rows}</ul>
 			</div>`;
-		}).join('')}<p class="fv-title">${L('كل حاجة عني', 'All about me')} ✎</p></div>`;
+		};
+		return `<div class="fvb">${kids.map(sheet).join('')}
+			<svg class="fvb-pencil" viewBox="0 -40 220 120" aria-hidden="true"><g transform="rotate(-20 110 20)"><rect x="40" y="10" width="140" height="20" fill="#fdc830" stroke="#37353f" stroke-width="2"/><path d="M40 10h140M40 17h140M40 23h140" stroke="#e39b2d" stroke-width="1.2"/><rect x="180" y="10" width="22" height="20" fill="#f9a3a8" stroke="#37353f" stroke-width="2"/><path d="M40 10 12 20l28 10Z" fill="#f3d9b1" stroke="#37353f" stroke-width="2" stroke-linejoin="round"/><path d="M12 20l9-3v6Z" fill="#37353f"/></g></svg>
+		</div>`;
 	},
 	card: (x, c) => `<article class="lp-card fv-card" style="--c:${esc(c.kidOf(x.kid)?.color || '#0e6990')}">
-		<header class="fv-card-h"><span class="fv-card-e">${esc(c.kidOf(x.kid)?.emoji || '⭐')}</span><span><b>${esc(c.kidName(x.kid))}</b><small>${x.date ? c.date(x.date) : ''}${x.date && c.kidAge(x.kid, x.date) ? ` · ${esc(c.kidAge(x.kid, x.date))}` : ''}</small></span></header>
+		<header class="fv-card-h"><span class="fv-card-e">${doodle(c.kidOf(x.kid)?.emoji || 'star', 26)}</span><span><b>${esc(c.kidName(x.kid))}</b><small>${x.date ? c.date(x.date) : ''}${x.date && c.kidAge(x.kid, x.date) ? ` · ${esc(c.kidAge(x.kid, x.date))}` : ''}</small></span></header>
 		${c.photo(x)}
-		<ul class="fv-list">${THINGS.filter(([n]) => x[n]).map(([n, e, l]) => `<li><span class="fv-li-e">${e}</span><span class="fv-li-k">${esc(L(...l))}</span><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
+		<ul class="fv-list">${THINGS.filter(([n]) => x[n]).map(([n, e, l]) => `<li><span class="fv-li-e">${doodle(e, 18)}</span><span class="fv-li-k">${esc(L(...l))}</span><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
 		${x.note ? `<p dir="auto">${esc(x.note)}</p>` : ''}
 		${c.del(x)}
 	</article>`,
