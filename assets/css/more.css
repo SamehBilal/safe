@@ -1182,6 +1182,18 @@
 .lp-list--sayings { padding-top: 14px; }
 .sy-entry.is-first::before { content: attr(data-letter); position: absolute; top: -16px; inset-inline-start: 14px; display: grid; place-items: center; width: 36px; height: 36px; font: 800 1.15rem var(--f-body); color: #fff; background: #c2185b; border: 2px solid var(--ink, #37353f); border-radius: 9px; rotate: -5deg; box-shadow: 2px 2px 0 0 var(--hl-yellow, #fdc830); }
 .sy-entry.is-first .sy-entry__word { margin-top: 10px; }
+/* the pronunciation button: his voice saying the word; while it plays the speaker sends out waves */
+.sy-say { display: inline-flex; }
+.sy-say__btn { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 10px; font: inherit; font-size: .8rem; font-weight: 800; color: var(--c); cursor: pointer; background: color-mix(in srgb, var(--c) 10%, var(--card)); border: 1.5px solid var(--c); border-radius: 999px; transition: background .2s, translate .2s; }
+.sy-say__btn:hover { translate: 0 -2px; background: color-mix(in srgb, var(--c) 18%, var(--card)); }
+.sy-say__waves { display: none; align-items: center; gap: 2px; height: 14px; }
+.sy-say__waves b { width: 3px; height: 40%; background: currentColor; border-radius: 2px; animation: lp-bar .8s ease-in-out infinite; }
+.sy-say__waves b:nth-child(2) { animation-delay: -.25s; } .sy-say__waves b:nth-child(3) { animation-delay: -.5s; }
+.sy-say.is-on .sy-say__btn { color: #fff; background: var(--c); }
+.sy-say.is-on .sy-say__waves { display: inline-flex; }
+.sy-say audio { display: none; }
+.sy-say--sm { margin-top: 6px; }
+.sy-say--sm .sy-say__btn { --c: var(--coral-deep, #d9534f); font-size: .74rem; }
 .grb-mark.is-last b { right: auto; left: 0; top: -19px; translate: none; font-size: .66rem; }
 .grb-mark:not(.is-last) small { display: none; }
 @keyframes grb-flag { from { opacity: 0; translate: 0 6px; } }

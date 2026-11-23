@@ -21,7 +21,7 @@ export const fold = (s) => String(s ?? '').normalize('NFKC').toLowerCase()
 
 /* All the readable text in a value, in both languages: strings, { ar, en }, arrays, nested objects.
    Ids, dates, file names, links and colours are skipped. */
-const SKIP = /^(id|at|by|who|photo|photos|cover|audio|sketch|color|icon|emoji|href|link|url|lat|lng|x|y|z|kind|k|done|fav|rating|order)$/i;
+const SKIP = /^(id|at|by|who|photo|photos|cover|audio|sketch|color|icon|emoji|href|link|url|lat|lng|x|y|z|kind|k|done|fav|rating|order|voice|voiceType)$/i;
 function texts(v, out = [], depth = 0) {
 	if (v == null || depth > 5) return out;
 	if (typeof v === 'string') {

@@ -7,7 +7,7 @@
      title, sub, add: [ar, en],      the title, the line under it, the «add» button
      icon,                           doodle for the «add» button
      fields: [{ n, t, l: [ar, en], req, opts, ideas, grow, ph }]
-             t: text | area | date | num | sel | photo | url;  opts: 'kids' | 'who' | 'whoBoth' | 'all' | [[value, ar, en]] | (s) => same
+             t: text | area | date | num | sel | photo | url | voice (recorded here, or a sound file);  opts: 'kids' | 'who' | 'whoBoth' | 'all' | [[value, ar, en]] | (s) => same
              a photo field with sketch: true can also be drawn right here, on the sketch pad (sketch.js)
              a text/area field with pic: true (and ic: a drawing) is a tile with its own picture, a photo or drawn, kept as <n>Pic
      band(items, ctx) → html         the header band (drawn again whenever the list changes)
@@ -69,8 +69,22 @@ function tile(f, s) {
 	</div>`;
 }
 
+/* a voice: «record it» (the phone's microphone, up to two minutes) or «a sound file», then a player to hear it back */
+function voice(f) {
+	return `<div class="f lp-voice" data-voice-field="${f.n}"><span>${esc(L(...f.l))}</span>
+		<div class="lp-voice__opts">
+			<button class="lp-pic__opt lp-pic__opt--sm" type="button" data-rec="${f.n}">${doodle('mic', 20)}<b>${Y('سجّل صوته', 'سجّلي صوته', 'Record it')}</b></button>
+			<label class="lp-pic__opt lp-pic__opt--sm">${doodle('music', 20)}<b>${L('ملف صوت', 'A sound file')}</b><input name="${f.n}" type="file" accept="audio/*"></label>
+		</div>
+		<div class="lp-voice__rec" hidden><span class="lp-voice__dot"></span><b class="lp-voice__t">0:00</b><span class="lp-voice__bars">${'<i></i>'.repeat(5)}</span><button class="btn btn--sm btn--coral" type="button" data-rec-stop="${f.n}">${L('وقّف', 'Stop')}</button></div>
+		<div class="lp-voice__show" hidden><audio controls preload="metadata"></audio><button class="link link--danger" type="button" data-voice-clear="${f.n}">${L('شيله', 'Remove')}</button></div>
+		<small class="lp-voice__msg muted"></small>
+	</div>`;
+}
+
 function input(f, s) {
 	if (f.pic) return tile(f, s);
+	if (f.t === 'voice') return voice(f);
 	const lab = L(...f.l), req = f.req ? ' required' : '';
 	const ph = f.ph ? ` placeholder="${esc(L(...f.ph))}"` : '';
 	let el;
@@ -114,7 +128,7 @@ export function listPage(cfg) {
 			for (const f of cfg.fields) {
 				/* pic: true fields side by side as tiles, one grid for each run of them */
 				if (f.pic) { if (row.length) { rows.push(row); row = []; } if (rows.at(-1)?.tiles) rows.at(-1).push(f); else { const g = [f]; g.tiles = true; rows.push(g); } continue; }
-				if (f.t === 'area' || f.full || f.sketch) { if (row.length) rows.push(row); rows.push([f]); row = []; }
+				if (f.t === 'area' || f.t === 'voice' || f.full || f.sketch) { if (row.length) rows.push(row); rows.push([f]); row = []; }
 				else { row.push(f); if (row.length === 3) { rows.push(row); row = []; } }
 			}
 			if (row.length) rows.push(row);
@@ -126,7 +140,7 @@ export function listPage(cfg) {
 				<details class="composer reveal"${ok ? '' : ' hidden'}>
 					<summary><span>${doodle(cfg.icon || 'pen', 22)}</span> ${esc(L(...cfg.add))}</summary>
 					<form id="lp-form" autocomplete="off">
-						${rows.map((r) => (r.tiles ? `<div class="lp-tiles">${r.map((f) => input(f, s)).join('')}</div>` : r.length === 1 && (r[0].t === 'area' || r[0].full || r[0].sketch) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
+						${rows.map((r) => (r.tiles ? `<div class="lp-tiles">${r.map((f) => input(f, s)).join('')}</div>` : r.length === 1 && (r[0].t === 'area' || r[0].t === 'voice' || r[0].full || r[0].sketch) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
 						${cfg.note ? `<p class="muted">${esc(L(...cfg.note))}</p>` : ''}
 						<p class="form-msg" id="lp-msg" role="status"></p>
 						<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظ ♥', 'احفظي ♥', 'Save ♥')}</button></div>
@@ -185,6 +199,36 @@ export function listPage(cfg) {
 				f.elements[n].value = '';
 				f.elements[n].required = false;
 			});
+			/* voices: recorded here, or a sound file */
+			const recorded = {};
+			let rec = null;
+			const vbox = (n) => $(`[data-voice-field="${n}"]`, f);
+			const showVoice = (n, url) => { const b = vbox(n); if (!b) return; const a = $('.lp-voice__show audio', b); if (a.src) URL.revokeObjectURL(a.src); a.removeAttribute('src'); if (url) a.src = url; $('.lp-voice__show', b).hidden = !url; $('.lp-voice__opts', b).hidden = !!url; };
+			f?.addEventListener('click', async (e) => {
+				const go = e.target.closest('[data-rec]'), stop = e.target.closest('[data-rec-stop]'), clr = e.target.closest('[data-voice-clear]');
+				if (clr) { const n = clr.dataset.voiceClear; delete recorded[n]; f.elements[n].value = ''; showVoice(n, ''); return; }
+				if (stop) { rec?.stop(); return; }
+				if (!go) return;
+				const n = go.dataset.rec, b = vbox(n), msg = $('.lp-voice__msg', b);
+				msg.textContent = '';
+				if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { msg.textContent = L('الموبايل ده مبيسجلش من هنا — اختاروا ملف صوت', 'This phone can’t record here — pick a sound file'); return; }
+				let stream;
+				try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { msg.textContent = L('محتاجين نستأذن الميكروفون — اسمحوا بيه وجرّبوا تاني', 'The microphone needs permission — allow it and try again'); return; }
+				const chunks = [], m = new MediaRecorder(stream), t0 = Date.now();
+				rec = m;
+				const box = $('.lp-voice__rec', b), clock = $('.lp-voice__t', b);
+				box.hidden = false; $('.lp-voice__opts', b).hidden = true;
+				const tick = setInterval(() => { const sec = Math.floor((Date.now() - t0) / 1000); clock.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`; if (sec >= 120) m.stop(); }, 250);
+				m.ondataavailable = (ev) => { if (ev.data.size) chunks.push(ev.data); };
+				m.onstop = () => {
+					clearInterval(tick); stream.getTracks().forEach((t) => t.stop()); box.hidden = true; rec = null; clock.textContent = '0:00';
+					const blob = new Blob(chunks, { type: (m.mimeType || 'audio/webm').split(';')[0] });
+					if (!blob.size) { $('.lp-voice__opts', b).hidden = false; return; }
+					recorded[n] = blob; f.elements[n].value = ''; showVoice(n, URL.createObjectURL(blob));
+				};
+				m.start();
+			});
+			f?.addEventListener('change', (e) => { const el = e.target; if (el.type !== 'file' || !el.closest('.lp-voice') || !el.files[0]) return; delete recorded[el.name]; showVoice(el.name, URL.createObjectURL(el.files[0])); });
 			const showPic = (n, url) => { const box = $(`[data-pic-clear="${n}"]`, f)?.parentNode; if (!box) return; $('img', box).src = url || ''; box.hidden = !url; };
 			f?.addEventListener('change', (e) => { const el = e.target; if (el.type !== 'file' || !el.closest('.lp-pic') || !el.files[0]) return; delete sketched[el.name]; showPic(el.name, URL.createObjectURL(el.files[0])); });
 			f?.addEventListener('click', (e) => { const c = e.target.closest('[data-pic-clear]'); if (!c) return; const n = c.dataset.picClear; delete sketched[n]; f.elements[n].value = ''; const fd = fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; showPic(n, ''); });
@@ -201,15 +245,22 @@ export function listPage(cfg) {
 							if (fd.many) { if (files.length) x[fd.n] = []; for (const file of files) x[fd.n].push(await live.putSketch(await shrinkPhoto(file, 1200))); }
 							else if (files[0]) x[fd.n] = await live.putSketch(await shrinkPhoto(files[0], 1200));
 							else if (sketched[fd.n]) { x[fd.n] = await live.putSketch(sketched[fd.n]); if (fd.inline) x[fd.n + 'Drawn'] = true; else x.drawn = true; }
+						} else if (fd.t === 'voice') {
+							const v = el.files[0] || recorded[fd.n];
+							if (v) {
+								if (v.size > 5 * 1024 * 1024) throw Object.assign(new Error(L('الصوت أطول من اللازم — خلّيه أقصر من دقيقتين', 'The sound is too long — keep it under two minutes')), { say: true });
+								x[fd.n] = await live.putSketch(v); x[fd.n + 'Type'] = (v.type || 'audio/webm').split(';')[0];
+							}
 						} else if (fd.t === 'num') { if (el.value !== '') x[fd.n] = +el.value; }
 						else if (el.value.trim()) x[fd.n] = el.value.trim();
 					}
 					cfg.prepare?.(x, ctx);
 					await save((d) => { (d.items = d.items || []).push(x); });
 					f.reset();
+					for (const fd of fields.filter((x) => x.t === 'voice')) { delete recorded[fd.n]; showVoice(fd.n, ''); }
 					for (const fd of fields.filter((x) => x.sketch)) { delete sketched[fd.n]; showPic(fd.n, ''); if (fd.req) f.elements[fd.n].required = true; }
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
-				} catch (err) { msg.textContent = live.why(err); }
+				} catch (err) { msg.textContent = err?.say ? err.message : live.why(err); }
 			};
 			await cfg.ready?.(root, ctx);
 			paint();

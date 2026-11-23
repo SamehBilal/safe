@@ -38,7 +38,9 @@ for (const file of files) {
 	let sketches = 0;
 	for (const [id, s] of Object.entries(body.sketches || {})) {
 		if (!/^[\w-]+$/.test(id)) continue;
-		const out = path.join(LIVE, 's', id + '.webp');
+		const t = String(s.type || '');
+		const ext = /^audio\//.test(t) ? (/mp4|m4a|aac/.test(t) ? '.m4a' : /mpeg|mp3/.test(t) ? '.mp3' : /ogg/.test(t) ? '.ogg' : /wav/.test(t) ? '.wav' : '.webm') : '.webp';
+		const out = path.join(LIVE, 's', id + ext);
 		if (!existsSync(out)) { await writeFile(out, Buffer.from(fromB64(s.b64))); sketches++; }
 	}
 	console.log(`✓ ${path.basename(file)} (${body.by === 'her' ? 'Esraa' : body.by === 'him' ? 'Sameh' : '?'}, ${body.at}): ${done.length ? 'updated ' + done.join(', ') : 'nothing new in the lists'}${sketches ? `, ${sketches} new sketch(es)` : ''}`);

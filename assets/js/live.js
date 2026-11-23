@@ -130,10 +130,29 @@ export function sketchURL(id) {
 	return urls.get(id);
 }
 
-/** Fill <img data-sketch="id"> in a block. */
+/* a recorded voice: kept and sent like a sketch, but read back as sound (its type kept beside it in the list) */
+const voices = new Map();
+export function voiceURL(id, type = 'audio/webm') {
+	if (!voices.has(id)) {
+		voices.set(id, (async () => {
+			const mine = await localSketch(id);
+			if (mine) return URL.createObjectURL(mine);
+			const r = await fetch(`content/live/s/${id}.bin`);
+			if (!r.ok) throw new Error('missing');
+			return URL.createObjectURL(new Blob([await unlock(await r.text())], { type }));
+		})());
+		voices.get(id).catch(() => voices.delete(id));
+	}
+	return voices.get(id);
+}
+
+/** Fill <img data-sketch="id"> and <audio data-voice="id" data-type="…"> in a block. */
 export function hydrateSketches(root) {
 	for (const el of root.querySelectorAll('img[data-sketch]:not([src])')) {
 		sketchURL(el.dataset.sketch).then((u) => { el.src = u; }).catch(() => el.remove());
+	}
+	for (const el of root.querySelectorAll('audio[data-voice]:not([src])')) {
+		voiceURL(el.dataset.voice, el.dataset.type || undefined).then((u) => { el.src = u; }).catch(() => el.closest('[data-voice-box]')?.remove());
 	}
 }
 

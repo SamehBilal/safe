@@ -1957,4 +1957,20 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .lp-tile:has(.lp-pic__show:not([hidden])) .lp-tile__pics { display: none; }
 .lp-tile .lp-pic__show { flex-direction: column; align-items: stretch; }
 .lp-tile .lp-pic__show .link { align-self: center; }
+/* a voice field: «record it» or «a sound file»; while recording a red dot, the time and bars; then a player */
+.lp-voice { display: grid; gap: 8px; }
+.lp-voice__opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lp-voice__opts[hidden], .lp-voice__rec[hidden], .lp-voice__show[hidden] { display: none; }
+.lp-voice__rec { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: color-mix(in srgb, #d9534f 8%, var(--card)); border: 2px dashed #d9534f; border-radius: 12px; }
+.lp-voice__dot { width: 12px; height: 12px; background: #d9534f; border-radius: 50%; animation: lp-rec 1s ease-in-out infinite; }
+@keyframes lp-rec { 50% { opacity: .25; } }
+.lp-voice__t { font-variant-numeric: tabular-nums; min-width: 3em; }
+.lp-voice__bars { display: flex; align-items: center; gap: 3px; height: 22px; margin-inline-end: auto; }
+.lp-voice__bars i { width: 4px; height: 30%; background: #d9534f; border-radius: 2px; animation: lp-bar .9s ease-in-out infinite; }
+.lp-voice__bars i:nth-child(2) { animation-delay: -.3s; } .lp-voice__bars i:nth-child(3) { animation-delay: -.6s; } .lp-voice__bars i:nth-child(4) { animation-delay: -.15s; } .lp-voice__bars i:nth-child(5) { animation-delay: -.45s; }
+@keyframes lp-bar { 50% { height: 100%; } }
+.lp-voice__show { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lp-voice__show audio { flex: 1; min-width: 0; max-width: 100%; height: 40px; }
+.lp-voice__msg:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { .lp-voice__dot, .lp-voice__bars i { animation: none; } }
 .cmodal form { overflow-x: hidden; }
