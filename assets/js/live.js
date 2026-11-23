@@ -205,6 +205,7 @@ export async function importFile(file) {
 	let body;
 	try {
 		const outer = JSON.parse(await file.text());
+		if (outer.app === 'us-watchlist' && Array.isArray(outer.items)) return importWatchlist(outer.items);
 		if (outer.app !== 'us' || !outer.data) throw new Error('not ours');
 		body = JSON.parse(dec.decode(await unlock(outer.data)));
 	} catch { throw new SyncError('file', 'not our file'); }
@@ -223,6 +224,30 @@ export async function importFile(file) {
 		urls.delete(id);
 	}
 	return n;
+}
+
+/* A list of films and series to watch, made on the PC from the folders they're kept in (not encrypted — it's only
+   titles and public posters, and it never goes online): each one not already ours joins «to watch» on this phone, its
+   poster shrunk and encrypted here like every photo. */
+async function importWatchlist(list) {
+	const { shrinkPhoto } = await import('./pages/trips.js');
+	const data = await load('movies');
+	const known = new Set([...(data.towatch || []), ...(data.items || [])].map((x) => String(x.title).trim().toLowerCase()));
+	const add = [];
+	for (const x of list) {
+		const title = String(x.title || '').trim().slice(0, 80);
+		if (!title || known.has(title.toLowerCase())) continue;
+		known.add(title.toLowerCase());
+		let pic;
+		if (x.poster?.b64) {
+			try { pic = await putSketch(await shrinkPhoto(new Blob([fromB64(x.poster.b64)], { type: x.poster.type || 'image/jpeg' }), 600)); } catch { /* no poster, then */ }
+		}
+		const item = { id: newId(), title, year: +x.year || undefined, series: x.series ? true : undefined, kind: ['arabic', 'foreign', 'kids', 'other'].includes(x.kind) ? x.kind : 'other', pic, by: me() || undefined, at: Date.now() };
+		for (const k of Object.keys(item)) if (item[k] === undefined) delete item[k];
+		add.push(item);
+	}
+	if (add.length) await save('movies', (d) => { d.towatch = [...add, ...(d.towatch || [])]; });
+	return add.length;
 }
 
 export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };

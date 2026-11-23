@@ -35,6 +35,9 @@ function spot(k, id) {
 	}
 	return out.join(';');
 }
+/* a poster: from the story's media (cover), or one added from a phone and kept with the sketches (pic) */
+const hasArt = (x) => !!(x.cover || x.pic);
+const posterImg = (x, cls = '') => (x.cover ? `<img${cls ? ` class="${cls}"` : ''} data-cover="${esc(x.cover)}" alt="" decoding="async">` : x.pic ? `<img${cls ? ` class="${cls}"` : ''} data-sketch="${esc(x.pic)}" alt="" decoding="async">` : '');
 const kindName = (id) => { const k = KINDS.find((x) => x.id === id) || KINDS[3]; return L(k.ar, k.en); };
 
 function line(x) {
@@ -133,8 +136,8 @@ export default {
 			$('#mv-empty', main).hidden = !!items.length;
 			$('#mv-empty', main).textContent = Y('لسه مسجلناش حاجة — ضيف أول فيلم ♥', 'لسه مسجلناش حاجة — ضيفي أول فيلم ♥', 'Nothing logged yet — add your first film ♥');
 			$('#mv-field', main).innerHTML = (lk && !shownItems.length && !watchOnly ? `<p class="empty">${L('مفيش حاجة من النوع ده لسه', 'Nothing of that kind yet')}</p>` : '') + shownItems.map((x, k) => `
-				<article class="binge__box mv--${esc(x.kind || 'other')}${x.cover ? ' has-cover' : ''}" style="--i:${k};${spot(k, x.id || x.title)}" id="${esc(x.id)}">
-					${x.cover ? `<img class="binge__poster" data-cover="${esc(x.cover)}" alt="" decoding="async">` : ''}
+				<article class="binge__box mv--${esc(x.kind || 'other')}${hasArt(x) ? ' has-cover' : ''}" style="--i:${k};${spot(k, x.id || x.title)}" id="${esc(x.id)}">
+					${posterImg(x, 'binge__poster')}
 					<h4 dir="auto">${esc(x.title)}</h4>
 					<p>${esc(line(x))}</p>
 					${x.hearts ? `<p class="binge__hearts" aria-label="${x.hearts}/5">${'♥'.repeat(x.hearts)}<i>${'♥'.repeat(5 - x.hearts)}</i></p>` : ''}
@@ -153,8 +156,8 @@ export default {
 			// twice over, so the row can scroll on its own in an endless loop (the copy is hidden from screen readers)
 			const tile = (x, k, copy) => `
 				<li class="top10__item${k === 9 ? ' is-ten' : ''}" data-n="${k + 1}"${copy ? ' aria-hidden="true"' : ''}>
-					<a class="top10__card mv--${esc(x.kind || 'other')}${x.cover ? ' has-cover' : ''}" href="${x.id ? `#${esc(x.id)}` : '#mv-board'}"${copy ? ' tabindex="-1"' : ''}>
-						${x.cover ? `<img data-cover="${esc(x.cover)}" alt="" decoding="async">` : `<span class="top10__doodle" aria-hidden="true">${doodle('popcorn', 34)}</span>`}
+					<a class="top10__card mv--${esc(x.kind || 'other')}${hasArt(x) ? ' has-cover' : ''}" href="${x.id ? `#${esc(x.id)}` : '#mv-board'}"${copy ? ' tabindex="-1"' : ''}>
+						${posterImg(x) || `<span class="top10__doodle" aria-hidden="true">${doodle('popcorn', 34)}</span>`}
 						<span class="top10__name" dir="auto">${esc(x.title)}</span>
 						${x.hearts ? `<span class="top10__hearts" aria-label="${x.hearts}/5">${'♥'.repeat(x.hearts)}</span>` : ''}
 					</a>
@@ -164,6 +167,8 @@ export default {
 
 			// posters and box art (private/media/covers), decrypted like the photos
 			for (const im of $$('img[data-cover]', main)) mediaURL(im.dataset.cover).then((url) => { im.src = url; }).catch(() => im.closest('.has-cover')?.classList.remove('has-cover') ?? im.remove());
+			// and the posters added from a phone (the to-watch list), kept with the sketches
+			live.hydrateSketches(main);
 
 			// our totals
 			const mins = items.reduce((a, x) => a + (+x.mins || 0), 0);
@@ -236,8 +241,8 @@ function watchlist(main, get, set) {
 		return bits.filter(Boolean).join(' · ');
 	};
 	const card = (x, k) => `
-		<li class="tw__card mv--${esc(x.kind || 'other')}${x.cover ? ' has-cover' : ''}${x.id === picked ? ' is-picked' : ''}" id="${esc(x.id)}" style="--i:${k % FIRST}">
-			<span class="tw__poster">${x.cover ? `<img data-cover="${esc(x.cover)}" alt="" decoding="async">` : `<span class="tw__doodle" aria-hidden="true">${doodle('popcorn', 40)}</span>`}</span>
+		<li class="tw__card mv--${esc(x.kind || 'other')}${hasArt(x) ? ' has-cover' : ''}${x.id === picked ? ' is-picked' : ''}" id="${esc(x.id)}" style="--i:${k % FIRST}">
+			<span class="tw__poster">${posterImg(x) || `<span class="tw__doodle" aria-hidden="true">${doodle('popcorn', 40)}</span>`}</span>
 			<span class="tw__tx"><b dir="auto">${esc(x.title)}</b><small>${esc(meta(x))}</small>${x.note ? `<small class="tw__note" dir="auto">${esc(x.note)}</small>` : ''}</span>
 			${live.canWrite() ? `<button class="tw__seen" type="button" data-seen="${esc(x.id)}" title="${L('اتفرجنا عليه', 'We watched it')}" aria-label="${esc(L(`اتفرجنا على ${x.title}`, `We watched ${x.title}`))}"><span aria-hidden="true">✓</span> ${L('اتفرجنا عليه', 'Watched it')}</button>` : ''}
 		</li>`;
@@ -264,6 +269,7 @@ function watchlist(main, get, set) {
 		more.textContent = all ? L('أقل', 'Show fewer') : L(`شوف الكل (${num(items.length)})`, `Show all ${items.length}`);
 		$('#mv-next-pick', box).disabled = !items.length;
 		for (const im of $$('img[data-cover]:not([src])', box)) seen.observe(im);
+		live.hydrateSketches(box);
 	};
 	draw();
 
@@ -294,7 +300,7 @@ function watchlist(main, get, set) {
 			const x = (get().towatch || []).find((y) => y.id === done.dataset.seen);
 			if (!x || !confirm(L(`اتفرجتوا على «${x.title}»؟ هيتنقل للوحة اللي فوق.`, `Watched “${x.title}”? It moves up onto the board.`))) return;
 			try {
-				const item = { id: live.newId(), title: x.title, year: x.year, yearTo: x.yearTo, kind: x.kind, series: !!x.series, mins: x.mins, cover: x.cover, by: live.me(), at: Date.now() };
+				const item = { id: live.newId(), title: x.title, year: x.year, yearTo: x.yearTo, kind: x.kind, series: !!x.series, mins: x.mins, cover: x.cover, pic: x.pic, by: live.me(), at: Date.now() };
 				for (const k of Object.keys(item)) if (item[k] === undefined) delete item[k];
 				const d = await live.save('movies', (d) => { d.towatch = (d.towatch || []).filter((y) => y.id !== x.id); (d.items = d.items || []).push(item); });
 				if (picked === x.id) { picked = ''; $('#mv-next-picked', box).hidden = true; }
