@@ -1,4 +1,5 @@
 import { L, esc, T } from '../shell.js';
+import { doodle } from '../doodles.js';
 import { listPage } from '../listpage.js';
 
 /* Before us: our two lives side by side until 14 July 2009 — schools, cities, where each of us was.
@@ -26,10 +27,20 @@ export default listPage({
 	top: (items, c) => {
 		const years = [...new Set(items.map((x) => x.year))].sort((a, b) => a - b);
 		if (!years.length) return `<p class="empty">${L('ضيفوا أول محطة من حياة كل واحد فينا قبل ٢٠٠٩', 'Add the first stop from each of our lives before 2009')}</p>`;
-		const cell = (y, w) => items.filter((x) => x.year === y && x.who === w).map((x) => `<div class="bu-stop">${c.photo(x)}<b dir="auto">${esc(x.what)}</b>${x.where ? `<small>${esc(x.where)}</small>` : ''}${c.del(x)}</div>`).join('');
-		return `<div class="bu-grid"><div class="bu-h">${esc(T(c.s.him))}</div><div></div><div class="bu-h">${esc(T(c.s.her))}</div>
-			${years.map((y) => `<div class="bu-side">${cell(y, 'him')}</div><div class="bu-year">${y}</div><div class="bu-side">${cell(y, 'her')}</div>`).join('')}
-			<div></div><div class="bu-year bu-year--us">♥ 2009</div><div></div></div>`;
+		// each stop in its person's colour, with their drawing and name (the headings are hidden on a phone), where it was,
+		// and its old photo as a polaroid; a short dashed tie runs from the card to the dotted line in the middle
+		const cell = (y, w) => items.filter((x) => x.year === y && x.who === w).map((x) => `<article class="bu-stop bu-stop--${w}">
+			<p class="bu-stop__who">${doodle(w === 'him' ? 'groom' : 'princess', 18)} ${esc(T(w === 'him' ? c.s.him : c.s.her))}</p>
+			<b dir="auto">${esc(x.what)}</b>
+			${x.where ? `<p class="bu-stop__where" dir="auto">${doodle('pin', 15)} ${esc(x.where)}</p>` : ''}
+			${x.photo ? `<div class="bu-stop__ph">${c.photo(x)}</div>` : ''}
+			${c.del(x)}
+		</article>`).join('');
+		// the year first, then his stops and hers: on a wide screen they go to their own columns, on a phone in this order
+		const side = (y, w, r) => { const h = cell(y, w); return h ? `<div class="bu-side bu-side--${w}" style="--r:${r}">${h}</div>` : ''; };
+		return `<div class="bu-grid"><div class="bu-h bu-h--him">${esc(T(c.s.him))}</div><div class="bu-h bu-h--her">${esc(T(c.s.her))}</div>
+			${years.map((y, k) => `<div class="bu-year" style="--r:${k + 2}">${y}</div>${side(y, 'him', k + 2)}${side(y, 'her', k + 2)}`).join('')}
+			<div class="bu-year bu-year--us" style="--r:${years.length + 2}">♥ 2009</div></div>`;
 	},
 	card: () => '',
 	empty: false,

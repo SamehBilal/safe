@@ -63,21 +63,43 @@
 .bu-meet path { fill: var(--coral); stroke: var(--ink); stroke-width: 1.5; animation: bu-beat 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .bu-meet text { font: 400 26px var(--f-label); fill: var(--text); }
 @keyframes bu-beat { 50% { transform: scale(1.2); } }
-.bu-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
+.bu-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px 22px; align-items: start; }
 /* a dotted line down the middle, from the first year to ♥ 2009: the years and the stops sit on it, the dots show between them */
 .bu-grid::before { content: ""; position: absolute; z-index: 0; top: 2.6rem; bottom: .9rem; left: 50%; width: 8px; translate: -50% 0; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb, var(--coral) 80%, transparent) 2.2px, transparent 2.9px) center top / 8px 13px repeat-y; }
 .bu-year, .bu-stop, .bu-h { position: relative; z-index: 1; }
+/* the year in the middle column, his stops on one side and hers on the other, all on the year's row */
+.bu-h { grid-row: 1; }
+.bu-year, .bu-side { grid-row: var(--r, auto); }
+.bu-h--him, .bu-side--him { grid-column: 1; }
+.bu-h--her, .bu-side--her { grid-column: 3; }
+.bu-year { grid-column: 2; }
 .bu-h { font: 400 1.6rem var(--f-hand); text-align: center; color: var(--blue); }
 :lang(ar) .bu-h { font: 800 1.1rem var(--f-body); }
-.bu-h:nth-child(3) { color: var(--coral-deep); }
-.bu-year { align-self: center; padding: 2px 12px; font: 400 1.3rem var(--f-label); letter-spacing: .04em; color: var(--text); background: var(--hl-yellow); border-radius: var(--sketch-sm); }
-.bu-year--us { background: var(--coral); color: #fff; }
-.bu-side { display: grid; gap: 10px; }
-.bu-stop { display: grid; gap: 4px; padding: 10px 12px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-lime); }
-.bu-side:nth-child(3n) .bu-stop { box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-pink); }
-.bu-stop img { width: 100%; max-height: 160px; object-fit: cover; padding: 4px 4px 12px; background: #fbf8f1; box-shadow: 0 3px 8px rgba(30, 20, 10, .18); }
-.bu-stop small { color: var(--muted); }
-@media (max-width: 560px) { .bu-grid { grid-template-columns: 1fr; } .bu-h { display: none; } .bu-year { justify-self: center; } }
+.bu-h--her { color: #c2185b; }
+.bu-year { align-self: start; margin-top: 14px; padding: 2px 12px; font: 400 1.3rem var(--f-label); letter-spacing: .04em; color: #2b2b33; background: #fdc830; border: 1.5px solid var(--ink); border-radius: var(--sketch-sm); }
+.bu-year--us { grid-column: 2; background: var(--coral); color: #fff; }
+.bu-side { display: grid; gap: 14px; }
+/* a stop: its person's colour across the top, their drawing and name, what happened, where, and an old photo */
+.bu-stop { --c: var(--blue); display: grid; gap: 6px; padding: 12px 16px 14px; background: var(--card); border: 1.5px solid var(--ink); border-top: 6px solid var(--c); border-radius: var(--sketch-sm, 10px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 30%, transparent); }
+.bu-stop--her { --c: #c2185b; }
+.bu-stop::after { content: ""; position: absolute; top: 24px; width: 22px; border-top: 1.6px dashed var(--c); }
+.bu-stop--him::after { inset-inline-end: -23px; }
+.bu-stop--her::after { inset-inline-start: -23px; }
+.bu-stop__who { display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin: 0; padding: 1px 10px 1px 8px; font-size: .78rem; font-weight: 800; color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--card)); border-radius: 999px; }
+.bu-stop > b { font-size: 1.05rem; line-height: 1.45; }
+.bu-stop__where { display: flex; align-items: center; gap: 5px; margin: 0; font-size: .88rem; font-weight: 700; color: var(--muted); }
+.bu-stop__where svg { flex: none; color: var(--coral); }
+.bu-stop__ph { margin-top: 4px; }
+.bu-stop__ph img { display: block; width: 100%; max-height: 190px; object-fit: cover; box-sizing: border-box; padding: 5px 5px 16px; background: #fbf8f1; rotate: -1.5deg; box-shadow: 0 4px 10px rgba(30, 20, 10, .2); }
+.bu-stop--her .bu-stop__ph img { rotate: 1.5deg; }
+@media (max-width: 560px) {
+	.bu-grid { grid-template-columns: minmax(0, 1fr); }
+	.bu-year, .bu-side { grid-row: auto; }
+	.bu-h { display: none; }
+	.bu-year, .bu-year--us, .bu-side--him, .bu-side--her { grid-column: auto; }
+	.bu-year { justify-self: center; margin-top: 6px; }
+	.bu-stop::after { display: none; }
+}
 
 /* ---- أغنية كل سنة: an equaliser drawn in ink ---- */
 .st-eq { display: flex; align-items: flex-end; gap: clamp(3px, 1vw, 8px); height: 190px; width: 100%; justify-content: center; }

@@ -264,5 +264,5 @@ export default listPage({
 		${c.del(x)}
 	</article>`,
 	empty: ['أول سهرة من غير موبايل تتسجل هنا ♥', 'The first offline night goes here ♥'],
-	related: ['questions', 'draw', 'games']
+	related: ['remember', 'draw', 'games']
 });
