@@ -1173,3 +1173,54 @@
 .nt-board .nt-note:nth-child(4n+2)::before { left: 22%; background: rgba(143, 209, 239, .55); }
 .nt-board .nt-note:nth-child(5n)::before { left: 74%; rotate: 6deg; }
 @media (prefers-reduced-motion: reduce) { .nt-board .nt-note { transition: opacity .2s; } }
+
+/* ---------- the album (gallery.js), the top: a wall of our photos in the same polaroid frames as every page's top
+   (each the top photo of a pile, its name in handwriting; tap one to open the pile), beside how many photos and piles
+   and the years they cover ---------- */
+.gh { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(18px, 4vw, 48px); align-items: center; padding: clamp(14px, 2.5vw, 26px) clamp(16px, 3.5vw, 38px); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--blue, #0e6990) 35%, transparent); background-image: radial-gradient(color-mix(in srgb, var(--ink, #37353f) 10%, transparent) 1px, transparent 1.4px); background-size: 18px 18px; }
+.gh-wall { position: relative; width: 100%; aspect-ratio: 100 / 86; container-type: inline-size; }
+.gh-wall .pol { cursor: pointer; }
+.gh-wall .pol:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+.gh-wall .pol figcaption { font-size: calc(var(--w) * .12); }
+.gh-body { display: grid; gap: 12px; justify-items: start; min-width: 0; }
+.gh-k { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 2px 12px; font-weight: 800; font-size: .85rem; color: #2b2b33; background: #fdc830; border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
+.gh-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; }
+.gh-count b { font: 400 clamp(3.2rem, 8vw, 5rem)/1 var(--f-label); color: var(--blue, #0e6990); }
+.gh-count span { font: 700 clamp(1.5rem, 3vw, 2rem)/1.2 var(--f-hand); color: var(--text); }
+.gh-sub { margin: 0; font-size: 1.02rem; font-weight: 700; color: var(--muted); }
+.gh-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+@media (max-width: 760px) {
+	.gh { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+	.gh-wall { aspect-ratio: 100 / 92; }
+	.gh-wall .pol { --w: 40cqw !important; }
+}
+@media (max-width: 640px) {
+	.gh-wall { aspect-ratio: 100 / 100; }
+	.gh-wall .pol { --w: 42cqw !important; }
+	.gh-body { justify-items: center; }
+	.gh-count, .gh-btns { justify-content: center; }
+}
+@media (max-width: 640px) { .gh-wall .pol--wide { display: none; } }
+
+/* ---------- the album: the title, the filters and the search in one row on a wide screen (the selects narrower, the
+   chips smaller); on a phone the filters are one row that scrolls sideways under the search ---------- */
+@media (min-width: 1000px) {
+	.tp-bar { flex-wrap: nowrap; }
+	.tp-bar__h { flex: none; }
+	.tp-bar .tp-find { flex: 1 1 auto; flex-wrap: nowrap; min-width: 0; }
+	.tp-filters { flex-wrap: nowrap; }
+	.tp-kinds { flex-wrap: nowrap; }
+	.tp-kinds .chip { min-height: 36px; padding: 3px 10px; font-size: .8rem; white-space: nowrap; }
+	.tp-sel { padding-inline: 8px 2px; }
+	.tp-sel select { min-height: 36px; max-width: 116px; font-size: .8rem; }
+	.tp-find .tp-find__field { flex: 1 1 180px; min-width: 150px; }
+}
+@media (max-width: 760px) {
+	.tp-filters { flex: 1 1 100%; min-width: 0; max-width: 100%; flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; padding: 4px 2px 8px; scrollbar-width: none; }
+	.tp-bar .tp-find { min-width: 0; max-width: 100%; }
+	.tp-filters::-webkit-scrollbar { display: none; }
+	.tp-kinds { flex-wrap: nowrap; }
+	.tp-kinds .chip, .tp-sel { flex: none; white-space: nowrap; }
+}
+/* a phone: lighter piles (no pink offset shadow under every photo, a simpler hover) */
+@media (max-width: 640px) { .tp__btn { box-shadow: 0 1px 2px rgba(0, 0, 0, .25); } }

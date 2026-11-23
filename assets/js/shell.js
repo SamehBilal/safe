@@ -1438,7 +1438,8 @@ async function renderPage() {
 	const own = DETAIL_OF[pageId()] && $('h1', main)?.textContent.trim();
 	if (own) document.title = `${own} — ${t(s.him)} ♥ ${t(s.her)}`;
 	if (location.hash.startsWith('#find=')) findOnPage(main, decodeURIComponent(location.hash.slice(6)));
-	else if (location.hash) $(location.hash.replace(/[^\w#-]/g, ''))?.scrollIntoView();
+	// by id, not as a selector: a hash like #01-21 (a date on «سنة من الذكريات») isn't a valid one
+	else if (location.hash) document.getElementById(location.hash.slice(1).replace(/[^\w-]/g, ''))?.scrollIntoView();
 }
 
 /* Coming from a search result (page.html#find=<its title>): scroll to the first card on the page that holds that
