@@ -1368,6 +1368,18 @@
 .nk-line__meta small { overflow-wrap: anywhere; line-height: 1.5; }
 .nk-line__gift { display: inline-flex; align-items: center; gap: 4px; width: fit-content; padding: 1px 8px; color: #6a5d3a; background: #fff6b8; border-radius: 999px; }
 .nk-line__del { position: absolute; top: 8px; inset-inline-end: 0; padding: 2px; }
+/* a line that came in an envelope: its photos taped on, and the message on it in handwriting */
+.nk-line__env { grid-column: 2; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px; margin-top: 6px; }
+.nk-pic { position: relative; display: block; width: 78px; padding: 3px; background: #fff; border: 1.5px solid var(--ink, #37353f); border-radius: 3px; rotate: calc((var(--i) % 2 * 2 - 1) * 2.5deg); box-shadow: 2px 3px 0 rgba(0, 0, 0, .12); }
+.nk-pic::before { content: ''; position: absolute; top: -7px; left: 50%; width: 34px; height: 12px; translate: -50% 0; rotate: -5deg; background: color-mix(in srgb, var(--c, #ffd66b) 70%, #fff); opacity: .9; }
+.nk-pic img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; cursor: zoom-in; }
+.nk-line__msg { flex: 1 1 160px; min-width: 0; margin: 0; padding: 6px 10px; font: 600 1.1rem/1.35 var(--f-hand); color: #3a3420; background: #fffbe0; border-inline-start: 3px solid var(--c, #ffd66b); border-radius: 4px; quotes: '«' '»'; }
+:lang(ar) .nk-line__msg { font: 700 .95rem/1.7 'Aref Ruqaa', var(--f-body); }
+.nk-has-env { display: inline-flex; vertical-align: -2px; color: var(--coral-deep, #d9534f); }
+.nk-pics-f__show { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.nk-pics-f__show[hidden], .nk-pics-f__opts[hidden] { display: none; }
+.nk-pics-f__show img { width: 84px; height: 84px; object-fit: cover; border: 1.5px solid var(--ink, #37353f); border-radius: 6px; }
+.nk-pics-f__opts { grid-template-columns: 1fr; }
 .nk-card h3 { overflow-wrap: anywhere; }
 .nk-card header { flex-wrap: wrap; }
 

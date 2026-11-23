@@ -2,11 +2,13 @@ import { L, Y, esc, pageHead, related, App, $, $$, num, longDate } from '../shel
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
+import { shrinkPhoto } from './trips.js';
 
 /* «النقطة»: the notebook every Egyptian home keeps — who came to our wedding, to Fahd's and Abdulrahman's births, and
    what they gave us; then, when they have something of their own (a wedding, a new baby, a graduation…), what we gave
    back. Every person has a page of their own in it: what came in, what went out, and a stamp — «اتردّت ♥» once we've
-   returned it, or how much is still on us. Above the title the notebook lies open and the newest line writes itself in. */
+   returned it, or how much is still on us. Above the title the notebook lies open and the newest line writes itself in.
+   A line can keep photos of the envelope it came in and the card inside (up to four), and the message written on it. */
 
 /* our occasions (money came to us) and theirs (we gave) */
 const OCCS = [
@@ -64,6 +66,13 @@ export default {
 						<label class="f"><span>${L('إمتى؟', 'When?')}</span><input name="date" type="date"></label>
 					</div>
 					<label class="f"><span>${L('كلمة (اختياري)', 'A note (optional)')}</span><input name="note" dir="auto" maxlength="140" placeholder="${L('مين في العيلة، فرح مين…', 'Which of them, whose wedding…')}"></label>
+					<div class="f lp-pic nk-pics-f"><span>${L('صورة الظرف أو الكارت اللي معاه (اختياري)', 'A photo of the envelope or the card inside (optional)')}</span>
+						<div class="lp-pic__opts nk-pics-f__opts">
+							<label class="lp-pic__opt">${doodle('letter', 30)}<b>${L('صوّر الظرف', 'Photograph the envelope')}</b><small>${L('صورة أو أكتر — الظرف والرسالة اللي جواه', 'one or more — the envelope and the card inside')}</small><input name="pics" type="file" accept="image/*" multiple></label>
+						</div>
+						<div class="nk-pics-f__show" id="nk-pics-show" hidden></div>
+					</div>
+					<label class="f"><span>${L('الرسالة اللي كانت مكتوبة (اختياري)', 'The message written on it (optional)')}</span><textarea name="msg" dir="auto" rows="2" maxlength="600" placeholder="${L('ألف مبروك يا حبايبنا…', 'Congratulations, dear ones…')}"></textarea></label>
 					<p class="form-msg" id="nk-msg" role="status"></p>
 					<div class="f-actions"><button type="submit" class="btn btn--coral">${L('اكتبها ♥', 'Write it ♥')}</button></div>
 				</form>
@@ -121,6 +130,7 @@ export default {
 				<span class="nk-line__ic">${doodle(o.ic, 20)}</span>
 				<span class="nk-line__top"><b>${out ? L('ردّيناها في', 'We gave at') : L('نقّطونا في', 'Gave at')} ${esc(L(o.ar, o.en))}</b>${x.amount ? `<span class="nk-line__amt">${money(x.amount)}</span>` : ''}</span>
 				<span class="nk-line__meta">${d ? `<small>${esc(longDate(d))}</small>` : ''}${x.what ? `<small class="nk-line__gift" dir="auto">${doodle('gift', 14)} ${esc(x.what)}</small>` : ''}${x.note ? `<small dir="auto">${esc(x.note)}</small>` : ''}</span>
+				${x.photos?.length || x.msg ? `<span class="nk-line__env">${(x.photos || []).map((p, i) => `<span class="nk-pic" style="--i:${i}"><img class="zoom" data-sketch="${esc(p)}" alt="${L('الظرف', 'The envelope')}" loading="lazy"></span>`).join('')}${x.msg ? `<q class="nk-line__msg" dir="auto">${esc(x.msg)}</q>` : ''}</span>` : ''}
 				${mine(x) ? `<button class="link link--danger nk-line__del" type="button" data-del="${esc(x.id)}" aria-label="${L('امسح السطر ده', 'Delete this line')}">${doodle('trash', 16)}</button>` : ''}
 			</li>`;
 		};
@@ -170,7 +180,7 @@ export default {
 					const o = occOf(xs[0].occ), d = dateOf(xs[0]), out = xs[0].dir === 'out', total = xs.reduce((n, x) => n + (+x.amount || 0), 0);
 					return `<section class="nk-ledger${out ? ' nk-ledger--out' : ''} reveal is-in">
 						<h3>${doodle(o.ic, 24)} ${out ? L('ردّيناها في', 'We gave at') + ' ' : ''}${esc(L(o.ar, o.en))}${d ? ` <small>${esc(longDate(d))}</small>` : ''}${total ? `<b>${money(total)}</b>` : ''}</h3>
-						<ol>${xs.map((x) => `<li><span dir="auto">${esc(x.name)}</span><i></i><b>${x.amount ? money(x.amount) : ''}${x.what ? ` <em dir="auto">${esc(x.what)}</em>` : ''}</b></li>`).join('')}</ol>
+						<ol>${xs.map((x) => `<li><span dir="auto">${esc(x.name)}${x.photos?.length || x.msg ? ` <span class="nk-has-env" title="${L('معاها ظرف ورسالة', 'Came with an envelope')}">${doodle('letter', 14)}</span>` : ''}</span><i></i><b>${x.amount ? money(x.amount) : ''}${x.what ? ` <em dir="auto">${esc(x.what)}</em>` : ''}</b></li>`).join('')}</ol>
 					</section>`;
 				}).join('') || `<p class="empty">${L('الدفتر لسه فاضي — أول اسم هيتكتب هنا ♥', 'The book is still empty — the first name goes here ♥')}</p>`;
 			} else {
@@ -179,7 +189,19 @@ export default {
 					: `<p class="empty">${!ps.length ? L('الدفتر لسه فاضي — اكتبوا أول اسم من «اكتب في الدفتر» ♥', 'The book is still empty — write the first name above ♥')
 						: view === 'owe' && !q && !occ ? L('مفيش حاجة علينا — كله اتردّ ♥', 'Nothing left to return — all given back ♥') : L('مفيش حد بالشكل ده', 'No one like that')}</p>`;
 			}
+			live.hydrateSketches(list);
 		};
+
+		/* the photos chosen for the next line, shown small before it's written */
+		const picsBox = $('#nk-pics-show', main);
+		const showPics = () => {
+			const files = [...f.pics.files].slice(0, 4);
+			picsBox.hidden = !files.length;
+			picsBox.innerHTML = files.map((fl) => `<img src="${URL.createObjectURL(fl)}" alt="">`).join('') + (files.length ? `<button class="link link--danger" type="button" id="nk-pics-clear">${L('شيلهم', 'Remove')}</button>` : '');
+			$('.nk-pics-f__opts', f).hidden = !!files.length;
+		};
+		f.pics.addEventListener('change', showPics);
+		picsBox.addEventListener('click', (e) => { if (e.target.closest('#nk-pics-clear')) { f.pics.value = ''; showPics(); } });
 
 		/* the form: in (our occasion) or out (theirs) */
 		const setDir = (d) => {
@@ -194,8 +216,11 @@ export default {
 			const amount = +f.amount.value || 0, what = f.what.value.trim();
 			if (!amount && !what) { msg.textContent = L('اكتب المبلغ أو الحاجة اللي جت', 'Write the amount or what it was'); f.amount.focus(); return; }
 			try {
-				await save((d) => { (d.items = d.items || []).push({ id: live.newId(), name: f.name.value.trim(), dir, occ: f.occ.value, amount: amount || undefined, what: what || undefined, date: f.date.value || undefined, note: f.note.value.trim() || undefined, by: live.me(), at: Date.now() }); });
-				f.reset(); setDir(dir); msg.textContent = L('اتكتبت في الدفتر ♥', 'Written in the book ♥');
+				msg.textContent = L('بنكتب…', 'Writing…');
+				const photos = [];
+				for (const fl of [...f.pics.files].slice(0, 4)) photos.push(await live.putSketch(await shrinkPhoto(fl, 1400)));
+				await save((d) => { (d.items = d.items || []).push({ id: live.newId(), name: f.name.value.trim(), dir, occ: f.occ.value, amount: amount || undefined, what: what || undefined, date: f.date.value || undefined, note: f.note.value.trim() || undefined, msg: f.msg.value.trim() || undefined, photos: photos.length ? photos : undefined, by: live.me(), at: Date.now() }); });
+				f.reset(); showPics(); setDir(dir); msg.textContent = L('اتكتبت في الدفتر ♥', 'Written in the book ♥');
 			} catch (err) { msg.textContent = live.why(err); }
 		};
 
