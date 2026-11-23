@@ -42,23 +42,25 @@ const pickOf = (arr, salt = 0) => (arr.length ? arr[(DAY * 31 + salt * 17) % arr
 const mdOf = (iso) => String(iso || '').slice(5, 10);
 const todayMD = () => { const d = new Date(); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(0, 0, 0, 0); const n = new Date(now.getFullYear(), d.getMonth(), d.getDate()); if (n < now) n.setFullYear(n.getFullYear() + 1); return Math.round((n - now) / 864e5); }
-/* The paper is the page: it comes first, folded in half the way it lands on the doorstep — the masthead and the front
-   page's top showing, «افتح الجريدة» to open it — and inside it has pages, turned with the arrows or the page numbers:
-   ١ the family tree (tree.js), ٢ the front page, ٣ family news (the four of us), ٤ odds and ends (the quote of the day
-   and the classifieds). */
-const PAGES = [['شجرة العيلتين', 'The family tree'], ['الصفحة الأولى', 'Front page'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
+/* The page is a book lying on the table, after Codrops' «Book Preview» (tympanus.net/codrops): its cover is our family
+   tree (tree.js), whole and alive — tap anyone on it. «افتح الجريدة» swings the cover open on its spine while the book
+   grows, and «جريدة بيتنا» opens across the whole page, its pages turned with the arrows or the page numbers:
+   ١ the front page, ٢ family news (the four of us), ٣ odds and ends (the quote of the day and the classifieds).
+   ✕ or Esc close it, and the page is where it was. */
+const PAGES = [['الصفحة الأولى', 'Front page'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
 function paperHTML(s, f, members) {
 	const today = new Date();
-	return `<article class="np2 is-folded reveal" id="np" style="--n:${PAGES.length}">
+	return `<div class="fbo" id="fbo" role="dialog" aria-modal="true" aria-label="${esc(T(f.paper) || L('جريدة بيتنا', 'The Daily Us'))}" hidden>
+		<button class="fbo__x" type="button" id="fbo-x" aria-label="${Y('اقفل الجريدة', 'اقفلي الجريدة', 'Close the paper')}">✕</button>
+		<div class="fbo__in"><article class="np2" id="np" style="--n:${PAGES.length}">
 		<header class="np2-mast">
 			<p class="np2-mast__ear"><span>${L('أول جريدة عائلية', 'A family newspaper')}</span><span>${L('بتصدر كل يوم', 'Out every day')}</span></p>
 			<h2 class="np2-name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
 			<div class="np2-bar"><span>${L('العدد', 'Issue')} ${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div>
 		</header>
 		<div class="np2-sheet" id="np-sheet">
-			<section class="np2-page is-on" data-p="0" id="tree"><h3 class="np2-sec">${L(...PAGES[0])}</h3><div class="fam-tree">${treeHTML(s)}</div></section>
-			<section class="np2-page" data-p="1"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
-			<section class="np2-page" data-p="2"><h3 class="np2-sec">${L(...PAGES[2])}</h3>
+			<section class="np2-page is-on" data-p="0"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
+			<section class="np2-page" data-p="1"><h3 class="np2-sec">${L(...PAGES[1])}</h3>
 				<div class="np2-news">${members.map((m) => `<article class="np2-story">
 					${m.photo ? `<div class="np2-story__pic" data-media-box>${img(m.photo, App.t(m.name), 'zoom')}</div>` : `<span class="np2-story__ic">${doodle(m.emoji, 44)}</span>`}
 					<h4>${T(m.name)}</h4>
@@ -67,25 +69,42 @@ function paperHTML(s, f, members) {
 					<a class="np2-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
 				</article>`).join('')}</div>
 			</section>
-			<section class="np2-page" data-p="3"><h3 class="np2-sec">${L(...PAGES[3])}</h3><div id="np-misc"></div></section>
+			<section class="np2-page" data-p="2"><h3 class="np2-sec">${L(...PAGES[2])}</h3><div id="np-misc"></div></section>
 		</div>
-		<div class="np2-fold"><button class="btn btn--coral" type="button" id="np-open">${doodle('scroll', 18)} ${L('افتح الجريدة', 'Open the paper')}</button></div>
 		<nav class="np2-pager" aria-label="${L('صفحات الجريدة', 'The paper’s pages')}">
 			<button class="np2-turn" type="button" data-go="-1" aria-label="${L('الصفحة اللي قبلها', 'Previous page')}">${doodle(L('forward', 'back'), 18)}</button>
 			<span class="np2-tabs">${PAGES.map((p, i) => `<button type="button" class="np2-tab${i ? '' : ' is-on'}" data-p="${i}"><b>${num(i + 1)}</b><small>${esc(L(...p))}</small></button>`).join('')}</span>
 			<button class="np2-turn" type="button" data-go="1" aria-label="${L('الصفحة اللي بعدها', 'Next page')}">${doodle(L('back', 'forward'), 18)}</button>
 		</nav>
-	</article>`;
+	</article></div>
+	</div>`;
 }
-/* fold, unfold and turn */
+/* the book: the tree on its cover, the paper's masthead on the first page under it */
+function bookHTML(s, f) {
+	return `<div class="fb" id="fb">
+		<div class="fb__persp"><div class="fb__book">
+			<div class="fb__page" aria-hidden="true"><p class="fb__page-ear">${L('أول جريدة عائلية', 'A family newspaper')}</p><b>${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</b><span>${L('بتصدر كل يوم', 'Out every day')}</span></div>
+			<div class="fb__cover" id="tree">
+				<div class="fb__front">
+					<p class="fb__title">${L('شجرة العيلتين', 'The family tree')}<small>${L('اللي بقوا عيلة واحدة', 'two families that became one')}</small></p>
+					<div class="fam-tree">${treeHTML(s)}</div>
+				</div>
+				<div class="fb__back" aria-hidden="true"></div>
+			</div>
+		</div></div>
+		<div class="fb__open"><button class="btn btn--coral" type="button" id="np-open" aria-haspopup="dialog">${doodle('scroll', 18)} ${L('افتح الجريدة', 'Open the paper')}</button></div>
+	</div>`;
+}
+
+/* open, turn and close */
 function wirePaper(main) {
-	const np = main.querySelector('#np');
-	if (!np) return;
-	let at = 0;
+	const np = main.querySelector('#np'), fb = main.querySelector('#fb'), fbo = main.querySelector('#fbo');
+	if (!np || !fb || !fbo) return () => {};
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	let at = 0, y0 = 0, isOpen = false, timer = 0;
 	const pages = [...np.querySelectorAll('.np2-page')];
-	const go = (i, scroll) => {
+	const go = (i) => {
 		i = Math.max(0, Math.min(pages.length - 1, i));
-		np.classList.remove('is-folded');
 		if (i !== at) {
 			const dir = i > at ? 'next' : 'prev';
 			pages.forEach((p, k) => { p.classList.toggle('is-on', k === i); p.classList.remove('turn-next', 'turn-prev'); });
@@ -95,17 +114,57 @@ function wirePaper(main) {
 		}
 		np.querySelectorAll('.np2-tab').forEach((t) => t.classList.toggle('is-on', +t.dataset.p === at));
 		np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = (+b.dataset.go < 0 && at === 0) || (+b.dataset.go > 0 && at === pages.length - 1); });
-		if (scroll) np.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+		fbo.querySelector('.fbo__in').scrollTop = 0;
 	};
-	np.addEventListener('click', (e) => {
-		if (e.target.closest('#np-open')) return go(0);
+	/* the cover swings open and the book grows, then the paper fills the page; closing plays it back */
+	const open = (i = 0) => {
+		if (isOpen) return go(i);
+		isOpen = true;
+		y0 = scrollY;
+		clearTimeout(timer);
+		fb.classList.remove('is-closing');
+		fb.classList.add('is-open');
+		go(i);
+		timer = setTimeout(() => {
+			fbo.hidden = false;
+			void fbo.offsetWidth;
+			fbo.classList.add('is-on');
+			document.documentElement.classList.add('fbo-lock');
+			fbo.querySelector('#fbo-x').focus({ preventScroll: true });
+		}, reduce ? 0 : 520);
+	};
+	const close = () => {
+		if (!isOpen) return;
+		isOpen = false;
+		clearTimeout(timer);
+		fbo.classList.remove('is-on');
+		document.documentElement.classList.remove('fbo-lock');
+		scrollTo({ top: y0, behavior: 'instant' });
+		timer = setTimeout(() => { fbo.hidden = true; }, reduce ? 0 : 420);
+		fb.classList.remove('is-open');
+		fb.classList.add('is-closing');
+		setTimeout(() => fb.classList.remove('is-closing'), reduce ? 0 : 600);
+		main.querySelector('#np-open')?.focus({ preventScroll: true });
+	};
+	fb.addEventListener('click', (e) => { if (e.target.closest('#np-open')) open(0); });
+	fbo.addEventListener('click', (e) => {
+		if (e.target.closest('#fbo-x')) return close();
 		const t = e.target.closest('.np2-tab, [data-goto]'), b = e.target.closest('[data-go]');
-		if (t) go(+(t.dataset.p ?? t.dataset.goto), true);
-		if (b) go(at + +b.dataset.go, true);
+		if (t) go(+(t.dataset.p ?? t.dataset.goto));
+		if (b) go(at + +b.dataset.go);
 	});
+	const onKey = (e) => {
+		if (!isOpen) return;
+		if (e.key === 'Escape') { e.preventDefault(); close(); }
+		const rtl = document.documentElement.dir === 'rtl';
+		if (e.key === 'ArrowLeft') go(at + (rtl ? 1 : -1));
+		if (e.key === 'ArrowRight') go(at + (rtl ? -1 : 1));
+	};
+	addEventListener('keydown', onKey);
 	np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = +b.dataset.go < 0; });
-	// a link to the tree (family.html#tree, or the old familytree.html) opens the paper at the tree
-	if (location.hash === '#tree') setTimeout(() => go(0, true), 300);
+	// a link to the tree (family.html#tree, or the old familytree.html) lands on the book's cover
+	if (location.hash === '#tree') setTimeout(() => fb.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }), 300);
+	return () => { removeEventListener('keydown', onKey); clearTimeout(timer); document.documentElement.classList.remove('fbo-lock'); };
 }
 async function fillPaper(main, s, f) {
 	const box = main.querySelector('#np-front'), misc = main.querySelector('#np-misc');
@@ -165,7 +224,7 @@ async function fillPaper(main, s, f) {
 				<section><p class="np2-kick">${L('قريب', 'Coming up')}</p>
 					<ul class="np2-soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
 				<section class="np2-index"><p class="np2-kick">${L('في العدد ده', 'In this issue')}</p>
-					<ul>${PAGES.map((p, i) => (i === 1 ? '' : `<li><button type="button" data-goto="${i}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 1)}</b></button></li>`)).join('')}</ul></section>
+					<ul>${PAGES.map((p, i) => (i === 0 ? '' : `<li><button type="button" data-goto="${i}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 1)}</b></button></li>`)).join('')}</ul></section>
 			</aside>
 		</div>`;
 	if (misc) misc.innerHTML = `<div class="np2-misc">
@@ -189,9 +248,27 @@ export default {
 		return `
 		${pageHead(L('عيلتنا', 'Our family'), Y('خبر عاجل! اقرا كل حاجة عننا — وشجرة العيلتين اللي بقوا عيلة واحدة', 'خبر عاجل! اقري كل حاجة عننا — وشجرة العيلتين اللي بقوا عيلة واحدة', 'Extra! Extra! Read all about us — and the tree of two families that became one'), [{ href: 'family.html', ar: 'عيلتنا', en: 'Our family' }], { band: band(members) })}
 		<section class="sec sec--top"><div class="wrap">
-			${paperHTML(s, f, members)}
+			${bookHTML(s, f)}
 		</div></section>
+		${paperHTML(s, f, members)}
 		${related(['routine', 'expenses', 'fixes', 'debts'])}`;
 	},
-	after(main, s) { wirePaper(main); fillPaper(main, s, s.family || {}); return wireTree(main, s); }
+	leave() { this.bye?.(); this.bye = null; },
+	after(main, s) {
+		this.bye?.();
+		const unwire = wirePaper(main);
+		fillPaper(main, s, s.family || {});
+		/* the tree shows whole on the cover: on a narrow screen it is scaled down to the cover's width instead of scrolling */
+		const ft = main.querySelector('.fb__front #ft'), box = ft?.parentElement;
+		const fitTree = () => {
+			if (!ft || !box) return;
+			ft.style.zoom = '';
+			const natural = ft.scrollWidth, room = box.clientWidth;
+			if (natural > room + 1) ft.style.zoom = (room / natural).toFixed(3);
+		};
+		const ro = box ? new ResizeObserver(() => fitTree()) : null;
+		ro?.observe(box);
+		this.bye = () => { unwire(); ro?.disconnect(); };
+		return Promise.resolve(wireTree(main, s)).then((r) => { fitTree(); setTimeout(fitTree, 400); return r; });
+	}
 };
