@@ -1,4 +1,4 @@
-import { L, Y, esc, pageHead, related, App, $, $$, t, img, hydrate, num } from '../shell.js';
+import { L, Y, esc, pageHead, related, App, $, $$, t, img, hydrate, num, REDUCE } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 
@@ -41,20 +41,31 @@ async function gather(s) {
 export default {
 	title: { ar: 'سنة من الذكريات', en: 'A year of memories' },
 	render() {
-		return `${pageHead(L('سنة من الذكريات', 'A year of memories'), L('كل يوم في السنة، وإيه اللي حصل فيه في كل سنينّا', 'Every date of the year, and what it has held in all our years'), [{ href: 'onthisday.html', ar: 'سنة من الذكريات', en: 'A year of memories' }], { band: `<div class="lp-band lp-band--onthisday" id="od-band" aria-hidden="true"></div>` })}
+		return `${pageHead(L('سنة من الذكريات', 'A year of memories'), L('كل يوم في السنة، وإيه اللي حصل فيه في كل سنينّا', 'Every date of the year, and what it has held in all our years'), [{ href: 'onthisday.html', ar: 'سنة من الذكريات', en: 'A year of memories' }], { band: '' })}
 		<section class="sec sec--top"><div class="wrap">
+			<div class="od-hero">
+				<div class="od-hero__cal" id="od-band" aria-hidden="true"></div>
+				<div class="od-hero__body">
+					<small class="od-hero__k" id="od-when"></small>
+					<div class="od-hero__day">
+						<button class="od-arrow" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">‹</button>
+						<h2 id="od-day" aria-live="polite"></h2>
+						<button class="od-arrow" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">›</button>
+					</div>
+					<p class="od-hero__sum" id="od-sum"></p>
+					<div class="od-hero__years" id="od-years"></div>
+					<div class="od-hero__btns">
+						<button class="btn btn--sm" type="button" id="od-today">${doodle('calendar', 18)} ${L('النهارده', 'Today')}</button>
+						<button class="btn btn--sm btn--ghost" type="button" id="od-luck">${doodle('dice', 18)} ${L('يوم عشوائي', 'A random day')}</button>
+					</div>
+				</div>
+			</div>
 			<ul class="od-stats" id="od-stats"></ul>
 			<div class="od-map-wrap">
 				<div class="od-map" id="od-map" role="grid" aria-label="${L('خريطة السنة', 'The year’s map')}"></div>
 				<p class="od-legend" aria-hidden="true"><span>${L('فاضي', 'Empty')}</span><i style="--n:0"></i><i style="--n:1"></i><i style="--n:2"></i><i style="--n:3"></i><i style="--n:4"></i><span>${L('مليان', 'Full')}</span></p>
 			</div>
-			<div class="od-nav">
-				<button class="btn btn--sm btn--ghost" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">‹</button>
-				<b id="od-day" aria-live="polite"></b>
-				<button class="btn btn--sm btn--ghost" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">›</button>
-				<button class="btn btn--sm btn--ghost" type="button" id="od-today">${doodle('calendar', 18)} ${L('النهارده', 'Today')}</button>
-				<button class="btn btn--sm btn--ghost" type="button" id="od-luck">${doodle('dice', 18)} ${L('يوم عشوائي', 'A random day')}</button>
-			</div>
+			<h2 class="od-list-h" id="od-list-h"></h2>
 			<div class="od-list" id="od-list"></div>
 		</div></section>
 		${related(['calendar', 'story', 'journal'])}`;
@@ -98,20 +109,39 @@ export default {
 			const items = (byDay.get(key) || []).slice().sort((a, b) => b.date.localeCompare(a.date));
 			const years = [...new Set(items.map((x) => +x.date.slice(0, 4)))];
 			const y0 = now.getFullYear();
+			const mo = +key.slice(0, 2) - 1, dd = +key.slice(3);
+			const loc = lang() === 'ar' ? 'ar-EG' : 'en-GB';
+			const wd = (y) => new Date(y, mo, dd).toLocaleDateString(loc, { weekday: 'long' });
+			const yr = (y) => num(y).replace(/[٬,]/g, '');
+			// this date this year, against today
+			const t0 = new Date(y0, now.getMonth(), now.getDate()), d0 = new Date(y0, mo, dd);
+			const gap = Math.round((d0 - t0) / 864e5);
+			$('#od-when', main).innerHTML = `${doodle(gap === 0 ? 'sun' : 'calendar', 16)} ${esc(gap === 0 ? L('النهارده', 'Today') : gap === 1 ? L('بكرة', 'Tomorrow') : gap === -1 ? L('امبارح', 'Yesterday') : gap > 0 ? L(`فاضل عليه ${num(gap)} يوم`, `in ${gap} days`) : L(`عدّى من ${num(-gap)} يوم`, `${-gap} days ago`))} · ${esc(wd(y0))}`;
 			$('#od-day', main).textContent = dayLabel(key);
+			$('#od-sum', main).innerHTML = items.length
+				? L(`<b>${num(items.length)}</b> ${items.length === 1 ? 'ذكرى' : items.length <= 10 ? 'ذكريات' : 'ذكرى'} في <b>${num(years.length)}</b> ${years.length === 1 ? 'سنة' : years.length <= 10 ? 'سنين' : 'سنة'} — أولها من ${yr(years[years.length - 1])}`, `<b>${items.length}</b> memor${items.length === 1 ? 'y' : 'ies'} in <b>${years.length}</b> year${years.length === 1 ? '' : 's'} — the first in ${years[years.length - 1]}`)
+				: Y('لسه فاضي — اعمل فيه أول ذكرى ♥', 'لسه فاضي — اعملي فيه أول ذكرى ♥', 'Still empty — make it the first ♥');
+			$('#od-years', main).innerHTML = years.map((y) => `<a class="chip" href="#od-y-${y}" data-y="${y}">${yr(y)} <small>${esc(wd(y))}</small></a>`).join('');
+			$('#od-list-h', main).innerHTML = `${doodle('book', 22)} ${esc(L(`اللي حصل في ${dayLabel(key)}`, `What ${dayLabel(key)} has held`))}`;
 			$$('.od-cell.is-on', main).forEach((c) => c.classList.remove('is-on'));
 			$(`.od-cell[data-k="${key}"]`, main)?.classList.add('is-on');
-			$('#od-list', main).innerHTML = years.map((y) => `<section class="od-year"><h2>${num(y).replace(/[٬,]/g, '')} <small>${y0 - y > 0 ? L(`من ${num(y0 - y)} سنة`, `${y0 - y} year${y0 - y === 1 ? '' : 's'} ago`) : L('السنة دي', 'this year')}</small></h2>${items.filter((x) => +x.date.slice(0, 4) === y).map((x) => `<a class="od-item" href="${esc(x.href)}">${x.photo ? img(x.photo, '', 'od-img') : x.sketch ? `<img class="od-img" data-sketch="${esc(x.sketch)}" alt="">` : `<span class="od-ic">${doodle(x.icon, 36)}</span>`}<span><small>${doodle(x.icon, 14)} ${esc(L(...x.src))}</small><b dir="auto">${esc(x.title)}</b>${x.text ? `<em dir="auto">${esc(cut(x.text))}</em>` : ''}</span></a>`).join('')}</section>`).join('')
+			$('#od-list', main).innerHTML = years.map((y) => `<section class="od-year" id="od-y-${y}"><h2>${num(y).replace(/[٬,]/g, '')} <small>${y0 - y > 0 ? L(`من ${num(y0 - y)} سنة`, `${y0 - y} year${y0 - y === 1 ? '' : 's'} ago`) : L('السنة دي', 'this year')}</small></h2>${items.filter((x) => +x.date.slice(0, 4) === y).map((x) => `<a class="od-item" href="${esc(x.href)}">${x.photo ? img(x.photo, '', 'od-img') : x.sketch ? `<img class="od-img" data-sketch="${esc(x.sketch)}" alt="">` : `<span class="od-ic">${doodle(x.icon, 36)}</span>`}<span><small>${doodle(x.icon, 14)} ${esc(L(...x.src))}</small><b dir="auto">${esc(x.title)}</b>${x.text ? `<em dir="auto">${esc(cut(x.text))}</em>` : ''}</span></a>`).join('')}</section>`).join('')
 				|| `<p class="empty">${Y('مفيش حاجة متسجلة في اليوم ده لسه — اعمل فيه أول ذكرى ♥', 'مفيش حاجة متسجلة في اليوم ده لسه — اعملي فيه أول ذكرى ♥', 'Nothing on this date yet — make it the first ♥')}</p>`;
 			hydrate($('#od-list', main));
 			live.hydrateSketches($('#od-list', main));
-			$('#od-band', main).innerHTML = `<div class="od-cal"><span class="od-rings"><i></i><i></i></span>${[...years.slice(0, 4).reverse(), null].map((y, i, a) => `<div class="od-page${y ? ' is-flip' : ''}" style="--i:${a.length - 1 - i}"><small>${MONTHS[lang()][+key.slice(0, 2) - 1]}</small><b>${num(+key.slice(3))}</b><em>${num(y || y0).replace(/[٬,]/g, '')}</em></div>`).join('')}</div>`;
+			// the desk calendar: this year's page on the bottom, the years it holds flipping away on top of it
+			$('#od-band', main).innerHTML = `<div class="od-cal"><span class="od-rings"><i></i><i></i></span>${[...years.slice(0, 4).reverse(), null].map((y, i, a) => `<div class="od-page${y ? ' is-flip' : ''}" style="--i:${a.length - 1 - i}"><small>${esc(MONTHS[lang()][mo])}</small><b>${num(dd)}</b><span>${esc(wd(y || y0))}</span><em>${yr(y || y0)}</em></div>`).join('')}</div>`;
 			history.replaceState(null, '', key === todayKey ? location.pathname : `#${key}`);
-			if (scroll) $('.od-nav', main).scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (scroll) $('#od-list-h', main).scrollIntoView({ behavior: 'smooth', block: 'start' });
 		};
 		const go = (k, scroll) => { key = k; paint(scroll); };
 		const shift = (n) => { const d = new Date(2024, +key.slice(0, 2) - 1, +key.slice(3) + n); go(`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`); };
-		main.addEventListener('click', (e) => { const c = e.target.closest('#od-map [data-k], #od-stats [data-k]'); if (c) go(c.dataset.k, true); });
+		main.addEventListener('click', (e) => {
+			const c = e.target.closest('#od-map [data-k], #od-stats [data-k]');
+			if (c) return go(c.dataset.k, true);
+			const y = e.target.closest('#od-years [data-y]');
+			if (y) { e.preventDefault(); $(`#od-y-${y.dataset.y}`, main)?.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }
+		});
 		$('#od-prev', main).onclick = () => shift(-1);
 		$('#od-next', main).onclick = () => shift(1);
 		$('#od-today', main).onclick = () => go(todayKey);
