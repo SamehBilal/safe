@@ -38,6 +38,8 @@ async function gather(s) {
 	return out;
 }
 
+let bye = null;
+
 export default {
 	title: { ar: 'سنة من الذكريات', en: 'A year of memories' },
 	render() {
@@ -73,7 +75,10 @@ export default {
 		</div></section>
 		${related(['calendar', 'story', 'journal'])}`;
 	},
+	leave() { bye?.(); bye = null; },
 	async after(main, s) {
+		bye?.();
+		const ac = new AbortController(), on = { signal: ac.signal };
 		const lang = () => (App.lang === 'ar' ? 'ar' : 'en');
 		const all = await gather(s);
 		const byDay = new Map();
@@ -108,10 +113,20 @@ export default {
 			nextEmpty ? stat('pen', esc(dayLabel(nextEmpty)), Y('أقرب يوم لسه فاضي — اعمل فيه ذكرى', 'أقرب يوم لسه فاضي — اعملي فيه ذكرى', 'the next empty date — make a memory on it'), nextEmpty) : ''
 		].join('');
 
+		const y0 = now.getFullYear();
+		const itemsOf = (k) => (byDay.get(k) || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+		const yearsOf = (items) => [...new Set(items.map((x) => +x.date.slice(0, 4)))];
+		const countLabel = (n) => (n ? L(`${num(n)} ${n === 1 ? 'ذكرى' : n <= 10 ? 'ذكريات' : 'ذكرى'}`, `${n} memor${n === 1 ? 'y' : 'ies'}`) : L('لسه فاضي', 'Still empty'));
+		/* a date's memories, year by year (the list under the map, and the window a square opens) */
+		const listHTML = (k, idp = 'od-y-') => {
+			const items = itemsOf(k);
+			return yearsOf(items).map((y) => `<section class="od-year" id="${idp}${y}"><h2>${num(y).replace(/[٬,]/g, '')} <small>${y0 - y > 0 ? L(`من ${num(y0 - y)} سنة`, `${y0 - y} year${y0 - y === 1 ? '' : 's'} ago`) : L('السنة دي', 'this year')}</small></h2>${items.filter((x) => +x.date.slice(0, 4) === y).map((x) => `<a class="od-item" href="${esc(x.href)}">${x.photo ? img(x.photo, '', 'od-img') : x.sketch ? `<img class="od-img" data-sketch="${esc(x.sketch)}" alt="">` : `<span class="od-ic">${doodle(x.icon, 36)}</span>`}<span><small>${doodle(x.icon, 14)} ${esc(L(...x.src))}</small><b dir="auto">${esc(x.title)}</b>${x.text ? `<em dir="auto">${esc(cut(x.text))}</em>` : ''}</span></a>`).join('')}</section>`).join('')
+				|| `<p class="empty">${Y('مفيش حاجة متسجلة في اليوم ده لسه — اعمل فيه أول ذكرى ♥', 'مفيش حاجة متسجلة في اليوم ده لسه — اعملي فيه أول ذكرى ♥', 'Nothing on this date yet — make it the first ♥')}</p>`;
+		};
+
 		const paint = (scroll) => {
-			const items = (byDay.get(key) || []).slice().sort((a, b) => b.date.localeCompare(a.date));
-			const years = [...new Set(items.map((x) => +x.date.slice(0, 4)))];
-			const y0 = now.getFullYear();
+			const items = itemsOf(key);
+			const years = yearsOf(items);
 			const mo = +key.slice(0, 2) - 1, dd = +key.slice(3);
 			const loc = lang() === 'ar' ? 'ar-EG' : 'en-GB';
 			const wd = (y) => new Date(y, mo, dd).toLocaleDateString(loc, { weekday: 'long' });
@@ -128,8 +143,7 @@ export default {
 			$('#od-list-h', main).innerHTML = `${doodle('book', 22)} ${esc(L(`اللي حصل في ${dayLabel(key)}`, `What ${dayLabel(key)} has held`))}`;
 			$$('.od-cell.is-on', main).forEach((c) => c.classList.remove('is-on'));
 			$(`.od-cell[data-k="${key}"]`, main)?.classList.add('is-on');
-			$('#od-list', main).innerHTML = years.map((y) => `<section class="od-year" id="od-y-${y}"><h2>${num(y).replace(/[٬,]/g, '')} <small>${y0 - y > 0 ? L(`من ${num(y0 - y)} سنة`, `${y0 - y} year${y0 - y === 1 ? '' : 's'} ago`) : L('السنة دي', 'this year')}</small></h2>${items.filter((x) => +x.date.slice(0, 4) === y).map((x) => `<a class="od-item" href="${esc(x.href)}">${x.photo ? img(x.photo, '', 'od-img') : x.sketch ? `<img class="od-img" data-sketch="${esc(x.sketch)}" alt="">` : `<span class="od-ic">${doodle(x.icon, 36)}</span>`}<span><small>${doodle(x.icon, 14)} ${esc(L(...x.src))}</small><b dir="auto">${esc(x.title)}</b>${x.text ? `<em dir="auto">${esc(cut(x.text))}</em>` : ''}</span></a>`).join('')}</section>`).join('')
-				|| `<p class="empty">${Y('مفيش حاجة متسجلة في اليوم ده لسه — اعمل فيه أول ذكرى ♥', 'مفيش حاجة متسجلة في اليوم ده لسه — اعملي فيه أول ذكرى ♥', 'Nothing on this date yet — make it the first ♥')}</p>`;
+			$('#od-list', main).innerHTML = listHTML(key);
 			hydrate($('#od-list', main));
 			live.hydrateSketches($('#od-list', main));
 			// the desk calendar: this year's page on the bottom, the years it holds flipping away on top of it
@@ -138,13 +152,80 @@ export default {
 			if (scroll) $('#od-list-h', main).scrollIntoView({ behavior: 'smooth', block: 'start' });
 		};
 		const go = (k, scroll) => { key = k; paint(scroll); };
-		const shift = (n) => { const d = new Date(2024, +key.slice(0, 2) - 1, +key.slice(3) + n); go(`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`); };
+		const near = (k, n) => { const d = new Date(2024, +k.slice(0, 2) - 1, +k.slice(3) + n); return `${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+		const shift = (n) => go(near(key, n));
+
+		/* hovering a square: the «line» tooltip (after Codrops' Tooltip Styles Inspiration) — a coral line draws out
+		   over the square, then the note rises out of it: the date, how many memories, and the first of them */
+		const tip = document.createElement('div');
+		tip.className = 'od-tip';
+		tip.setAttribute('aria-hidden', 'true');
+		tip.innerHTML = '<div class="od-tip__line"><div class="od-tip__in"></div></div>';
+		document.body.append(tip);
+		bye = () => { ac.abort(); tip.remove(); dlg.remove(); };
+		let tipFor = null;
+		const tipShow = (cell) => {
+			const k = cell.dataset.k, items = itemsOf(k), years = yearsOf(items);
+			$('.od-tip__in', tip).innerHTML = `<b>${esc(dayLabel(k))}</b><small>${esc(countLabel(items.length))}${years.length > 1 ? esc(L(` · ${num(years.length)} سنين`, ` · ${years.length} years`)) : ''}</small>${items.slice(0, 2).map((x) => `<span dir="auto">${doodle(x.icon, 14)} ${esc(cut(x.title, 38))}</span>`).join('')}${items.length > 2 ? `<em>${esc(L(`و${num(items.length - 2)} كمان`, `and ${items.length - 2} more`))}</em>` : ''}`;
+			const r = cell.getBoundingClientRect(), cx = r.left + r.width / 2, half = 125;
+			const x = Math.min(Math.max(cx, half + 8), innerWidth - half - 8);
+			const below = r.top < tip.offsetHeight + 90;
+			tip.classList.toggle('is-below', below);
+			tip.style.left = `${x}px`;
+			tip.style.top = `${below ? r.bottom : r.top}px`;
+			tip.style.setProperty('--ax', `${cx - x}px`);
+			tipFor = cell;
+			tip.classList.add('is-on');
+		};
+		const tipHide = () => { tipFor = null; tip.classList.remove('is-on'); };
+		const map = $('#od-map', main);
+		map.addEventListener('pointerover', (e) => { const c = e.target.closest('[data-k]'); if (c && e.pointerType === 'mouse' && c !== tipFor) tipShow(c); }, on);
+		map.addEventListener('pointerleave', tipHide, on);
+		map.addEventListener('focusin', (e) => { const c = e.target.closest('[data-k]'); if (c && c.matches(':focus-visible')) tipShow(c); }, on);
+		map.addEventListener('focusout', tipHide, on);
+		addEventListener('scroll', tipHide, { passive: true, signal: ac.signal });
+
+		/* tapping a date: its memories open in a window over the page, with arrows to the days either side */
+		const dlg = document.createElement('dialog');
+		dlg.className = 'cmodal od-modal';
+		main.append(dlg);
+		let modalKey = null;
+		const openDay = (k) => {
+			modalKey = k;
+			const items = itemsOf(k), years = yearsOf(items);
+			dlg.setAttribute('aria-label', dayLabel(k));
+			dlg.innerHTML = `<div class="cmodal__in">
+				<header class="cmodal__hd od-modal__hd">
+					<button type="button" class="od-arrow" data-step="-1" aria-label="${L('اليوم اللي قبله', 'Previous day')}">‹</button>
+					<h2><span>${doodle('calendar', 22)}</span><span class="od-modal__t"><b>${esc(dayLabel(k))}</b><small>${esc(countLabel(items.length))}${years.length ? esc(L(` في ${num(years.length)} ${years.length === 1 ? 'سنة' : 'سنين'}`, ` in ${years.length} year${years.length === 1 ? '' : 's'}`)) : ''}</small></span></h2>
+					<button type="button" class="od-arrow" data-step="1" aria-label="${L('اليوم اللي بعده', 'Next day')}">›</button>
+					<button type="button" class="cmodal__x" aria-label="${Y('اقفل', 'اقفلي', 'Close')}">✕</button>
+				</header>
+				<div class="od-modal__body">${listHTML(k, 'od-my-')}</div>
+			</div>`;
+			hydrate($('.od-modal__body', dlg));
+			live.hydrateSketches($('.od-modal__body', dlg));
+			if (!dlg.open) dlg.showModal();
+			$('.od-modal__body', dlg).scrollTop = 0;
+			go(k);
+		};
+		dlg.addEventListener('click', (e) => {
+			if (e.target === dlg || e.target.closest('.cmodal__x')) return dlg.close();
+			const st = e.target.closest('[data-step]');
+			if (st) openDay(near(modalKey, +st.dataset.step));
+		});
+		dlg.addEventListener('keydown', (e) => {
+			if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+			const back = (e.key === 'ArrowRight') === (document.dir === 'rtl' || App.lang === 'ar');
+			openDay(near(modalKey, back ? -1 : 1));
+		});
+
 		main.addEventListener('click', (e) => {
 			const c = e.target.closest('#od-map [data-k], #od-stats [data-k]');
-			if (c) return go(c.dataset.k, true);
+			if (c) { tipHide(); return openDay(c.dataset.k); }
 			const y = e.target.closest('#od-years [data-y]');
 			if (y) { e.preventDefault(); $(`#od-y-${y.dataset.y}`, main)?.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }
-		});
+		}, on);
 		$('#od-prev', main).onclick = () => shift(-1);
 		$('#od-next', main).onclick = () => shift(1);
 		$('#od-today', main).onclick = () => go(todayKey);
