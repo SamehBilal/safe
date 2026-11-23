@@ -41,8 +41,8 @@ async function gather(s) {
 export default {
 	title: { ar: 'سنة من الذكريات', en: 'A year of memories' },
 	render() {
-		return `${pageHead(L('سنة من الذكريات', 'A year of memories'), L('كل يوم في السنة، وإيه اللي حصل فيه في كل سنينّا', 'Every date of the year, and what it has held in all our years'), [{ href: 'onthisday.html', ar: 'سنة من الذكريات', en: 'A year of memories' }], { band: '' })}
-		<section class="sec sec--top"><div class="wrap">
+		return `<section class="sec sec--top od-top"><div class="wrap">
+			<!-- the day being read, first on the page, above its title -->
 			<div class="od-hero">
 				<div class="od-hero__cal" id="od-band" aria-hidden="true"></div>
 				<div class="od-hero__body">
@@ -60,6 +60,9 @@ export default {
 					</div>
 				</div>
 			</div>
+		</div></section>
+		${pageHead(L('سنة من الذكريات', 'A year of memories'), L('كل يوم في السنة، وإيه اللي حصل فيه في كل سنينّا', 'Every date of the year, and what it has held in all our years'), [{ href: 'onthisday.html', ar: 'سنة من الذكريات', en: 'A year of memories' }], { band: '' })}
+		<section class="sec sec--top"><div class="wrap">
 			<ul class="od-stats" id="od-stats"></ul>
 			<div class="od-map-wrap">
 				<div class="od-map" id="od-map" role="grid" aria-label="${L('خريطة السنة', 'The year’s map')}"></div>
