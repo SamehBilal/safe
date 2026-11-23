@@ -1062,39 +1062,8 @@
 .mu-eq__bar.is-on i { height: calc(var(--h) - 26px); min-height: 30px; }
 .mu-eq__bar.is-on i { height: var(--h); }
 
-/* «رسايل حب»: the notes scattered, not in rows — they flow down uneven columns, each a different width, tilted its own
-   way and nudged off the line, so the page looks like notes left on a table */
-.notes__scatter { columns: 270px; column-gap: 34px; padding: 10px 0 30px; }
-.notes__scatter .note { display: inline-block; width: var(--w, 100%); margin: var(--dy, 0) 0 30px; translate: var(--dx, 0) 0; break-inside: avoid; transition: rotate .3s, translate .3s, scale .3s; }
-.notes__scatter .note:nth-child(3n) { margin-inline-start: calc(100% - var(--w, 100%)); }
-.notes__scatter .note:hover { rotate: 0deg; scale: 1.03; z-index: 2; }
-.notes__scatter .note:nth-child(4n+1)::before { rotate: 4deg; background: rgba(253, 200, 48, .5); }
-.notes__scatter .note:nth-child(4n+2)::before { left: 20%; background: rgba(143, 209, 239, .55); }
 .note__label { display: block; margin-bottom: 6px; font-size: .78rem; font-weight: 800; color: var(--muted); }
 
-/* ---------- «رسايل حب» (notes.js): the top is our fridge door — magnet letters «B7BK ♥», three notes held up by
-   magnets, and a magnet that counts them ---------- */
-.nf-band { display: grid; place-items: center; padding: 10px var(--gutter) 18px; }
-.nf-door { position: relative; width: min(860px, 100%); box-sizing: border-box; padding: 26px clamp(18px, 4vw, 40px) 30px; padding-inline-end: clamp(46px, 7vw, 70px); background: linear-gradient(160deg, #fdfcf9, #eef0ef 70%, #e3e7e6); border: 2px solid var(--ink, #37353f); border-radius: 26px 26px 18px 18px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--blue, #0e6990) 35%, transparent); }
-.nf-handle { position: absolute; top: 34px; bottom: 34px; inset-inline-end: 18px; width: 12px; background: linear-gradient(90deg, #c9ced0, #f6f7f7, #b9bfc2); border: 2px solid var(--ink, #37353f); border-radius: 8px; }
-.nf-letters { display: flex; justify-content: center; gap: 6px; margin: 0 0 18px; direction: ltr; }
-.nf-letters b { display: grid; place-items: center; min-width: 46px; height: 54px; padding: 0 4px; font: 900 2.4rem/1 'Fredoka', 'Nunito', var(--f-body); color: var(--c); text-shadow: 2px 3px 0 rgba(0, 0, 0, .18); rotate: var(--r); filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--c) 60%, #000)); animation: nf-wob 4s calc(var(--r) * .1s) ease-in-out infinite; }
-@keyframes nf-wob { 50% { rotate: calc(var(--r) * -1); } }
-.nf-notes { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 22px 20px; }
-.nf-note { position: relative; display: grid; gap: 6px; width: 165px; padding: 22px 14px 12px; color: #2b2b33; background: #fff6b8; box-shadow: 0 6px 12px -6px rgba(0, 0, 0, .35); rotate: -3deg; }
-.nf-note--1 { background: #ffd9e2; rotate: 2.5deg; translate: 0 14px; }
-.nf-note--2 { background: #d4ecff; rotate: -1.5deg; }
-.nf-note span { font: 600 1.15rem/1.35 var(--f-hand); overflow-wrap: anywhere; }
-.nf-note span:lang(ar), :lang(ar) .nf-note span { font-family: var(--f-hand), var(--f-body); }
-.nf-note small { font-size: .78rem; font-weight: 800; color: #8a5a6a; }
-.nf-mag { position: absolute; top: -10px; left: 50%; width: 22px; height: 22px; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #fff8, transparent 45%), var(--m); border: 2px solid var(--ink, #37353f); border-radius: 50%; box-shadow: 0 3px 0 rgba(0, 0, 0, .2); }
-.nf-count { position: relative; display: grid; justify-items: center; gap: 0; padding: 20px 18px 12px; background: #fff; border: 2px solid var(--ink, #37353f); border-radius: 14px; rotate: 3deg; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--hl-yellow, #fdc830); }
-.nf-count b { font: 400 2.2rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
-:lang(ar) .nf-count b { font: 800 1.9rem/1.2 var(--f-body); }
-.nf-count small { font-weight: 800; font-size: .85rem; }
-.nf-count em { margin-top: 4px; font-style: normal; font-size: .74rem; font-weight: 700; color: var(--muted, #6b6b75); }
-@media (max-width: 640px) { .nf-note { width: min(100%, 230px); } .nf-note--1 { translate: none; } .nf-letters b { min-width: 36px; font-size: 1.9rem; } }
-@media (prefers-reduced-motion: reduce) { .nf-letters b { animation: none; } }
 
 /* ---------- «بوستاتنا» (posts.js): the top is our profile on a phone — the two of us, the numbers, a highlight for
    every network and the latest posts as a grid, with the newest hearts popping up beside it ---------- */
@@ -1147,4 +1116,60 @@
 .tp-sel select option { color: #2b2b33; background: #fff; }
 @media (max-width: 760px) { .tp-bar .tp-find { flex: 1 1 100%; justify-content: stretch; } .tp-find .tp-find__field { flex: 1 1 100%; order: -1; } .tp-filters { justify-content: flex-start; } }
 .sec.notes { overflow-x: clip; }
-@media (max-width: 640px) { .notes__scatter .note { translate: calc(var(--dx, 0px) / 3) 0; } }
+
+/* ---------- «رسايل حب» (notes.js): the top is an envelope with one note pulled out, read in full (and slipped back
+   for another), beside how many notes, who wrote how many, and chips for all / his / hers ---------- */
+.nh { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(22px, 4vw, 52px); align-items: center; padding: clamp(18px, 3vw, 30px) clamp(18px, 4vw, 40px); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, #c2185b 35%, transparent); background-image: radial-gradient(color-mix(in srgb, var(--ink, #37353f) 10%, transparent) 1px, transparent 1.4px); background-size: 18px 18px; }
+.nh-env { position: relative; width: 310px; height: 320px; }
+.nh-env__back, .nh-env__front { position: absolute; inset-inline: 0; bottom: 0; border: 1.5px solid #37353f; border-radius: 10px; }
+.nh-env__back { z-index: 1; height: 175px; background: #e9c995; }
+.nh-env__back::before { content: ''; position: absolute; inset: -1.5px -1.5px auto; height: 90px; background: #dcb67b; border: 1.5px solid #37353f; border-bottom: 0; clip-path: polygon(0 100%, 50% 0, 100% 100%); translate: 0 -88px; }
+.nh-env__front { z-index: 3; height: 128px; background: linear-gradient(to top right, transparent calc(50% - 1px), rgba(55, 53, 63, .35) 50%, transparent calc(50% + 1px)) left bottom / 50% 100% no-repeat, linear-gradient(to top left, transparent calc(50% - 1px), rgba(55, 53, 63, .35) 50%, transparent calc(50% + 1px)) right bottom / 50% 100% no-repeat, #f2d6a6; border-top: 0; border-radius: 0 0 10px 10px; box-shadow: 0 -1.5px 0 0 rgba(55, 53, 63, .25); }
+.nh-env__seal { position: absolute; top: -18px; left: 50%; display: grid; place-items: center; width: 40px; height: 40px; translate: -50% 0; color: #fff; background: #c2185b; border: 1.5px solid #37353f; border-radius: 50%; box-shadow: 0 3px 0 0 #8e1043; }
+.nh-slip { position: absolute; z-index: 2; left: 50%; bottom: 58px; display: grid; align-content: start; gap: 8px; width: 262px; min-height: 215px; max-height: 250px; box-sizing: border-box; margin: 0; padding: 22px 20px 16px; overflow: hidden; color: #2b2b33; background: #fffdf8; background-image: repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .14) 31px 32px); border-radius: 4px; box-shadow: 0 8px 18px -8px rgba(30, 20, 10, .45); translate: -50% 0; rotate: -3deg; transition: translate .38s cubic-bezier(.5, 0, .3, 1), rotate .38s, opacity .38s; }
+.nh-slip.is-in { translate: -50% 150px; rotate: 0deg; opacity: .6; }
+.nh-slip p { margin: 0; font: 700 1.6rem/1.3 var(--f-hand); white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.nh-slip.is-long p { font-size: 1.2rem; -webkit-line-clamp: 8; }
+.nh-slip.note--her p { color: #c2185b; }
+.nh-slip footer { font: 1.25rem var(--f-hand); color: #6b6872; text-align: end; }
+.nh-body { display: grid; gap: 12px; justify-items: start; min-width: 0; }
+.nh-k { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 2px 12px; font-weight: 800; font-size: .85rem; color: #2b2b33; background: #fdc830; border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
+.nh-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; }
+.nh-count b { font: 400 clamp(3rem, 7vw, 4.4rem)/1 var(--f-label); color: #c2185b; }
+.nh-count span { font: 700 clamp(1.4rem, 3vw, 1.8rem)/1.2 var(--f-hand); color: var(--text); }
+.nh-split { display: grid; gap: 6px; width: min(100%, 380px); }
+.nh-split__bar { display: flex; height: 14px; overflow: hidden; border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
+.nh-split__bar i { display: block; height: 100%; }
+.nh-split__bar .is-him { background: var(--blue, #0e6990); }
+.nh-split__bar .is-her { background: #e0507f; }
+.nh-split__who { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; font-size: .9rem; color: var(--muted); }
+.nh-split__who b { color: var(--text); }
+.nh-split__who .is-him::before, .nh-split__who .is-her::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-inline-end: 6px; border-radius: 50%; background: var(--blue, #0e6990); }
+.nh-split__who .is-her::before { background: #e0507f; }
+.nh-more { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: .9rem; font-weight: 700; color: var(--muted); }
+.nh-who { display: flex; flex-wrap: wrap; gap: 8px; }
+.nh-who .chip { min-height: 36px; padding: 4px 14px; }
+.nh-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 720px) {
+	.nh { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+	.nh-body { justify-items: center; }
+	.nh-count, .nh-who, .nh-btns { justify-content: center; }
+	.nh-env { width: min(290px, 100%); height: 300px; }
+	.nh-slip { width: min(250px, 88%); }
+}
+@media (prefers-reduced-motion: reduce) { .nh-slip { transition: none; } }
+
+/* the board: every note placed by notes.js where it fell — no rows, no columns */
+.sec.notes { overflow-x: clip; }
+.nt-board { position: relative; min-height: 200px; margin: 10px 0 20px; }
+.nt-board .nt-note { position: absolute; top: 0; left: 0; box-sizing: border-box; margin: 0; opacity: 0; transition: opacity .4s, rotate .3s, scale .3s; }
+.nt-board.is-laid .nt-note { opacity: 1; transition: left .5s var(--ease-out, ease), top .5s var(--ease-out, ease), opacity .4s, rotate .3s, scale .3s; }
+.nt-board .nt-note[hidden] { display: none; }
+.nt-board .nt-note:hover { z-index: 3; rotate: 0deg; scale: 1.03; }
+.nt-board .nt-note p { font-size: clamp(1.5rem, 4.6vw, 2rem); overflow-wrap: anywhere; }
+.nt-board .nt-note[data-len] p { font-size: clamp(1.45rem, 4.4vw, 1.95rem); }
+.nt-board .nt-note img { max-width: 100%; height: auto; }
+.nt-board .nt-note:nth-child(4n+1)::before { rotate: 4deg; background: rgba(253, 200, 48, .5); }
+.nt-board .nt-note:nth-child(4n+2)::before { left: 22%; background: rgba(143, 209, 239, .55); }
+.nt-board .nt-note:nth-child(5n)::before { left: 74%; rotate: 6deg; }
+@media (prefers-reduced-motion: reduce) { .nt-board .nt-note { transition: opacity .2s; } }

@@ -282,7 +282,7 @@
 .od-page em { padding: 0 10px; font: 400 1.2rem var(--f-label); font-style: normal; color: #2b2b33; background: #fdc830; border: 1.5px solid #37353f; border-radius: var(--sketch-sm, 10px); }
 .od-page.is-flip { transform-origin: top; animation: od-flip 6s ease-in-out calc(var(--i) * 1.2s) infinite; }
 .od-hero__body { display: grid; gap: 10px; justify-items: start; min-width: 0; }
-.od-hero__k { display: inline-flex; align-items: center; gap: 6px; padding: 2px 12px; font-weight: 800; font-size: .85rem; color: var(--ink-text, #2b2b33); background: var(--hl-yellow); border: 1.5px solid var(--ink); border-radius: 999px; }
+.od-hero__k { display: inline-flex; align-items: center; gap: 6px; padding: 2px 12px; font-weight: 800; font-size: .85rem; color: #2b2b33; background: #fdc830; border: 1.5px solid var(--ink); border-radius: 999px; }
 .od-hero__day { display: flex; align-items: center; gap: 12px; max-width: 100%; }
 .od-hero__day h2 { margin: 0; font: 400 clamp(2.4rem, 6vw, 3.6rem)/1.05 var(--f-label); letter-spacing: .03em; color: var(--blue); }
 .od-arrow { flex: none; display: grid; place-items: center; width: 42px; height: 42px; padding: 0; font: 700 1.5rem/1 var(--f-body, inherit); color: var(--text); background: var(--card); border: 1.5px solid var(--ink); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink); cursor: pointer; transition: translate .15s, box-shadow .15s; }
