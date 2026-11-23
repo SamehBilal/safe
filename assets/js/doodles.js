@@ -82,6 +82,7 @@ const PATHS = {
 	bride: `${CIRCLE(12, 5, 2.5)}M9.5 4C6 5 5 10 4 13.5M12 7.5 8 21h8zM10 12h4`,
 	baby: `${FACE}M12 6c1-1.6 2.6-1 2.6 0M9.5 11h.01M14.5 11h.01M10.5 15c1 .8 2 .8 3 0`,
 	bottle: 'M10 3h4v3h-4zM9 6h6l1 3v10a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V9zM8 12h3M8 15h3',
+	dino: `M2 17.5C5 15 7.5 12.5 10.5 11c1.5-.8 2.3-2.2 2.7-4.3l.5-2.7h6.3c.8 0 1.5.7 1.5 1.5V8h-4.5l-1.2 3c-.2 2-.8 3.5-2.3 4.5M2 17.5c3 .3 6-.4 8.8-2.4M10.5 15.3l-.6 4.7h2.2M13.8 15.6l1 4.4h2.2M15.4 11.6l2 .9M17.2 5.6h.01M18.5 8v1.1`,
 	lion: `${CIRCLE(12, 12.5, 5)}M12 3l1.5 2 2.5-1 .5 2.5 2.5.5-1 2.5 2 1.5-2 1.5 1 2.5-2.5.5-.5 2.5-2.5-1L12 21.5l-1.5-2-2.5 1-.5-2.5-2.5-.5 1-2.5-2-1.5 2-1.5-1-2.5 2.5-.5.5-2.5 2.5 1zM10 11.5h.01M14 11.5h.01M11 14.5h2L12 15.5z`,
 	chick: `M5 14c0 4 3 7 7 7s7-3 7-7l-2.5 1.5L14 13l-2 2-2-2-2.5 2.5z${CIRCLE(12, 9, 4)}M10.5 8.5h.01M13.5 8.5h.01M11.4 10.6h1.2l-.6.8z`,
 	groom: `${CIRCLE(12, 8, 5)}M7 6.5c2-3 8-3 10 0M10 8h.01M14 8h.01M10.5 10.5q1.5 1 3 0M9 18l3-1.8 3 1.8-3 1.8zM5 22c1-4 3.5-6 7-6s6 2 7 6`,
@@ -106,7 +107,7 @@ const EMOJI = {
 	'📸': 'camera', '📷': 'camera', '🎲': 'dice', '👗': 'dress', '🍽️': 'dinner', '🍽': 'dinner', '🛵': 'scooter', '🎬': 'clapper', '🔒': 'lock', '🔐': 'lock',
 	'🧽': 'eraser', '🗑️': 'trash', '✈️': 'plane', '🔄': 'refresh', '🔀': 'shuffle', '📌': 'pin', '⚙️': 'gear', '💌': 'letter', '🤝': 'handshake',
 	'🗓️': 'calendar', '⭐': 'star', '👋': 'wave', '👀': 'eyes', '🙈': 'shy', '🎁': 'gift', '📞': 'phone', '🌧️': 'rain', '☕': 'coffee', '🚆': 'train', '🚌': 'bus', '🎟️': 'ticket', '🎟': 'ticket', '🎤': 'music', '🧾': 'scroll', '📍': 'pin', '📮': 'mailbox', '🧲': 'magnet', '🔧': 'wrench', '🛠️': 'wrench', '💧': 'drop', '🚶': 'walk',
-	'👫': 'couple', '👨‍👩‍👧‍👦': 'family', '📖': 'book', '📜': 'scroll', '👰': 'bride', '👶': 'baby', '🍼': 'bottle', '🦁': 'lion', '🐣': 'chick',
+	'👫': 'couple', '👨‍👩‍👧‍👦': 'family', '📖': 'book', '📜': 'scroll', '👰': 'bride', '👶': 'baby', '🍼': 'bottle', '🦁': 'lion', '🦖': 'dino', '🐣': 'chick',
 	'🤵': 'groom', '👸': 'princess', '😍': 'love', '🥰': 'smitten', '😂': 'laugh', '🥹': 'teary', '😌': 'calm', '😴': 'sleepy', '🤒': 'sick', '😤': 'angry'
 };
 
