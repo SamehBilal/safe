@@ -1177,7 +1177,7 @@
 /* ---------- the album (gallery.js), the top: a wall of our photos in the same polaroid frames as every page's top
    (each the top photo of a pile, its name in handwriting; tap one to open the pile), beside how many photos and piles
    and the years they cover ---------- */
-.gh { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(18px, 4vw, 48px); align-items: center; padding: clamp(14px, 2.5vw, 26px) clamp(16px, 3.5vw, 38px); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--blue, #0e6990) 35%, transparent); background-image: radial-gradient(color-mix(in srgb, var(--ink, #37353f) 10%, transparent) 1px, transparent 1.4px); background-size: 18px 18px; }
+.gh { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(18px, 4vw, 48px); align-items: center; padding: clamp(6px, 1.5vw, 14px) 0; }
 .gh-wall { position: relative; width: 100%; aspect-ratio: 100 / 86; container-type: inline-size; }
 .gh-wall .pol { cursor: pointer; }
 .gh-wall .pol:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
