@@ -32,14 +32,25 @@
 .lp-note > b, .lp-note p b { color: var(--coral-deep); }
 @media (prefers-reduced-motion: reduce) { .lp-band *, .lp-band *::before, .lp-band *::after { animation: none !important; } }
 
-/* ---- أول مرة لينا: fairy lights ---- */
+/* ---- أول مرة لينا: fairy lights, a number on each lit bulb, and one first read out under them ---- */
+.of-band { display: grid; justify-items: center; gap: 4px; width: 100%; justify-self: stretch; }
+.of-svg { justify-self: stretch; width: 100%; height: auto; overflow: visible; }
 .of-wire { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 2 7; stroke-linecap: round; }
 .of-bulb rect { fill: var(--ink); }
-.of-bulb path { fill: var(--card); stroke: var(--ink); stroke-width: 1.4; }
+.of-bulb path { fill: var(--card); stroke: var(--ink); stroke-width: 1.4; transition: fill .3s; }
+.of-bulb.is-on { cursor: pointer; outline: none; }
 .of-bulb.is-on path { fill: #fdc830; animation: of-glow 2.4s ease-in-out calc(var(--i) * .2s) infinite; }
-.of-bulb text { font: 400 20px var(--f-hand); fill: var(--text); }
-:lang(ar) .of-bulb text { font: 700 13px var(--f-body); }
-@keyframes of-glow { 50% { fill: color-mix(in srgb, #fdc830 45%, var(--card)); } }
+.of-bulb.is-now path { fill: var(--coral); animation: none; filter: drop-shadow(0 0 8px color-mix(in srgb, var(--coral) 75%, transparent)); }
+.of-bulb:focus-visible path { stroke: var(--blue); stroke-width: 3; }
+.of-bulb text { font: 700 12px var(--f-body); fill: #2b2b33; pointer-events: none; }
+.of-bulb.is-now text { fill: #fff; }
+@keyframes of-glow { 50% { fill-opacity: .5; } }
+.of-now { display: flex; align-items: center; gap: 12px; min-height: 58px; max-width: min(640px, 100%); margin: 0; padding: 8px 18px 8px 8px; background: var(--card); border: 1.5px solid var(--ink); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 #fdc830; }
+[dir="rtl"] .of-now { padding: 8px 8px 8px 18px; }
+.of-now__n { flex: none; display: grid; place-items: center; width: 40px; height: 40px; font: 800 1.05rem var(--f-body); color: #fff; background: var(--coral); border: 1.5px solid var(--ink); border-radius: 50%; }
+.of-now__t { display: grid; min-width: 0; }
+.of-now__t b { font-size: 1.12rem; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.of-now__t small { font-size: .85rem; font-weight: 700; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ---- قبل ما نتقابل: two roads ---- */
 .bu-road { fill: none; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 2 9; animation: bu-march 1.6s linear infinite; }
@@ -1941,3 +1952,24 @@
 	.od-modal__body { padding-inline: 12px; }
 	.od-modal__body .od-img, .od-modal__body .od-ic { width: 72px; height: 72px; }
 }
+
+/* ---- أول مرة لينا: each first hangs from its own lit bulb, numbered oldest first ---- */
+.lp-list--ourfirsts { counter-reset: of; gap: 44px 24px; padding-top: 26px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.of-card { counter-increment: of; gap: 10px; padding: 30px 20px 18px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, #fdc830 75%, transparent); }
+.of-card:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--coral) 55%, transparent); }
+.of-card:nth-child(3n) { box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--blue) 40%, transparent); }
+.of-card::before { content: ""; position: absolute; top: -30px; inset-inline-start: 38px; width: 0; height: 14px; border-inline-start: 1.6px dashed var(--ink); }
+.of-card__bulb { position: absolute; top: -18px; inset-inline-start: 22px; display: grid; place-items: center; width: 34px; height: 40px; background: #fdc830; border: 1.5px solid var(--ink); border-radius: 50% 50% 46% 46% / 42% 42% 58% 58%; box-shadow: 0 0 14px color-mix(in srgb, #fdc830 70%, transparent); }
+.of-card__bulb::before { content: ""; position: absolute; top: -7px; left: 50%; width: 12px; height: 8px; translate: -50% 0; background: var(--ink); border-radius: 2px; }
+.of-card__bulb::after { content: counter(of, arabic-indic); font: 800 .95rem/1 var(--f-body); color: #2b2b33; }
+:root:lang(en) .of-card__bulb::after { content: counter(of); }
+.of-card__date { justify-self: start; margin: 0; padding: 2px 10px; font-weight: 800; font-size: .82rem; color: #2b2b33; background: #fdc830; border-radius: var(--sketch-sm, 8px); }
+.of-card h3 { margin: 0; font-size: 1.3rem; line-height: 1.35; }
+.of-card__where { display: flex; align-items: center; gap: 6px; margin: 0; font-size: .9rem; font-weight: 700; color: var(--blue); }
+.of-card__where svg { flex: none; color: var(--coral); }
+.of-card__note { margin: 2px 0 0; padding-inline-start: 12px; font: 600 1.25rem/1.4 var(--f-hand); color: var(--muted); border-inline-start: 3px dotted var(--coral); }
+:lang(ar) .of-card__note { font: 600 1rem/1.75 var(--f-body); }
+.of-card__ph { margin-top: 4px; }
+.of-card__ph img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; box-sizing: border-box; padding: 6px 6px 20px; background: #fbf8f1; rotate: -1.5deg; box-shadow: 0 4px 12px rgba(30, 20, 10, .22); }
+.of-card:nth-child(even) .of-card__ph img { rotate: 1.5deg; }
+@media (max-width: 560px) { .of-now__t b { white-space: normal; } .of-bulb text { display: none; } .of-svg { margin-inline: -8px; width: calc(100% + 16px); } }
