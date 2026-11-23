@@ -129,7 +129,7 @@ export async function library(mediaDir) {
 				out.count += files.length;
 				if (meta.at && !out.newPlaces.some((p) => p.id === id)) {
 					const a = AREA[city.toLowerCase()];
-					out.newPlaces.push({ id, title: meta.title || name(id), where: meta.where || name(city), at: meta.at, area: meta.area || (a ? { ar: a[0], en: a[1] } : name(city)), ...(meta.place || meta.note ? { place: meta.place || meta.note } : {}), ...(meta.date ? { date: meta.date } : {}), ...(meta.album ? { album: meta.album } : {}) });
+					out.newPlaces.push({ id, title: meta.title || name(id), where: meta.where || name(city), at: meta.at, area: meta.area || (a ? { ar: a[0], en: a[1] } : name(city)), ...(meta.place || meta.note ? { place: meta.place || meta.note } : {}), ...(meta.date ? { date: meta.date } : {}), ...(meta.album ? { album: meta.album } : {}), ...(meta.maps ? { maps: meta.maps } : {}) });
 				}
 			}
 		}

@@ -1,4 +1,5 @@
-import { L, Y, T, esc, img, fmtDate, longDate, yearsAgo, related, qs, App, linksOut, $, $$, REDUCE } from '../shell.js';
+import { L, Y, T, esc, img, fmtDate, longDate, yearsAgo, related, qs, App, linksOut, $, $$, REDUCE, parseDate, daysBetween, num, age } from '../shell.js';
+import { where, fit } from '../tilemap.js';
 import { doodle } from '../doodles.js';
 import { farthestMap, drawFarthest } from './distances.js';
 
@@ -45,6 +46,104 @@ function stripHTML(tl, x, prev, next) {
 	</nav>`;
 }
 
+/* ---- «يومها»: the top of every moment ----
+   A tear-off calendar page for the day (the weekday, the day, the month and year, the Hijri date), beside it what
+   that day was for us — how long we'd known each other or been married, how old each of us there was, how long ago
+   it is, the season — and the other years' moments on the same day. When the moment happened somewhere on
+   «أماكننا» (story.json "place": its id, or a photo it shares with a place) a street map of the spot sits beside
+   them with a pin, the place's name, and buttons to open it in Google Maps and on our map. */
+const fullDate = (d) => /^\d{4}-\d{2}-\d{2}/.test(String(d || ''));
+const SEASON = [['شتا', 'Winter'], ['شتا', 'Winter'], ['ربيع', 'Spring'], ['ربيع', 'Spring'], ['ربيع', 'Spring'], ['صيف', 'Summer'], ['صيف', 'Summer'], ['صيف', 'Summer'], ['خريف', 'Autumn'], ['خريف', 'Autumn'], ['خريف', 'Autumn'], ['شتا', 'Winter']];
+const SEASON_IC = ['rain', 'rain', 'sparkle', 'sparkle', 'sparkle', 'sun', 'sun', 'sun', 'wave', 'wave', 'wave', 'rain'];
+const photoIds = (o) => [o?.photo, ...(o?.photos || []).map((p) => (typeof p === 'string' ? p : p?.photo))].filter(Boolean);
+
+/** The place on «أماكننا» a moment happened at: its "place" id, else a place sharing one of its photos. */
+export function placeOf(s, x) {
+	const P = (s.places || []).filter((p) => where(p));
+	if (x.place) { const p = P.find((q) => q.id === x.place); if (p) return p; }
+	const mine = new Set(photoIds(x));
+	return mine.size ? P.find((p) => photoIds(p).some((q) => mine.has(q))) || null : null;
+}
+
+function dayHTML(s, x) {
+	if (!/^\d{4}-\d{2}/.test(String(x.date || ''))) return '';
+	const full = fullDate(x.date), d = parseDate(x.date), m = d.getMonth();
+	const lang = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	let hijri = '';
+	try { if (full) hijri = new Intl.DateTimeFormat(`${lang}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long', year: 'numeric' }).format(d); } catch { /* no Hijri calendar here */ }
+	const cal = `<div class="mo-cal" aria-hidden="true">
+			<span class="mo-cal__rings"><i></i><i></i></span>
+			<b class="mo-cal__wd">${full ? esc(d.toLocaleDateString(lang, { weekday: 'long' })) : esc(L(...SEASON[m]))}</b>
+			<strong class="mo-cal__d">${full ? num(d.getDate()) : doodle(SEASON_IC[m], 54)}</strong>
+			<span class="mo-cal__my">${esc(d.toLocaleDateString(lang, { month: 'long', year: 'numeric' }))}</span>
+			${hijri ? `<small class="mo-cal__h">${esc(hijri)}</small>` : ''}
+		</div>`;
+
+	const facts = [];
+	const fact = (ic, small, big) => facts.push(`<li>${doodle(ic, 26)}<span><small>${small}</small><b>${big}</b></span></li>`);
+	// us: before we met, how long we'd known each other, how long married
+	const met = s.met && parseDate(s.met), wed = s.married && parseDate(s.married);
+	const same = (a) => a && a.getTime() === d.getTime();
+	if (same(met)) fact('heart', L('يومها', 'That day'), L('أول يوم نعرف فيه بعض', 'The day we met'));
+	else if (met && d < met) fact('clock', L('قبل ما نتقابل', 'Before we met'), esc(L(`بـ ${age(x.date, met)}`, `by ${age(x.date, met)}`)));
+	else if (same(wed)) fact('ring', L('يومها', 'That day'), L('يوم فرحنا', 'Our wedding day'));
+	else if (wed && d > wed) fact('ring', L('كنا متجوزين بقالنا', 'We had been married'), esc(age(s.married, d)));
+	else if (met) fact('heart', L('كنا عارفين بعض بقالنا', 'We had known each other'), esc(age(s.met, d)) + (wed ? `<em>${esc(L(`وفاضل على فرحنا ${age(x.date, wed)}`, `and ${age(x.date, wed)} to our wedding`))}</em>` : ''));
+	// how old each of us there was
+	const people = (s.family?.members || []).filter((p) => p.born && (x.who || []).includes(p.id) && parseDate(p.born) <= d);
+	if (people.length) facts.push(`<li class="mo-ages">${doodle('family', 26)}<span><small>${L('كان عندنا', 'How old we were')}</small><span class="mo-ages__row">${people.map((p) => `<a class="mo-age" href="member.html?id=${encodeURIComponent(p.id)}"><b>${T(p.name)}</b> ${same(parseDate(p.born)) ? esc(L('اتولد النهارده', 'born that day')) : esc(age(p.born, d))}</a>`).join('')}</span></span></li>`);
+	// how long ago, and the season
+	const days = daysBetween(d);
+	if (days > 0) fact('calendar', L('من ساعتها', 'Since then'), esc(L(`${num(days)} يوم`, `${num(days)} days`) + (yearsAgo(x.date) ? ` · ${yearsAgo(x.date)}` : '')));
+	if (full) fact(SEASON_IC[m], L('الفصل', 'The season'), esc(L(...SEASON[m])));
+
+	// the same day in other years
+	const md = String(x.date).slice(5, 10);
+	const also = full ? (s.timeline || []).filter((o) => o.id !== x.id && fullDate(o.date) && o.date.slice(5, 10) === md) : [];
+
+	const p = placeOf(s, x);
+	const at = p && where(p);
+	const here = p ? (s.timeline || []).filter((o) => o.id !== x.id && placeOf(s, o)?.id === p.id) : [];
+	const gmaps = p ? (String(p.maps || '').startsWith('https://') ? p.maps : `https://www.google.com/maps/search/?api=1&query=${at.lat},${at.lng}`) : '';
+	const placeCard = p ? `<div class="mo-place">
+			<div class="mo-place__map" id="mo-place-map" data-at="${at.lat},${at.lng}" role="img" aria-label="${esc(L(`${App.t(p.title)} على الخريطة`, `${App.t(p.title)} on the map`))}"><div class="mo-place__tiles"></div><span class="mo-place__pin" hidden><svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg></span><small class="mo-place__osm">© OpenStreetMap</small></div>
+			<div class="mo-place__txt">
+				<small>${L('المكان', 'The place')}</small>
+				<b dir="auto">${T(p.title)}</b>
+				${p.where ? `<span dir="auto">${T(p.where)}</span>` : ''}
+				${here.length ? `<em>${esc(L(`رحناه ${here.length + 1 === 2 ? 'مرتين' : `${num(here.length + 1)} مرات`}`, `We've been ${here.length + 1} times`))}: ${here.slice(0, 3).map((o) => `<a href="moment.html?id=${encodeURIComponent(o.id)}">${T(o.title)}</a>`).join(L('، ', ', '))}</em>` : ''}
+				<span class="mo-place__btns"><a class="btn btn--sm" href="${esc(gmaps)}" target="_blank" rel="noopener noreferrer">${doodle('pin', 18)} ${L('افتحه في خرايط جوجل', 'Open in Google Maps')}</a><a class="btn btn--sm btn--ghost" href="places.html">${L('على خريطة أماكننا', 'On our map')}</a></span>
+			</div>
+		</div>` : '';
+
+	return `<section class="mo-day wrap" id="mo-day" aria-label="${L('يومها', 'That day')}">
+		<h2 class="mo-day__h">${L('يومها', 'That day')}</h2>
+		<div class="mo-day__grid${p ? ' has-place' : ''}">
+			${cal}
+			<ul class="mo-facts">${facts.join('')}</ul>
+			${placeCard}
+		</div>
+		${also.length ? `<p class="mo-also"><small>${L('في نفس اليوم في سنين تانية', 'The same day, other years')}</small>${also.map((o) => `<a class="chip" href="moment.html?id=${encodeURIComponent(o.id)}">${doodle(o.icon, 16)} ${T(o.title)} <small>${num(+o.date.slice(0, 4)).replace(/[٬,]/g, '')}</small></a>`).join('')}</p>` : ''}
+	</section>`;
+}
+
+/* the street map of the place, fitted around its pin once the box has a size */
+function drawPlace(main) {
+	const box = $('#mo-place-map', main);
+	if (!box) return;
+	const [lat, lng] = box.dataset.at.split(',').map(Number);
+	const draw = () => {
+		const tiles = $('.mo-place__tiles', box);
+		if (!tiles.clientWidth) return;
+		const v = fit(tiles, [{ lat, lng }], { zoom: 15, maxZ: 16, minZ: 12 });
+		const pt = v.at({ lat, lng }), pin = $('.mo-place__pin', box);
+		pin.style.left = `${pt.x}px`; pin.style.top = `${pt.y}px`; pin.hidden = false;
+	};
+	draw();
+	let t;
+	new ResizeObserver(() => { clearTimeout(t); t = setTimeout(draw, 80); }).observe(box);
+}
+
 export default {
 	title: { ar: 'ذكرى', en: 'A moment' },
 	render(s) {
@@ -73,6 +172,7 @@ export default {
 			${stack ? `<button class="mo-down" type="button" id="mo-down" aria-label="${Y('شوف الصور', 'شوفي الصور', 'See the photos')}"><span>${Y('شوف الصور', 'شوفي الصور', 'See the photos')}</span><i aria-hidden="true">↓</i></button>` : ''}
 		</header>
 		<article class="sec mo-body">
+			${dayHTML(s, x)}
 			${photos.length ? `<section class="scatter-wrap wrap" aria-label="${L('الصور', 'Photos')}">
 				<h2 class="sec__title scatter__h" id="mo-wall-h">${L(`${photos.length} صورة من اليوم ده`, `${photos.length} photo${photos.length === 1 ? '' : 's'} from that day`)}</h2>
 				<div class="scatter${photos.length < 4 ? ' scatter--few' : ''}" id="mo-wall">${photos.map((p, n) => {
@@ -103,6 +203,7 @@ export default {
 	after(main, s) {
 		const x = (s.timeline || []).find((m) => m.id === qs('id'));
 		if (isFar(s, x)) drawFarthest(main, s);
+		drawPlace(main);
 		/* a program that can run: the button opens a console under the code and runs it there */
 		$('#mo-run', main)?.addEventListener('click', async (e) => {
 			e.currentTarget.hidden = true;
@@ -171,6 +272,7 @@ function stackToGrid(main, intro) {
 		});
 		rest.forEach((el, n) => el.animate([{ transform: 'scale(.6)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 500, delay: 250 + n * 35, easing: EASE_OUT, fill: 'backwards' }));
 		wallH?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: 150, easing: 'ease-out', fill: 'backwards' });
+		$('#mo-day', main)?.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay: 100, easing: EASE_OUT, fill: 'backwards' });
 	};
 	const onScroll = () => { if (scrollY > 8) toGrid(); };
 	let t;
