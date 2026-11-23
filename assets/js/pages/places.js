@@ -1,4 +1,13 @@
-import { L, T, esc, img, fmtDate, pageHead, related, App, $, $$, REDUCE, hydrate } from '../shell.js';
+import { L, T, esc, img, fmtDate, pageHead, related, App, $, $$, REDUCE, hydrate, num } from '../shell.js';
+import { doodle } from '../doodles.js';
+
+/* The top: a wall of our places in the same polaroid frames as the album — each a place's own photo with its name in
+   handwriting (tap one to see it on the map) — beside how many places, how many areas, the years, and buttons to the
+   map and to the city maps. The cards below: each place's photo clear in a frame, its name, where with a pin, when,
+   and the line about it. */
+const SPOTS = [[20, 25], [50, 19], [80, 27], [25, 63], [55, 60], [83, 66]];
+const PHONE = [[28, 27], [72, 25], [29, 72], [72, 74]];
+const yr = (y) => num(+y).replace(/[٬,]/g, '');
 
 /* Our places on a map, after Codrops' «Interactive Points»: a faded street map with a pin for every place we've been.
    Bring the mouse near a pin and that place's photo shows through the map; click it and the photo fills the map with
@@ -38,16 +47,17 @@ export default {
 		const names = [...new Set(pinned.map(({ m }) => T(m.area)))];
 		pinned.forEach((p) => { p.a = names.indexOf(T(p.m.area)); });
 		return `
-		${pageHead(L('أماكننا', 'Our places'), L('أماكن فيها حتة مننا', 'Places that hold a piece of us'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }])}
+		${hero(list, pinned, names)}
+		${pageHead(L('أماكننا', 'Our places'), L('أماكن فيها حتة مننا', 'Places that hold a piece of us'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }], { band: '' })}
 		${pinned.length ? `<section class="sec sec--top"><div class="wrap">
 			<p class="ip-hint" data-touch="${L('دوسي على أي دبوس على الخريطة', 'Tap any pin on the map')}">${L('قرّبي من أي دبوس على الخريطة… واضغطي عليه', 'Bring the mouse near a pin on the map… then click it')}</p>
 			${names.length > 1 ? `<div class="chips ip-areas" role="toolbar" aria-label="${L('المنطقة', 'Area')}">${names.map((n, k) => `<button class="chip${k ? '' : ' is-on'}" type="button" data-area="${k}" aria-pressed="${!k}">${esc(n || L('أماكن تانية', 'Elsewhere'))} <small>${pinned.filter((p) => p.a === k).length}</small></button>`).join('')}</div>` : ''}
-			<div class="ip" tabindex="-1" aria-label="${L('خريطة أماكننا', 'Map of our places')}">
+			<div class="ip" id="ip-map" tabindex="-1" aria-label="${L('خريطة أماكننا', 'Map of our places')}">
 				<div class="ip__map" aria-hidden="true"></div>
 				<div class="ip__bgs" aria-hidden="true">${pinned.map(({ m }) => `<div class="ip__bg">${photosOf(m).map((p, j) => (j ? img(p, '', 'ip__photo').replace('data-m=', 'data-later=') : img(p, '', 'ip__photo is-on'))).join('')}</div>`).join('')}</div>
 				<svg class="ip__lines" aria-hidden="true"></svg>
 				<div class="ip__pins">${pinned.map(({ m }, k) => `
-					<button class="ip__pin" type="button" data-k="${k}" aria-label="${esc(T(m.title))}${T(m.where) ? ` — ${esc(T(m.where))}` : ''}">
+					<button class="ip__pin" type="button" data-k="${k}" data-area="${pinned[k].a}" aria-label="${esc(T(m.title))}${T(m.where) ? ` — ${esc(T(m.where))}` : ''}">
 						<svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg>
 					</button>`).join('')}
 				</div>
@@ -67,12 +77,16 @@ export default {
 			</div>
 		</div></section>` : ''}
 		<section class="sec${pinned.length ? '' : ' sec--top'}"><div class="wrap">
-			<div class="places">${list.map((m, k) => `
-				<article class="moment reveal" data-media-box style="--delay:${(k % 2) * 0.1}s">
-					${img(m.photo, App.t(m.title), 'zoom')}
-					<h3>${T(m.title)}</h3>
-					<div class="moment__blur"></div>
-					<div class="moment__meta"><b>${T(m.where) || T(m.place)}</b>${m.date ? `<span>${fmtDate(m.date)}</span>` : ''}${m.where && m.place ? `<span>${T(m.place)}</span>` : ''}${m.text ? `<span>${T(m.text)}</span>` : ''}</div>
+			<div class="pl-grid">${list.map((m, k) => `
+				<article class="pl-card reveal" style="--delay:${(k % 3) * 0.08}s;--k:${k}">
+					${m.photo ? `<div class="pl-card__ph" data-media-box>${img(m.photo, App.t(m.title), 'zoom')}</div>` : `<div class="pl-card__ph pl-card__ph--none">${doodle('pin', 46)}</div>`}
+					<div class="pl-card__body">
+						${m.date ? `<p class="pl-card__date">${fmtDate(m.date)}</p>` : ''}
+						<h3 dir="auto">${T(m.title)}</h3>
+						${T(m.where) ? `<p class="pl-card__where" dir="auto">${doodle('pin', 15)} ${T(m.where)}</p>` : ''}
+						${m.place ? `<p class="pl-card__line" dir="auto">${T(m.place)}</p>` : ''}
+						${m.text ? `<p class="pl-card__line" dir="auto">${T(m.text)}</p>` : ''}
+					</div>
 				</article>`).join('')}
 			</div>
 		</div></section>
@@ -85,19 +99,45 @@ export default {
 			const names = [...new Set(pinned.map((m) => T(m.area)))];
 			points(box, pinned.map(where), pinned.map((m) => names.indexOf(T(m.area))));
 		}
-		if (REDUCE) return;
-		// the photo follows the mouse only on the card it's over, and settles back when it leaves
-		for (const c of $$('.moment', main)) {
-			c.addEventListener('pointermove', (e) => {
-				if (e.pointerType !== 'mouse') return;
-				const r = c.getBoundingClientRect();
-				c.style.setProperty('--x', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-				c.style.setProperty('--y', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
-			}, { passive: true });
-			c.addEventListener('pointerleave', () => { c.style.setProperty('--x', 0); c.style.setProperty('--y', 0); });
+		// a polaroid at the top opens its place on the map
+		for (const p of $$('.gh-wall [data-k]', main)) {
+			const open = () => {
+				const k = +p.dataset.k, pin = $(`.ip__pin[data-k="${k}"]`, main);
+				if (!pin) return;
+				const area = pin.dataset.area;
+				$('.ip', main)?.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
+				setTimeout(() => { const chip = area != null ? $(`.ip-areas [data-area="${area}"]`, main) : null; if (chip && !chip.classList.contains('is-on')) chip.click(); setTimeout(() => pin.click(), 350); }, REDUCE ? 0 : 450);
+			};
+			p.addEventListener('click', open);
+			p.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
 		}
 	}
 };
+
+function hero(list, pinned, names) {
+	if (!list.length) return '';
+	const withPh = pinned.filter(({ m }) => m.photo).map((p, i) => ({ ...p, k: pinned.indexOf(p) }));
+	const n = Math.min(SPOTS.length, withPh.length);
+	const pick = [...withPh].sort(() => Math.random() - 0.5).slice(0, n);
+	const years = list.map((m) => String(m.date || '').slice(0, 4)).filter((y) => /^\d{4}$/.test(y)).sort();
+	const pols = pick.map(({ m, k }, i) => {
+		const [sx, sy] = SPOTS[i], [px, py] = PHONE[i] || SPOTS[i];
+		return `<figure class="pol gh-pol${i >= 4 ? ' pol--wide' : ''}" data-media-box data-k="${k}" role="button" tabindex="0" aria-label="${esc(App.t(m.title))}" style="--w:30cqw;--x:${sx};--y:${sy};--px:${px};--py:${py};--r:${(Math.random() * 16 - 8).toFixed(1)}deg;--s:${(0.3 + Math.random() * 0.5).toFixed(2)};--i:${i}">
+			<div class="pol__ph">${img(m.photo, '', 'pol__img')}</div><figcaption>${esc(App.t(m.title))}</figcaption></figure>`;
+	}).join('');
+	return `<section class="sec sec--top"><div class="wrap"><div class="gh">
+		<div class="gh-wall">${pols}</div>
+		<div class="gh-body">
+			<p class="gh-k">${doodle('pin', 16)} ${L('أماكننا', 'Our places')}${years.length ? ` · ${yr(years[0])}–${yr(years.at(-1))}` : ''}</p>
+			<p class="gh-count"><b>${num(list.length)}</b> <span>${L('مكان فيه حتة مننا', list.length === 1 ? 'place with a piece of us' : 'places with a piece of us')}</span></p>
+			${names.length ? `<p class="gh-sub">${L(`في ${num(names.length)} ${names.length === 1 ? 'منطقة' : 'مناطق'}: `, `in ${names.length} area${names.length === 1 ? '' : 's'}: `)}${names.filter(Boolean).slice(0, 5).map(esc).join(L('، ', ', '))}</p>` : ''}
+			<div class="gh-btns">
+				${pinned.length ? `<a class="btn btn--sm" href="#ip-map" data-to-map>${doodle('pin', 18)} ${L('على الخريطة', 'On the map')}</a>` : ''}
+				<a class="btn btn--sm btn--ghost" href="cities.html">${doodle('house', 18)} ${L('خرايط مدننا', 'Our city maps')}</a>
+			</div>
+		</div>
+	</div></div></section>`;
+}
 
 /** The map, the pins, and the hover/click effect. `areas[i]` is the area pin i belongs to; the map shows one area at a time. */
 function points(box, spots, areas) {

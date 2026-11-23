@@ -210,7 +210,7 @@ export default {
 				${(() => {
 					// a trip on «رحلاتنا» this day is part of: its road on the map
 					const j = (s.journeys || []).find((t) => t.moment === x.id || t.stops.some((st) => (st.photos || []).includes(x.photo)));
-					return j ? `<a class="otd reveal" href="journeys.html#j-${esc(j.id)}"><span class="otd__ic">${doodle('plane', 28)}</span><span><small>${L('الرحلة على الخريطة', 'The trip on the map')}</small><b>${T(j.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : '';
+					return j ? `<a class="otd reveal" href="journey.html?id=${esc(j.id)}"><span class="otd__ic">${doodle('plane', 28)}</span><span><small>${L('الرحلة على الخريطة', 'The trip on the map')}</small><b>${T(j.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : '';
 				})()}
 				${chapter ? `<a class="otd reveal" href="chapter.html?id=${esc(chapter.id)}"><span class="otd__ic">${doodle(chapter.icon, 28)}</span><span><small>${L('الحكاية كاملة', 'The full chapter')}</small><b>${T(chapter.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : ''}
 				<nav class="pager" aria-label="${L('ذكريات تانية', 'Other moments')}">

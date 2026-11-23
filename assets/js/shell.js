@@ -613,7 +613,7 @@ export const DRAW_KINDS = [
 	{ id: 'kids', emoji: 'family', color: '#5a9e6f', ar: 'نشاط مع الولاد', en: 'With the boys', dar: 'نعمل إيه مع فهد وعبد الرحمن؟', den: 'What shall we do with Fahd and Abdulrahman?', sketch: { ar: 'رسمة النشاط', en: 'Sketch it' } }
 ];
 /* pages that are one page per item, and which menu they belong to */
-const DETAIL_OF = { moment: 'story', chapter: 'story', member: 'family', trip: 'story' };
+const DETAIL_OF = { moment: 'story', chapter: 'story', member: 'family', trip: 'story', journey: 'journeys' };
 
 const ICONS = {
 	home: '<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/>',
@@ -1351,7 +1351,7 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'debts', 'distances', 'draw', 'drawings', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'debts', 'distances', 'draw', 'drawings', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
 const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', debts: 'more', drawings: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', remember: 'more', routine: 'more', sayings: 'more', secret: 'secret', shopping: 'more', tickets: 'more' };
 function ownCSS(id) {

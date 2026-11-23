@@ -24,7 +24,8 @@ const DETAIL = {
 	moment: { ar: 'ذكرى', en: 'A moment', dar: 'يوم من حكايتنا، بصوره وحكايته', den: 'One day of our story, with its photos' },
 	chapter: { ar: 'يوم فارق', en: 'A big day', dar: 'يوم من أيامنا الفارقة، بالصور', den: 'One of our big days, in photos' },
 	member: { ar: 'عيلتنا', en: 'Our family', dar: 'صفحة كل واحد في عيلتنا', den: 'A page for each of our family' },
-	trip: { ar: 'رحلة', en: 'A trip', dar: 'رحلة من رحلات عيد جوازنا', den: 'One of our anniversary trips' }
+	trip: { ar: 'رحلة', en: 'A trip', dar: 'رحلة من رحلات عيد جوازنا', den: 'One of our anniversary trips' },
+	journey: { ar: 'رحلة', en: 'A trip', dar: 'رحلة من رحلاتنا، محطة ورا محطة على الخريطة', den: 'One of our trips, stop by stop on the map' }
 };
 
 const BASE_CSS = ['app', 'chrome', 'live', 'trips', 'plans', 'bujo'];

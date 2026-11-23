@@ -68,8 +68,9 @@ export default {
 	render() {
 		const ok = live.canWrite();
 		return `
-		${pageHead(L('خرايط مدننا', 'Our city maps'), L('كل مدينة رحناها، والأماكن اللي مشينا فيها منورة على خريطتها', 'Every city we’ve been to, with the spots we walked lit up on its map'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }, { href: 'cities.html', ar: 'خرايط مدننا', en: 'Our city maps' }], [['pin', 'هنا', 'Here'], ['moon', 'بالليل', 'By night'], ['walk', 'مشينا', 'We walked'], ['star', 'منورة', 'Lit up']])}
-		<section class="sec sec--top"><div class="wrap">
+		<section class="sec sec--top cmh-top"><div class="wrap"><div class="cmh" id="cmh"><p class="empty">${L('بنجيب الخرايط…', 'Fetching the maps…')}</p></div></div></section>
+		${pageHead(L('خرايط مدننا', 'Our city maps'), L('كل مدينة رحناها، والأماكن اللي مشينا فيها منورة على خريطتها', 'Every city we’ve been to, with the spots we walked lit up on its map'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }, { href: 'cities.html', ar: 'خرايط مدننا', en: 'Our city maps' }], { band: '' })}
+		<section class="sec"><div class="wrap">
 			<div class="cm" id="cm" style="direction:ltr">
 				<div class="cm__map" aria-hidden="true"></div>
 				<div class="cm__pins"></div>
@@ -162,34 +163,66 @@ export default {
 			box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		};
 
-		function build(want) {
-			list = cities(s, trips, spots.items || []);
-			// each city a framed street-map poster on the wall, in one of three styles in turn: white streets on black to the
-			// edges, the city in a circle on a white poster, or cream streets in a circle on charcoal — the English name big,
-			// the Arabic under it, then the governorate, Egypt and where it is
-			const STYLES = ['noir', 'circle', 'cream'];
-			grid.innerHTML = list.length ? list.map((c, k) => {
-				const cap = centreOf(c);
-				return `<button class="cm-card cm-card--${STYLES[k % 3]}" type="button" data-c="${esc(c.id)}" style="--k:${k}">
-					<span class="cm-poster" aria-hidden="true">
-						<span class="cm-card__map" style="direction:ltr"><span class="cm-card__tiles"></span><span class="cm-card__dots"></span></span>
-						<span class="cm-poster__en">${esc(c.en)}</span>
-						<span class="cm-poster__ar" dir="rtl">${esc(c.ar)}</span>
-						<span class="cm-poster__sub">${esc([c.gov, 'Egypt'].filter(Boolean).join(' · '))}</span>
-						${cap ? `<span class="cm-poster__xy">${esc(coords(cap))}</span>` : ''}
-					</span>
-					<b class="sr-only">${esc(c.label)}</b>
-					<small>${c.spots.length ? L(`${num(c.spots.length)} ${c.spots.length === 1 ? 'مكان' : c.spots.length <= 10 ? 'أماكن' : 'مكان'} منورة`, `${c.spots.length} spot${c.spots.length === 1 ? '' : 's'} lit up`) : L('مستنية أماكنها', 'waiting for its spots')}${c.trips.length ? ` · ${doodle('suitcase', 14)}` : ''}</small>
-				</button>`;
-			}).join('') : `<p class="empty">${Y('لسه مفيش مدن… ضيف أول مكان رحناه ♥', 'لسه مفيش مدن… ضيفي أول مكان رحناه ♥', 'No cities yet… add the first spot we went to ♥')}</p>`;
-			// each poster gets its city's streets: wide enough to show the town, with our spots in gold
-			for (const card of $$('.cm-card', grid)) {
+		/* a city as a framed poster: its streets in white on black to the edges, our spots in gold, the English name big,
+		   the Arabic under it, then the governorate and Egypt */
+		const poster = (c) => {
+			const cap = centreOf(c);
+			return `<span class="cm-poster" aria-hidden="true">
+				<span class="cm-card__map" style="direction:ltr"><span class="cm-card__tiles"></span><span class="cm-card__dots"></span></span>
+				<span class="cm-poster__en">${esc(c.en)}</span>
+				<span class="cm-poster__ar" dir="rtl">${esc(c.ar)}</span>
+				<span class="cm-poster__sub">${esc([c.gov, 'Egypt'].filter(Boolean).join(' · '))}</span>
+				${cap ? `<span class="cm-poster__xy">${esc(coords(cap))}</span>` : ''}
+			</span>`;
+		};
+		const streets = (root) => {
+			for (const card of $$('[data-c]', root)) {
 				const c = list.find((x) => x.id === card.dataset.c);
 				const tiles = $('.cm-card__tiles', card);
+				if (!c || !tiles) continue;
 				const mid = centreOf(c);
-				const v = fit(tiles, [...c.spots.map((p) => p.at), mid].filter(Boolean), { pad: 30, zoom: 12, maxZ: 13, minZ: 11, center: mid || undefined, poster: true, detail: 2 });
+				const v = fit(tiles, [...c.spots.map((p) => p.at), mid].filter(Boolean), { pad: 30, zoom: 12, maxZ: 13, minZ: 10, center: mid || undefined, poster: true, detail: 2 });
 				$('.cm-card__dots', card).innerHTML = c.spots.map((p) => { const xy = v.at(p.at); return `<i style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px"></i>`; }).join('');
 			}
+		};
+		/* the top: the cities with the most spots hung on the wall, and the numbers beside them */
+		const wall = () => {
+			const box = $('#cmh', main);
+			if (!list.length) { box.innerHTML = ''; return; }
+			const hung = list.slice(0, 4);
+			const spotsN = list.reduce((a, c) => a + c.spots.length, 0);
+			const tripsN = new Set(list.flatMap((c) => c.trips)).size;
+			box.innerHTML = `<div class="cmh-wall">${hung.map((c, k) => `<button class="cmh-frame" type="button" data-c="${esc(c.id)}" style="--k:${k};--r:${k % 2 ? 1.6 : -1.4}deg;--dy:${k % 2 ? 18 : 0}px" aria-label="${esc(c.label)}"><span class="cmh-wire" aria-hidden="true"></span>${poster(c)}</button>`).join('')}</div>
+				<div class="cmh-body">
+					<p class="cmh-k">${doodle('pin', 16)} ${L('خرايط مدننا', 'Our city maps')}</p>
+					<p class="cmh-count"><b>${num(list.length)}</b> <span>${L(list.length === 1 ? 'مدينة رحناها' : list.length <= 10 ? 'مدن رحناها' : 'مدينة رحناها', list.length === 1 ? 'city we’ve been to' : 'cities we’ve been to')}</span></p>
+					<ul class="cmh-facts">
+						<li>${doodle('star', 18)} <b>${num(spotsN)}</b> ${L('مكان منوّر', spotsN === 1 ? 'spot lit up' : 'spots lit up')}</li>
+						${tripsN ? `<li>${doodle('suitcase', 18)} <b>${num(tripsN)}</b> ${L(tripsN === 1 ? 'رحلة عيد جواز' : 'رحلات عيد جواز', tripsN === 1 ? 'anniversary trip' : 'anniversary trips')}</li>` : ''}
+						<li>${doodle('house', 18)} ${L(`أكتر مدينة: ${esc(list[0].ar || list[0].label)}`, `Most of all: ${esc(list[0].en)}`)}</li>
+					</ul>
+					<a class="btn btn--sm" href="#cm-grid">${doodle('book', 16)} ${L('كل المدن', 'All the cities')}</a>
+				</div>`;
+			streets(box);
+		};
+		$('#cmh', main).onclick = (e) => {
+			const b = e.target.closest('[data-c]');
+			if (!b) return;
+			show(b.dataset.c);
+			history.replaceState(history.state, '', `#${b.dataset.c}`);
+			box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		};
+
+		function build(want) {
+			list = cities(s, trips, spots.items || []);
+			// each city a framed street-map poster: white streets on black to the edges, like a city poster on a wall
+			grid.innerHTML = list.length ? list.map((c, k) => `<button class="cm-card cm-card--noir" type="button" data-c="${esc(c.id)}" style="--k:${k}">
+				${poster(c)}
+				<b class="sr-only">${esc(c.label)}</b>
+				<small>${c.spots.length ? L(`${num(c.spots.length)} ${c.spots.length === 1 ? 'مكان' : c.spots.length <= 10 ? 'أماكن' : 'مكان'} منورة`, `${c.spots.length} spot${c.spots.length === 1 ? '' : 's'} lit up`) : L('مستنية أماكنها', 'waiting for its spots')}${c.trips.length ? ` · ${doodle('suitcase', 14)}` : ''}</small>
+			</button>`).join('') : `<p class="empty">${Y('لسه مفيش مدن… ضيف أول مكان رحناه ♥', 'لسه مفيش مدن… ضيفي أول مكان رحناه ♥', 'No cities yet… add the first spot we went to ♥')}</p>`;
+			streets(grid);
+			wall();
 			const fromHash = decodeURIComponent(location.hash.slice(1));
 			show(want || (list.some((c) => c.id === fromHash) ? fromHash : list[0]?.id));
 		}
