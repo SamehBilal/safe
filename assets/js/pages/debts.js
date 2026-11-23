@@ -8,7 +8,9 @@ import * as live from '../live.js';
    borrowed. Each one has whom, how much, the monthly installment and when it's due; every payment is written down
    («دفعنا قسط») and the bar fills until it's paid off (a pen checkmark). Above the title a balance: what's on us in
    one pan, what's ours in the other, the beam leaning to the heavier side. Shared: content/live/debts.bin; the
-   monthly installments also count in «مصاريف الشهر», the due dates show in the calendar. */
+   monthly installments also count in «مصاريف الشهر», the due dates show in the calendar.
+   A debt can also be a thing, not money (a copy of a book we owe a friend, the drill a neighbour lent us): what it is,
+   how many, a photo of it or a drawing; its card is a gift tag tied on, ticked when we give it (or get it back). */
 
 export const DIRS = [['out', 'علينا', 'We owe'], ['in', 'لينا', 'Owed to us']];
 export const DKINDS = [
@@ -16,9 +18,11 @@ export const DKINDS = [
 	['gamaya', 'heart', 'جمعية', 'A «gamaya»'], ['person', 'handshake', 'سلف من حد', 'Borrowed from someone'], ['lent', 'handshake', 'سلفناه لحد', 'We lent it'], ['other', 'star', 'حاجة تانية', 'Something else']
 ];
 const kindOf = (k) => DKINDS.find((x) => x[0] === k) || DKINDS.at(-1);
-export const paidOf = (x) => (x.paid || []).reduce((a, p) => a + (+p.a || 0), 0);
-export const leftOf = (x) => Math.max(0, (+x.amount || 0) - paidOf(x));
-export const isOver = (x) => (+x.amount || 0) > 0 && leftOf(x) <= 0;
+export const isThing = (x) => x.form === 'thing';
+export const paidOf = (x) => (isThing(x) ? 0 : (x.paid || []).reduce((a, p) => a + (+p.a || 0), 0));
+export const leftOf = (x) => (isThing(x) ? 0 : Math.max(0, (+x.amount || 0) - paidOf(x)));
+export const isOver = (x) => (isThing(x) ? !!x.doneOn : (+x.amount || 0) > 0 && leftOf(x) <= 0);
+const thingName = (x) => `${+x.qty > 1 ? `${num(x.qty)} × ` : ''}${x.thing || ''}`;
 export const money = (n) => `${num(Math.round(+n || 0))} ${L('ج', 'EGP')}`;
 const daysTo = (iso) => Math.round((new Date(iso + 'T00:00') - new Date(live.today() + 'T00:00')) / 864e5);
 
@@ -27,19 +31,25 @@ export default listPage({
 	title: ['ديوننا', 'Our debts'], sub: ['اللي علينا واللي لينا — كل قسط بنكتبه لحد ما نخلص ♥', 'What we owe and what’s owed to us — every payment written down until it’s paid off ♥'],
 	add: ['ضيفوا دين', 'Add a debt'],
 	fields: [
+		{ n: 'form', t: 'sel', l: ['فلوس ولا حاجة (كتاب، حاجة مستلفينها)؟', 'Money, or a thing (a book, something borrowed)?'], opts: [['money', 'فلوس', 'Money'], ['thing', 'حاجة مش فلوس', 'A thing, not money']] },
 		{ n: 'dir', t: 'sel', l: ['علينا ولا لينا؟', 'Do we owe it, or are we owed?'], opts: DIRS },
 		{ n: 'whom', t: 'text', l: ['لمين / من مين؟', 'To or from whom?'], req: 1, ph: ['بنك مصر، عمو أحمد…', 'Banque Misr, Uncle Ahmed…'], grow: 1 },
-		{ n: 'dkind', t: 'sel', l: ['نوعه', 'What kind'], opts: DKINDS.map(([v, , ar, en]) => [v, ar, en]) },
-		{ n: 'amount', t: 'num', l: ['المبلغ كله (جنيه)', 'The whole amount (EGP)'], req: 1, ph: ['٥٠٠٠٠', '50000'] },
-		{ n: 'monthly', t: 'num', l: ['القسط الشهري (اختياري)', 'Monthly installment (optional)'], ph: ['٢٠٠٠', '2000'] },
-		{ n: 'payday', t: 'num', l: ['بيتدفع يوم كام في الشهر؟', 'Paid on which day of the month?'], min: 1, ph: ['٥', '5'] },
+		{ n: 'dkind', t: 'sel', l: ['نوعه', 'What kind'], opts: DKINDS.map(([v, , ar, en]) => [v, ar, en]), when: ['form', 'money'] },
+		{ n: 'amount', t: 'num', l: ['المبلغ كله (جنيه)', 'The whole amount (EGP)'], req: 1, ph: ['٥٠٠٠٠', '50000'], when: ['form', 'money'] },
+		{ n: 'monthly', t: 'num', l: ['القسط الشهري (اختياري)', 'Monthly installment (optional)'], ph: ['٢٠٠٠', '2000'], when: ['form', 'money'] },
+		{ n: 'payday', t: 'num', l: ['بيتدفع يوم كام في الشهر؟', 'Paid on which day of the month?'], min: 1, ph: ['٥', '5'], when: ['form', 'money'] },
+		{ n: 'thing', t: 'text', l: ['إيه هي الحاجة؟', 'What is it?'], req: 1, grow: 1, ph: ['نسخة من كتاب «…»', 'A copy of the book «…»'], when: ['form', 'thing'] },
+		{ n: 'qty', t: 'num', l: ['كام واحدة؟', 'How many?'], min: 1, ph: ['١', '1'], when: ['form', 'thing'] },
+		{ n: 'photo', t: 'photo', l: ['صورتها أو رسمتها (اختياري)', 'A photo or a drawing of it (optional)'], sketch: true, sketchTitle: ['ارسم الحاجة', 'Draw the thing'], when: ['form', 'thing'] },
 		{ n: 'due', t: 'date', l: ['آخر ميعاد (اختياري)', 'Final due date (optional)'] },
 		{ n: 'who', t: 'sel', l: ['مين ماسكه؟', 'Who’s handling it?'], opts: 'whoBoth' },
-		{ n: 'paidSoFar', t: 'num', l: ['دفعنا منه كام لحد دلوقتي؟', 'Paid so far (if any)'], ph: ['٠', '0'] },
+		{ n: 'paidSoFar', t: 'num', l: ['دفعنا منه كام لحد دلوقتي؟', 'Paid so far (if any)'], ph: ['٠', '0'], when: ['form', 'money'] },
 		{ n: 'note', t: 'area', l: ['تفاصيل', 'Details'], rows: 2 }
 	],
 	prepare: (x) => {
 		x.dir = x.dir || 'out';
+		if (x.form !== 'thing') delete x.form;
+		if (x.qty) x.qty = Math.max(1, Math.round(x.qty));
 		if (x.paidSoFar > 0) x.paid = [{ d: live.today(), a: x.paidSoFar, first: 1 }];
 		delete x.paidSoFar;
 		if (x.payday) x.payday = Math.min(31, Math.max(1, Math.round(x.payday)));
@@ -51,12 +61,13 @@ export default listPage({
 		const out = open.filter((x) => x.dir !== 'in').reduce((a, x) => a + leftOf(x), 0);
 		const inn = open.filter((x) => x.dir === 'in').reduce((a, x) => a + leftOf(x), 0);
 		const tilt = out === inn ? 0 : Math.max(-12, Math.min(12, ((out - inn) / Math.max(out, inn)) * 12));
-		const pan = (cls, label, sum, list) => `<div class="db-pan ${cls}">
+		const pan = (cls, label, sum, list) => { const th = list.filter(isThing).length; return `<div class="db-pan ${cls}">
 			<svg class="db-pan__str" viewBox="0 0 80 60"><path d="M40 3 6 58M40 3l34 55"/><circle cx="40" cy="4" r="3.5"/></svg>
-			<div class="db-pan__dish">${list.slice(0, 4).map((x, i) => `<span class="db-coin" style="--i:${i}">${esc([...String(x.whom || '?')][0])}</span>`).join('')}</div>
+			<div class="db-pan__dish">${list.slice(0, 4).map((x, i) => `<span class="db-coin${isThing(x) ? ' is-thing' : ''}" style="--i:${i}">${isThing(x) ? doodle('gift', 14) : esc([...String(x.whom || '?')][0])}</span>`).join('')}</div>
 			<p class="db-pan__lbl">${esc(label)}</p>
 			<b class="db-pan__sum">${money(sum)}</b>
-		</div>`;
+			${th ? `<small class="db-pan__things">+ ${L(th === 1 ? 'حاجة' : `${num(th)} حاجات`, th === 1 ? 'a thing' : `${th} things`)}</small>` : ''}
+		</div>`; };
 		/* in RTL the first pan sits on the right: «علينا» there, «لينا» on the left; the beam tips toward the heavier one */
 		return `<div class="db-b">
 			<div class="db-scale" style="--tilt:${tilt}deg">
@@ -69,6 +80,7 @@ export default listPage({
 			<div class="db-ledger">
 				<p class="db-ledger__h">${doodle('pen', 18)} ${L('دفتر الأقساط', 'The installments book')}</p>
 				<ul>${open.filter((x) => x.dir !== 'in' && x.monthly).slice(0, 4).map((x) => `<li><span dir="auto">${esc(shorten(x.whom, 20))}</span><i></i><b>${money(x.monthly)}</b></li>`).join('') || `<li class="is-calm">${L('مفيش أقساط شهرية ♥', 'No monthly installments ♥')}</li>`}</ul>
+				${open.some((x) => isThing(x) && x.dir !== 'in') ? `<p class="db-ledger__sub">${doodle('gift', 15)} ${L('وحاجات هنرجّعها', 'And things to give back')}</p><ul>${open.filter((x) => isThing(x) && x.dir !== 'in').slice(0, 3).map((x) => `<li><span dir="auto">${esc(shorten(thingName(x), 18))}</span><i></i><b dir="auto">${esc(shorten(x.whom, 12))}</b></li>`).join('')}</ul>` : ''}
 				${items.some(isOver) ? `<p class="db-ledger__done">${doodle('heart', 14)} ${L(`خلّصنا ${num(items.filter(isOver).length)}`, `${items.filter(isOver).length} paid off`)}</p>` : ''}
 			</div>
 		</div>`;
@@ -85,9 +97,59 @@ export default listPage({
 			<li style="--c:#5a9e6f"><b>${money(paid)}</b><small>${L('دفعنا لحد دلوقتي', 'Paid so far')}</small></li>
 			<li style="--c:#e39b2d"><b>${money(monthly)}</b><small>${L('أقساط كل شهر', 'Installments a month')}</small></li>
 			<li style="--c:#0e6990"><b>${money(owed)}</b><small>${L('لينا عند الناس', 'Owed to us')}</small></li>
+			${open.some(isThing) ? `<li style="--c:#8e5bd1"><b>${num(open.filter((x) => isThing(x) && x.dir !== 'in').length)} <i>/</i> ${num(open.filter((x) => isThing(x) && x.dir === 'in').length)}</b><small>${L('حاجات علينا / لينا', 'Things we owe / are owed')}</small></li>` : ''}
 		</ul>`;
 	},
-	card: (x, c) => {
+	card: (x, c) => (isThing(x) ? thingCard(x, c) : moneyCard(x, c)),
+	painted: (root) => {
+		for (const svg of $$('.db-card.is-done .db-card__box svg', root)) if (!svg.childNodes.length) mark(svg, 'checkmark', false);
+	},
+	click: async (e, ctx) => {
+		const g = e.target.closest('[data-give]');
+		if (g) {
+			const on = g.dataset.to === '1';
+			if (on) { mark(g.closest('.db-card').querySelector('.db-card__box svg'), 'checkmark'); await new Promise((r) => setTimeout(r, 700)); }
+			try { await ctx.save((d) => { const x = (d.items || []).find((y) => y.id === g.dataset.give); if (x) x.doneOn = on ? live.today() : undefined; }); } catch (err) { alert(live.why(err)); }
+			return;
+		}
+		return payClick(e, ctx);
+	},
+	empty: ['مفيش ديون — الحمد لله ♥', 'No debts — thank God ♥'],
+	related: ['expenses', 'goals', 'shopping']
+});
+
+/* a thing we owe (or are owed): a gift tag on a string — the photo or drawing of it, what it is, how many, to whom */
+function thingCard(x, c) {
+	const inn = x.dir === 'in', over = isOver(x), d = x.due && !over ? daysTo(x.due) : null;
+	return `<article class="lp-card db-card db-card--thing${over ? ' is-done' : ''}${inn ? ' is-in' : ''}" id="db-${esc(x.id)}">
+		<header class="db-card__hd">
+			<span class="db-card__kind">${doodle('gift', 18)} ${L('حاجة مش فلوس', 'A thing, not money')}</span>
+			<span class="db-card__dir">${inn ? L('لينا', 'Owed to us') : L('علينا', 'We owe')}</span>
+		</header>
+		<div class="db-card__main">
+			<span class="db-card__box">${markSVG('checkmark')}</span>
+			<h3 dir="auto">${esc(x.whom)}</h3>
+		</div>
+		<div class="db-tag">
+			<span class="db-tag__hole" aria-hidden="true"></span>
+			${x.photo ? `<span class="db-tag__pic${x.drawn ? ' is-drawn' : ''}"><img class="zoom" data-sketch="${esc(x.photo)}" alt="${esc(x.thing || '')}" loading="lazy"></span>` : `<span class="db-tag__ic">${doodle('gift', 34)}</span>`}
+			<p class="db-tag__what"><small>${inn ? L('هيرجعلنا', 'Coming back to us') : L('هنديله', 'We’ll give')}</small><b dir="auto">${esc(thingName(x))}</b></p>
+		</div>
+		<p class="db-card__meta">
+			${x.due ? `<span class="${d !== null && d < 0 ? 'is-late' : d !== null && d <= 14 ? 'is-near' : ''}">${doodle('clock', 15)} ${L('لحد', 'By')} ${c.date(x.due)}${d !== null && d < 0 ? ` — ${L('فات', 'overdue')}` : ''}</span>` : ''}
+			${x.who ? `<span>${doodle('handshake', 15)} ${esc(c.whoName(x.who))}</span>` : ''}
+			${over ? `<span class="is-done">${doodle('heart', 15)} ${inn ? L('رجعتلنا', 'Got it back') : L('اديناهاله', 'Given')} ${c.date(x.doneOn)}</span>` : ''}
+		</p>
+		${x.note ? `<p class="db-card__note" dir="auto">${esc(x.note)}</p>` : ''}
+		${live.canWrite() ? `<div class="db-card__act">
+			${over ? `<button class="btn btn--sm btn--ghost" type="button" data-give="${esc(x.id)}" data-to="0">${L('رجّعها', 'Undo')}</button>`
+				: `<button class="btn btn--sm btn--coral" type="button" data-give="${esc(x.id)}" data-to="1">${doodle('gift', 16)} ${inn ? L('رجعتلنا', 'We got it back') : L('اديناهاله', 'We gave it')}</button>`}
+			${c.del(x)}
+		</div>` : ''}
+	</article>`;
+}
+
+function moneyCard(x, c) {
 		const [, kic, kar, ken] = kindOf(x.dkind), over = isOver(x), paid = paidOf(x), total = +x.amount || 0, inn = x.dir === 'in';
 		const pct = total ? Math.min(100, Math.round((paid / total) * 100)) : 0;
 		const d = x.due && !over ? daysTo(x.due) : null;
@@ -119,11 +181,9 @@ export default listPage({
 				${c.del(x)}
 			</div>` : ''}
 		</article>`;
-	},
-	painted: (root) => {
-		for (const svg of $$('.db-card.is-done .db-card__box svg', root)) if (!svg.childNodes.length) mark(svg, 'checkmark', false);
-	},
-	click: async (e, ctx) => {
+}
+
+async function payClick(e, ctx) {
 		const p = e.target.closest('[data-pay]'), u = e.target.closest('[data-unpay]');
 		if (!p && !u) return;
 		const id = (p || u).dataset.pay || (p || u).dataset.unpay;
@@ -143,7 +203,4 @@ export default listPage({
 				else x.paid = (x.paid || []).slice(0, -1);
 			});
 		} catch (err) { alert(live.why(err)); }
-	},
-	empty: ['مفيش ديون — الحمد لله ♥', 'No debts — thank God ♥'],
-	related: ['expenses', 'goals', 'shopping']
-});
+}

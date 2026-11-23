@@ -17,6 +17,7 @@
      toggle: { n, on: [ar, en], off: [ar, en] }   a done/undone button on each card
      top(items, ctx) → html          something between the form and the list
      bottom(items, ctx) → html       something under the list
+     a field with when: [n, value] shows (and is kept) only while the field n is set to value
      empty: [ar, en], related: [ids], note: [ar, en] (a line under the form)
    }
    A list can also live inside another page (recipes inside «أكلنا»): that page puts section(s, head) where it wants
@@ -235,6 +236,18 @@ export function listPage(cfg) {
 			const showPic = (n, url) => { const box = $(`[data-pic-clear="${n}"]`, f)?.parentNode; if (!box) return; $('img', box).src = url || ''; box.hidden = !url; };
 			f?.addEventListener('change', (e) => { const el = e.target; if (el.type !== 'file' || !el.closest('.lp-pic') || !el.files[0]) return; delete sketched[el.name]; showPic(el.name, URL.createObjectURL(el.files[0])); });
 			f?.addEventListener('click', (e) => { const c = e.target.closest('[data-pic-clear]'); if (!c) return; const n = c.dataset.picClear; delete sketched[n]; f.elements[n].value = ''; const fd = fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; showPic(n, ''); });
+			/* fields that show only for one choice of another (when: [n, value]) */
+			const shows = (fd) => !fd.when || f.elements[fd.when[0]]?.value === fd.when[1];
+			const toggle = () => {
+				for (const fd of fields.filter((x) => x.when)) {
+					const el = f.elements[fd.n], box = el?.closest('.lp-pic, .f');
+					if (!box) continue;
+					const on = shows(fd);
+					box.hidden = !on;
+					if (fd.req) el.required = on;
+				}
+			};
+			if (f && fields.some((x) => x.when)) { f.addEventListener('change', (e) => { if (fields.some((x) => x.when?.[0] === e.target.name)) toggle(); }); toggle(); }
 			if (f) f.onsubmit = async (e) => {
 				e.preventDefault();
 				const msg = $('#lp-msg', root);
@@ -242,6 +255,7 @@ export function listPage(cfg) {
 					msg.textContent = L('بنحفظ…', 'Saving…');
 					const x = { id: live.newId(), by: live.me(), at: Date.now() };
 					for (const fd of fields) {
+						if (!shows(fd) || (fd.inline && fields.find((p) => p.n + 'Pic' === fd.n && !shows(p)))) continue;
 						const el = f.elements[fd.n];
 						if (fd.t === 'photo') {
 							const files = [...el.files];
@@ -262,6 +276,7 @@ export function listPage(cfg) {
 					f.reset();
 					for (const fd of fields.filter((x) => x.t === 'voice')) { delete recorded[fd.n]; showVoice(fd.n, ''); }
 					for (const fd of fields.filter((x) => x.sketch)) { delete sketched[fd.n]; showPic(fd.n, ''); if (fd.req) f.elements[fd.n].required = true; }
+					if (fields.some((x) => x.when)) toggle();
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
 				} catch (err) { msg.textContent = err?.say ? err.message : live.why(err); }
 			};

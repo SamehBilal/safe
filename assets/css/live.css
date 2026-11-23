@@ -1974,3 +1974,6 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .lp-voice__msg:empty { display: none; }
 @media (prefers-reduced-motion: reduce) { .lp-voice__dot, .lp-voice__bars i { animation: none; } }
 .cmodal form { overflow-x: hidden; }
+
+/* a field that shows only for one choice of another (listpage when:) */
+.f[hidden], .lp-pic[hidden] { display: none !important; }

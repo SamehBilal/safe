@@ -1660,6 +1660,28 @@
 .db-card__act .btn, .ex-card__act .btn { display: inline-flex; align-items: center; gap: 5px; }
 .db-pay, .ex-pay { flex: 0 1 140px; margin: 0; }
 .db-pay input, .ex-pay input { width: 100%; }
+/* a thing, not money: a kraft gift tag tied on with a string — the photo or drawing of it and what it is */
+.db-card--thing { --c: #8e5bd1; }
+.db-card--thing.is-done { --c: #5a9e6f; }
+.db-tag { position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px; margin: 2px 0 0 4px; padding: 12px 14px 12px 30px; color: #3a2c1c; background: #e9d3b0; border: 1.5px solid var(--ink); clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 50%); rotate: -1deg; }
+:root[dir="rtl"] .db-tag { margin: 2px 4px 0 0; padding: 12px 30px 12px 14px; clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%); rotate: 1deg; }
+.db-tag__hole { position: absolute; top: 50%; inset-inline-start: 10px; width: 10px; height: 10px; translate: 0 -50%; background: var(--card); border: 1.5px solid var(--ink); border-radius: 50%; }
+.db-tag__pic { display: block; width: 84px; padding: 4px; background: #fff; border: 1.5px solid var(--ink); border-radius: 3px; rotate: -2deg; }
+.db-tag__pic img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.db-tag__pic.is-drawn img { object-fit: contain; }
+.db-tag__ic { display: grid; place-items: center; width: 56px; height: 56px; color: var(--c); background: #fff8ec; border: 1.5px dashed var(--ink); border-radius: 50%; }
+.db-tag__what { display: grid; gap: 2px; margin: 0; min-width: 0; }
+.db-tag__what small { font-size: .72rem; font-weight: 800; color: #7a5c38; }
+.db-tag__what b { font: 700 1.35rem/1.2 var(--f-hand); overflow-wrap: anywhere; }
+:lang(ar) .db-tag__what b { font: 700 1.1rem/1.5 'Aref Ruqaa', var(--f-body); }
+.db-card--thing.is-done .db-tag { opacity: .7; }
+.db-card__meta .is-done { color: #5a9e6f; }
+.db-coin.is-thing { color: #fff; background: #8e5bd1; }
+.db-coin.is-thing svg { width: 14px; height: 14px; }
+.db-pan__things { margin-top: 3px; font-size: .74rem; font-weight: 800; color: #8e5bd1; }
+.db-ledger__sub { display: flex; align-items: center; gap: 5px; margin: 8px 0 0; font-size: .8rem; font-weight: 800; color: #8e5bd1; }
+.db-ledger__sub + ul li b { color: #8e5bd1; font-size: .82rem; }
+.db-sum b i { font-style: normal; color: var(--muted); }
 
 /* ---------- «مصاريف الشهر» (expenses.html): the month's receipt above the title beside a jar of coins filling with
    what's paid; the month to move through, the totals, a bar by kind, the debts' installments, and each expense a card ---------- */
