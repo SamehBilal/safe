@@ -65,6 +65,17 @@ export function placeOf(s, x) {
 	return mine.size ? P.find((p) => photoIds(p).some((q) => mine.has(q))) || null : null;
 }
 
+/** Every place a moment's day went to, in order: its "places" ids (a day out with several stops), else the one placeOf finds. */
+export function placesOf(s, x) {
+	if (Array.isArray(x.places) && x.places.length) {
+		const P = (s.places || []).filter((p) => where(p));
+		const list = x.places.map((id) => P.find((q) => q.id === id)).filter(Boolean);
+		if (list.length) return list;
+	}
+	const p = placeOf(s, x);
+	return p ? [p] : [];
+}
+
 function dayHTML(s, x) {
 	if (!/^\d{4}-\d{2}/.test(String(x.date || ''))) return '';
 	const full = fullDate(x.date), d = parseDate(x.date), m = d.getMonth();
@@ -101,12 +112,23 @@ function dayHTML(s, x) {
 	const md = String(x.date).slice(5, 10);
 	const also = full ? (s.timeline || []).filter((o) => o.id !== x.id && fullDate(o.date) && o.date.slice(5, 10) === md) : [];
 
-	const p = placeOf(s, x);
-	const at = p && where(p);
-	const here = p ? (s.timeline || []).filter((o) => o.id !== x.id && placeOf(s, o)?.id === p.id) : [];
-	const gmaps = p ? (String(p.maps || '').startsWith('https://') ? p.maps : `https://www.google.com/maps/search/?api=1&query=${at.lat},${at.lng}`) : '';
+	const ps = placesOf(s, x);
+	const p = ps.length === 1 ? ps[0] : null;
+	const here = p ? (s.timeline || []).filter((o) => o.id !== x.id && placesOf(s, o).some((q) => q.id === p.id)) : [];
+	const gmapsOf = (q) => { const w = where(q); return String(q.maps || '').startsWith('https://') ? q.maps : `https://www.google.com/maps/search/?api=1&query=${w.lat},${w.lng}`; };
+	const gmaps = p ? gmapsOf(p) : '';
+	const pinSvg = '<svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg>';
+	const mapBox = (list, label) => `<div class="mo-place__map" id="mo-place-map" data-at="${list.map((q) => { const w = where(q); return `${w.lat},${w.lng}`; }).join(';')}" role="img" aria-label="${esc(label)}"><div class="mo-place__tiles"></div>${list.map((q, i) => `<span class="mo-place__pin" hidden>${pinSvg}${list.length > 1 ? `<b>${num(i + 1)}</b>` : ''}</span>`).join('')}<small class="mo-place__osm">© OpenStreetMap</small></div>`;
+	const routeCard = ps.length > 1 ? `<div class="mo-place mo-place--route">
+			${mapBox(ps, L(`أماكن اليوم على الخريطة: ${ps.map((q) => App.t(q.title)).join('، ')}`, `The day's places on the map: ${ps.map((q) => App.t(q.title)).join(', ')}`))}
+			<div class="mo-place__txt">
+				<small>${L(`رحنا ${num(ps.length)} أماكن يومها`, `${ps.length} places that day`)}</small>
+				<ol class="mo-stops">${ps.map((q, i) => `<li><i aria-hidden="true">${num(i + 1)}</i><span><b dir="auto">${T(q.title)}</b>${q.where ? `<span dir="auto">${T(q.where)}</span>` : ''}</span><a class="btn btn--sm btn--ghost" href="${esc(gmapsOf(q))}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L(`افتح ${App.t(q.title)} في خرايط جوجل`, `Open ${App.t(q.title)} in Google Maps`))}">${doodle('pin', 16)} ${L('خرايط جوجل', 'Google Maps')}</a></li>`).join('')}</ol>
+				<span class="mo-place__btns"><a class="btn btn--sm" href="places.html">${L('على خريطة أماكننا', 'On our map')}</a></span>
+			</div>
+		</div>` : '';
 	const placeCard = p ? `<div class="mo-place">
-			<div class="mo-place__map" id="mo-place-map" data-at="${at.lat},${at.lng}" role="img" aria-label="${esc(L(`${App.t(p.title)} على الخريطة`, `${App.t(p.title)} on the map`))}"><div class="mo-place__tiles"></div><span class="mo-place__pin" hidden><svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg></span><small class="mo-place__osm">© OpenStreetMap</small></div>
+			${mapBox([p], L(`${App.t(p.title)} على الخريطة`, `${App.t(p.title)} on the map`))}
 			<div class="mo-place__txt">
 				<small>${L('المكان', 'The place')}</small>
 				<b dir="auto">${T(p.title)}</b>
@@ -114,11 +136,11 @@ function dayHTML(s, x) {
 				${here.length ? `<em>${esc(L(`رحناه ${here.length + 1 === 2 ? 'مرتين' : `${num(here.length + 1)} مرات`}`, `We've been ${here.length + 1} times`))}: ${here.slice(0, 3).map((o) => `<a href="moment.html?id=${encodeURIComponent(o.id)}">${T(o.title)}</a>`).join(L('، ', ', '))}</em>` : ''}
 				<span class="mo-place__btns"><a class="btn btn--sm" href="${esc(gmaps)}" target="_blank" rel="noopener noreferrer">${doodle('pin', 18)} ${L('افتحه في خرايط جوجل', 'Open in Google Maps')}</a><a class="btn btn--sm btn--ghost" href="places.html">${L('على خريطة أماكننا', 'On our map')}</a></span>
 			</div>
-		</div>` : '';
+		</div>` : routeCard;
 
 	return `<section class="mo-day wrap" id="mo-day" aria-label="${L('يومها', 'That day')}">
 		<h2 class="mo-day__h">${L('يومها', 'That day')}</h2>
-		<div class="mo-day__grid${p ? ' has-place' : ''}">
+		<div class="mo-day__grid${ps.length ? ' has-place' : ''}">
 			${cal}
 			<ul class="mo-facts">${facts.join('')}</ul>
 			${placeCard}
@@ -131,13 +153,13 @@ function dayHTML(s, x) {
 function drawPlace(main) {
 	const box = $('#mo-place-map', main);
 	if (!box) return;
-	const [lat, lng] = box.dataset.at.split(',').map(Number);
+	const spots = box.dataset.at.split(';').map((a) => { const [lat, lng] = a.split(',').map(Number); return { lat, lng }; });
+	const pins = $$('.mo-place__pin', box);
 	const draw = () => {
 		const tiles = $('.mo-place__tiles', box);
 		if (!tiles.clientWidth) return;
-		const v = fit(tiles, [{ lat, lng }], { zoom: 15, maxZ: 16, minZ: 12 });
-		const pt = v.at({ lat, lng }), pin = $('.mo-place__pin', box);
-		pin.style.left = `${pt.x}px`; pin.style.top = `${pt.y}px`; pin.hidden = false;
+		const v = fit(tiles, spots, spots.length > 1 ? { pad: 36, padTop: 54, zoom: 15, maxZ: 16, minZ: 9 } : { zoom: 15, maxZ: 16, minZ: 12 });
+		spots.forEach((spot, i) => { const pt = v.at(spot), pin = pins[i]; if (!pin) return; pin.style.left = `${pt.x}px`; pin.style.top = `${pt.y}px`; pin.hidden = false; });
 	};
 	draw();
 	let t;

@@ -443,6 +443,16 @@
 .mo-place__txt b { font-size: 1.1rem; }
 .mo-place__txt em { font-style: normal; font-size: .9rem; color: var(--muted); }
 .mo-place__btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.mo-place__pin b { position: absolute; top: 5px; left: 0; right: 0; text-align: center; font-size: .74rem; line-height: 22px; color: var(--ink, #37353f); }
+.mo-place--route .mo-place__pin circle { r: 9.5px; }
+.mo-place--route .mo-place__map { height: 230px; }
+.mo-stops { display: grid; gap: 2px; margin: 4px 0 0; padding: 0; list-style: none; }
+.mo-stops li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding-block: 6px; border-bottom: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 22%, transparent); }
+.mo-stops li:last-child { border-bottom: 0; }
+.mo-stops li > i { display: grid; place-items: center; width: 24px; height: 24px; font-style: normal; font-size: .78rem; font-weight: 700; color: #fff; background: var(--coral); border: 1.5px solid var(--ink, #37353f); border-radius: 50%; }
+.mo-stops li > span { display: grid; min-width: 0; }
+.mo-stops li > span > span { color: var(--muted); font-size: .86rem; }
+@media (max-width: 420px) { .mo-stops li { grid-template-columns: auto minmax(0, 1fr); } .mo-stops li > a { grid-column: 2; justify-self: start; } }
 .mo-also { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 14px 0 0; }
 .mo-also > small { width: 100%; text-align: center; color: var(--muted); font-weight: 700; }
 .mo-also .chip { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
