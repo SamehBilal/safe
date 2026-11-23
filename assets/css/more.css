@@ -1206,6 +1206,18 @@
 .fv-page__note { margin: 0 18px; padding: 10px 14px; font: 600 1.15rem/1.4 var(--f-hand); color: var(--text); background: #fff6b8; border-radius: 4px; rotate: -.4deg; }
 :lang(ar) .fv-page__note { font: 700 .95rem/1.6 var(--f-body); color: #3a3420; }
 .fv-page > .link--danger { margin-inline: 18px; justify-self: start; }
+/* a favourite's picture, taped on its tile like a drawing on the fridge */
+.fv-tiles li.has-pic { padding-top: 14px; }
+.fv-tile__pic { position: relative; display: block; justify-self: stretch; margin: 0 0 6px; padding: 5px; background: #fff; border: 1.5px solid var(--ink, #37353f); border-radius: 4px; rotate: calc((var(--i) % 2 * 2 - 1) * 1.4deg); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 color-mix(in srgb, var(--c) 40%, transparent); }
+.fv-tile__pic::before { content: ''; position: absolute; top: -9px; left: 50%; z-index: 1; width: 54px; height: 16px; translate: -50% 0; rotate: -4deg; background: color-mix(in srgb, var(--c) 35%, #fff6b8); opacity: .85; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.fv-tile__pic img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 2px; }
+.fv-tile__pic.is-drawn img { object-fit: contain; background: #fff; }
+.fv-tiles li.has-pic .fv-tile__ic { width: 30px; height: 30px; margin-top: -26px; position: relative; z-index: 2; }
+.fv-page__note-row { display: flex; align-items: center; gap: 14px; margin: 0 18px; }
+.fv-page__note-row .fv-page__note { flex: 1; margin: 0; }
+.fv-page__note-row .fv-tile__pic { flex: none; width: 130px; margin: 0; }
+.fvb-ic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+@media (max-width: 560px) { .fv-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .fv-tiles li { padding: 10px; } .fv-page__note-row { flex-direction: column; align-items: stretch; } .fv-page__note-row .fv-tile__pic { width: 70%; align-self: center; } }
 @media (max-width: 640px) { .fv-page__body.has-photo { grid-template-columns: 1fr; } .fv-page__photo img { max-height: 260px; } }
 .sh-mode { justify-content: center; margin: 0 0 12px; }
 .sh-mode .chip .dd { vertical-align: -3px; }

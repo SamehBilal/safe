@@ -9,6 +9,7 @@
      fields: [{ n, t, l: [ar, en], req, opts, ideas, grow, ph }]
              t: text | area | date | num | sel | photo | url;  opts: 'kids' | 'who' | 'whoBoth' | 'all' | [[value, ar, en]] | (s) => same
              a photo field with sketch: true can also be drawn right here, on the sketch pad (sketch.js)
+             a text/area field with pic: true (and ic: a drawing) is a tile with its own picture, a photo or drawn, kept as <n>Pic
      band(items, ctx) → html         the header band (drawn again whenever the list changes)
      card(x, ctx) → html             one entry
      sort(a, b), keep(x, ctx)        order; which entries this phone shows
@@ -52,7 +53,24 @@ function optsOf(f, s) {
 	return (o || []).map(([v, ar, en]) => [v, L(ar, en ?? ar)]);
 }
 
+/* the picture that goes with a pic: true field: a small «photo» and «draw it», and the picture once it's there */
+const picOf = (f) => ({ n: f.n + 'Pic', t: 'photo', sketch: true, inline: true, l: f.l, sketchTitle: f.picTitle || f.l });
+function tile(f, s) {
+	const p = picOf(f), lab = L(...f.l);
+	const ph = f.ph ? ` placeholder="${esc(L(...f.ph))}"` : '';
+	const el = f.t === 'area' ? `<textarea name="${f.n}" dir="auto" rows="${f.rows || 2}" maxlength="${f.max || 1200}"${ph}></textarea>` : `<input name="${f.n}" dir="auto" maxlength="${f.max || 140}"${ph}>`;
+	return `<div class="lp-tile lp-pic${f.t === 'area' ? ' lp-tile--wide' : ''}">
+		<label class="f"><span>${f.ic ? doodle(f.ic, 18) : ''} ${esc(lab)}</span>${el}</label>
+		<div class="lp-tile__pics">
+			<label class="lp-pic__opt lp-pic__opt--sm">${doodle('camera', 20)}<b>${L('صورة', 'A photo')}</b><input name="${p.n}" type="file" accept="image/*"></label>
+			<button class="lp-pic__opt lp-pic__opt--sm" type="button" data-sketch-field="${p.n}">${doodle('pencil', 20)}<b>${Y('ارسمها', 'ارسميها', 'Draw it')}</b></button>
+		</div>
+		<span class="lp-pic__show" hidden><img class="lp-sketch__img" alt=""><button class="link link--danger" type="button" data-pic-clear="${p.n}">${L('شيلها', 'Remove')}</button></span>
+	</div>`;
+}
+
 function input(f, s) {
+	if (f.pic) return tile(f, s);
 	const lab = L(...f.l), req = f.req ? ' required' : '';
 	const ph = f.ph ? ` placeholder="${esc(L(...f.ph))}"` : '';
 	let el;
@@ -78,6 +96,8 @@ function input(f, s) {
 }
 
 export function listPage(cfg) {
+	// every field the form sends, the pictures of pic: true fields among them
+	const fields = cfg.fields.flatMap((f) => (f.pic ? [f, picOf(f)] : [f]));
 	const page = {
 		title: { ar: cfg.title[0], en: cfg.title[1] },
 		render(s) {
@@ -92,6 +112,8 @@ export function listPage(cfg) {
 			const rows = [];
 			let row = [];
 			for (const f of cfg.fields) {
+				/* pic: true fields side by side as tiles, one grid for each run of them */
+				if (f.pic) { if (row.length) { rows.push(row); row = []; } if (rows.at(-1)?.tiles) rows.at(-1).push(f); else { const g = [f]; g.tiles = true; rows.push(g); } continue; }
 				if (f.t === 'area' || f.full || f.sketch) { if (row.length) rows.push(row); rows.push([f]); row = []; }
 				else { row.push(f); if (row.length === 3) { rows.push(row); row = []; } }
 			}
@@ -104,7 +126,7 @@ export function listPage(cfg) {
 				<details class="composer reveal"${ok ? '' : ' hidden'}>
 					<summary><span>${doodle(cfg.icon || 'pen', 22)}</span> ${esc(L(...cfg.add))}</summary>
 					<form id="lp-form" autocomplete="off">
-						${rows.map((r) => (r.length === 1 && (r[0].t === 'area' || r[0].full || r[0].sketch) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
+						${rows.map((r) => (r.tiles ? `<div class="lp-tiles">${r.map((f) => input(f, s)).join('')}</div>` : r.length === 1 && (r[0].t === 'area' || r[0].full || r[0].sketch) ? input(r[0], s) : `<div class="f-row">${r.map((f) => input(f, s)).join('')}</div>`)).join('')}
 						${cfg.note ? `<p class="muted">${esc(L(...cfg.note))}</p>` : ''}
 						<p class="form-msg" id="lp-msg" role="status"></p>
 						<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('احفظ ♥', 'احفظي ♥', 'Save ♥')}</button></div>
@@ -155,7 +177,7 @@ export function listPage(cfg) {
 			f?.addEventListener('click', async (e) => {
 				const b = e.target.closest('[data-sketch-field]');
 				if (!b) return;
-				const n = b.dataset.sketchField, fd = cfg.fields.find((x) => x.n === n);
+				const n = b.dataset.sketchField, fd = fields.find((x) => x.n === n);
 				const blob = await openSketch({ title: L(...(fd.sketchTitle || fd.l)) });
 				if (!blob) return;
 				sketched[n] = blob;
@@ -165,27 +187,27 @@ export function listPage(cfg) {
 			});
 			const showPic = (n, url) => { const box = $(`[data-pic-clear="${n}"]`, f)?.parentNode; if (!box) return; $('img', box).src = url || ''; box.hidden = !url; };
 			f?.addEventListener('change', (e) => { const el = e.target; if (el.type !== 'file' || !el.closest('.lp-pic') || !el.files[0]) return; delete sketched[el.name]; showPic(el.name, URL.createObjectURL(el.files[0])); });
-			f?.addEventListener('click', (e) => { const c = e.target.closest('[data-pic-clear]'); if (!c) return; const n = c.dataset.picClear; delete sketched[n]; f.elements[n].value = ''; const fd = cfg.fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; showPic(n, ''); });
+			f?.addEventListener('click', (e) => { const c = e.target.closest('[data-pic-clear]'); if (!c) return; const n = c.dataset.picClear; delete sketched[n]; f.elements[n].value = ''; const fd = fields.find((x) => x.n === n); if (fd?.req) f.elements[n].required = true; showPic(n, ''); });
 			if (f) f.onsubmit = async (e) => {
 				e.preventDefault();
 				const msg = $('#lp-msg', root);
 				try {
 					msg.textContent = L('بنحفظ…', 'Saving…');
 					const x = { id: live.newId(), by: live.me(), at: Date.now() };
-					for (const fd of cfg.fields) {
+					for (const fd of fields) {
 						const el = f.elements[fd.n];
 						if (fd.t === 'photo') {
 							const files = [...el.files];
 							if (fd.many) { if (files.length) x[fd.n] = []; for (const file of files) x[fd.n].push(await live.putSketch(await shrinkPhoto(file, 1200))); }
 							else if (files[0]) x[fd.n] = await live.putSketch(await shrinkPhoto(files[0], 1200));
-							else if (sketched[fd.n]) { x[fd.n] = await live.putSketch(sketched[fd.n]); x.drawn = true; }
+							else if (sketched[fd.n]) { x[fd.n] = await live.putSketch(sketched[fd.n]); if (fd.inline) x[fd.n + 'Drawn'] = true; else x.drawn = true; }
 						} else if (fd.t === 'num') { if (el.value !== '') x[fd.n] = +el.value; }
 						else if (el.value.trim()) x[fd.n] = el.value.trim();
 					}
 					cfg.prepare?.(x, ctx);
 					await save((d) => { (d.items = d.items || []).push(x); });
 					f.reset();
-					for (const fd of cfg.fields.filter((x) => x.sketch)) { delete sketched[fd.n]; showPic(fd.n, ''); if (fd.req) f.elements[fd.n].required = true; }
+					for (const fd of fields.filter((x) => x.sketch)) { delete sketched[fd.n]; showPic(fd.n, ''); if (fd.req) f.elements[fd.n].required = true; }
 					msg.textContent = L('اتحفظت ♥', 'Saved ♥');
 				} catch (err) { msg.textContent = live.why(err); }
 			};

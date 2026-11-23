@@ -13,7 +13,9 @@ const THINGS = [
 	['food', 'dinner', ['أكلته', 'Food'], ['أكلتي المفضلة', 'My favourite food']], ['show', 'tv', ['كرتونه', 'Cartoon'], ['كرتوني', 'My cartoon']],
 	['toy', 'teddy', ['لعبته', 'Toy'], ['لعبتي', 'My toy']], ['song', 'music', ['أغنيته', 'Song'], ['أغنيتي', 'My song']],
 	['word', 'chat', ['كلمته', 'Word'], ['كلمتي', 'My word']], ['person', 'love', ['متعلق بمين', 'Can’t leave'], ['متعلق بـ', 'I can’t leave']],
-	['color', 'palette', ['لونه', 'Colour'], ['لوني', 'My colour']], ['place', 'pin', ['مكانه', 'Place'], ['مكاني', 'My place']]
+	['color', 'palette', ['لونه', 'Colour'], ['لوني', 'My colour']], ['place', 'pin', ['مكانه', 'Place'], ['مكاني', 'My place']],
+	['animal', 'lion', ['حيوانه', 'Animal'], ['حيواني', 'My animal']], ['story', 'book', ['حدوتته', 'Story'], ['حدوتتي', 'My story']],
+	['outfit', 'dress', ['لبسه', 'Outfit'], ['لبسي', 'My outfit']], ['game', 'dice', ['لعبه مع مين', 'Game'], ['بلعب', 'I play']]
 ];
 const STICK = ['#fdc830', '#fdd5d8', '#e6efb4', '#cfe9f5', '#f9d3b4', '#e2d6f5'];
 
@@ -24,16 +26,21 @@ export default listPage({
 	fields: [
 		{ n: 'kid', t: 'sel', l: ['مين؟', 'Who?'], opts: 'kids' },
 		{ n: 'date', t: 'date', l: ['إمتى؟', 'When?'], req: 1 },
-		{ n: 'food', t: 'text', l: ['أكلته المفضلة', 'Favourite food'], ph: ['بطاطس محمرة', 'chips'] },
-		{ n: 'show', t: 'text', l: ['كرتونه', 'Cartoon or show'], ph: ['بيبي شارك', 'Baby Shark'] },
-		{ n: 'toy', t: 'text', l: ['لعبته', 'Toy'], ph: ['العربية الحمرا', 'the red car'] },
-		{ n: 'song', t: 'text', l: ['أغنيته', 'Song'] },
-		{ n: 'word', t: 'text', l: ['الكلمة اللي بيقولها طول اليوم', 'The word he says all day'] },
-		{ n: 'person', t: 'text', l: ['متعلق بمين', 'Who he can’t leave'] },
-		{ n: 'color', t: 'text', l: ['لونه', 'Colour'] },
-		{ n: 'place', t: 'text', l: ['مكانه المفضل', 'Favourite place'] },
-		{ n: 'photo', t: 'photo', l: ['صورة', 'Photo'] },
-		{ n: 'note', t: 'area', l: ['حاجة كمان', 'Anything else'], rows: 2 }
+		/* every favourite with its picture: a photo of it, or drawn right here (by us, or by him) */
+		{ n: 'food', t: 'text', pic: 1, ic: 'dinner', l: ['أكلته المفضلة', 'Favourite food'], ph: ['بطاطس محمرة', 'chips'] },
+		{ n: 'show', t: 'text', pic: 1, ic: 'tv', l: ['كرتونه', 'Cartoon or show'], ph: ['بيبي شارك', 'Baby Shark'] },
+		{ n: 'toy', t: 'text', pic: 1, ic: 'teddy', l: ['لعبته', 'Toy'], ph: ['العربية الحمرا', 'the red car'] },
+		{ n: 'song', t: 'text', pic: 1, ic: 'music', l: ['أغنيته', 'Song'] },
+		{ n: 'place', t: 'text', pic: 1, ic: 'pin', l: ['مكانه المفضل', 'Favourite place'], ph: ['النادي، بيت تيتة', 'the club, Grandma’s'] },
+		{ n: 'color', t: 'text', pic: 1, ic: 'palette', l: ['لونه', 'Colour'], ph: ['الأزرق', 'blue'] },
+		{ n: 'animal', t: 'text', pic: 1, ic: 'lion', l: ['حيوانه المفضل', 'Favourite animal'], ph: ['الأسد', 'the lion'] },
+		{ n: 'story', t: 'text', pic: 1, ic: 'book', l: ['حدوتته أو كتابه', 'Story or book'] },
+		{ n: 'outfit', t: 'text', pic: 1, ic: 'dress', l: ['اللبس اللي بيحبه', 'The clothes he loves'], ph: ['تيشيرت سبايدرمان', 'the Spider-Man T-shirt'] },
+		{ n: 'game', t: 'text', pic: 1, ic: 'dice', l: ['بيحب يلعب إيه', 'What he loves to play'], ph: ['استغماية', 'hide and seek'] },
+		{ n: 'person', t: 'text', pic: 1, ic: 'love', l: ['متعلق بمين', 'Who he can’t leave'] },
+		{ n: 'word', t: 'text', pic: 1, ic: 'chat', l: ['الكلمة اللي بيقولها طول اليوم', 'The word he says all day'] },
+		{ n: 'note', t: 'area', pic: 1, ic: 'star', l: ['وحاجة كمان', 'And anything else'], rows: 2 },
+		{ n: 'photo', t: 'photo', l: ['صورة ليه وهو كده', 'A photo of him at this age'] }
 	],
 	chips: { n: 'kid', opts: 'kids' },
 	sort: (a, b) => String(b.date || '').localeCompare(String(a.date || '')),
@@ -42,7 +49,7 @@ export default listPage({
 		const sheet = (k, i) => {
 			const last = items.find((x) => x.kid === k.id);
 			const lines = (last ? THINGS.filter(([n]) => last[n]) : []).slice(0, 5);
-			const rows = (lines.length ? lines : THINGS.slice(0, 4)).map(([n, ic, , mine], j) => `<li style="--i:${j}"><span class="fvb-ic">${doodle(ic, 18)}</span><span class="fvb-k">${esc(L(...mine))}:</span><b dir="auto">${last?.[n] ? esc(shorten(last[n], 18)) : '…'}</b></li>`).join('');
+			const rows = (lines.length ? lines : THINGS.slice(0, 4)).map(([n, ic, , mine], j) => `<li style="--i:${j}"><span class="fvb-ic">${last?.[n + 'Pic'] ? `<img data-sketch="${esc(last[n + 'Pic'])}" alt="">` : doodle(ic, 18)}</span><span class="fvb-k">${esc(L(...mine))}:</span><b dir="auto">${last?.[n] ? esc(shorten(last[n], 18)) : '…'}</b></li>`).join('');
 			return `<div class="fvb-sheet" style="--c:${esc(k.color || '#0e6990')};--r:${i % 2 ? 2 : -2}deg">
 				<p class="fvb-h">${L('كل حاجة عني', 'All about me')}</p>
 				<div class="fvb-me"><span class="fvb-face">${doodle(k.emoji || 'star', 38)}</span>
@@ -64,9 +71,9 @@ export default listPage({
 			<span class="fv-page__date">${x.date ? c.date(x.date) : ''}</span></header>
 		<div class="fv-page__body${x.photo ? ' has-photo' : ''}">
 			${x.photo ? `<div class="fv-page__photo">${c.photo(x)}</div>` : ''}
-			<ul class="fv-tiles">${got.map(([n, ic, l], j) => `<li style="--i:${j}"><span class="fv-tile__ic">${doodle(ic, 22)}</span><small>${esc(L(...l))}</small><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
+			<ul class="fv-tiles">${got.map(([n, ic, l], j) => `<li class="${x[n + 'Pic'] ? 'has-pic' : ''}" style="--i:${j}">${x[n + 'Pic'] ? `<span class="fv-tile__pic${x[n + 'PicDrawn'] ? ' is-drawn' : ''}"><img class="zoom" data-sketch="${esc(x[n + 'Pic'])}" alt="${esc(x[n])}" loading="lazy"></span>` : ''}<span class="fv-tile__ic">${doodle(ic, 22)}</span><small>${esc(L(...l))}</small><b dir="auto">${esc(x[n])}</b></li>`).join('')}</ul>
 		</div>
-		${x.note ? `<p class="fv-page__note" dir="auto">«${esc(x.note)}»</p>` : ''}
+		${x.note ? `<div class="fv-page__note-row">${x.notePic ? `<span class="fv-tile__pic${x.notePicDrawn ? ' is-drawn' : ''}"><img class="zoom" data-sketch="${esc(x.notePic)}" alt="" loading="lazy"></span>` : ''}<p class="fv-page__note" dir="auto">«${esc(x.note)}»</p></div>` : ''}
 		${c.del(x)}
 	</article>`;
 	},

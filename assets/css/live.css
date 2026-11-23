@@ -1942,4 +1942,19 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 .lp-pic__show { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 .lp-pic__show[hidden] { display: none; }
 .lp-pic__show .lp-sketch__img { width: 84px; height: 84px; }
+/* fields that carry their own picture (pic: true): a tile each — what it is, then «a photo» or «draw it» */
+.lp-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 14px; margin: 0 0 16px; }
+.lp-tile { display: grid; align-content: start; gap: 8px; padding: 12px; background: var(--card); border: 1.5px solid color-mix(in srgb, var(--ink, #37353f) 30%, transparent); border-radius: 14px; }
+.lp-tile--wide { grid-column: 1 / -1; }
+.lp-tile > .f { margin: 0; }
+.lp-tile > .f > span { display: inline-flex; align-items: center; gap: 6px; }
+.lp-tile > .f > span .dd { color: var(--coral-deep, #d9534f); }
+.lp-tile__pics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lp-pic__opt--sm { grid-auto-flow: column; justify-content: center; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 10px; }
+.lp-pic__opt--sm b { font-size: .82rem; }
+.lp-tile .lp-pic__show { margin: 0; }
+.lp-tile .lp-pic__show .lp-sketch__img { width: 100%; height: auto; max-height: 150px; aspect-ratio: 4 / 3; object-fit: contain; background: #fff; border-radius: 8px; }
+.lp-tile:has(.lp-pic__show:not([hidden])) .lp-tile__pics { display: none; }
+.lp-tile .lp-pic__show { flex-direction: column; align-items: stretch; }
+.lp-tile .lp-pic__show .link { align-self: center; }
 .cmodal form { overflow-x: hidden; }
