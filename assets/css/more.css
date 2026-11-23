@@ -52,7 +52,10 @@
 .bu-meet path { fill: var(--coral); stroke: var(--ink); stroke-width: 1.5; animation: bu-beat 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .bu-meet text { font: 400 26px var(--f-label); fill: var(--text); }
 @keyframes bu-beat { 50% { transform: scale(1.2); } }
-.bu-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px 16px; align-items: start; }
+.bu-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px 16px; align-items: start; }
+/* a dotted line down the middle, from the first year to ♥ 2009: the years and the stops sit on it, the dots show between them */
+.bu-grid::before { content: ""; position: absolute; z-index: 0; top: 2.6rem; bottom: .9rem; left: 50%; width: 8px; translate: -50% 0; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb, var(--coral) 80%, transparent) 2.2px, transparent 2.9px) center top / 8px 13px repeat-y; }
+.bu-year, .bu-stop, .bu-h { position: relative; z-index: 1; }
 .bu-h { font: 400 1.6rem var(--f-hand); text-align: center; color: var(--blue); }
 :lang(ar) .bu-h { font: 800 1.1rem var(--f-body); }
 .bu-h:nth-child(3) { color: var(--coral-deep); }
