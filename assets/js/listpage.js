@@ -16,6 +16,7 @@
      chips: { n, l, opts, def }      filter chips on a field (def: what an entry without that field counts as)
      toggle: { n, on: [ar, en], off: [ar, en] }   a done/undone button on each card
      top(items, ctx) → html          something between the form and the list
+     bottom(items, ctx) → html       something under the list
      empty: [ar, en], related: [ids], note: [ar, en] (a line under the form)
    }
    A list can also live inside another page (recipes inside «أكلنا»): that page puts section(s, head) where it wants
@@ -149,6 +150,7 @@ export function listPage(cfg) {
 				<div id="lp-top"></div>
 				${chips}
 				<div class="lp-list lp-list--${cfg.id}" id="lp-list"></div>
+				${cfg.bottom ? '<div id="lp-bottom"></div>' : ''}
 			</div></section>`;
 		},
 
@@ -165,6 +167,7 @@ export function listPage(cfg) {
 				if (cfg.sort) items = [...items].sort(cfg.sort);
 				{ const band = $('#lp-band', main); if (band) band.innerHTML = cfg.band ? cfg.band(items, ctx) : ''; }
 				if (cfg.top) $('#lp-top', root).innerHTML = cfg.top(items, ctx);
+				if (cfg.bottom) $('#lp-bottom', root).innerHTML = cfg.bottom(items, ctx);
 				const shown = chip && cfg.chips ? items.filter((x) => String(x[cfg.chips.n] ?? cfg.chips.def ?? '') === chip) : items;
 				$('#lp-list', root).innerHTML = shown.map((x) => cfg.card(x, ctx)).join('') || (cfg.empty === false ? '' : `<p class="empty">${esc(L(...(cfg.empty || ['لسه مفيش حاجة هنا ♥', 'Nothing here yet ♥'])))}</p>`);
 				live.hydrateSketches(main);

@@ -8,7 +8,9 @@ import { money, leftOf, isOver } from './debts.js';
 /* «مصاريف الشهر»: what goes out every month — the fixed (rent, the nursery, internet, the club) and the variable
    (electricity, food, the car) — each with its day of the month, and some only every three months, six, or once a
    year. Month by month (‹ ›): tick what's paid and how much it really was; what's left, what's late, the total by
-   kind. The debts' monthly installments («ديوننا») count in the month too. Above the title the month's receipt
+   kind. The debts' monthly installments («ديوننا») count in the month too, and the month is weighed against the one
+   before. Under the cards the whole year: a bar for every month (what's paid filling it) and a table of every kind by
+   month with the totals — tap a month to open it. Above the title the month's receipt
    beside a jar of coins filling with what's paid. Shared: content/live/expenses.bin. */
 
 const CATS = [
@@ -32,29 +34,40 @@ const NOW = () => ymOf();
 const monthLabel = (ym) => new Date(+ym.slice(0, 4), +ym.slice(5) - 1, 1).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: 'long', year: 'numeric' });
 let ym = NOW();
 let debts = [];
+let yr = null; // the year shown under the cards (null: the open month's)
+/* any month's sums, from every expense that falls in it */
+const monthOf = (all, m) => ({ m, ...totals(all.filter((x) => inMonth(x, m)), m) });
+const compact = (n) => new Intl.NumberFormat(App.lang === 'ar' ? 'ar-EG' : 'en', { notation: 'compact', maximumFractionDigits: 1 }).format(Math.round(n));
+const monthShort = (m) => new Date(+m.slice(0, 4), +m.slice(5) - 1, 1).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: App.lang === 'ar' ? 'long' : 'short' });
 
 const every = (x) => Math.max(1, +x.every || 1);
 const inMonth = (x, m) => { const f = x.from || m; if (idx(m) < idx(f)) return false; if (x.until && idx(m) > idx(x.until)) return false; return (idx(m) - idx(f)) % every(x) === 0; };
 const paidIn = (x, m = ym) => x.paid?.[m];
-const expect = (x) => {
+/* what a month will likely cost: a fixed one its amount, a variable one the average of its last three paid months */
+const expect = (x, m = ym) => {
 	if (x.type !== 'var') return +x.amount || 0;
-	const past = Object.entries(x.paid || {}).filter(([k]) => k < ym).sort().slice(-3).map(([, p]) => +p.a || 0);
+	const past = Object.entries(x.paid || {}).filter(([k]) => k < m).sort().slice(-3).map(([, p]) => +p.a || 0);
 	return past.length ? past.reduce((a, b) => a + b, 0) / past.length : +x.amount || 0;
 };
-const cost = (x) => (paidIn(x) ? +paidIn(x).a || 0 : expect(x));
+const cost = (x, m = ym) => (paidIn(x, m) ? +paidIn(x, m).a || 0 : expect(x, m));
 const late = (x) => !paidIn(x) && (idx(ym) < idx(NOW()) || (ym === NOW() && x.day && +x.day < new Date().getDate()));
-const installs = () => debts.filter((d) => d.dir !== 'in' && +d.monthly > 0 && (!isOver(d) || (d.paid || []).some((p) => String(p.d).startsWith(ym))));
-const instPaid = (d) => (d.paid || []).filter((p) => String(p.d).startsWith(ym)).reduce((a, p) => a + (+p.a || 0), 0);
+const installs = (m = ym) => debts.filter((d) => d.dir !== 'in' && +d.monthly > 0 && (!isOver(d) || (d.paid || []).some((p) => String(p.d).startsWith(m))));
+const instPaid = (d, m = ym) => (d.paid || []).filter((p) => String(p.d).startsWith(m)).reduce((a, p) => a + (+p.a || 0), 0);
 
-function totals(items) {
+function totals(items, m = ym) {
 	const t = { fixed: 0, var: 0, paid: 0, inst: 0, instPaid: 0, byCat: new Map() };
 	for (const x of items) {
-		const c = cost(x);
+		const c = cost(x, m);
 		t[x.type === 'var' ? 'var' : 'fixed'] += c;
-		if (paidIn(x)) t.paid += c;
+		if (paidIn(x, m)) t.paid += c;
 		t.byCat.set(x.cat || 'other', (t.byCat.get(x.cat || 'other') || 0) + c);
 	}
-	for (const d of installs()) { t.inst += +d.monthly; t.instPaid += Math.min(+d.monthly, instPaid(d)); }
+	/* the debts: a past month counts what was really paid in it (not the «paid so far» written when a debt was added);
+	   this month its installments; a month ahead each installment still left to pay */
+	const k = idx(m) - idx(NOW());
+	if (k < 0) for (const d of debts.filter((d) => d.dir !== 'in')) { const v = (d.paid || []).filter((p) => !p.first && String(p.d).startsWith(m)).reduce((a, p) => a + (+p.a || 0), 0); t.inst += v; t.instPaid += v; }
+	else if (k === 0) for (const d of installs(m)) { t.inst += +d.monthly; t.instPaid += Math.min(+d.monthly, instPaid(d, m)); }
+	else for (const d of debts.filter((d) => d.dir !== 'in' && +d.monthly > 0 && !isOver(d))) { const left = Math.ceil(leftOf(d) / +d.monthly), paidNow = instPaid(d, NOW()) >= +d.monthly; if (k <= left - (paidNow ? 0 : 1)) t.inst += +d.monthly; }
 	t.all = t.fixed + t.var + t.inst;
 	t.done = t.paid + t.instPaid;
 	return t;
@@ -103,8 +116,9 @@ export default listPage({
 			</div>
 		</div>`;
 	},
-	top: (items) => {
+	top: (items, c) => {
 		const t = totals(items), now = NOW();
+		const prevM = ymAt(idx(ym) - 1), prev = monthOf(c.data().items || [], prevM), diff = Math.round(t.all - prev.all);
 		const left = Math.max(0, t.all - t.done), lateN = items.filter(late).length;
 		const bar = [...t.byCat].sort((a, b) => b[1] - a[1]).concat(t.inst ? [['__inst', t.inst]] : []);
 		return `<div class="ex-month">
@@ -114,7 +128,7 @@ export default listPage({
 				${ym !== now ? `<button class="chip" type="button" data-ym="0">${L('الشهر ده', 'This month')}</button>` : ''}
 			</div>
 			<ul class="ex-sum">
-				<li style="--c:#0e6990"><b>${money(t.all)}</b><small>${L('مصاريف الشهر كله', 'The whole month')}</small></li>
+				<li style="--c:#0e6990"><b>${money(t.all)}</b><small>${L('مصاريف الشهر كله', 'The whole month')}</small>${prev.all && diff ? `<span class="ex-diff ${diff > 0 ? 'is-up' : 'is-down'}">${diff > 0 ? '▲' : '▼'} ${money(Math.abs(diff))} ${L(`عن ${monthShort(prevM)}`, `vs ${monthShort(prevM)}`)}</span>` : prev.all ? `<span class="ex-diff">${L(`زي ${monthShort(prevM)}`, `same as ${monthShort(prevM)}`)}</span>` : ''}</li>
 				<li style="--c:#5a9e6f"><b>${money(t.done)}</b><small>${L('دفعنا', 'Paid')}</small></li>
 				<li style="--c:#e39b2d"><b>${money(left)}</b><small>${L('فاضل', 'Left')}${lateN ? ` · <em>${L(`${num(lateN)} فات ميعاده`, `${lateN} late`)}</em>` : ''}</small></li>
 				<li style="--c:#6d4bb3"><b>${money(t.fixed)} <i>/</i> ${money(t.var)}</b><small>${L('ثابت / متغير', 'fixed / varies')}</small></li>
@@ -159,10 +173,63 @@ export default listPage({
 	painted: (root) => {
 		for (const svg of $$('.ex-card.is-paid .ex-card__box svg', root)) if (!svg.childNodes.length) mark(svg, 'checkmark', false);
 	},
+	bottom: (items, c) => {
+		const all = c.data().items || [];
+		if (!all.length) return '';
+		const Y = yr ?? +ym.slice(0, 4), now = NOW();
+		const months = Array.from({ length: 12 }, (_, i) => monthOf(all, `${Y}-${String(i + 1).padStart(2, '0')}`));
+		const used = months.filter((x) => x.all > 0);
+		const max = Math.max(1, ...months.map((x) => x.all));
+		const sum = months.reduce((a, x) => a + x.all, 0);
+		const top = used.length ? used.reduce((a, b) => (b.all > a.all ? b : a)) : null;
+		const byCat = new Map();
+		for (const x of months) for (const [k, v] of x.byCat) byCat.set(k, (byCat.get(k) || 0) + v);
+		const cats = [...byCat].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+		const big = cats[0] ? catOf(cats[0][0]) : null;
+		const instY = months.reduce((a, x) => a + x.inst, 0);
+		const est = (m) => idx(m) >= idx(now);
+		const cell = (v, rowMax, m) => `<td class="${est(m) ? 'is-est' : ''}${m === ym ? ' is-on' : ''}" style="--a:${v ? Math.round((v / rowMax) * 100) : 0}">${v ? num(Math.round(v)) : '<i>—</i>'}</td>`;
+		const row = (label, ic, vals, cls = '') => { const rm = Math.max(1, ...vals); return `<tr class="${cls}"><th scope="row">${ic ? doodle(ic, 16) : ''} ${esc(label)}</th>${vals.map((v, i) => cell(v, rm, months[i].m)).join('')}<td class="ex-table__y">${num(Math.round(vals.reduce((a, b) => a + b, 0)))}</td></tr>`; };
+		return `<section class="ex-year" id="ex-year">
+			<header class="ex-year__h">
+				<h2>${doodle('calendar', 26)} ${L('السنة كلها', 'The whole year')}</h2>
+				<div class="ex-year__nav"><button class="btn btn--sm btn--ghost" type="button" data-yr="-1" aria-label="${L('السنة اللي فاتت', 'Previous year')}">${doodle(App.lang === 'ar' ? 'forward' : 'back', 18)}</button><b>${App.lang === 'ar' ? num(Y).replace(/٬/g, '') : Y}</b><button class="btn btn--sm btn--ghost" type="button" data-yr="1" aria-label="${L('السنة الجاية', 'Next year')}">${doodle(App.lang === 'ar' ? 'back' : 'forward', 18)}</button></div>
+			</header>
+			<ul class="ex-year__stats">
+				<li style="--c:#0e6990"><small>${L('مصاريف السنة', 'The year’s spending')}</small><b>${money(sum)}</b></li>
+				<li style="--c:#5a9e6f"><small>${L('في المتوسط كل شهر', 'On average a month')}</small><b>${money(used.length ? sum / used.length : 0)}</b></li>
+				<li style="--c:#d9534f"><small>${L('أغلى شهر', 'The dearest month')}</small><b>${top ? `${esc(monthShort(top.m))} · ${money(top.all)}` : '—'}</b></li>
+				<li style="--c:#e39b2d"><small>${L('أكتر حاجة صرفنا عليها', 'Where most of it went')}</small><b>${big ? `${esc(L(big[2], big[3]))} · ${num(Math.round((cats[0][1] / Math.max(1, sum)) * 100))}٪` : '—'}</b></li>
+			</ul>
+			<div class="ex-bars" role="list">${months.map((x) => `<button class="ex-bar${x.m === ym ? ' is-on' : ''}${est(x.m) ? ' is-est' : ''}${x.m === now ? ' is-now' : ''}" type="button" role="listitem" data-goto="${x.m}" style="--h:${Math.round((x.all / max) * 100)}%; --p:${x.all ? Math.round((Math.min(x.done, x.all) / x.all) * 100) : 0}%" aria-label="${esc(monthShort(x.m))}: ${esc(money(x.all))}">
+				<b>${x.all ? compact(x.all) : ''}</b>
+				<span class="ex-bar__col">${x.all ? '<i></i>' : ''}</span>
+				<small><span class="ex-bar__l">${esc(monthShort(x.m))}</span><span class="ex-bar__s">${num(+x.m.slice(5))}</span></small>
+			</button>`).join('')}</div>
+			<p class="ex-year__key"><span class="is-paid"><i></i>${L('اتدفع', 'Paid')}</span><span class="is-left"><i></i>${L('لسه', 'Not yet')}</span><span class="is-est"><i></i>${L('الشهور الجاية متوقعة', 'Months ahead are estimates')}</span></p>
+			${cats.length || instY ? `<div class="ex-table-wrap"><table class="ex-table">
+				<thead><tr><th scope="col">${L('النوع', 'Kind')}</th>${months.map((x) => `<th scope="col" class="${x.m === ym ? 'is-on' : ''}"><button class="link" type="button" data-goto="${x.m}">${esc(monthShort(x.m))}</button></th>`).join('')}<th scope="col" class="ex-table__y">${L('السنة', 'Year')}</th></tr></thead>
+				<tbody>
+					${cats.map(([k]) => { const [, ic, ar, en] = catOf(k); return row(L(ar, en), ic, months.map((x) => x.byCat.get(k) || 0)); }).join('')}
+					${instY ? row(L('أقساط الديون', 'Debt installments'), 'scale', months.map((x) => x.inst)) : ''}
+				</tbody>
+				<tfoot>
+					${row(L('ثابت', 'Fixed'), '', months.map((x) => x.fixed), 'is-sub')}
+					${row(L('متغير', 'Varies'), '', months.map((x) => x.var), 'is-sub')}
+					${row(L('الإجمالي', 'Total'), 'coins', months.map((x) => x.all), 'is-total')}
+					${row(L('اتدفع', 'Paid'), 'heart', months.map((x) => x.done), 'is-paid')}
+				</tfoot>
+			</table></div>` : ''}
+		</section>`;
+	},
 	ready: async () => { debts = (await live.load('debts').catch(() => ({}))).items || []; },
 	click: async (e, ctx) => {
 		const m = e.target.closest('[data-ym]');
-		if (m) { ym = +m.dataset.ym ? ymAt(idx(ym) + +m.dataset.ym) : NOW(); return ctx.repaint(); }
+		if (m) { ym = +m.dataset.ym ? ymAt(idx(ym) + +m.dataset.ym) : NOW(); yr = null; return ctx.repaint(); }
+		const y = e.target.closest('[data-yr]');
+		if (y) { yr = (yr ?? +ym.slice(0, 4)) + +y.dataset.yr; return ctx.repaint(); }
+		const g = e.target.closest('[data-goto]');
+		if (g) { ym = g.dataset.goto; yr = null; ctx.repaint(); return document.getElementById('lp-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 		const b = e.target.closest('[data-paid], [data-unpaid], [data-stop]');
 		if (!b) return;
 		const id = b.dataset.paid || b.dataset.unpaid || b.dataset.stop;
