@@ -728,6 +728,81 @@ function featureHTML(g, s) {
 		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
 }
 
+/* the pictures beside each chapter's pages in the header's menu, as they were before the six chapters: the big days
+   as photo cards and today in our story; the album, a love note, the guestbook and the tickets over a strip of film;
+   the four draws and tonight's real moon; the boys and the tailor's tape; the desk calendar, what comes after it and
+   us in numbers. بيتنا, new, has its day card. */
+function widgetsHTML(g, s) {
+	const here = currentFile();
+	if (g === 'story') {
+		const chapters = (s.chapters || []).slice(0, 3);
+		const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
+		const today = todays.find((x) => firstPhoto(x)) || todays[0];
+		const todayPhoto = today && firstPhoto(today);
+		return `${chapters.length ? `<div class="mg-cards">${chapters.map((c) => `
+			<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>
+				${img(firstPhoto(c), '', 'mg-cover')}
+				<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span>
+			</a>`).join('')}</div>` : ''}
+		<a class="mg-band${todayPhoto ? ' has-photo' : ''}" href="${today ? `moment.html?id=${esc(today.id)}` : 'story.html'}">
+			${todayPhoto ? `<span class="mg-band-pic" data-media-box>${img(todayPhoto, '', 'mg-band-img')}</span>` : ''}
+			<b>${today ? L('النهارده في حكايتنا', 'Today in our story') : L('من أول رسالة لحد النهارده', 'From the first message until today')}</b>
+			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
+		</a>`;
+	}
+	if (g === 'memories') {
+		const gb = s.guestbook;
+		return `<div class="mg-cards">
+			<a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a>
+			<a class="mg-card mg-card--note" href="notes.html">
+				<span class="mg-note" id="mg-note">${noteHTML(s)}</span>
+				<span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span>
+			</a>
+			${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>
+				${img(gb.photo, '', 'mg-cover')}
+				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
+			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
+			<a class="mg-card mg-card--ticket" href="tickets.html">
+				<span class="mg-ticket" aria-hidden="true"><small>${L('تذكرة دخول', 'Admit one')}</small><b>♥</b><small>${L('سينما · قطر · كافيه', 'Cinema · train · café')}</small></span>
+				<span class="mg-card-t"><b>${L('تذاكر وفواتير', 'Tickets')}</b><small>${L('كشكول ذكرياتنا', 'Our scrapbook')}</small></span>
+			</a>
+		</div>
+		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`;
+	}
+	if (g === 'nights') {
+		const kind = qs('k');
+		return `<div class="mg-kinds">${DRAW_KINDS.map((k) => `
+			<a class="mg-kind" href="draw.html?k=${k.id}" style="--c:${k.color}"${here === 'draw.html' && kind === k.id ? ' aria-current="page"' : ''}>
+				<span class="mg-kind-e" aria-hidden="true">${doodle(k.emoji, 40)}</span><b>${esc(L(k.ar, k.en))}</b><small>${esc(L(k.dar, k.den))}</small>
+			</a>`).join('')}</div>
+		<a class="mg-sky" id="mg-sky" href="draw.html">${skyHTML()}</a>`;
+	}
+	if (g === 'kids') {
+		const members = s.family?.members || [];
+		const kids = members.filter((m) => m.kid);
+		return `<div class="mg-figs">${(kids.length ? kids : members).map((m) => `
+			<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
+				<span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span>
+				<span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span>
+			</a>`).join('')}</div>
+		${tapeHTML(members)}`;
+	}
+	if (g === 'people') {
+		const met = parseDate(s.met || '2009-06-10'), yrs = yearsBetween(met);
+		return `<div class="mx-wpair">
+			<a class="mg-data" href="numbers.html"${here === 'numbers.html' ? ' aria-current="page"' : ''}>
+				<span class="mg-new">${L('بالأرقام', 'In numbers')}</span>
+				<span class="mg-bars" aria-hidden="true">${Array.from({ length: Math.min(yrs + 1, 20) }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / Math.min(yrs + 1, 20))}%"></i>`).join('')}</span>
+				<b>${num(daysBetween(met))} ${L('يوم من أول سلام', 'days since hello')}</b>
+				<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
+				<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
+			</a>
+			${calendarHTML(s)}
+		</div>
+		${nextTagsHTML(s)}`;
+	}
+	return featureHTML(g, s);
+}
 /* The header: Home, the six chapters, and «اكتب النهارده». Each chapter opens a sheet: its number, name and what's in
    it, its ten pages as index cards (five to a row), and the chapter's card at the side. */
 function megaHTML(s) {
@@ -743,7 +818,7 @@ function megaHTML(s) {
 				<p class="mx-head"><i aria-hidden="true">${n < 9 ? num(0) : ''}${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${esc(L(...g.say))}</small><span class="mx-count">${num(ps.length)} ${L('صفحات', 'pages')}</span></p>
 				<div class="mx-grid">${ps.map((p, k) => `<a class="mx-item" href="${p.href}"${cur(p.href)} style="--i:${k}">${icon(p.ic, 20)}<b>${esc(L(p.ar, p.en))}</b><small>${esc(L(p.dar || '', p.den || ''))}</small></a>`).join('')}</div>
 			</div>
-			<div class="mx-side" data-feature="${g.id}">${featureHTML(g.id, s)}</div>
+			<div class="mx-side mx-side--${g.id}">${widgetsHTML(g.id, s)}</div>
 		</div></div>`;
 	};
 	return `<nav class="mnav" aria-label="${L('القائمة الرئيسية', 'Main')}">
@@ -779,6 +854,115 @@ export function moonTonight(now = new Date()) {
 	const svg = `<svg class="mg-moon" viewBox="-22 -22 44 44" aria-hidden="true"><circle r="${r}" class="mg-moon-dark"/>${lit > 0.01 ? `<path d="${half} ${term}Z" class="mg-moon-lit"/>` : ''}<circle r="${r}" class="mg-moon-rim"/></svg>`;
 	return { svg, name: L(...name), how };
 }
+/* عيلتنا: a tailor's tape with the four of us standing on it at our ages — from the baby near nought to the two of
+   us in our thirties — every year a tick, every five a number. Takes you to the growth chart. */
+function tapeHTML(members) {
+	const now = new Date();
+	const ages = members.filter((m) => m.born && parseDate(m.born) <= now)
+		.map((m) => ({ m, a: (now - parseDate(m.born)) / (365.2425 * 864e5) })).sort((x, y) => x.a - y.a);
+	if (!ages.length) return '';
+	const max = Math.max(10, Math.ceil((ages.at(-1).a + 1) / 5) * 5);
+	const ticks = Array.from({ length: max + 1 }, (_, i) => `<i class="${i % 5 ? '' : 'is-5'}" style="--p:${(i / max) * 100}%">${i % 5 ? '' : `<b>${num(i)}</b>`}</i>`).join('');
+	const pins = ages.map(({ m, a }, i) => `
+		<span class="mg-tape-pin ${i % 2 ? 'is-up' : 'is-down'}${a / max > 0.6 ? ' is-end' : ''}" style="--p:${(a / max) * 100}%;--c:${esc(m.color || '#0e6990')}">
+			<span class="mg-tape-dot">${doodle(m.emoji, 22)}</span><small><b>${T(m.name)}</b> ${m.kid ? age(m.born, now) : `${num(Math.floor(a))} ${L('سنة', 'yrs')}`}</small>
+		</span>`).join('');
+	return `<a class="mg-tape" href="growth.html" aria-label="${L('مين كبر قد إيه', 'How much each of us has grown')}">
+		<span class="mg-tape-h">${L('مين كبر قد إيه', 'How tall we’ve grown')}</span>
+		<span class="mg-tape-track" aria-hidden="true">${ticks}${pins}</span>
+	</a>`;
+}
+
+
+function skyHTML(a) {
+	const moon = moonTonight();
+	const k = pick(DRAW_KINDS);
+	if (a) a.href = `draw.html?k=${k.id}`;
+	else queueMicrotask(() => { const el = document.getElementById('mg-sky'); if (el) el.href = `draw.html?k=${k.id}`; });
+	const stars = Array.from({ length: 22 }, () => `<i style="--x:${rand(2, 98)}%;--y:${rand(6, 94)}%;--s:${rand(1.5, 3.2)}px;--d:${rand(1.8, 4.5)}s;--delay:-${rand(0, 4)}s"></i>`).join('');
+	return `<span class="mg-sky-stars" aria-hidden="true">${stars}</span>
+		${moon.svg}
+		<span class="mg-sky-tx">
+			<span class="mg-sky-h">${L('قمر الليلة', 'Tonight’s moon')}</span>
+			<b>${esc(moon.name)}</b>
+			<span class="mg-sky-how">${esc(moon.how)}</span>
+			<small>${L('ونسهر على إيه الليلة؟', 'What shall we do tonight?')} <span class="mg-sky-k" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))}</span> ${App.arrow}</small>
+		</span>`;
+}
+
+
+/* مناسباتنا: a desk calendar torn to the next occasion — the day in big numbers, the month, what it is and how long
+   is left — with the two after it peeking out behind. */
+function calendarHTML(s) {
+	const next = occasions(s).slice(0, 3);
+	if (!next.length) return '';
+	const [o] = next;
+	const when = new Date(); when.setHours(12, 0, 0, 0); when.setDate(when.getDate() + o.days);
+	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	const month = new Intl.DateTimeFormat(loc, { month: 'long' }).format(when);
+	const wday = new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(when);
+	const left = o.days === 0 ? L('النهارده ♥', 'Today ♥') : o.days === 1 ? L('بكرة', 'Tomorrow') : L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`);
+	return `<a class="mg-cal" href="calendar.html" aria-label="${esc(`${o.title} — ${left}`)}">
+		${next.slice(1).map((x, i) => `<span class="mg-cal-back" style="--n:${i + 1}" aria-hidden="true"><small>${esc(x.title)}</small></span>`).join('')}
+		<span class="mg-cal-page">
+			<span class="mg-cal-rings" aria-hidden="true"><i></i><i></i></span>
+			<span class="mg-cal-month">${esc(month)}</span>
+			<span class="mg-cal-day">${num(when.getDate())}</span>
+			<span class="mg-cal-wday">${esc(wday)}</span>
+			<b>${esc(o.title)}</b>
+			<small>${esc(o.sub)}</small>
+			<span class="mg-cal-left${o.days === 0 ? ' is-today' : ''}">${left}</span>
+		</span>
+	</a>`;
+}
+
+/* مناسباتنا, under the calendar: «وبعدها», a page of the planner with the two occasions after the next one, side by side —
+   each a torn-off calendar leaf (month and day), what it is, and how long is left */
+function nextTagsHTML(s) {
+	const after = occasions(s).slice(1, 3);
+	if (!after.length) return '';
+	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	const dateOf = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return d; };
+	const month = (o) => new Intl.DateTimeFormat(loc, { month: 'short' }).format(dateOf(o));
+	const href = (o) => (o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html');
+	return `<div class="mg-tags">
+		<p class="mg-tags-h">${L('وبعدها', 'And after that')}</p>
+		<div class="mg-tags-row">${after.map((o, i) => `<a class="mg-tag" href="${href(o)}" style="--i:${i}">
+			<span class="mg-tag-leaf" aria-hidden="true"><i>${esc(month(o))}</i><b>${num(dateOf(o).getDate())}</b></span>
+			<span class="mg-tag-tx"><b>${esc(o.title)}</b><small><span class="mg-tag-e" aria-hidden="true">${doodle(o.emoji, 14)}</span>${L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`)}</small></span>
+		</a>`).join('')}</div>
+	</div>`;
+}
+
+/* the album polaroid in ذكرياتنا: any photo from the album, a different one each time */
+function albumHTML(s) {
+	const photos = (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
+	const p = photos.length ? pick(photos) : s.poster;
+	return `${p ? `<span class="mg-pic" data-media-box>${img(p, '', 'mg-cover')}</span>` : ''}
+		<span class="mg-card-t"><b>${L('ألبوم الصور', 'Photo album')}</b><small>${L('إحنا بالصور', 'Us in pictures')}</small></span>`;
+}
+
+/* the film strip in ذكرياتنا: five moments from our story with photos (never today's — حكايتنا shows that one),
+   five different ones each time it opens, laid out oldest first like a reel */
+function filmHTML(s) {
+	const all = (s.timeline || []).filter((x) => !x.when && firstPhoto(x) && !isVideo(firstPhoto(x)) && !isToday(x.date));
+	const five = [];
+	while (five.length < 5 && five.length < all.length) { const m = pick(all); if (!five.includes(m)) five.push(m); }
+	return five.sort((a, b) => String(a.date).localeCompare(String(b.date))).map((m) => `
+		<a class="mg-frame" href="moment.html?id=${esc(m.id)}" title="${T(m.title)}" data-media-box>${img(firstPhoto(m), App.t(m.title), 'mg-frame-img')}<small>${fmtDate(m.date)}</small></a>`).join('');
+}
+
+let lastNote = -1;
+function noteHTML(s) {
+	const notes = (s.notes || []).filter((n) => t(n.text).length <= 140);
+	if (!notes.length) return `<q>${T(s.closing)}</q>`;
+	let k = Math.floor(Math.random() * notes.length);
+	if (k === lastNote && notes.length > 1) k = (k + 1) % notes.length;
+	lastNote = k;
+	const n = notes[k];
+	return `<q>${T(n.text)}</q><small>— ${T(n.by === 'him' ? s.him : s.her)}</small>`;
+}
+
 /* open on hover (mouse), click/tap, Enter or ↓; close on leaving, Escape, a click outside or focus leaving */
 function wireMega(header) {
 	const nav = $('.mnav', header);
@@ -789,8 +973,13 @@ function wireMega(header) {
 	let openedAt = 0;
 	const set = (id) => {
 		clearTimeout(timer);
-		// a new photo and note from the album, a new idea under tonight's moon, each time those two open
-		if ((id === 'memories' || id === 'nights') && openId !== id) { const f = $(`[data-feature="${id}"]`, nav); if (f) f.innerHTML = featureHTML(id, App.story); }
+		// a new album photo, love note and strip of moments each time ذكرياتنا opens; a new idea under tonight's moon for ليالينا
+		if (id === 'memories' && openId !== id) {
+			const tx = $('#mg-note', nav); if (tx) tx.innerHTML = noteHTML(App.story);
+			const al = $('#mg-album', nav); if (al) al.innerHTML = albumHTML(App.story);
+			const fm = $('#mg-film', nav); if (fm) fm.innerHTML = filmHTML(App.story);
+		}
+		if (id === 'nights' && openId !== id) { const sk = $('#mg-sky', nav); if (sk) sk.innerHTML = skyHTML(sk); }
 		if (id) hydrate(nav);
 		openId = id;
 		for (const b of btns) {
