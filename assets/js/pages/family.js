@@ -251,7 +251,7 @@ export default {
 			${bookHTML(s, f)}
 		</div></section>
 		${paperHTML(s, f, members)}
-		${related(['routine', 'expenses', 'fixes', 'debts'])}`;
+		${related(['people', 'routine', 'expenses', 'debts'])}`;
 	},
 	leave() { this.bye?.(); this.bye = null; },
 	after(main, s) {
