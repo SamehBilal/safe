@@ -546,58 +546,64 @@ export const PAGES = [
 	{ href: 'index.html', id: 'home', ic: 'home', ar: 'الرئيسية', en: 'Home' },
 	{ href: 'story.html', id: 'story', ic: 'book', ar: 'حكايتنا', en: 'Our story', dar: 'كل تاريخ عملنا إحنا', den: 'Every date that made us', group: 'story' },
 	{ href: 'chapters.html', id: 'chapters', ic: 'ring', ar: 'أيام فارقة', en: 'Big days', dar: 'الخطوبة، كتب الكتاب، الفرح', den: 'Engagement, wedding and more', group: 'story' },
-	{ href: 'places.html', id: 'places', ic: 'pin', ar: 'أماكننا', en: 'Our places', dar: 'أماكن فيها حتة مننا', den: 'Places that hold a piece of us', group: 'story' },
-	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'رحلة كل سنة على الخريطة، وكل سنة جواز عملنا فيها إيه', den: 'A trip every year on the map, and how we marked each one', group: 'story' },
-	{ href: 'journeys.html', id: 'journeys', ic: 'map', ar: 'رحلاتنا', en: 'Our trips', dar: 'كل رحلة طريق على الخريطة، محطة ورا محطة', den: 'Every trip a road on the map, stop by stop', group: 'story' },
-	{ href: 'cities.html', id: 'cities', ic: 'city', ar: 'خرايط مدننا', en: 'Our city maps', dar: 'كل مدينة رحناها، وأماكننا منورة فيها', den: 'Every city we’ve been to, our spots lit up', group: 'story' },
-	{ href: 'journal.html', id: 'journal', ic: 'pen', ar: 'دفترنا', en: 'Our journal', dar: 'بنكتب حكايتنا سوا، يوم بيوم', den: 'We write our story together, day by day', group: 'story' },
 	{ href: 'ourfirsts.html', id: 'ourfirsts', ic: 'heart', ar: 'أول مرة لينا', en: 'Our firsts', dar: 'أول مقابلة، أول «بحبك»، أول رحلة', den: 'First meeting, first “I love you”, first trip', group: 'story' },
 	{ href: 'beforeus.html', id: 'beforeus', ic: 'route', ar: 'قبل ما نتقابل', en: 'Before us', dar: 'حياتنا الاتنين جنب بعض لحد ٢٠٠٩', den: 'Our two lives side by side until 2009', group: 'story' },
+	{ href: 'journal.html', id: 'journal', ic: 'pen', ar: 'دفترنا', en: 'Our journal', dar: 'بنكتب حكايتنا سوا، يوم بيوم', den: 'We write our story together, day by day', group: 'story' },
+	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'رحلة كل سنة على الخريطة، وكل سنة جواز عملنا فيها إيه', den: 'A trip every year on the map, and how we marked each one', group: 'story' },
+	{ href: 'places.html', id: 'places', ic: 'pin', ar: 'أماكننا', en: 'Our places', dar: 'أماكن فيها حتة مننا', den: 'Places that hold a piece of us', group: 'story' },
+	{ href: 'cities.html', id: 'cities', ic: 'city', ar: 'خرايط مدننا', en: 'Our city maps', dar: 'كل مدينة رحناها، وأماكننا منورة فيها', den: 'Every city we’ve been to, our spots lit up', group: 'story' },
+	{ href: 'journeys.html', id: 'journeys', ic: 'map', ar: 'رحلاتنا', en: 'Our trips', dar: 'كل رحلة طريق على الخريطة، محطة ورا محطة', den: 'Every trip a road on the map, stop by stop', group: 'story' },
 	{ href: 'minute.html', id: 'minute', ic: 'film', ar: 'الحكاية في دقيقة', en: 'Our story in a minute', dar: 'كل ذكرى بصورة، ورا بعض', den: 'Every memory, one photo after another', group: 'story' },
+	{ href: 'gallery.html', id: 'gallery', ic: 'image', ar: 'ألبوم الصور', en: 'Photo album', dar: 'إحنا بالصور، سنة بسنة', den: 'Us in pictures, year by year', group: 'memories' },
+	{ href: 'onthisday.html', id: 'onthisday', ic: 'calendar', ar: 'سنة من الذكريات', en: 'A year of memories', dar: 'كل يوم في السنة وحصل فيه إيه', den: 'Every date and what it held', group: 'memories' },
+	{ href: 'notes.html', id: 'notes', ic: 'note', ar: 'رسايل حب', en: 'Love notes', dar: 'كلام كتبناه لبعض', den: 'Little things we wrote', group: 'memories' },
+	{ href: 'letters.html', id: 'letters', ic: 'mail', ar: 'جوابات', en: 'Letters', dar: 'جوابات لبعض، مستنية تتفتح', den: 'Letters for you — open them', group: 'memories' },
+	{ href: 'chats.html', id: 'chats', ic: 'chat', ar: 'محادثاتنا', en: 'Our chats', dar: 'أحلى رسايلنا باسكرينشوت', den: 'Our best messages, screenshotted', group: 'memories' },
+	{ href: 'posts.html', id: 'posts', ic: 'phone', ar: 'بوستاتنا', en: 'Our posts', dar: 'اللي كتبناه لبعض على السوشيال ميديا', den: 'What we posted about each other', group: 'memories' },
+	{ href: 'guestbook.html', id: 'guestbook', ic: 'mail', ar: 'دفتر المعازيم', en: 'Wedding guestbook', dar: 'اللي كتبه حبايبنا يوم فرحنا', den: 'What our loved ones wrote for our wedding', group: 'memories' },
+	{ href: 'tickets.html', id: 'tickets', ic: 'film', ar: 'تذاكر وفواتير', en: 'Tickets & receipts', dar: 'كشكول كل تذكرة وفاتورة احتفظنا بيها', den: 'A scrapbook of every ticket we kept', group: 'memories' },
+	{ href: 'remember.html', id: 'remember', ic: 'dice', ar: 'فاكر؟', en: 'Do you remember?', dar: 'لعبة من صورنا وحكايتنا: مين فاكر أكتر؟', den: 'A game made of our photos: who remembers more?', group: 'memories' },
+	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'memories' },
 	{ href: 'draw.html', id: 'draw', ic: 'dice', ar: 'قرعة الليلة', en: 'Tonight’s draw', dar: 'لبس، خروجة، دليفري، فيلم، لعبة، وأكتر', den: 'Outfit, dinner, delivery, a film, a game, and more', group: 'nights' },
 	{ href: 'movies.html', id: 'movies', ic: 'film', ar: 'اتفرجنا على إيه', en: 'What we’ve watched', dar: 'أفلامنا ومسلسلاتنا بالأرقام', den: 'Our films and series, in numbers', group: 'nights' },
 	{ href: 'music.html', id: 'music', ic: 'music', ar: 'أغانينا', en: 'Our songs', dar: 'الأغاني اللي بتفكرنا ببعض', den: 'The songs that remind us of each other', group: 'nights' },
 	{ href: 'food.html', id: 'food', ic: 'food', ar: 'أكلنا', en: 'Our food', dar: 'مطاعمنا والمنيو بتاع كل واحد، واللي بنطبخه في البيت', den: 'Our restaurants and their menus, and what we cook at home', group: 'nights' },
 	{ href: 'books.html', id: 'books', ic: 'book', ar: 'كتبنا', en: 'Our books', dar: 'اللي بنقراه، واللي خلصناه', den: 'What we’re reading, and what we’ve finished', group: 'nights' },
 	{ href: 'games.html', id: 'games', ic: 'dice', ar: 'ألعابنا', en: 'Our games', dar: 'كوتشينة ودومينو… ومين بيكسب', den: 'Cards, dominoes… who’s winning', group: 'nights' },
-	{ href: 'adventures.html', id: 'adventures', ic: 'star', ar: 'أحلامنا ومغامراتنا', en: 'Our bucket list', dar: 'حاجات نفسنا نعملها سوا، في مصر وبرّاها', den: 'Things we want to do together, in Egypt and beyond', group: 'nights' },
 	{ href: 'offline.html', id: 'offline', ic: 'moon', ar: 'سهرة من غير موبايل', en: 'Offline nights', dar: 'كروت أسئلة، والموبايلات في السلة', den: 'Question cards, phones in the basket', group: 'nights' },
+	{ href: 'adventures.html', id: 'adventures', ic: 'star', ar: 'أحلامنا ومغامراتنا', en: 'Our bucket list', dar: 'حاجات نفسنا نعملها سوا، في مصر وبرّاها', den: 'Things we want to do together, in Egypt and beyond', group: 'nights' },
+	{ href: 'wishes.html', id: 'wishes', ic: 'star', ar: 'برطمان الأمنيات', en: 'Wish jar', dar: 'أمنياتنا في أمان هنا', den: 'Our wishes, kept safe', group: 'nights' },
 	{ href: 'secret.html', id: 'secret', ic: 'heart', ar: 'أوضتنا', en: 'Our room', dar: 'لينا إحنا الاتنين بس — بالرقم السري', den: 'Just for the two of us — behind a PIN', group: 'nights' },
-	{ href: 'gallery.html', id: 'gallery', ic: 'image', ar: 'ألبوم الصور', en: 'Photo album', dar: 'إحنا بالصور، سنة بسنة', den: 'Us in pictures, year by year', group: 'memories' },
-	{ href: 'notes.html', id: 'notes', ic: 'note', ar: 'رسايل حب', en: 'Love notes', dar: 'كلام كتبناه لبعض', den: 'Little things we wrote', group: 'memories' },
-	{ href: 'letters.html', id: 'letters', ic: 'mail', ar: 'جوابات', en: 'Letters', dar: 'جوابات لبعض، مستنية تتفتح', den: 'Letters for you — open them', group: 'memories' },
-	{ href: 'guestbook.html', id: 'guestbook', ic: 'mail', ar: 'دفتر المعازيم', en: 'Wedding guestbook', dar: 'اللي كتبه حبايبنا يوم فرحنا', den: 'What our loved ones wrote for our wedding', group: 'memories' },
-	{ href: 'posts.html', id: 'posts', ic: 'phone', ar: 'بوستاتنا', en: 'Our posts', dar: 'اللي كتبناه لبعض على السوشيال ميديا', den: 'What we posted about each other', group: 'memories' },
-	{ href: 'tickets.html', id: 'tickets', ic: 'film', ar: 'تذاكر وفواتير', en: 'Tickets & receipts', dar: 'كشكول كل تذكرة وفاتورة احتفظنا بيها', den: 'A scrapbook of every ticket we kept', group: 'memories' },
-	{ href: 'onthisday.html', id: 'onthisday', ic: 'calendar', ar: 'سنة من الذكريات', en: 'A year of memories', dar: 'كل يوم في السنة وحصل فيه إيه', den: 'Every date and what it held', group: 'memories' },
-	{ href: 'remember.html', id: 'remember', ic: 'dice', ar: 'فاكر؟', en: 'Do you remember?', dar: 'لعبة من صورنا وحكايتنا: مين فاكر أكتر؟', den: 'A game made of our photos: who remembers more?', group: 'memories' },
-	{ href: 'chats.html', id: 'chats', ic: 'chat', ar: 'محادثاتنا', en: 'Our chats', dar: 'أحلى رسايلنا باسكرينشوت', den: 'Our best messages, screenshotted', group: 'memories' },
-	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'جريدتنا وشجرة العيلة', den: 'Our paper and family tree', group: 'family' },
-	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد قد إيه', den: 'How far apart we are', group: 'family' },
-	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'اللي نفسنا فيه، ونشطبه', den: 'What we want, crossed out', group: 'family' },
-	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور', den: 'House jobs in turns', group: 'family' },
-	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'بيحبوا إيه في كل سن', den: 'What they love at each age', group: 'family' },
-	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسوماتنا', en: 'Our drawings', dar: 'كل رسمة رسمناها', den: 'Every drawing we made', group: 'family' },
-	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن', den: 'Height and weight', group: 'family' },
-	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'قاموس كلامهم', den: 'Their own dictionary', group: 'family' },
-	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت', den: 'What the house needs', group: 'family' },
-	{ href: 'routine.html', id: 'routine', ic: 'hourglass', ar: 'روتيننا', en: 'Our routine', dar: 'يوم العيلة، وروتين كل واحد', den: 'The family’s day, and each one’s', group: 'family' },
-	{ href: 'fixes.html', id: 'fixes', ic: 'gear', ar: 'تصليحات البيت', en: 'House fixes', dar: 'اللي محتاج يتصلح أو يتعمل', den: 'What needs fixing or doing', group: 'family' },
-	{ href: 'expenses.html', id: 'expenses', ic: 'chart', ar: 'مصاريف الشهر', en: 'Monthly expenses', dar: 'الثابت والمتغير، دفعنا إيه وفاضل إيه', den: 'Fixed and variable — paid and left', group: 'family' },
-	{ href: 'debts.html', id: 'debts', ic: 'coins', ar: 'ديوننا', en: 'Our debts', dar: 'اللي علينا واللي لينا، قسط بقسط', den: 'What we owe and are owed, payment by payment', group: 'family' },
-	{ href: 'people.html', id: 'people', ic: 'family', ar: 'ناسنا', en: 'Our people', dar: 'القرايب والصحاب والجيران، وكل يوم حد نسأل عليه', den: 'Relatives, friends, neighbours — one to reach each day', group: 'family' },
-	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا وردّيناها', den: 'Who gave, and what we gave back', group: 'family' },
-	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحتنا', en: 'Our health book', dar: 'تطعيمات ودكاترة وأدوية', den: 'Jabs, doctors and medicines', group: 'family' },
-	{ href: 'birthday.html', id: 'birthday', ic: 'cake', ar: 'أعياد الميلاد', en: 'Birthdays', dar: 'عيد ميلاد كل واحد فينا', den: 'Every one of our birthdays', group: 'you' },
-	{ href: 'numbers.html', id: 'numbers', ic: 'chart', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'كل يوم وكل سنة، متعدّين واحد واحد', den: 'Every day and every year, counted', group: 'you' },
-	{ href: 'wishes.html', id: 'wishes', ic: 'star', ar: 'برطمان الأمنيات', en: 'Wish jar', dar: 'أمنياتنا في أمان هنا', den: 'Our wishes, kept safe', group: 'you' },
-	{ href: 'calendar.html', id: 'calendar', ic: 'calendar', ar: 'تقويمنا', en: 'Our calendar', dar: 'كل مناسباتنا في سنة واحدة', den: 'All our occasions in one year', group: 'you' },
-	{ href: 'yearly.html', id: 'yearly', ic: 'image', ar: 'صورة كل سنة', en: 'A photo every year', dar: 'نفس الصورة، سنة ورا سنة', den: 'The same photo, year after year', group: 'you' },
-	{ href: 'ramadan.html', id: 'ramadan', ic: 'moon', ar: 'رمضان والعيد', en: 'Ramadan & Eid', dar: 'العد التنازلي، وعاداتنا، والعيدية', den: 'Countdowns, our traditions, and the Eid money', group: 'you' },
-	{ href: 'firsts.html', id: 'firsts', ic: 'steps', ar: 'أول مرة', en: 'Firsts', dar: 'أول خطوة، أول كلمة', den: 'First step, first word', group: 'you' },
-	{ href: 'gifts.html', id: 'gifts', ic: 'gift', ar: 'هدايانا', en: 'Our gifts', dar: 'كل هدية، ومين جابها — واللي نفسنا فيه', den: 'Every gift, who gave it — and what we’d love', group: 'you' },
-	{ href: 'capsule.html', id: 'capsule', ic: 'hourglass', ar: 'كبسولة زمنية للولاد', en: 'The boys’ time capsule', dar: 'جوابات بتستنى لحد ما يكبروا', den: 'Letters waiting for them to grow up', group: 'you' },
-	{ href: 'hosting.html', id: 'hosting', ic: 'home', ar: 'عزايمنا', en: 'Hosting & visits', dar: 'مين جالنا، ورحنا لمين', den: 'Who came over, and who we visited', group: 'you' },
+	{ href: 'firsts.html', id: 'firsts', ic: 'steps', ar: 'أول مرة', en: 'Firsts', dar: 'أول خطوة، أول كلمة', den: 'First step, first word', group: 'kids' },
+	{ href: 'growth.html', id: 'growth', ic: 'chart', ar: 'طول الولاد', en: 'Growth chart', dar: 'الطول والوزن', den: 'Height and weight', group: 'kids' },
+	{ href: 'sayings.html', id: 'sayings', ic: 'chat', ar: 'كلام الولاد', en: 'What the boys said', dar: 'قاموس كلامهم', den: 'Their own dictionary', group: 'kids' },
+	{ href: 'favorites.html', id: 'favorites', ic: 'star', ar: 'بيحب إيه دلوقتي', en: 'What they love now', dar: 'بيحبوا إيه في كل سن', den: 'What they love at each age', group: 'kids' },
+	{ href: 'drawings.html', id: 'drawings', ic: 'image', ar: 'رسوماتنا', en: 'Our drawings', dar: 'كل رسمة رسمناها', den: 'Every drawing we made', group: 'kids' },
+	{ href: 'school.html', id: 'school', ic: 'cap', ar: 'مدرستهم', en: 'Their school', dar: 'المدرسة والمدرسين والامتحانات والدرجات', den: 'School, teachers, exams and grades', group: 'kids' },
+	{ href: 'clubs.html', id: 'clubs', ic: 'medal', ar: 'نشاطاتهم', en: 'Their activities', dar: 'التمرين والكورسات، والميداليات', den: 'Sports, courses, and the medals', group: 'kids' },
+	{ href: 'health.html', id: 'health', ic: 'note', ar: 'دفتر صحتنا', en: 'Our health book', dar: 'تطعيمات ودكاترة وأدوية', den: 'Jabs, doctors and medicines', group: 'kids' },
+	{ href: 'yearly.html', id: 'yearly', ic: 'image', ar: 'صورة كل سنة', en: 'A photo every year', dar: 'نفس الصورة، سنة ورا سنة', den: 'The same photo, year after year', group: 'kids' },
+	{ href: 'capsule.html', id: 'capsule', ic: 'hourglass', ar: 'كبسولة زمنية للولاد', en: 'The boys’ time capsule', dar: 'جوابات بتستنى لحد ما يكبروا', den: 'Letters waiting for them to grow up', group: 'kids' },
+	{ href: 'routine.html', id: 'routine', ic: 'hourglass', ar: 'روتيننا', en: 'Our routine', dar: 'يوم العيلة، وروتين كل واحد', den: 'The family’s day, and each one’s', group: 'home' },
+	{ href: 'chores.html', id: 'chores', ic: 'chores', ar: 'مين بيعمل إيه', en: 'Who does what', dar: 'شغل البيت بالدور', den: 'House jobs in turns', group: 'home' },
+	{ href: 'meals.html', id: 'meals', ic: 'food', ar: 'منيو الأسبوع', en: 'The week’s menu', dar: 'هناكل إيه كل يوم، ومين بيطبخ', den: 'What we eat each day, and who cooks', group: 'home' },
+	{ href: 'shopping.html', id: 'shopping', ic: 'food', ar: 'طلبات البيت', en: 'Shopping list', dar: 'اللي ناقص في البيت', den: 'What the house needs', group: 'home' },
+	{ href: 'expenses.html', id: 'expenses', ic: 'chart', ar: 'مصاريف الشهر', en: 'Monthly expenses', dar: 'الثابت والمتغير، دفعنا إيه وفاضل إيه', den: 'Fixed and variable — paid and left', group: 'home' },
+	{ href: 'debts.html', id: 'debts', ic: 'coins', ar: 'ديوننا', en: 'Our debts', dar: 'اللي علينا واللي لينا، قسط بقسط', den: 'What we owe and are owed, payment by payment', group: 'home' },
+	{ href: 'fixes.html', id: 'fixes', ic: 'gear', ar: 'تصليحات البيت', en: 'House fixes', dar: 'اللي محتاج يتصلح أو يتعمل', den: 'What needs fixing or doing', group: 'home' },
+	{ href: 'warranty.html', id: 'warranty', ic: 'plug', ar: 'أجهزة البيت', en: 'Home appliances', dar: 'كل جهاز، وضمانه لحد إمتى', den: 'Every appliance, and its warranty', group: 'home' },
+	{ href: 'papers.html', id: 'papers', ic: 'folder', ar: 'ورقنا المهم', en: 'Our papers', dar: 'الباسبور والرخص… وإمتى بتخلص', den: 'Passports, licences… and when they expire', group: 'home' },
+	{ href: 'goals.html', id: 'goals', ic: 'flag', ar: 'أهدافنا', en: 'Our goals', dar: 'اللي نفسنا فيه، ونشطبه', den: 'What we want, crossed out', group: 'home' },
+	{ href: 'family.html', id: 'family', ic: 'family', ar: 'عيلتنا', en: 'Our family', dar: 'جريدتنا وشجرة العيلة', den: 'Our paper and family tree', group: 'people' },
+	{ href: 'people.html', id: 'people', ic: 'family', ar: 'ناسنا', en: 'Our people', dar: 'القرايب والصحاب والجيران، وكل يوم حد نسأل عليه', den: 'Relatives, friends, neighbours — one to reach each day', group: 'people' },
+	{ href: 'calendar.html', id: 'calendar', ic: 'calendar', ar: 'تقويمنا', en: 'Our calendar', dar: 'كل مناسباتنا في سنة واحدة', den: 'All our occasions in one year', group: 'people' },
+	{ href: 'birthday.html', id: 'birthday', ic: 'cake', ar: 'أعياد الميلاد', en: 'Birthdays', dar: 'عيد ميلاد كل واحد فينا', den: 'Every one of our birthdays', group: 'people' },
+	{ href: 'ramadan.html', id: 'ramadan', ic: 'moon', ar: 'رمضان والعيد', en: 'Ramadan & Eid', dar: 'العد التنازلي، وعاداتنا، والعيدية', den: 'Countdowns, our traditions, and the Eid money', group: 'people' },
+	{ href: 'gifts.html', id: 'gifts', ic: 'gift', ar: 'هدايانا', en: 'Our gifts', dar: 'كل هدية، ومين جابها — واللي نفسنا فيه', den: 'Every gift, who gave it — and what we’d love', group: 'people' },
+	{ href: 'hosting.html', id: 'hosting', ic: 'home', ar: 'عزايمنا', en: 'Hosting & visits', dar: 'مين جالنا، ورحنا لمين', den: 'Who came over, and who we visited', group: 'people' },
+	{ href: 'duties.html', id: 'duties', ic: 'hands', ar: 'واجباتنا', en: 'Our duties', dar: 'أفراح ومواليد وعزا وزيارات لازم نروحها', den: 'Weddings, newborns, condolences, visits', group: 'people' },
+	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا وردّيناها', den: 'Who gave, and what we gave back', group: 'people' },
+	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد قد إيه', den: 'How far apart we are', group: 'people' },
 	{ href: 'search.html', id: 'search', ic: 'search', ar: 'دوّر', en: 'Search', dar: 'دوّر في كل حاجة كتبناها', den: 'Look through everything we’ve written', group: 'app' },
 	{ href: 'settings.html', id: 'settings', ic: 'gear', ar: 'الإعدادات', en: 'Settings', dar: 'مين ماسك الموبايل، وإزاي الجديد يتبعت', den: 'Whose phone, and sharing what’s new', group: 'app' }
 ];
@@ -649,131 +655,106 @@ const ICONS = {
 	food: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10"/><path d="M17 21V3c-2 1.5-3 4-3 7 0 2 1 3 3 3"/>',
 	phone: '<rect x="6.5" y="3" width="11" height="18" rx="2.5"/><path d="M10.5 18h3"/><path d="M12 13.2c-2-1.3-3-2.4-3-3.6a1.5 1.5 0 0 1 3-.4 1.5 1.5 0 0 1 3 .4c0 1.2-1 2.3-3 3.6Z"/>',
 	search: '<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/><path d="M8 9.2a2.6 2.6 0 0 1 2.4-1.6"/>',
+	cap: '<path d="M2.5 9.5 12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4.5c3 2.2 8 2.2 11 0v-4.5M21 9.5v5"/>',
+	medal: '<path d="M8 3.5h3l1.5 5M16 3.5h-3l-1 3"/><circle cx="12" cy="14.5" r="5.5"/><path d="m12 12 .9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3z"/>',
+	plug: '<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M5 9h14"/><circle cx="12" cy="14.5" r="3"/><path d="M8 6.2h1M11 6.2h1"/>',
+	folder: '<path d="M3.5 7.5V18a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5V9.5A1.5 1.5 0 0 0 19 8h-7l-2-2.5H5A1.5 1.5 0 0 0 3.5 7z"/><path d="M8 13h8M8 16h5"/>',
+	hands: '<path d="M3 12.5 7 8.5l3 1 2.5-2 3 .5 4.5 4.5"/><path d="m8 15 2 2c.8.8 2 .8 2.8 0l3.7-3.7M3 12.5l4 4M20 12.5l-3.2 3.2"/><path d="m10.5 13.5 2 2"/>',
 	baby: '<circle cx="12" cy="11" r="6.5"/><circle cx="9.8" cy="10.5" r=".8"/><circle cx="14.2" cy="10.5" r=".8"/><path d="M10 13.6c1.2 1 2.8 1 4 0M12 4.5c1-1 2.2-.8 2.6 0"/>'
 };
 export const icon = (k, size = 18) => `<span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[k] || ICONS.heart}</svg></span>`;
 
 const currentFile = () => location.pathname.split('/').pop() || 'index.html';
 const pageId = () => document.body.dataset.page || 'home';
-const groupOf = (id) => DETAIL_OF[id] || PAGES.find((p) => p.id === id)?.group || '';
+const groupOf = (id) => PAGES.find((p) => p.id === (DETAIL_OF[id] || id))?.group || '';
 
+/* The six chapters of the site, ten pages each: in the header, the phone menu, the footer and the eyebrows. */
+export const GROUPS = [
+	{ id: 'story', ar: 'حكايتنا', en: 'Our story', nav: ['حكايتنا', 'Story'], ic: 'book', tab: '#fcc5c9', c: '#d9534f', say: ['من أول رسالة لحد النهارده، يوم بيوم', 'From the first message to today, day by day'] },
+	{ id: 'memories', ar: 'ذكرياتنا', en: 'Memories', nav: ['ذكرياتنا', 'Memories'], ic: 'image', tab: '#e3ec9c', c: '#6f8f1f', say: ['صورنا ورسايلنا وجواباتنا وكل حاجة احتفظنا بيها', 'Our photos, notes, letters and keepsakes'] },
+	{ id: 'nights', ar: 'ليالينا', en: 'Our nights', nav: ['ليالينا', 'Nights'], ic: 'moon', tab: '#fde49a', c: '#c98a00', say: ['نسهر على إيه، نتفرج على إيه، ونسمع إيه', 'What to do, watch and play tonight'] },
+	{ id: 'kids', ar: 'ولادنا', en: 'Our kids', nav: ['ولادنا', 'Kids'], ic: 'baby', tab: '#bfe0ef', c: '#0e6990', say: ['أول مرة، الطول، الكلام، المدرسة والتمرين', 'Firsts, growth, sayings, school and sports'] },
+	{ id: 'home', ar: 'بيتنا', en: 'Our home', nav: ['بيتنا', 'Home'], ic: 'home', tab: '#cfe8d3', c: '#3f8a57', say: ['يوم البيت، الأكل، الطلبات، الفلوس والورق', 'The day, meals, shopping, money and papers'] },
+	{ id: 'people', ar: 'عيلتنا وناسنا', en: 'Family & people', nav: ['عيلتنا', 'Family'], ic: 'family', tab: '#e2d3f5', c: '#7b4fc4', say: ['العيلة والقرايب والصحاب، ومناسباتنا كلها', 'Family, relatives, friends, and every occasion'] }
+];
+
+/* the card at the side of each menu (and at the foot of each chapter in the phone menu): one live thing from that
+   chapter, in one frame — a taped card with a picture, a line, and where it goes */
+function featureHTML(g, s) {
+	const card = (cls, href, pic, k, b, small) => `<a class="mf mf--${g} ${cls}" href="${href}">
+		<span class="mf-tape" aria-hidden="true"></span>
+		<span class="mf-pic">${pic}</span>
+		<span class="mf-tx"><span class="mf-k">${k}</span><b>${b}</b><small>${small} ${App.arrow}</small></span>
+	</a>`;
+	if (g === 'story') {
+		const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
+		const today = todays.find((x) => firstPhoto(x)) || todays[0];
+		const ch = (s.chapters || [])[0];
+		const ph = (today && firstPhoto(today)) || (ch && firstPhoto(ch));
+		return card('', today ? `moment.html?id=${esc(today.id)}` : 'story.html', ph ? `<span class="mf-photo" data-media-box>${img(ph, '', 'mf-img')}</span>` : `<span class="mf-doodle">${doodle('heart', 54)}</span>`,
+			today ? L('النهارده في حكايتنا', 'Today in our story') : L('حكايتنا', 'Our story'),
+			today ? T(today.title) : `${num(daysBetween(parseDate(s.met || '2009-06-10')))} ${L('يوم من أول سلام', 'days since hello')}`,
+			today ? yearsAgo(today.date) : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`);
+	}
+	if (g === 'memories') {
+		const photos = (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
+		const p = photos.length ? pick(photos) : s.poster;
+		const notes = (s.notes || []).filter((n) => t(n.text).length <= 90);
+		const n = notes.length ? pick(notes) : null;
+		return card('', 'gallery.html', p ? `<span class="mf-photo mf-photo--polaroid" data-media-box>${img(p, '', 'mf-img')}</span>` : `<span class="mf-doodle">${doodle('camera', 54)}</span>`,
+			L('من ألبومنا', 'From our album'), n ? `<q>${T(n.text)}</q>` : L('إحنا بالصور، سنة بسنة', 'Us in pictures, year by year'), n ? `— ${T(n.by === 'him' ? s.him : s.her)}` : L('افتح الألبوم', 'Open the album'));
+	}
+	if (g === 'nights') {
+		const moon = moonTonight(), k = pick(DRAW_KINDS);
+		return card('mf--dark', `draw.html?k=${k.id}`, `<span class="mf-sky" aria-hidden="true">${Array.from({ length: 14 }, () => `<i style="--x:${rand(4, 96)}%;--y:${rand(6, 94)}%;--d:${rand(1.8, 4.5)}s"></i>`).join('')}${moon.svg}</span>`,
+			`${L('قمر الليلة', 'Tonight’s moon')} · ${esc(moon.name)}`, `${L('نسهر على', 'Tonight:')} ${esc(L(k.ar, k.en))}`, esc(moon.how));
+	}
+	if (g === 'kids') {
+		const kids = (s.family?.members || []).filter((m) => m.kid);
+		return card('', 'growth.html', `<span class="mf-kids">${kids.slice(0, 3).map((m) => `<span class="mf-kid" style="--c:${esc(m.color || '#0e6990')}">${m.photo ? `<span data-media-box>${img(m.photo, '', 'mf-kid-img')}</span>` : doodle(m.emoji || 'baby', 34)}<small>${T(m.name)}</small></span>`).join('') || doodle('baby', 54)}</span>`,
+			L('مين كبر قد إيه', 'How they’ve grown'), kids.map((m) => `${T(m.name)} ${age(m.born)}`).join(' · ') || L('ولادنا', 'Our kids'), L('الطول والوزن', 'Height and weight'));
+	}
+	if (g === 'home') {
+		const d = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+		const hijri = new Intl.DateTimeFormat(`${loc}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d);
+		return card('', 'shopping.html', `<span class="mf-day"><small>${esc(new Intl.DateTimeFormat(loc, { month: 'long' }).format(d))}</small><b>${num(d.getDate())}</b><small>${esc(new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(d))}</small></span>`,
+			esc(hijri), L('ناقص إيه في البيت النهارده؟', 'What’s missing at home today?'), L('طلبات البيت', 'The shopping list'));
+	}
+	const next = occasions(s).slice(0, 3);
+	if (!next.length) return card('', 'calendar.html', `<span class="mf-doodle">${doodle('cake', 54)}</span>`, L('مناسباتنا', 'Occasions'), L('كل مناسباتنا في سنة', 'All our occasions in a year'), L('النتيجة', 'The calendar'));
+	const [o] = next, when = new Date(); when.setDate(when.getDate() + o.days);
+	const left = o.days === 0 ? L('النهارده ♥', 'Today ♥') : o.days === 1 ? L('بكرة', 'Tomorrow') : L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`);
+	return card('', o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html', `<span class="mf-day"><small>${esc(new Intl.DateTimeFormat(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: 'long' }).format(when))}</small><b>${num(when.getDate())}</b><small>${left}</small></span>`,
+		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
+}
+
+/* The header: Home, the six chapters, and «اكتب النهارده». Each chapter opens a sheet: its number, name and what's in
+   it, its ten pages as index cards (five to a row), and the chapter's card at the side. */
 function megaHTML(s) {
 	const here = currentFile();
 	const up = DETAIL_OF[pageId()] ? `${DETAIL_OF[pageId()]}.html` : '';
 	const cur = (href) => (href === here || href === up ? ' aria-current="page"' : '');
-	const item = (p) => `<a class="mg-item" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span></a>`;
-	const row = (p) => `<a class="mg-row" href="${p.href}"${cur(p.href)}>${icon(p.ic)}<span class="mg-tx"><b>${esc(L(p.ar, p.en))}</b>${p.dar ? `<small>${esc(L(p.dar, p.den))}</small>` : ''}</span><span class="mg-arr" aria-hidden="true">${App.arrow}</span></a>`;
-	const panel = (id, label, inner) => `<div class="mega mega-${id}" id="mega-${id}" role="group" aria-label="${esc(label)}"><div class="mega-in">${inner}</div></div>`;
-	const top = (id, label) => `<button class="mnav-btn${groupOf(pageId()) === id ? ' is-here' : ''}" type="button" aria-expanded="false" aria-controls="mega-${id}" data-mega="${id}">${esc(label)}<svg class="mnav-chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
-	const pages = (g) => PAGES.filter((p) => p.group === g);
-
-	// حكايتنا — the big days as photo cards, then the story pages, then "on this day".
-	const chapters = (s.chapters || []).slice(0, 3);
-	// today's moment: one with a photo when several fell on this date
-	const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
-	const today = todays.find((x) => firstPhoto(x)) || todays[0];
-	const todayPhoto = today && firstPhoto(today);
-	const story = panel('story', L('حكايتنا', 'Our story'),
-		`<div class="mg-cards">${chapters.map((c) => `
-			<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>
-				${img(firstPhoto(c), '', 'mg-cover')}
-				<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span>
-			</a>`).join('')}</div>
-		<div class="mg-more"><p class="mg-h">${L('الحكاية', 'The story')}</p>${pages('story').map(row).join('')}</div>
-		<a class="mg-band${todayPhoto ? ' has-photo' : ''}" href="${today ? `moment.html?id=${esc(today.id)}` : 'story.html'}">
-			${todayPhoto ? `<span class="mg-band-pic" data-media-box>${img(todayPhoto, '', 'mg-band-img')}</span>` : ''}
-			<b>${today ? L('النهارده في حكايتنا', 'Today in our story') : L('من أول رسالة لحد النهارده', 'From the first message until today')}</b>
-			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
-		</a>`);
-
-	// ذكرياتنا — حكايتنا in a mirror: the memory pages on the other side, three taped polaroids tilting the other way
-	// (a photo from the album, a love note, the wedding guestbook), and instead of a band, a strip of film with five
-	// moments from our story. The photo, the note and the five frames change every time it opens.
-	const gb = s.guestbook;
-	const memories = panel('memories', L('ذكرياتنا', 'Memories'),
-		`<div class="mg-cards">
-			<a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a>
-			<a class="mg-card mg-card--note" href="notes.html">
-				<span class="mg-note" id="mg-note">${noteHTML(s)}</span>
-				<span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span>
-			</a>
-			${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>
-				${img(gb.photo, '', 'mg-cover')}
-				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
-			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
-			<a class="mg-card mg-card--ticket" href="tickets.html">
-				<span class="mg-ticket" aria-hidden="true"><small>${L('تذكرة دخول', 'Admit one')}</small><b>♥</b><small>${L('سينما · قطر · كافيه', 'Cinema · train · café')}</small></span>
-				<span class="mg-card-t"><b>${L('تذاكر وفواتير', 'Tickets')}</b><small>${L('كشكول ذكرياتنا', 'Our scrapbook')}</small></span>
-			</a>
-		</div>
-		<div class="mg-more"><p class="mg-h">${L('ذكرياتنا', 'Our memories')}</p>${pages('memories').map(row).join('')}</div>
-		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`);
-
-	// عيلتنا — one card per person.
-	const members = s.family?.members || [];
-	const family = panel('family', L('عيلتنا', 'Our family'),
-		`<div class="mg-figs">${members.map((m) => `
-			<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
-				<span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span>
-				<span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span>
-			</a>`).join('')}</div>
-		<div class="mg-more"><p class="mg-h">${L('البيت', 'Home')}</p>${pages('family').map(row).join('')}</div>
-		${tapeHTML(members)}`);
-
-	// لِكِ — birthday, wishes, and us in numbers.
-	const met = parseDate(s.met || '2009-06-10');
-	const yrs = yearsBetween(met);
-	const you = panel('you', L('مناسباتنا', 'Occasions'),
-		`<div class="mg-list"><p class="mg-h">${L('مناسباتنا', 'Our occasions')}</p>${pages('you').map(item).join('')}</div>
-		<a class="mg-data" href="numbers.html"${cur('numbers.html')}>
-			<span class="mg-new">${L('بالأرقام', 'In numbers')}</span>
-			<span class="mg-bars" aria-hidden="true">${Array.from({ length: Math.min(yrs + 1, 20) }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / Math.min(yrs + 1, 20))}%"></i>`).join('')}</span>
-			<b>${num(daysBetween(met))} ${L('يوم من أول سلام', 'days since hello')}</b>
-			<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
-			<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
-		</a>
-		${calendarHTML(s)}
-		${nextTagsHTML(s)}`);
-
-	// ليالينا — the four draws as coloured cards, then the songs and the rest of the evenings.
-	const kind = qs('k');
-	const nights = panel('nights', L('ليالينا', 'Our nights'),
-		`<div class="mg-kinds">${DRAW_KINDS.map((k) => `
-			<a class="mg-kind" href="draw.html?k=${k.id}" style="--c:${k.color}"${here === 'draw.html' && kind === k.id ? ' aria-current="page"' : ''}>
-				<span class="mg-kind-e" aria-hidden="true">${doodle(k.emoji, 40)}</span><b>${esc(L(k.ar, k.en))}</b><small>${esc(L(k.dar, k.den))}</small>
-			</a>`).join('')}</div>
-		<div class="mg-more"><p class="mg-h">${L('سهراتنا', 'Our evenings')}</p>${pages('nights').map(row).join('')}</div>
-		<a class="mg-sky" id="mg-sky" href="draw.html">${skyHTML()}</a>`);
-
-	const link = (href, ar, en) => `<a class="mnav-link" href="${href}"${cur(href)}>${esc(L(ar, en))}</a>`;
+	const mine = groupOf(pageId());
+	const top = (g) => `<button class="mnav-btn${mine === g.id ? ' is-here' : ''}" type="button" aria-expanded="false" aria-controls="mega-${g.id}" data-mega="${g.id}" style="--tab:${g.tab}">${esc(L(...g.nav))}<svg class="mnav-chev" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+	const panel = (g, n) => {
+		const ps = PAGES.filter((p) => p.group === g.id);
+		return `<div class="mega mega-${g.id}" id="mega-${g.id}" role="group" aria-label="${esc(L(g.ar, g.en))}" style="--tab:${g.tab};--gc:${g.c}"><div class="mega-in">
+			<div class="mx-main">
+				<p class="mx-head"><i aria-hidden="true">${n < 9 ? num(0) : ''}${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${esc(L(...g.say))}</small><span class="mx-count">${num(ps.length)} ${L('صفحات', 'pages')}</span></p>
+				<div class="mx-grid">${ps.map((p, k) => `<a class="mx-item" href="${p.href}"${cur(p.href)} style="--i:${k}">${icon(p.ic, 20)}<b>${esc(L(p.ar, p.en))}</b><small>${esc(L(p.dar || '', p.den || ''))}</small></a>`).join('')}</div>
+			</div>
+			<div class="mx-side" data-feature="${g.id}">${featureHTML(g.id, s)}</div>
+		</div></div>`;
+	};
 	return `<nav class="mnav" aria-label="${L('القائمة الرئيسية', 'Main')}">
-		${link('index.html', 'الرئيسية', 'Home')}
-		${top('story', L('حكايتنا', 'Our story'))}${top('memories', L('ذكرياتنا', 'Memories'))}${top('family', L('عيلتنا', 'Family'))}${top('nights', L('ليالينا', 'Our nights'))}${top('you', L('مناسباتنا', 'Occasions'))}
+		<a class="mnav-link" href="index.html"${cur('index.html')}>${L('الرئيسية', 'Home')}</a>
+		${GROUPS.map(top).join('')}
 		<a class="mnav-link mnav-cta" href="journal.html"${cur('journal.html')}>${doodle('pen', 18)} ${Y('اكتب النهارده', 'اكتبي النهارده', 'Write today')}</a>
-		${story}${memories}${family}${nights}${you}
+		${GROUPS.map(panel).join('')}
 	</nav>`;
 }
 
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
-
-/* عيلتنا: a tailor's tape with the four of us standing on it at our ages — from the baby near nought to the two of
-   us in our thirties — every year a tick, every five a number. Takes you to the growth chart. */
-function tapeHTML(members) {
-	const now = new Date();
-	const ages = members.filter((m) => m.born && parseDate(m.born) <= now)
-		.map((m) => ({ m, a: (now - parseDate(m.born)) / (365.2425 * 864e5) })).sort((x, y) => x.a - y.a);
-	if (!ages.length) return '';
-	const max = Math.max(10, Math.ceil((ages.at(-1).a + 1) / 5) * 5);
-	const ticks = Array.from({ length: max + 1 }, (_, i) => `<i class="${i % 5 ? '' : 'is-5'}" style="--p:${(i / max) * 100}%">${i % 5 ? '' : `<b>${num(i)}</b>`}</i>`).join('');
-	const pins = ages.map(({ m, a }, i) => `
-		<span class="mg-tape-pin ${i % 2 ? 'is-up' : 'is-down'}${a / max > 0.6 ? ' is-end' : ''}" style="--p:${(a / max) * 100}%;--c:${esc(m.color || '#0e6990')}">
-			<span class="mg-tape-dot">${doodle(m.emoji, 22)}</span><small><b>${T(m.name)}</b> ${m.kid ? age(m.born, now) : `${num(Math.floor(a))} ${L('سنة', 'yrs')}`}</small>
-		</span>`).join('');
-	return `<a class="mg-tape" href="growth.html" aria-label="${L('مين كبر قد إيه', 'How much each of us has grown')}">
-		<span class="mg-tape-h">${L('مين كبر قد إيه', 'How tall we’ve grown')}</span>
-		<span class="mg-tape-track" aria-hidden="true">${ticks}${pins}</span>
-	</a>`;
-}
 
 /* ليالينا: tonight's sky — the real moon over Egypt tonight, drawn and named, a few stars, and one of the four draws
    suggested for tonight (a different one each time it opens). */
@@ -798,94 +779,6 @@ export function moonTonight(now = new Date()) {
 	const svg = `<svg class="mg-moon" viewBox="-22 -22 44 44" aria-hidden="true"><circle r="${r}" class="mg-moon-dark"/>${lit > 0.01 ? `<path d="${half} ${term}Z" class="mg-moon-lit"/>` : ''}<circle r="${r}" class="mg-moon-rim"/></svg>`;
 	return { svg, name: L(...name), how };
 }
-function skyHTML(a) {
-	const moon = moonTonight();
-	const k = pick(DRAW_KINDS);
-	if (a) a.href = `draw.html?k=${k.id}`;
-	else queueMicrotask(() => { const el = document.getElementById('mg-sky'); if (el) el.href = `draw.html?k=${k.id}`; });
-	const stars = Array.from({ length: 22 }, () => `<i style="--x:${rand(2, 98)}%;--y:${rand(6, 94)}%;--s:${rand(1.5, 3.2)}px;--d:${rand(1.8, 4.5)}s;--delay:-${rand(0, 4)}s"></i>`).join('');
-	return `<span class="mg-sky-stars" aria-hidden="true">${stars}</span>
-		${moon.svg}
-		<span class="mg-sky-tx">
-			<span class="mg-sky-h">${L('قمر الليلة', 'Tonight’s moon')}</span>
-			<b>${esc(moon.name)}</b>
-			<span class="mg-sky-how">${esc(moon.how)}</span>
-			<small>${L('ونسهر على إيه الليلة؟', 'What shall we do tonight?')} <span class="mg-sky-k" style="--c:${k.color}">${doodle(k.emoji, 18)} ${esc(L(k.ar, k.en))}</span> ${App.arrow}</small>
-		</span>`;
-}
-
-/* مناسباتنا: a desk calendar torn to the next occasion — the day in big numbers, the month, what it is and how long
-   is left — with the two after it peeking out behind. */
-function calendarHTML(s) {
-	const next = occasions(s).slice(0, 3);
-	if (!next.length) return '';
-	const [o] = next;
-	const when = new Date(); when.setHours(12, 0, 0, 0); when.setDate(when.getDate() + o.days);
-	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-	const month = new Intl.DateTimeFormat(loc, { month: 'long' }).format(when);
-	const wday = new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(when);
-	const left = o.days === 0 ? L('النهارده ♥', 'Today ♥') : o.days === 1 ? L('بكرة', 'Tomorrow') : L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`);
-	return `<a class="mg-cal" href="calendar.html" aria-label="${esc(`${o.title} — ${left}`)}">
-		${next.slice(1).map((x, i) => `<span class="mg-cal-back" style="--n:${i + 1}" aria-hidden="true"><small>${esc(x.title)}</small></span>`).join('')}
-		<span class="mg-cal-page">
-			<span class="mg-cal-rings" aria-hidden="true"><i></i><i></i></span>
-			<span class="mg-cal-month">${esc(month)}</span>
-			<span class="mg-cal-day">${num(when.getDate())}</span>
-			<span class="mg-cal-wday">${esc(wday)}</span>
-			<b>${esc(o.title)}</b>
-			<small>${esc(o.sub)}</small>
-			<span class="mg-cal-left${o.days === 0 ? ' is-today' : ''}">${left}</span>
-		</span>
-	</a>`;
-}
-
-/* مناسباتنا, under the calendar: «وبعدها», a page of the planner with the two occasions after the next one, side by side —
-   each a torn-off calendar leaf (month and day), what it is, and how long is left */
-function nextTagsHTML(s) {
-	const after = occasions(s).slice(1, 3);
-	if (!after.length) return '';
-	const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-	const dateOf = (o) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + o.days); return d; };
-	const month = (o) => new Intl.DateTimeFormat(loc, { month: 'short' }).format(dateOf(o));
-	const href = (o) => (o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html');
-	return `<div class="mg-tags">
-		<p class="mg-tags-h">${L('وبعدها', 'And after that')}</p>
-		<div class="mg-tags-row">${after.map((o, i) => `<a class="mg-tag" href="${href(o)}" style="--i:${i}">
-			<span class="mg-tag-leaf" aria-hidden="true"><i>${esc(month(o))}</i><b>${num(dateOf(o).getDate())}</b></span>
-			<span class="mg-tag-tx"><b>${esc(o.title)}</b><small><span class="mg-tag-e" aria-hidden="true">${doodle(o.emoji, 14)}</span>${L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`)}</small></span>
-		</a>`).join('')}</div>
-	</div>`;
-}
-
-/* the album polaroid in ذكرياتنا: any photo from the album, a different one each time */
-function albumHTML(s) {
-	const photos = (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
-	const p = photos.length ? pick(photos) : s.poster;
-	return `${p ? `<span class="mg-pic" data-media-box>${img(p, '', 'mg-cover')}</span>` : ''}
-		<span class="mg-card-t"><b>${L('ألبوم الصور', 'Photo album')}</b><small>${L('إحنا بالصور', 'Us in pictures')}</small></span>`;
-}
-
-/* the film strip in ذكرياتنا: five moments from our story with photos (never today's — حكايتنا shows that one),
-   five different ones each time it opens, laid out oldest first like a reel */
-function filmHTML(s) {
-	const all = (s.timeline || []).filter((x) => !x.when && firstPhoto(x) && !isVideo(firstPhoto(x)) && !isToday(x.date));
-	const five = [];
-	while (five.length < 5 && five.length < all.length) { const m = pick(all); if (!five.includes(m)) five.push(m); }
-	return five.sort((a, b) => String(a.date).localeCompare(String(b.date))).map((m) => `
-		<a class="mg-frame" href="moment.html?id=${esc(m.id)}" title="${T(m.title)}" data-media-box>${img(firstPhoto(m), App.t(m.title), 'mg-frame-img')}<small>${fmtDate(m.date)}</small></a>`).join('');
-}
-
-let lastNote = -1;
-function noteHTML(s) {
-	const notes = (s.notes || []).filter((n) => t(n.text).length <= 140);
-	if (!notes.length) return `<q>${T(s.closing)}</q>`;
-	let k = Math.floor(Math.random() * notes.length);
-	if (k === lastNote && notes.length > 1) k = (k + 1) % notes.length;
-	lastNote = k;
-	const n = notes[k];
-	return `<q>${T(n.text)}</q><small>— ${T(n.by === 'him' ? s.him : s.her)}</small>`;
-}
-
 /* open on hover (mouse), click/tap, Enter or ↓; close on leaving, Escape, a click outside or focus leaving */
 function wireMega(header) {
 	const nav = $('.mnav', header);
@@ -896,14 +789,8 @@ function wireMega(header) {
 	let openedAt = 0;
 	const set = (id) => {
 		clearTimeout(timer);
-		if (id === 'memories' && openId !== 'memories') {
-			// a new love note, album photo and moment every time ذكرياتنا opens
-			const tx = $('#mg-note', nav); if (tx) tx.innerHTML = noteHTML(App.story);
-			const al = $('#mg-album', nav); if (al) al.innerHTML = albumHTML(App.story);
-			const fm = $('#mg-film', nav); if (fm) fm.innerHTML = filmHTML(App.story);
-		}
-		// a new suggestion under tonight's moon each time ليالينا opens
-		if (id === 'nights' && openId !== 'nights') { const sk = $('#mg-sky', nav); if (sk) sk.innerHTML = skyHTML(sk); }
+		// a new photo and note from the album, a new idea under tonight's moon, each time those two open
+		if ((id === 'memories' || id === 'nights') && openId !== id) { const f = $(`[data-feature="${id}"]`, nav); if (f) f.innerHTML = featureHTML(id, App.story); }
 		if (id) hydrate(nav);
 		openId = id;
 		for (const b of btns) {
@@ -962,21 +849,21 @@ function wireMega(header) {
 	matchMedia('(max-width: 979px)').addEventListener('change', () => { header._mega.set(''); header._menu?.(false); });
 }
 
-/* The phone menu: the diary's contents page, as in the footer. Home on its own line at the top, then a chapter per
-   menu under a coloured divider tab with its number and how many pages it holds — tap a tab to open it (one at a
-   time), the chapter of the page you're on already open — its pages two to a row, and search and settings at the foot. */
-const PN_CHAPTERS = [['story', 'حكايتنا', 'Our story'], ['memories', 'ذكرياتنا', 'Memories'], ['family', 'عيلتنا', 'Our family'], ['nights', 'ليالينا', 'Our nights'], ['you', 'مناسباتنا', 'Occasions']];
-function pnavHTML(here) {
+/* The phone menu: the diary's contents page, as in the footer. Home on its own line at the top, then the six chapters
+   under coloured divider tabs with their number and what's in them — tap a tab to open it (one at a time), the chapter
+   of the page you're on already open — its ten pages two to a row, and at its foot the chapter's card, the same one
+   the header's menu shows at its side; search and settings at the end. */
+function pnavHTML(here, s) {
 	const cur = (p) => (p.href === here ? ' aria-current="page"' : '');
 	const mine = groupOf(pageId());
 	const link = (p, k) => `<a href="${p.href}" style="--i:${k}"${cur(p)}>${icon(p.ic)}<span>${esc(L(p.ar, p.en))}</span></a>`;
 	const home = PAGES[0];
 	return `<a class="pn-home" href="${home.href}"${cur(home)}>${icon(home.ic)}<span>${esc(L(home.ar, home.en))}</span></a>
-		${PN_CHAPTERS.map(([g, ar, en], n) => {
-			const ps = PAGES.filter((p) => p.group === g);
-			return `<details class="pn-ch" name="pn" style="--n:${n}"${g === mine ? ' open' : ''}>
-				<summary><i aria-hidden="true">${num(n + 1)}</i><b>${esc(L(ar, en))}</b><small>${num(ps.length)} ${L('صفحة', ps.length === 1 ? 'page' : 'pages')}</small></summary>
-				<div class="pn-list">${ps.map(link).join('')}</div>
+		${GROUPS.map((g, n) => {
+			const ps = PAGES.filter((p) => p.group === g.id);
+			return `<details class="pn-ch" name="pn" style="--n:${n};--tab:${g.tab};--gc:${g.c}"${g.id === mine ? ' open' : ''}>
+				<summary><i aria-hidden="true">${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${num(ps.length)} ${L('صفحات', 'pages')}</small></summary>
+				<div class="pn-list">${ps.map(link).join('')}<div class="pn-card" data-feature="${g.id}">${featureHTML(g.id, s)}</div></div>
 			</details>`;
 		}).join('')}
 		<div class="pn-app">${PAGES.filter((p) => p.group === 'app').map(link).join('')}</div>`;
@@ -1097,7 +984,7 @@ function renderChrome() {
 		<div class="hd-wrap">
 			<button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="${L('القائمة', 'Menu')}"><span class="stack" aria-hidden="true"><i></i><i></i><i></i></span></button>
 			<a class="brand" href="index.html"><span class="brand-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span><span class="brand-sub">${L('حكاية حب', 'A love story')} · ${(s.met || '2009').slice(0, 4)}</span></a>
-			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">${pnavHTML(here)}</nav>
+			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">${pnavHTML(here, s)}</nav>
 			${megaHTML(s)}
 			<div class="tools"><a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
@@ -1105,6 +992,7 @@ function renderChrome() {
 		header.classList.toggle('menu-open', on);
 		$('.menu-btn', header).setAttribute('aria-expanded', String(on));
 		document.body.classList.toggle('menu-lock', on);
+		if (on) hydrate($('.pnav', header));
 	};
 	header._menu = setMenu;
 	$('.menu-btn', header).onclick = () => setMenu(!header.classList.contains('menu-open'));
@@ -1268,33 +1156,33 @@ function familyScene(s) {
 }
 
 function footerHTML(s) {
-	// each group a chapter of the diary's contents page: a coloured divider tab with its number, the pages under it
-	const col = (n, title, list) => `<nav class="ft-links" style="--n:${n}" aria-label="${esc(title)}"><h2><i aria-hidden="true">${String(n).padStart(2, '0')}</i>${esc(title)}</h2><div class="ft-links__list">${list.map((p) => `<a href="${p.href}">${esc(L(p.ar, p.en))}</a>`).join('')}</div></nav>`;
-	const g = (id) => PAGES.filter((p) => p.group === id);
+	/* the contents page of our diary: the six chapters under their coloured tabs, ten pages each, three to a row on a
+	   wide screen; above it our names and what the site can do (install, save, lock); under it a line of the little
+	   things — home, search, settings, the intro again — and who made it */
+	const col = (g, n) => `<nav class="ft-links" style="--tab:${g.tab}" aria-label="${esc(L(g.ar, g.en))}"><h2><i aria-hidden="true">${num(n + 1)}</i>${esc(L(g.ar, g.en))}</h2><div class="ft-links__list">${PAGES.filter((p) => p.group === g.id).map((p) => `<a href="${p.href}">${esc(L(p.ar, p.en))}</a>`).join('')}</div></nav>`;
 	return `
 	<div class="ft-scene">${familyScene(s)}</div>
 	<div class="ft-body"><div class="ft-wrap">
 		<div class="ft-brand">
-			<span class="ft-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span>
-			<span class="ft-dates" dir="ltr">${(s.met || '2009').slice(0, 4)} — ∞</span>
+			<span class="ft-brand__id"><span class="ft-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span>
+			<span class="ft-dates" dir="ltr">${(s.met || '2009').slice(0, 4)} — ∞</span></span>
 			<div class="ft-tools">
 				<button class="btn btn--coral btn--sm" type="button" id="install-btn" hidden>${Y('حطها على الشاشة الرئيسية', 'حطيها على الشاشة الرئيسية', 'Add to home screen')}</button>
 				<button class="btn btn--ghost btn--sm" type="button" id="save-btn" hidden>${Y('احفظها من غير نت', 'احفظيها من غير نت', 'Save for offline')}</button>
-				<a class="btn btn--ghost btn--sm" href="index.html?intro">${Y('شوف المقدمة تاني', 'شوفي المقدمة تاني', 'Replay intro')}</a>
 				<button class="btn btn--ghost btn--sm" type="button" id="lock-btn">${doodle('lock', 16)} ${Y('اقفل', 'اقفلي', 'Lock')}</button>
 			</div>
 		</div>
 		<div class="ft-book">
 			<span class="ft-book__holes" aria-hidden="true"></span>
-			<p class="ft-book__h">${L('الفهرس', 'Contents')}</p>
-			<div class="ft-book__ch">
-				${col(1, L('حكايتنا', 'Our story'), [PAGES[0], ...g('story')])}
-				${col(2, L('ذكرياتنا', 'Memories'), g('memories'))}
-				${col(3, L('ليالينا', 'Our nights'), [...g('nights'), ...DRAW_KINDS.map((k) => ({ href: `draw.html?k=${k.id}`, ar: k.ar, en: k.en }))])}
-				${col(4, L('عيلتنا ومناسباتنا', 'Family & occasions'), [...g('family'), ...g('you'), ...g('app')])}
-			</div>
+			<p class="ft-book__h">${L('الفهرس', 'Contents')} <small>${L(`${num(GROUPS.length)} فصول · ${num(PAGES.filter((p) => GROUPS.some((g) => g.id === p.group)).length)} صفحة`, `${GROUPS.length} chapters · ${PAGES.filter((p) => GROUPS.some((g) => g.id === p.group)).length} pages`)}</small></p>
+			<div class="ft-book__ch">${GROUPS.map(col).join('')}</div>
 		</div>
 		<div class="ft-maker">
+			<nav class="ft-quick" aria-label="${L('روابط سريعة', 'Quick links')}">
+				<a href="index.html">${icon('home', 16)} ${L('الرئيسية', 'Home')}</a>
+				${PAGES.filter((p) => p.group === 'app').map((p) => `<a href="${p.href}">${icon(p.ic, 16)} ${esc(L(p.ar, p.en))}</a>`).join('')}
+				<a href="index.html?intro">${icon('heart', 16)} ${Y('شوف المقدمة تاني', 'شوفي المقدمة تاني', 'Replay intro')}</a>
+			</nav>
 			${App.lang === 'ar'
 				? `<p class="ft-copy" dir="rtl">حقوق النشر @${new Date().getFullYear()}، ${petHTML()}كل الحب محفوظ. <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
 				: `<p class="ft-copy" dir="ltr">Copyright @${new Date().getFullYear()}, ${petHTML()}All love reserved. <span>Crafted with <span class="ft-heart">${doodle('heart', 16)}</span> Sameh Bilal</span></p>`}
@@ -1352,9 +1240,9 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'debts', 'distances', 'draw', 'drawings', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'home', 'hosting', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', debts: 'more', drawings: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', secret: 'secret', shopping: 'more', tickets: 'more' };
+const OWN_CSS = { school: 'more', clubs: 'more', meals: 'more', warranty: 'more', papers: 'more', duties: 'more', adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', debts: 'more', drawings: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', secret: 'secret', shopping: 'more', tickets: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
@@ -1542,7 +1430,7 @@ const BAND = {
 };
 const EYEBROW = {
 	story: ['حكايتنا', 'Our story'], nights: ['سهراتنا', 'Our nights'], memories: ['ذكرياتنا', 'Our memories'],
-	family: ['عيلتنا', 'Our family'], you: ['مناسباتنا', 'Our occasions'], app: ['التطبيق', 'The app']
+	kids: ['ولادنا', 'Our kids'], home: ['بيتنا', 'Our home'], people: ['عيلتنا وناسنا', 'Family & people'], app: ['التطبيق', 'The app']
 };
 /* steady pseudo-random numbers, so a page's polaroids land the same way every visit */
 const rnd = (i, salt) => { const x = Math.sin((i + 1) * 9301 + salt * 49297) * 233280; return x - Math.floor(x); };

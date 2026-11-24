@@ -300,28 +300,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .mg-kind:hover, .mg-kind[aria-current='page'] { transform: translate(calc(var(--bujo-x) * -2px), -2px); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-yellow); }
 .portrait img { padding: 10px 10px 34px; background: #fbf8f1; border: 1.5px solid #37353f; border-radius: 3px; rotate: -1deg; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-pink), 0 18px 40px rgba(0, 0, 0, 0.16); }
 
-/* ---------- «بالأرقام» in the occasions menu: a page torn from the journal — cream graph paper, a strip of tape, the
-   years as highlighter bars with an ink outline. Cream in dark mode too, like the polaroids. ---------- */
-.mg-data {
-	--ink: #37353f; --text: #2b2b33; --muted: #6f6a74;
-	background: linear-gradient(rgba(14, 105, 144, 0.08) 1px, transparent 1px) 0 0 / 18px 18px, linear-gradient(90deg, rgba(14, 105, 144, 0.08) 1px, transparent 1px) 0 0 / 18px 18px, #fbf8f1;
-	color: var(--text); overflow: visible; padding: 26px 20px 18px; border: 1.5px solid var(--ink); border-radius: var(--sketch);
-	box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 rgba(253, 200, 48, 0.75); rotate: -0.8deg;
-}
-.mg-data::before { content: ''; position: absolute; top: -10px; left: 50%; width: 92px; height: 22px; translate: -50% 0; rotate: 3deg; opacity: 0.92; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); background: rgba(233, 228, 240, 0.85) linear-gradient(to bottom, transparent 25%, #feac5e 25% 31%, transparent 31% 52%, #c779d0 52% 57%, transparent 58% 80%, #4bc0c8 80% 85%, transparent 85%); }
-.mg-data:hover { rotate: 0deg; }
-.mg-data .mg-new { top: 16px; padding: 0 6px; border-radius: 0; color: var(--text); font: 400 1.25rem/1.2 var(--f-label); letter-spacing: 0.04em; background: linear-gradient(transparent 35%, rgba(253, 200, 48, 0.85) 35% 90%, transparent 90%); rotate: -2deg; }
-:lang(ar) .mg-data .mg-new { font: 800 0.95rem/1.4 var(--f-body); letter-spacing: 0; }
-.mg-data .mg-bars { gap: 3px; height: 86px; margin-top: 24px; padding-bottom: 2px; border-bottom: 1.5px solid var(--ink); }
-.mg-data .mg-bars i { background: rgba(252, 139, 147, 0.75); border: 1.2px solid var(--ink); border-bottom: 0; border-radius: 3px 5px 0 0 / 3px 4px 0 0; }
-.mg-data .mg-bars i:nth-child(3n + 2) { background: rgba(205, 220, 57, 0.8); }
-.mg-data .mg-bars i:nth-child(3n) { background: rgba(253, 200, 48, 0.8); }
-.mg-data b { font: 400 1.6rem/1.1 var(--f-label); color: var(--coral-deep, #d9534f); letter-spacing: 0.02em; }
-:lang(ar) .mg-data b { font: 800 1.15rem/1.35 var(--f-body); }
-.mg-data small { opacity: 1; color: var(--muted); font: 600 1.15rem/1.2 var(--f-hand); }
-:lang(ar) .mg-data small { font: 600 0.85rem/1.4 var(--f-body); }
-.mg-data .mg-go { color: var(--blue); text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 5px; }
-
 /* ---------- a child's photo a month / a year (member.html) ---------- */
 .grow { margin: 40px 0 44px; text-align: center; }
 .grow__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 26px 18px; margin-top: 22px; }
@@ -357,212 +335,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .ft__row--kids { justify-content: center; gap: 56px; }
 
 
-
-/* ---------- the mega menus, pictures first: the photos and cards are the big thing in each panel — taped-on polaroids
-   and journal cards that tilt and lift — and the page links sit beside them as a short two-column list ---------- */
-@media (min-width: 980px) {
-	.mega-in { padding: 22px 0 26px; gap: 22px 36px; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) !important; align-items: start !important; }
-	.mega-in > :not(.mg-list):not(.mg-more) { grid-column: 1; }
-	.mg-list, .mg-more { grid-column: 2; grid-row: 1 / span 4; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; align-content: start; }
-	.mg-more .mg-h, .mg-list .mg-h { grid-column: 1 / -1; }
-	/* in Arabic the one-line descriptions make each link shorter than in English (where they wrap to two lines), so the
-	   links get more room between them to keep the same rhythm — as much as مناسباتنا has */
-	:lang(ar) .mg-more { row-gap: 12px; }
-	.mg-h { margin: 0 0 6px; padding-inline: .3em; width: fit-content; font: 400 1.35rem var(--f-label); letter-spacing: .06em; color: var(--text); background: linear-gradient(transparent 45%, var(--hl-yellow) 45% 92%, transparent 92%); }
-	/* the links: the name, and a small one-line description under it */
-	.mg-item, .mg-row { display: flex; align-items: center; gap: 8px; padding: 5px 8px; }
-	.mg-item .ic, .mg-row .ic { flex: none; width: 28px; height: 28px; display: grid; place-items: center; color: var(--coral-deep); background: color-mix(in srgb, var(--hl-pink) 50%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
-	.mg-item .mg-tx, .mg-row .mg-tx { min-width: 0; flex: 1; line-height: 1.25; }
-	.mg-item b, .mg-row b { display: block; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.mg-item small, .mg-row small { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: .7rem; line-height: 1.35; color: var(--muted); }
-	:lang(en) .mg-item small, :lang(en) .mg-row small { font-size: .74rem; }
-	.mg-item:hover small, .mg-row:hover small, .mg-item[aria-current='page'] small { color: color-mix(in srgb, var(--ink) 75%, transparent); }
-	.mg-item .mg-arr, .mg-row .mg-arr { display: none; }
-
-	/* ---- the pictures: the polaroid / journal-card look, with tape, a tilt, a lift on hover ---- */
-	.mg-card, .mg-photo, .mg-fig, .mg-kind, .mg-data, .mg-band { position: relative; transition: transform .25s var(--ease-pop, ease), box-shadow .2s, rotate .25s; }
-	/* حكايتنا: the three big days as big taped polaroids */
-	:is(.mega-story, .mega-memories) .mg-cards { grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 8px 4px 4px; }
-	:is(.mega-story, .mega-memories) .mg-card { aspect-ratio: 3 / 3.6; padding: 8px 8px 46px; background: #fffdf8; color: #2b2b33; overflow: visible; border: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
-	:is(.mega-story, .mega-memories) .mg-card:nth-child(1) { rotate: -3deg; } :is(.mega-story, .mega-memories) .mg-card:nth-child(2) { rotate: 2deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); } :is(.mega-story, .mega-memories) .mg-card:nth-child(3) { rotate: -1.5deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
-	:is(.mega-story, .mega-memories) .mg-card::after { display: none; }
-	:is(.mega-story, .mega-memories) .mg-cover { position: relative; inset: auto; height: 100%; border: 1px solid rgba(55, 53, 63, .25); }
-	:is(.mega-story, .mega-memories) .mg-card-t { position: absolute; inset-inline: 8px; bottom: 6px; padding: 0; text-align: center; }
-	:is(.mega-story, .mega-memories) .mg-card-t b { font: 400 1.35rem/1.2 var(--f-hand); color: #2b2b33; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	:lang(ar) :is(.mega-story, .mega-memories) .mg-card-t b { font: 800 .95rem/1.4 var(--f-body); }
-	:is(.mega-story, .mega-memories) .mg-card-t small { font: 400 .95rem var(--f-label); color: #6b6b75; }
-	:is(.mega-story, .mega-memories) .mg-card::before { content: ''; position: absolute; top: -11px; left: 50%; z-index: 2; width: 44%; height: 20px; translate: -50% 0; rotate: -4deg; opacity: .9; background: repeating-linear-gradient(45deg, rgba(252, 139, 147, .75) 0 6px, rgba(253, 210, 214, .75) 6px 12px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
-	:is(.mega-story, .mega-memories) .mg-card:nth-child(2)::before { background: rgba(205, 220, 57, .7); rotate: 3deg; }
-	:is(.mega-story, .mega-memories) .mg-card:nth-child(3)::before { background: rgba(253, 200, 48, .75); }
-	:is(.mega-story, .mega-memories) .mg-card:hover { rotate: 0deg; transform: translateY(-6px) scale(1.04); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); z-index: 2; }
-	:is(.mega-story, .mega-memories) .mg-band { margin-top: 6px; }
-	/* ذكرياتنا: the album photo (in its own box, so a photo that won't open leaves the card), and the love note
-	   written on lined paper inside the same polaroid frame */
-	.mega-memories .mg-pic { display: block; height: 100%; }
-	.mega-memories .mg-pic .mg-cover { width: 100%; object-fit: cover; }
-	.mega-memories .mg-note { display: grid; align-content: center; gap: 6px; height: 100%; padding: 10px 12px; overflow: hidden; text-align: center; border: 1px solid rgba(55, 53, 63, .25);
-		background: repeating-linear-gradient(transparent 0 23px, rgba(14, 105, 144, .16) 23px 24px), #fff7f2; }
-	.mega-memories .mg-note q { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 6; overflow: hidden; font: 600 1.15rem/1.3 var(--f-hand); color: #c2185b; quotes: '«' '»'; }
-	:lang(ar) .mega-memories .mg-note q { font: 700 .9rem/1.6 var(--f-body); }
-	:root[dir='ltr'] .mega-memories .mg-note q { quotes: '“' '”'; }
-	.mega-memories .mg-note small { font: 400 .9rem var(--f-label); color: #6b6b75; }
-	/* the line under each polaroid here is words («٣٠ تهنئة»), not a date: the label font's Arabic fallback is taller */
-	:lang(ar) .mega-memories .mg-card-t small { font: 600 .72rem/1.35 var(--f-body); }
-	/* …and حكايتنا in a mirror: the list on the other side, the polaroids tilting the other way */
-	.mega-memories .mega-in { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) !important; }
-	.mega-memories .mega-in > :not(.mg-more) { grid-column: 2; }
-	.mega-memories .mega-in > .mg-more { grid-column: 1; }
-	.mega-memories .mg-card:nth-child(1) { rotate: 3deg; } .mega-memories .mg-card:nth-child(2) { rotate: -2deg; } .mega-memories .mg-card:nth-child(3) { rotate: 1.5deg; }
-	.mega-memories .mg-card:nth-child(1)::before { rotate: 4deg; } .mega-memories .mg-card:nth-child(2)::before { rotate: -3deg; }
-	.mega-memories .mg-card:hover { rotate: 0deg; }
-	/* four smaller polaroids here: the album, a love note, the guestbook and the scrapbook */
-	.mega-memories .mg-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; padding-top: 12px; }
-	.mega-memories .mg-card { padding: 6px 6px 38px; }
-	.mega-memories .mg-card-t { inset-inline: 6px; bottom: 5px; }
-	.mega-memories .mg-card-t b { font-size: 1.1rem; }
-	:lang(ar) .mega-memories .mg-card-t b { font-size: .82rem; }
-	:lang(ar) .mega-memories .mg-card-t small { font-size: .66rem; }
-	.mega-memories .mg-card::before { width: 50%; height: 16px; top: -9px; }
-	.mega-memories .mg-card:nth-child(4) { rotate: -1.5deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); }
-	.mega-memories .mg-card:nth-child(4)::before { background: rgba(14, 105, 144, .45); rotate: 2deg; }
-	.mega-memories .mg-note { padding: 8px; gap: 4px; }
-	.mega-memories .mg-note q { -webkit-line-clamp: 5; font-size: .95rem; }
-	:lang(ar) .mega-memories .mg-note q { font-size: .74rem; line-height: 1.55; }
-	.mega-memories .mg-note small { font-size: .78rem; }
-	/* the scrapbook polaroid: a little admit-one stub on kraft paper */
-	.mega-memories .mg-ticket { display: grid; place-content: center; justify-items: center; gap: 2px; height: 100%; padding: 8px; border: 1px solid rgba(55, 53, 63, .25);
-		background: radial-gradient(rgba(90, 60, 30, .1) 1px, transparent 1.5px) 0 0 / 6px 6px, linear-gradient(135deg, #d9bf94, #cfb184); }
-	.mega-memories .mg-ticket b { display: grid; place-items: center; width: 82%; padding: 6px 0; font-size: 1.4rem; color: #d9534f; background: #fffaf0; border: 1.5px dashed #37353f; border-radius: 4px; rotate: -4deg; box-shadow: 0 3px 6px rgba(60, 40, 20, .2); }
-	.mega-memories .mg-ticket small { font: 400 .78rem var(--f-label); letter-spacing: .08em; color: #4a3726; text-align: center; }
-	:lang(ar) .mega-memories .mg-ticket small { font: 700 .62rem/1.4 var(--f-body); letter-spacing: 0; }
-	/* where حكايتنا has its band, a strip of film: five moments, sprocket holes along both edges, a label taped on */
-	.mega-memories .mg-film { position: relative; margin-top: 8px; padding: 18px 12px; background: #1e1c21; border: 1.5px solid #37353f; border-radius: 3px; rotate: -.6deg; box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); transition: rotate .25s, box-shadow .2s; }
-	.mega-memories .mg-film:hover { rotate: 0deg; box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); }
-	.mega-memories .mg-film::before, .mega-memories .mg-film::after { content: ''; position: absolute; inset-inline: 8px; height: 7px; border-radius: 1px; background: repeating-linear-gradient(90deg, #f4efe6 0 8px, transparent 8px 16px); opacity: .85; }
-	.mega-memories .mg-film::before { top: 5px; } .mega-memories .mg-film::after { bottom: 5px; }
-	.mega-memories .mg-film-h { position: absolute; top: -13px; inset-inline-start: 18px; z-index: 2; margin: 0; padding: 1px 10px; font: 400 1.05rem var(--f-label); letter-spacing: .06em; color: #2b2b33; background: var(--hl-yellow); border: 1.5px solid #37353f; rotate: -2deg; }
-	:lang(ar) .mega-memories .mg-film-h { font: 800 .78rem/1.6 var(--f-body); letter-spacing: 0; }
-	.mega-memories .mg-film-strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-	.mega-memories .mg-frame { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; background: #2c2a30; }
-	.mega-memories .mg-frame-img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.18) saturate(.9); transition: filter .3s, scale .4s var(--ease-out); }
-	.mega-memories .mg-frame:hover .mg-frame-img, .mega-memories .mg-frame:focus-visible .mg-frame-img { filter: none; scale: 1.08; }
-	.mega-memories .mg-frame small { position: absolute; inset-inline: 0; bottom: 0; padding: 12px 4px 3px; font: 400 .78rem var(--f-label); letter-spacing: .05em; color: #fff; text-align: center; background: linear-gradient(transparent, rgba(0, 0, 0, .72)); }
-	/* عيلتنا: the four of us as big journal cards */
-	.mega-family .mg-figs { grid-template-columns: repeat(4, 1fr); gap: 16px; }
-	.mega-family .mg-fig { padding: 16px 8px 14px; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 color-mix(in srgb, var(--c) 70%, transparent); }
-	.mega-family .mg-fig:nth-child(odd) { rotate: -1.5deg; } .mega-family .mg-fig:nth-child(even) { rotate: 1.5deg; }
-	.mega-family .mg-fig-box { width: 96px; height: 96px; border: 1.5px solid var(--ink); }
-	.mega-family .mg-fig:hover { rotate: 0deg; transform: translateY(-6px); background: color-mix(in srgb, var(--c) 10%, var(--card)); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--c); }
-	/* ليالينا: the draws as big coloured cards, two by two */
-	.mega-nights .mg-kinds { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-	.mega-nights .mg-kind { min-height: 120px; padding: 16px; }
-	.mega-nights .mg-kind:nth-child(odd) { rotate: -1deg; } .mega-nights .mg-kind:nth-child(even) { rotate: 1deg; }
-	.mega-nights .mg-kind:hover { rotate: 0deg; transform: translateY(-5px); }
-	.mega-nights .mg-kind-e { font-size: 2.4rem; }
-	/* مناسباتنا: the numbers card as the big picture */
-	/* مناسباتنا: the pages in four columns, the numbers as a small card beside them */
-	.mega-you .mega-in { grid-template-columns: minmax(0, 1fr) 210px 180px !important; column-gap: 26px; }
-	.mega-you .mega-in > .mg-list { grid-column: 1; grid-row: 1; grid-auto-flow: row; grid-template-rows: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	.mega-you .mega-in > .mg-data.mg-data { grid-column: 2; grid-row: 1; align-self: start; min-height: 0; gap: 2px; padding: 34px 14px 14px; rotate: -1deg; }
-	.mega-you .mg-data .mg-new { top: 10px; font-size: 1.05rem; }
-	:lang(ar) .mega-you .mg-data .mg-new { font-size: .8rem; }
-	.mega-you .mg-data .mg-bars { height: 46px; margin-top: 6px; gap: 2px; }
-	.mega-you .mg-data b { font-size: 1.2rem; }
-	:lang(ar) .mega-you .mg-data b { font-size: .9rem; }
-	.mega-you .mg-data small { font-size: .95rem; }
-	:lang(ar) .mega-you .mg-data small { font-size: .75rem; }
-	.mega-you .mg-data .mg-go { font-size: .85rem; }
-	.mega-you .mg-data::before { width: 64px; height: 18px; }
-	.mg-data:hover { rotate: 0deg; }
-	.mega { max-height: calc(100vh - var(--hd, 70px)); overflow-y: auto; }
-
-	/* عيلتنا: a tailor's tape, the four of us standing on it at our ages (shell.js tapeHTML) */
-	.mg-tape { position: relative; display: block; margin-top: 4px; padding: 30px 6px 30px; text-decoration: none; color: var(--text); }
-	.mg-tape-h { position: absolute; top: -2px; left: 50%; translate: -50% 0; white-space: nowrap; padding: 0 .35em; font: 400 1.2rem var(--f-label); letter-spacing: .05em; background: linear-gradient(transparent 45%, var(--hl-lime) 45% 92%, transparent 92%); }
-	:lang(ar) .mg-tape-h { font: 800 .85rem/1.6 var(--f-body); }
-	.mg-tape-track { position: relative; display: block; height: 34px; margin-top: 18px; background: #f5d54e; border: 1.5px solid #37353f; border-radius: 3px; rotate: -.8deg;
-		box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink), inset 0 -6px 0 rgba(0, 0, 0, .06); transition: rotate .25s, box-shadow .2s; }
-	.mg-tape:hover .mg-tape-track { rotate: 0deg; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral), inset 0 -6px 0 rgba(0, 0, 0, .06); }
-	.mg-tape-track > i { position: absolute; top: 0; inset-inline-start: var(--p); width: 1px; height: 9px; background: #37353f; }
-	.mg-tape-track > i.is-5 { height: 15px; width: 1.5px; }
-	.mg-tape-track > i b { position: absolute; top: 15px; left: 50%; translate: -50% 0; font: 400 .78rem var(--f-label); color: #37353f; }
-	.mg-tape-pin { position: absolute; inset-inline-start: var(--p); z-index: 1; display: flex; align-items: center; gap: 5px; translate: calc(var(--dir-x, 1) * -14px) 0; white-space: nowrap; }
-	:root[dir='rtl'] .mg-tape-pin { --dir-x: -1; }
-	.mg-tape-pin.is-up { bottom: calc(100% + 4px); }
-	.mg-tape-pin.is-down { top: calc(100% + 4px); }
-	.mg-tape-dot { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--c) 22%, var(--card)); border: 2px solid var(--c); box-shadow: 0 2px 0 #37353f; }
-	.mg-tape-pin small { font-size: .74rem; color: var(--muted); }
-	.mg-tape-pin small b { color: var(--c); font-size: .82rem; }
-	.mg-tape-pin::after { content: ''; position: absolute; inset-inline-start: 13px; width: 2px; height: 8px; background: var(--c); }
-	.mg-tape-pin.is-up::after { top: 100%; } .mg-tape-pin.is-down::after { bottom: 100%; }
-
-	/* ليالينا: tonight's sky, with tonight's real moon (shell.js skyHTML) */
-	.mg-sky { position: relative; display: flex; align-items: center; gap: 18px; min-height: 92px; margin-top: 6px; padding: 14px 22px; overflow: hidden; text-decoration: none; color: #f4eede;
-		background: radial-gradient(120% 140% at 85% 10%, #2c3d6b 0%, #18213f 45%, #0d1226 100%); border: 1.5px solid #37353f; border-radius: var(--sketch); rotate: .5deg;
-		box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); transition: rotate .25s, box-shadow .2s, transform .25s; }
-	.mg-sky:hover { rotate: 0deg; transform: translateY(-3px); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); }
-	.mg-sky-stars { position: absolute; inset: 0; pointer-events: none; }
-	.mg-sky-stars i { position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: #fff7d6; box-shadow: 0 0 6px 1px rgba(255, 240, 190, .7); animation: twinkle var(--d) ease-in-out var(--delay) infinite; }
-	.mg-moon { position: relative; flex: none; width: 64px; height: 64px; filter: drop-shadow(0 0 14px rgba(255, 236, 170, .55)); transition: rotate .4s; }
-	.mg-sky:hover .mg-moon { rotate: -12deg; }
-	.mg-moon-dark { fill: #2a3358; }
-	.mg-moon-lit { fill: #fdf1c8; }
-	.mg-moon-rim { fill: none; stroke: rgba(253, 241, 200, .35); stroke-width: 1; }
-	.mg-sky-tx { position: relative; display: grid; gap: 4px; }
-	.mg-sky-tx b { font: 400 1.5rem/1.1 var(--f-hand); }
-	:lang(ar) .mg-sky-tx b { font: 800 1.05rem/1.4 var(--f-body); }
-	/* «قمر الليلة»: a small label, the phase's name, and in plain words how lit it is and whether it's growing */
-	.mg-sky-tx { gap: 2px; }
-	.mg-sky-h { font: 400 .85rem var(--f-label); letter-spacing: .1em; color: rgba(244, 238, 222, .7); }
-	:lang(ar) .mg-sky-h { font: 700 .75rem/1.4 var(--f-body); letter-spacing: 0; }
-	.mg-sky-how { font-size: .82rem; font-weight: 800; color: #f5d54e; }
-	/* tonight's suggestion is its own line, set apart from the moon */
-	.mg-sky-tx small { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(244, 238, 222, .3); }
-	.mg-sky-tx small { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .85rem; color: rgba(244, 238, 222, .8); }
-	.mg-sky-k { display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px 1px 7px; border-radius: 999px; background: var(--c); color: #fff; font-weight: 800; }
-
-	/* مناسباتنا: a desk calendar torn to the next occasion (shell.js calendarHTML) */
-	/* the same headline as the other panels, and room between the links like theirs */
-	.mega-you .mega-in > .mg-list { grid-row: 1 / span 2; row-gap: 12px; }
-	.mega-you .mg-list .mg-h { margin-bottom: 0; }
-	.mega-you .mega-in > .mg-cal { grid-column: 3; grid-row: 1; align-self: start; position: relative; display: block; margin: 14px 6px 6px; text-decoration: none; color: #2b2b33; }
-	.mega-you .mega-in > .mg-tags { grid-column: 2 / 4; grid-row: 2; }
-	/* «وبعدها»: a page of the planner — ruled paper with a strip of washi tape for its title, and the occasions after the
-	   next one two to a row, each with a torn-off calendar leaf (the month on a coloured band, the day big), its name,
-	   and the days left */
-	.mg-tags { position: relative; margin-top: 6px; padding: 26px 14px 12px; color: #2b2b33; background: #fffdf8 repeating-linear-gradient(transparent 0 27px, rgba(14, 105, 144, .12) 27px 28px) 0 22px; border: 1.5px solid #37353f; border-radius: 4px 12px 12px 4px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); }
-	.mg-tags-h { position: absolute; top: -12px; inset-inline-start: 16px; margin: 0; padding: 2px 14px; font: 700 1.25rem/1.2 var(--f-hand); color: #2b2b33; background: rgba(253, 200, 48, .78) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); rotate: -2deg; box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
-	:lang(ar) .mg-tags-h { font: 700 1rem/1.5 'Aref Ruqaa', var(--f-body); }
-	.mg-tags-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
-	.mg-tag { --c: #d9534f; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 4px; text-decoration: none; color: #2b2b33; border-radius: 6px; transition: background .2s; }
-	.mg-tag:nth-child(2) { --c: #0e6990; } .mg-tag:nth-child(3) { --c: #5a9e6f; } .mg-tag:nth-child(4) { --c: #e39b2d; }
-	.mg-tag:hover { background: rgba(253, 200, 48, .3); }
-	.mg-tag-leaf { flex: none; display: grid; width: 42px; overflow: hidden; text-align: center; background: #fff; border: 1.5px solid #37353f; border-radius: 4px; rotate: calc((var(--i) % 2 * 2 - 1) * -3deg); box-shadow: 0 2px 0 rgba(55, 53, 63, .25); transition: rotate .2s; }
-	.mg-tag:hover .mg-tag-leaf { rotate: 0deg; }
-	.mg-tag-leaf i { padding: 2px 0 1px; font: 400 .7rem/1.2 var(--f-label); font-style: normal; letter-spacing: .08em; color: #fff; background: var(--c); }
-	:lang(ar) .mg-tag-leaf i { font: 800 .58rem/1.5 var(--f-body); letter-spacing: 0; }
-	.mg-tag-leaf b { padding: 1px 0 3px; font: 400 1.35rem/1 var(--f-label); }
-	.mg-tag-tx { display: grid; gap: 1px; min-width: 0; }
-	.mg-tag-tx b { font-size: .8rem; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.mg-tag-tx small { display: flex; align-items: center; gap: 4px; font-size: .68rem; font-weight: 800; color: var(--c); }
-	.mg-tag-e { display: inline-flex; color: var(--c); }
-	.mg-cal-back { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 6px; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px;
-		translate: calc(var(--bujo-x) * var(--n) * 6px) calc(var(--n) * -7px); rotate: calc(var(--n) * 2.5deg); z-index: calc(3 - var(--n)); }
-	.mg-cal-back small { font-size: .62rem; color: #8a8792; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-	.mg-cal-page { position: relative; z-index: 3; display: grid; justify-items: center; gap: 1px; padding: 0 10px 12px; text-align: center; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px;
-		box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); rotate: -1.5deg; transition: rotate .25s, translate .25s, box-shadow .2s; }
-	.mg-cal:hover .mg-cal-page { rotate: 0deg; translate: 0 -3px; box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral); }
-	.mg-cal-rings { position: absolute; top: -9px; left: 0; right: 0; display: flex; justify-content: space-around; }
-	.mg-cal-rings i { width: 7px; height: 16px; border-radius: 4px; background: #c9c3cf; border: 1.5px solid #37353f; }
-	.mg-cal-month { justify-self: stretch; margin: 0 -10px 4px; padding: 9px 0 5px; border-radius: 5px 5px 0 0; background: var(--coral-deep, #d9534f); color: #fff; font: 400 1.05rem var(--f-label); letter-spacing: .08em; }
-	:lang(ar) .mg-cal-month { font: 800 .9rem/1.4 var(--f-body); letter-spacing: 0; }
-	.mg-cal-day { font: 400 3.2rem/1 var(--f-label); color: #2b2b33; }
-	.mg-cal-wday { font-size: .72rem; color: #8a8792; margin-bottom: 4px; }
-	.mg-cal-page b { font-size: .86rem; line-height: 1.3; }
-	.mg-cal-page small { font-size: .72rem; color: #6b6b75; }
-	.mg-cal-left { margin-top: 6px; padding: 2px 10px; border-radius: 999px; background: var(--hl-yellow); border: 1.5px solid #37353f; font-size: .76rem; font-weight: 800; }
-	.mg-cal-left.is-today { background: var(--coral); color: #fff; }
-}
 
 /* ---------- دوّر: the search page, and the glow on what a search result opened ---------- */
 .search-btn { --pen-bg: var(--coral); --pen-fg: #fff; text-decoration: none; }
@@ -645,9 +417,6 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 :lang(ar) .ft-book__h { font: 700 1.6rem/1.3 'Aref Ruqaa', var(--f-body); }
 .ft-book__ch { display: grid; gap: 26px 30px; grid-template-columns: 1fr; }
 .ft-links { --tab: #fcc5c9; min-width: 0; }
-.ft-links:nth-child(2) { --tab: #e3ec9c; }
-.ft-links:nth-child(3) { --tab: #fde49a; }
-.ft-links:nth-child(4) { --tab: #bfe0ef; }
 .ft-links h2 { display: flex; align-items: center; gap: 8px; width: fit-content; margin: 0; padding: 4px 14px 3px 6px; font: 400 1.15rem/1.2 var(--f-label); letter-spacing: .08em; color: #2b2b33; background: var(--tab); border: 1.5px solid #37353f; border-bottom: 0; border-radius: 9px 9px 0 0; }
 [dir='rtl'] .ft-links h2 { padding: 4px 6px 3px 14px; }
 :lang(ar) .ft-links h2 { font: 800 .95rem/1.5 var(--f-body); letter-spacing: 0; }
@@ -663,12 +432,7 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 }
 @media (min-width: 640px) { .ft-book__ch { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1100px) {
-	/* our story and memories stacked in the first column, the two long chapters beside them */
 	.ft-book__ch { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-	.ft-links:nth-child(1) { grid-area: 1 / 1; }
-	.ft-links:nth-child(2) { grid-area: 2 / 1; }
-	.ft-links:nth-child(3) { grid-area: 1 / 2 / span 2; }
-	.ft-links:nth-child(4) { grid-area: 1 / 3 / span 2; }
 }
 
 /* ---------- «دوّر»: the gooey search band (after Codrops' «Gooey Search») — an ink pill that stretches into the box,
@@ -738,3 +502,105 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 }
 .mg-fig[aria-current='page'] { outline: 3px solid var(--hl-yellow, #fdc830); outline-offset: 3px; }
 .mg-fig[aria-current='page'] .mg-fig-t b { color: var(--coral-deep, #d9534f); }
+
+/* ---------- the menus, six chapters of ten (shell.js megaHTML / pnavHTML / featureHTML): each chapter a sheet of the
+   diary in its own tab colour — its number in a circle, its name, what's in it — its ten pages as index cards five to
+   a row, and the chapter's card at the side: a taped card with one live thing from it (today in our story, a photo
+   from the album, tonight's moon, the boys, today's date, the next occasion). On a phone the same card closes each
+   chapter of the contents. ---------- */
+@media (min-width: 980px) {
+	.mnav-btn { position: relative; }
+	.mnav-btn[aria-expanded='true'] { background: color-mix(in srgb, var(--tab) 70%, var(--card)); color: var(--text); box-shadow: inset 0 0 0 1.5px var(--ink); }
+	.mega { max-height: calc(100vh - var(--hd, 70px)); overflow-y: auto; border-top: 6px solid var(--tab); background: var(--card) linear-gradient(color-mix(in srgb, var(--tab) 22%, transparent), transparent 140px); }
+	.mega-in { grid-template-columns: minmax(0, 1fr) 290px; gap: 26px 34px; align-items: start; padding: 22px 0 28px; }
+	.mx-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; }
+	.mx-head i { display: grid; place-items: center; width: 40px; height: 40px; flex: none; font: 400 1.15rem/1 var(--f-label); font-style: normal; color: #fff; background: #37353f; border-radius: 50%; box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--tab); }
+	.mx-head b { padding-inline: .2em; font: 400 2rem/1.1 var(--f-label); letter-spacing: .04em; color: var(--text); background: linear-gradient(transparent 58%, var(--tab) 58% 92%, transparent 92%); }
+	:lang(ar) .mx-head b { font: 700 1.6rem/1.4 'Aref Ruqaa', var(--f-body); letter-spacing: 0; }
+	.mx-head small { flex: 1; min-width: 200px; font-size: .9rem; font-weight: 700; color: var(--muted); }
+	.mx-count { padding: 3px 12px; font-size: .78rem; font-weight: 800; color: var(--text); border: 1.5px dashed color-mix(in srgb, var(--ink) 55%, transparent); border-radius: 999px; }
+	.mx-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+	.mx-item { position: relative; display: grid; align-content: start; gap: 4px; min-height: 128px; padding: 14px 12px 12px; text-decoration: none; color: var(--text); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 color-mix(in srgb, var(--tab) 85%, var(--ink) 15%); transition: transform .15s, box-shadow .15s, background .2s; animation: mx-in .3s var(--ease-out) calc(var(--i) * 25ms) backwards; }
+	.mega:not(.is-open) .mx-item { animation: none; }
+	@keyframes mx-in { from { opacity: 0; transform: translateY(8px); } }
+	.mx-item .ic { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 4px; color: var(--gc); background: color-mix(in srgb, var(--tab) 55%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+	.mx-item b { font-size: .98rem; line-height: 1.3; }
+	.mx-item small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .78rem; line-height: 1.45; color: var(--muted); }
+	.mx-item:hover, .mx-item:focus-visible { transform: translate(calc(var(--bujo-x) * -2px), -3px); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--ink); background: color-mix(in srgb, var(--tab) 25%, var(--card)); }
+	.mx-item[aria-current='page'] { background: color-mix(in srgb, var(--tab) 45%, var(--card)); }
+	.mx-item[aria-current='page']::after { content: '♥'; position: absolute; top: 8px; inset-inline-end: 10px; color: var(--coral); }
+	.mx-side { position: sticky; top: 0; padding-top: 10px; }
+	/* room for the six chapters and «اكتب النهارده» on a narrower screen */
+	.mnav-link, .mnav-btn { padding-inline: 11px; }
+}
+@media (min-width: 980px) and (max-width: 1180px) {
+	.mnav-link, .mnav-btn { padding-inline: 8px; font-size: .92rem; }
+	.mega-in { grid-template-columns: minmax(0, 1fr) 240px; gap: 22px; }
+	.mx-grid { gap: 10px; }
+	.mx-item { min-height: 118px; padding: 12px 10px 10px; }
+	.mx-item small { font-size: .74rem; }
+}
+@media (prefers-reduced-motion: reduce) { .mx-item { animation: none; transition: none; } }
+
+/* the chapter's card */
+.mf { --ink: #37353f; --text: #2b2b33; --muted: #6f6a74; position: relative; display: grid; gap: 12px; padding: 14px 14px 16px; text-decoration: none; color: var(--text); background: #fffdf8; border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--tab, #fcc5c9); rotate: -1deg; transition: rotate .25s, transform .2s, box-shadow .2s; }
+.mf:hover { rotate: 0deg; transform: translateY(-2px); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--ink); }
+.mf-tape { position: absolute; top: -11px; left: 50%; z-index: 2; width: 96px; height: 22px; translate: -50% 0; background: color-mix(in srgb, var(--tab, #fcc5c9) 75%, #fff); border: 1px dashed rgba(55, 53, 63, .35); rotate: 2deg; opacity: .95; }
+.mf-pic { position: relative; display: grid; place-items: center; height: 168px; overflow: hidden; background: color-mix(in srgb, var(--tab, #fcc5c9) 30%, #fffdf8); border: 1.5px solid var(--ink); border-radius: calc(var(--sketch) - 4px); }
+.mf-photo { display: block; width: 100%; height: 100%; }
+.mf-photo img, .mf-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mf-photo--polaroid { width: 74%; height: 86%; padding: 8px 8px 22px; background: #fbf8f1; border: 1.5px solid var(--ink); rotate: 3deg; box-shadow: 2px 3px 0 rgba(0, 0, 0, .12); }
+.mf-doodle { color: var(--gc, #d9534f); }
+.mf-tx { display: grid; gap: 3px; min-width: 0; }
+.mf-k { width: fit-content; padding: 1px 10px; font-size: .74rem; font-weight: 800; color: var(--text); background: var(--tab, #fcc5c9); border: 1.5px solid var(--ink); border-radius: 999px; }
+.mf-tx b { font-size: 1.02rem; line-height: 1.4; overflow-wrap: anywhere; }
+.mf-tx b q { font: 600 1.2rem/1.35 var(--f-hand); quotes: '«' '»'; }
+:lang(ar) .mf-tx b q { font: 700 .95rem/1.6 var(--f-body); }
+.mf-tx small { font-size: .8rem; font-weight: 700; color: var(--muted); }
+.mf-tx small .arrow, .mf-tx small svg { vertical-align: middle; color: var(--gc, #0e6990); }
+/* tonight's sky */
+.mf--dark .mf-pic { background: radial-gradient(120% 140% at 85% 10%, #2c3d6b 0%, #18213f 45%, #0d1226 100%); }
+.mf-sky { position: absolute; inset: 0; display: grid; place-items: center; }
+.mf-sky i { position: absolute; left: var(--x); top: var(--y); width: 3px; height: 3px; background: #fff; border-radius: 50%; animation: mf-tw var(--d) ease-in-out infinite alternate; }
+@keyframes mf-tw { from { opacity: .25; } }
+.mf-sky .mg-moon { width: 96px; height: 96px; }
+.mf-sky .mg-moon-dark { fill: #2a3354; }
+.mf-sky .mg-moon-lit { fill: #fdf0b8; }
+.mf-sky .mg-moon-rim { fill: none; stroke: #fdf0b8; stroke-width: 1; opacity: .6; }
+/* the boys */
+.mf-kids { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+.mf-kid { display: grid; justify-items: center; gap: 6px; color: var(--c); }
+.mf-kid > span, .mf-kid > svg { display: grid; place-items: center; width: 84px; height: 84px; overflow: hidden; background: color-mix(in srgb, var(--c) 15%, #fffdf8); border: 2px solid var(--ink); border-radius: 50%; box-shadow: 0 0 0 4px #fffdf8, 0 0 0 6px var(--c); }
+.mf-kid > svg { padding: 20px; }
+.mf-kid-img { width: 100%; height: 100%; object-fit: cover; }
+.mf-kid small { font-weight: 800; font-size: .8rem; color: var(--text); }
+/* a calendar leaf: today's date, or the next occasion */
+.mf-day { display: grid; justify-items: center; width: 130px; padding: 26px 8px 10px; background: #fff; border: 1.5px solid var(--ink); border-radius: 10px; box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--gc, #d9534f); rotate: -2deg; position: relative; }
+.mf-day::before { content: ''; position: absolute; inset: 0 0 auto; height: 20px; background: var(--gc, #d9534f); border-bottom: 1.5px solid var(--ink); border-radius: 9px 9px 0 0; }
+.mf-day b { font: 400 3.4rem/1 var(--f-label); color: var(--text); }
+.mf-day small { font-size: .78rem; font-weight: 800; color: var(--muted); }
+.mf-day small:first-child { position: relative; z-index: 1; margin-top: -22px; margin-bottom: 6px; color: #fff; }
+@media (prefers-reduced-motion: reduce) { .mf, .mf-sky i { transition: none; animation: none; } }
+
+/* the phone menu: the chapter's card closes its list */
+.pn-card { grid-column: 1 / -1; padding: 16px 6px 6px; }
+.pn-list .pn-card .mf { display: grid; align-items: stretch; gap: 12px; min-height: 0; padding: 14px 14px 16px; font-size: 1rem; font-weight: 400; line-height: 1.5; border-radius: var(--sketch); rotate: 0deg; }
+.pn-list .pn-card .mf:active { background: #fffdf8; }
+.pn-card .mf-pic { height: 150px; }
+.pn-ch summary small { white-space: nowrap; }
+
+/* ---------- the footer, rearranged: our names with what the site can do beside them, the contents of the six
+   chapters three to a row, then a line of the little links and who made it ---------- */
+.ft-brand__id { display: grid; }
+.ft-book__h small { margin-inline-start: 10px; font: 800 .8rem/1 var(--f-body); color: #6f6a74; text-decoration: none; display: inline-block; }
+.ft-book__ch { gap: 28px 34px; }
+.ft-maker { display: grid; justify-items: center; gap: 14px; }
+.ft-quick { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ft-quick a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px 6px 10px; font-size: .86rem; font-weight: 800; color: var(--text); text-decoration: none; border: 1.5px dashed color-mix(in srgb, var(--ink) 55%, transparent); border-radius: 999px; transition: background .2s, border-color .2s; }
+.ft-quick a:hover { background: var(--hl-yellow); border: 1.5px solid var(--ink); }
+.ft-quick .ic { color: var(--coral); }
+@media (min-width: 900px) {
+	.ft-maker { grid-template-columns: auto 1fr; justify-items: stretch; align-items: center; }
+	.ft-quick { justify-content: flex-start; }
+	.ft-copy { justify-content: flex-end; }
+}

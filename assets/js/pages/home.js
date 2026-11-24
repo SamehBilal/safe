@@ -85,14 +85,15 @@ function yearStage(main, years) {
 const GROUPS = [
 	{ id: 'story', ar: 'حكايتنا', en: 'Our story', ic: 'book', top: ['story', 'chapters', 'places', 'minute'] },
 	{ id: 'memories', ar: 'ذكرياتنا', en: 'Memories', ic: 'image', top: ['gallery', 'onthisday', 'notes', 'letters'] },
-	{ id: 'family', ar: 'عيلتنا', en: 'Our family', ic: 'family', top: ['family', 'growth', 'sayings', 'distances'] },
 	{ id: 'nights', ar: 'ليالينا', en: 'Our nights', ic: 'moon', top: ['draw', 'music', 'movies', 'adventures'] },
-	{ id: 'you', ar: 'مناسباتنا', en: 'Occasions', ic: 'cake', top: ['birthday', 'calendar', 'firsts', 'gifts'] }
+	{ id: 'kids', ar: 'ولادنا', en: 'Our kids', ic: 'baby', top: ['firsts', 'growth', 'sayings', 'school'] },
+	{ id: 'home', ar: 'بيتنا', en: 'Our home', ic: 'home', top: ['routine', 'meals', 'shopping', 'expenses'] },
+	{ id: 'people', ar: 'عيلتنا وناسنا', en: 'Family & people', ic: 'family', top: ['family', 'people', 'calendar', 'birthday'] }
 ];
 
 /* the house itself, filling the row beside the last card: a drawn house with a window for every room
    (each opens that room's first page), a door that opens a page at random, and the newest corners pinned beside it */
-const NEWEST = ['people', 'debts', 'routine'];
+const NEWEST = ['school', 'meals', 'papers'];
 const house = (page) => {
 	const rooms = GROUPS.map((g) => ({ g, p: page(g.top[0]) })).filter((r) => r.p);
 	const door = PAGES[Math.floor(Math.random() * PAGES.length)];
