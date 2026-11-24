@@ -1109,6 +1109,7 @@
 .tp-filters { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .tp-kinds { display: flex; flex-wrap: wrap; gap: 6px; }
 .tp-kinds .chip { display: inline-flex; align-items: center; gap: 5px; min-height: 38px; padding: 4px 12px; font-size: .85rem; }
+.tp-kinds .chip--ic { justify-content: center; min-width: 40px; padding: 4px 8px; }
 .tp-sel { position: relative; display: flex; align-items: center; gap: 4px; padding-inline: 10px 4px; color: var(--blue, #0e6990); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); transition: box-shadow .15s, translate .15s; }
 .tp-sel:focus-within { translate: calc(var(--bujo-x, 1) * -1px) -1px; box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--coral); }
 .tp-sel svg { flex: none; }

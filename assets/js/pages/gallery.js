@@ -44,10 +44,10 @@ function filters(ps) {
 	const areas = [...new Set(ps.map((p) => p.area).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 	const sel = (id, ic, label, opts) => `<label class="tp-sel" title="${esc(label)}">${doodle(ic, 18)}<select id="${id}" aria-label="${esc(label)}">${opts.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('')}</select></label>`;
 	return `<div class="tp-filters">
-		${kinds.length > 1 ? `<div class="tp-kinds" role="group" aria-label="${L('نوع الكومة', 'Kind of pile')}"><button class="chip is-on" type="button" data-kind="">${L('الكل', 'All')}</button>${kinds.map((k) => `<button class="chip" type="button" data-kind="${k}">${doodle(KIND[k][0], 16)} ${L(KIND[k][1], KIND[k][2])}</button>`).join('')}</div>` : ''}
-		${years.length > 1 ? sel('tp-year', 'calendar', L('السنة', 'Year'), [['', L('كل السنين', 'Every year')], ...years.map((y) => [y, yr(y)])]) : ''}
-		${areas.length > 1 ? sel('tp-area', 'house', L('المدينة', 'City'), [['', L('كل المدن', 'Every city')], ...areas.map((a) => [a, a])]) : ''}
-		${sel('tp-sort', 'shuffle', L('الترتيب', 'Order'), [['', L('زي ما هي', 'As they are')], ['new', L('الأحدث الأول', 'Newest first')], ['old', L('الأقدم الأول', 'Oldest first')], ['big', L('الأكبر الأول', 'Biggest first')], ['az', L('بالاسم', 'By name')]])}
+		${kinds.length > 1 ? `<div class="tp-kinds" role="group" aria-label="${L('نوع الكومة', 'Kind of pile')}"><button class="chip is-on" type="button" data-kind="">${L('الكل', 'All')}</button>${kinds.map((k) => `<button class="chip chip--ic" type="button" data-kind="${k}" title="${L(KIND[k][1], KIND[k][2])}" aria-label="${L(KIND[k][1], KIND[k][2])}">${doodle(KIND[k][0], 18)}</button>`).join('')}</div>` : ''}
+		${years.length > 1 ? sel('tp-year', 'calendar', L('السنة', 'Year'), [['', L('السنة', 'Year')], ...years.map((y) => [y, yr(y)])]) : ''}
+		${areas.length > 1 ? sel('tp-area', 'house', L('المدينة', 'City'), [['', L('المدينة', 'City')], ...areas.map((a) => [a, a])]) : ''}
+		${sel('tp-sort', 'shuffle', L('الترتيب', 'Order'), [['', L('الترتيب', 'Order')], ['new', L('الأحدث', 'Newest')], ['old', L('الأقدم', 'Oldest')], ['big', L('الأكبر', 'Biggest')], ['az', L('بالاسم', 'A–Z')]])}
 	</div>`;
 }
 
