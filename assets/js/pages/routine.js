@@ -158,18 +158,27 @@ export default {
 			hydrate($('#rt-band', main));
 		};
 
-		const row = (x, isToday) => {
+		/* one stop on the infographic: the badge on the line (its drawing, the time under it), the name in big letters
+		   beside it; pointing at it (or a tap) grows the badge, settles the name and brings out the details */
+		let introDone = false;
+		const stop = (x, isToday, k) => {
 			const p = person(x.who), done = isToday && x.done?.[todayKey];
-			return `<li class="rt-it${done ? ' is-done' : ''}" style="--c:${p.c}" data-id="${esc(x.id)}">
-				<time>${fmtT(x.time)}</time>
-				<span class="rt-it__dot"></span>
-				<div class="rt-it__card">
-					<span class="rt-it__ic">${doodle(x.icon || 'clock', 22)}</span>
-					<span class="rt-it__tx"><b dir="auto">${esc(x.what)}</b>
-						<small>${x.who === 'all' ? `${doodle('family', 13)} ${L('العيلة كلها', 'The whole family')}` : esc(p.name)}${x.days?.length && x.days.length < 7 ? ` · ${x.days.length === 5 && [0, 1, 2, 3, 4].every((d) => x.days.includes(d)) ? L('أيام الشغل', 'Work days') : x.days.length === 2 && x.days.includes(5) && x.days.includes(6) ? L('الويكند', 'Weekend') : DAYS.filter((d) => x.days.includes(d)).map((d) => DAY[lang()][d]).join('، ')}` : ''}</small>
-						${x.note ? `<em dir="auto">${esc(x.note)}</em>` : ''}</span>
-					${isToday ? `<label class="rt-it__tick" title="${L('اتعمل', 'Done')}"><input type="checkbox" data-tick="${esc(x.id)}"${done ? ' checked' : ''}${ok ? '' : ' disabled'}><span class="rt-it__box">${markSVG('checkmark')}</span></label>` : ''}
-					${ok ? `<span class="rt-it__tools"><button class="link" type="button" data-edit="${esc(x.id)}">${L('تعديل', 'Edit')}</button><button class="link link--danger" type="button" data-del="${esc(x.id)}">${L('مسح', 'Delete')}</button></span>` : ''}
+			const days = x.days?.length && x.days.length < 7 ? (x.days.length === 5 && [0, 1, 2, 3, 4].every((d) => x.days.includes(d)) ? L('أيام الشغل', 'Work days') : x.days.length === 2 && x.days.includes(5) && x.days.includes(6) ? L('الويكند', 'Weekend') : DAYS.filter((d) => x.days.includes(d)).map((d) => DAY[lang()][d]).join('، ')) : L('كل يوم', 'Every day');
+			return `<li class="rti-stop rt-it ${k % 2 ? 'is-b' : 'is-a'}${done ? ' is-done' : ''}" style="--c:${p.c};--k:${k}" data-id="${esc(x.id)}" tabindex="0" aria-label="${esc(`${fmtT(x.time)} — ${x.what}`)}">
+				<span class="rti-mark">
+					<span class="rti-badge">${doodle(x.icon || 'clock', 30)}${done ? '<i class="rti-badge__ok" aria-hidden="true">✓</i>' : ''}</span>
+					<time class="rti-time">${fmtT(x.time)}</time>
+				</span>
+				<div class="rti-card">
+					<h3 class="rti-title" dir="auto">${esc(x.what)}</h3>
+					<div class="rti-details">
+						<p class="rti-who"><span class="rti-who__av">${p.photo ? img(p.photo, '', '') : doodle(x.who === 'all' ? 'family' : p.ic, 16)}</span><b>${x.who === 'all' ? L('العيلة كلها', 'The whole family') : esc(p.name)}</b><small>${esc(days)}</small></p>
+						${x.note ? `<p class="rti-note" dir="auto">${esc(x.note)}</p>` : ''}
+						<div class="rti-acts">
+							${isToday ? `<label class="rt-it__tick" title="${L('اتعمل', 'Done')}"><input type="checkbox" data-tick="${esc(x.id)}"${done ? ' checked' : ''}${ok ? '' : ' disabled'}><span class="rt-it__box">${markSVG('checkmark')}</span><span>${L('اتعمل', 'Done')}</span></label>` : ''}
+							${ok ? `<span class="rt-it__tools"><button class="link" type="button" data-edit="${esc(x.id)}">${L('تعديل', 'Edit')}</button><button class="link link--danger" type="button" data-del="${esc(x.id)}">${L('مسح', 'Delete')}</button></span>` : ''}
+						</div>
+					</div>
 				</div>
 			</li>`;
 		};
@@ -215,18 +224,28 @@ export default {
 				$('#rt-progress', main).textContent = '';
 				return;
 			}
-			let nowShown = !isToday;
-			box.innerHTML = PARTS.map((part, i) => {
+			/* the day as an infographic, after Codrops' «Interactive SVG»: one line down the middle, a stop on it for
+			   everything, left and right in turn; the parts of the day as labels on the line and «now» across it */
+			let nowShown = !isToday, k = 0;
+			const nowLine = `<li class="rti-now" aria-label="${L('دلوقتي', 'Now')}"><span>${L('دلوقتي', 'Now')} · ${fmtT(nowT())}</span></li>`;
+			const stops = [];
+			PARTS.forEach((part, i) => {
 				const end = PARTS[i + 1]?.from ?? 28 * 60;
 				const here = list.filter((x) => dayMins(x.time) >= part.from && dayMins(x.time) < end);
-				if (!here.length) return '';
-				return `<section class="rt-part"><h2 class="rt-part__h">${doodle(part.ic, 24)} ${esc(L(part.ar, part.en))}</h2><ol class="rt-line">${here.map((x) => {
-					let line = '';
-					if (!nowShown && dayMins(x.time) > nd) { nowShown = true; line = `<li class="rt-nowline" aria-label="${L('دلوقتي', 'Now')}"><span>${L('دلوقتي', 'Now')} · ${fmtT(nowT())}</span></li>`; }
-					return line + row(x, isToday);
-				}).join('')}</ol></section>`;
-			}).join('') || `<p class="empty">${L('مفيش حاجة في اليوم ده', 'Nothing on this day')}</p>`;
-			if (!nowShown && list.length) $$('.rt-line', box).at(-1)?.insertAdjacentHTML('beforeend', `<li class="rt-nowline"><span>${L('دلوقتي', 'Now')} · ${fmtT(nowT())}</span></li>`);
+				if (!here.length) return;
+				stops.push(`<li class="rti-part" style="--k:${k}"><span>${doodle(part.ic, 18)} ${esc(L(part.ar, part.en))}</span></li>`);
+				for (const x of here) {
+					if (!nowShown && dayMins(x.time) > nd) { nowShown = true; stops.push(nowLine); }
+					stops.push(stop(x, isToday, k++));
+				}
+			});
+			if (!nowShown && list.length) stops.push(nowLine);
+			const dayName = new Date(2024, 0, 7 + day).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long' });
+			box.innerHTML = list.length
+				? `<p class="rti-quote${introDone ? '' : ' is-intro'}"><i class="rti-brace">{</i><span>${isToday ? L('النهارده في بيتنا', 'Today at home') : L(`يوم ${dayName} في بيتنا`, `${dayName} at home`)} <b>${num(list.length)}</b> ${L(list.length > 10 || list.length < 3 ? 'حاجة' : 'حاجات', list.length === 1 ? 'thing' : 'things')}</span><i class="rti-brace">}</i></p>
+					<ol class="rti${introDone ? '' : ' is-intro'}">${stops.join('')}</ol>`
+				: `<p class="empty">${L('مفيش حاجة في اليوم ده', 'Nothing on this day')}</p>`;
+			introDone = true;   // the opening plays once; the list repaints every minute without it
 			hydrate(box);
 			for (const svg of $$('.rt-it.is-done .rt-it__box svg', box)) mark(svg, 'checkmark', false);
 			const doneN = isToday ? list.filter((x) => x.done?.[todayKey]).length : 0;
@@ -278,6 +297,9 @@ export default {
 		};
 		$('#rt-cancel', main).onclick = () => editing(null);
 		list.addEventListener('click', async (e) => {
+			// a tap on a stop (not on its tick or buttons) opens it, as pointing at it does; a tap elsewhere closes the others
+			const st = e.target.closest('.rti-stop');
+			if (st && !e.target.closest('label, button, a, input')) { const was = st.classList.contains('is-open'); $$('.rti-stop.is-open', list).forEach((x) => x.classList.remove('is-open')); st.classList.toggle('is-open', !was); }
 			const ed = e.target.closest('[data-edit]'), del = e.target.closest('[data-del]');
 			if (ed) editing(items().find((x) => x.id === ed.dataset.edit));
 			if (del && confirm(Y('تمسحها من الروتين؟', 'تمسحيها من الروتين؟', 'Remove it from the routine?'))) save((d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); });
