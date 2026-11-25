@@ -729,15 +729,24 @@ function featureHTML(g, s) {
 		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
 }
 
-/* عيلتنا: the four of us in a frame on the wall, each face round, and how long we've been a family */
+/* عيلتنا: the family wall — bunting in our colours across the top, the two of us as big polaroids with a heart between,
+   the boys as small ones under us, each with his name on a paper tag, and how long we've been a family */
 function familyFrame(s, here) {
-	const members = (s.family?.members || []).slice(0, 4);
+	const all = s.family?.members || [], big = all.filter((m) => !m.kid).slice(0, 2), small = all.filter((m) => m.kid).slice(0, 3);
 	const wed = s.married ? parseDate(s.married) : null;
-	return `<a class="mg-frame-fam" href="family.html"${here === 'family.html' ? ' aria-current="page"' : ''}>
-		<span class="mg-frame-fam__in">${members.map((m) => `<span class="mg-frame-fam__face" style="--c:${esc(m.color || '#7b4fc4')}">${m.photo ? `<span class="mg-frame-fam__pic" data-media-box>${img(m.photo, '', 'mg-frame-fam__img')}</span>` : `<span class="mg-frame-fam__pic">${doodle(m.emoji || 'heart', 30)}</span>`}<small>${T(m.name)}</small></span>`).join('') || doodle('family', 54)}</span>
-		<b>${L('عيلتنا', 'Our family')}</b>
-		<small>${wed ? L(`عيلة من ${num(yearsBetween(wed))} سنين`, `a family for ${yearsBetween(wed)} years`) : L('شجرة العيلتين', 'The family tree')}</small>
-		<span class="mg-go">${Y('افتح الشجرة', 'افتحي الشجرة', 'Open the tree')} ${App.arrow}</span>
+	const pola = (m, k, cls) => `<span class="wg-fam__p ${cls}" style="--c:${esc(m.color || '#7b4fc4')};--k:${k}"><span class="wg-fam__ph"${m.photo ? ' data-media-box' : ''}>${m.photo ? img(m.photo, '', 'wg-fill') : doodle(m.emoji || 'heart', cls === 'is-big' ? 40 : 30)}</span><small>${T(m.name)}</small></span>`;
+	const flags = (all.length ? all : [{ color: '#7b4fc4' }]).map((m) => m.color || '#7b4fc4');
+	return `<a class="wg-fam" href="family.html"${here === 'family.html' ? ' aria-current="page"' : ''}>
+		<span class="wg-fam__bunting" aria-hidden="true">${Array.from({ length: 9 }, (_, k) => `<i style="--c:${esc(flags[k % flags.length])};--k:${k}"></i>`).join('')}</span>
+		<span class="wg-fam__wall">
+			<span class="wg-fam__row">${big.map((m, k) => pola(m, k, 'is-big')).join(`<i class="wg-fam__heart" aria-hidden="true">${doodle('heart', 22)}</i>`)}</span>
+			<span class="wg-fam__row is-kids">${small.map((m, k) => pola(m, k + 2, 'is-small')).join('')}</span>
+		</span>
+		<span class="wg-fam__foot">
+			<b>${L('عيلتنا', 'Our family')}</b>
+			<small>${wed ? L(`عيلة من ${num(yearsBetween(wed))} سنين · ${num(all.length)} أفراد`, `a family for ${yearsBetween(wed)} years · ${all.length} of us`) : L('شجرة العيلتين', 'The family tree')}</small>
+			<span class="wg-fam__go">${Y('افتح الشجرة', 'افتحي الشجرة', 'Open the tree')} ${App.arrow}</span>
+		</span>
 	</a>`;
 }
 
@@ -747,7 +756,7 @@ function familyFrame(s, here) {
    menu shows the widgets it always had. `idea` is the number of the idea on widgets.html it came from. ---------- */
 export const WG_SIZES = { s: [1, 1, 'صغيرة', 'Small'], w: [2, 1, 'عريضة', 'Wide'], t: [1, 2, 'طويلة', 'Tall'], b: [2, 2, 'كبيرة', 'Big'], strip: [4, 1, 'شريط', 'Strip'], board: [4, 2, 'لوحة', 'Board'] };
 export const WG_CELLS = 12;
-export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['house', 'week'], people: ['frame', 'cal', 'tags'] };
+export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'guest', 'ourfirsts', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['house', 'needs'], people: ['frame', 'cal', 'tags'] };
 const WG_KEY = 'us.widgets';
 const cells = (w) => WG_SIZES[w.size][0] * WG_SIZES[w.size][1];
 export function wgLayout(g) {
@@ -835,7 +844,7 @@ function houseHTML(here) {
 	try { hijri = new Intl.DateTimeFormat(`${loc()}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d); } catch { /* none */ }
 	const win = (href, ic, ar, en, k) => `<a class="wg-win" ${wgGo(href, here)} style="--k:${k}"><span class="wg-win__g">${doodle(ic, 22)}</span><small>${L(ar, en)}</small></a>`;
 	return `<div class="wg-house${night ? ' is-night' : ''}">
-		<span class="wg-house__sky" aria-hidden="true">${night ? `<i class="wg-house__moon"></i>${Array.from({ length: 9 }, (_, k) => `<i class="wg-house__star" style="--x:${(k * 37) % 92 + 4}%;--y:${(k * 23) % 60 + 6}%;--k:${k}"></i>`).join('')}` : `<i class="wg-house__sun"></i><i class="wg-house__cloud"></i><i class="wg-house__cloud is-2"></i>`}</span>
+		<span class="wg-house__sky" aria-hidden="true">${night ? `<i class="wg-house__moon">${doodle('moon', 34)}</i>${Array.from({ length: 6 }, (_, k) => `<i class="wg-house__star" style="--x:${(k * 37) % 88 + 6}%;--y:${(k * 23) % 50 + 8}%;--k:${k}">${doodle('star', 12)}</i>`).join('')}` : `<i class="wg-house__sun">${doodle('sun', 40)}</i><svg class="wg-house__birds" viewBox="0 0 60 20" aria-hidden="true"><path d="M2 10q5-6 10 0q5-6 10 0M34 6q4-5 8 0q4-5 8 0"/></svg>`}</span>
 		<div class="wg-house__h">
 			<span class="wg-house__chim" aria-hidden="true"><b></b><b></b><b></b></span>
 			<svg class="wg-house__roof" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><path d="M8 68 L150 4 L292 68 Z" vector-effect="non-scaling-stroke"/><path d="M48 50 L252 50 M88 32 L212 32 M120 18 L180 18" class="t" vector-effect="non-scaling-stroke"/></svg>
@@ -889,12 +898,15 @@ export const WIDGETS = [
 		} },
 
 	/* ذكرياتنا */
-	{ id: 'album', g: 'memories', size: 't', ar: 'ألبوم الصور', en: 'Photo album', dar: 'صورة من الألبوم، غيرها كل ما تفتح', den: 'A photo from the album, new each time',
-		html: (s) => `<div class="mg-cards"><a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a></div>` },
-	{ id: 'note', g: 'memories', size: 't', ar: 'رسالة حب', en: 'A love note', dar: 'رسالة من رسايلنا على ورقة', den: 'One of our notes',
-		html: (s) => `<div class="mg-cards"><a class="mg-card mg-card--note" href="notes.html"><span class="mg-note" id="mg-note">${noteHTML(s)}</span><span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span></a></div>` },
-	{ id: 'guest', g: 'memories', size: 't', ar: 'دفتر المعازيم', en: 'Guestbook', dar: 'صورة دفتر المعازيم وعدد التهاني', den: 'The guestbook and its wishes',
-		html: (s) => { const gb = s.guestbook; return `<div class="mg-cards">${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>${img(gb.photo, '', 'mg-cover')}<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span></a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}</div>`; } },
+	{ id: 'album', g: 'memories', size: 's', ar: 'ألبوم الصور', en: 'Photo album', dar: 'صورة من الألبوم في بولارويد صغيرة، غيرها كل ما تفتح', den: 'A photo from the album, a small polaroid',
+		html: (s, here) => { const [p] = someOf(photosOf(s), 1); return `<a class="wg-mini wg-mini--pola" ${wgGo('gallery.html', here)}><span class="wg-mini__ph"${p ? ' data-media-box' : ''}>${p ? img(p, '', 'wg-fill') : doodle('camera', 34)}</span><b>${L('ألبوم الصور', 'Photo album')}</b></a>`; } },
+	{ id: 'note', g: 'memories', size: 's', ar: 'رسالة حب', en: 'A love note', dar: 'رسالة من رسايلنا على ورقة مسطرة', den: 'One of our notes on lined paper',
+		html: (s, here) => { const ns = (s.notes || []).filter((n) => t(n.text).length <= 110); const n = ns.length ? pick(ns) : null; return `<a class="wg-mini wg-mini--note" ${wgGo('notes.html', here)}><span class="wg-mini__k">${L('رسايل حب', 'Love notes')}</span><q>${n ? T(n.text) : T(s.closing)}</q>${n ? `<small>— ${T(n.by === 'him' ? s.him : s.her)}</small>` : ''}</a>`; } },
+	{ id: 'guest', g: 'memories', size: 's', ar: 'كلمة من المعازيم', en: 'A guestbook wish', dar: 'تهنئة من دفتر المعازيم بإسم صاحبها', den: 'A wish from the guestbook, with who wrote it',
+		html: (s, here) => { const es = (s.guestbook?.entries || []).filter((e) => e.text); const e = es.length ? pick(es) : null; if (!e) return ''; return `<a class="wg-mini wg-mini--guest" ${wgGo('guestbook.html', here)}><span class="wg-mini__k">${L('دفتر المعازيم', 'Guestbook')}</span><q>${T(e.text)}</q><small>— ${T(e.name)}</small></a>`; } },
+	{ id: 'ourfirsts', g: 'memories', size: 's', ar: 'أول مرة لينا', en: 'A first of ours', dar: 'أول مرة من أول مراتنا، بتاريخها، غيرها كل ما تفتح', den: 'One of our firsts, with its date',
+		html: (s, here) => `<a class="wg-mini wg-mini--first" ${wgGo('ourfirsts.html', here)}><span class="wg-mini__k">${doodle('heart', 12)} ${L('أول مرة لينا', 'Our firsts')}</span><b class="wg-mini__t">${L('أول مرة…', 'The first time…')}</b><small class="wg-mini__d"></small></a>`,
+		fill: async (el, live) => { const xs = ((await live.load('ourfirsts')).items || []).filter((x) => x.what); if (!xs.length) return; const x = pick(xs); el.querySelector('.wg-mini__t').textContent = App.t(x.what); el.querySelector('.wg-mini__d').textContent = [x.date ? fmtDate(x.date) : '', App.t(x.where || '')].filter(Boolean).join(' · '); } },
 	{ id: 'numbers', g: 'memories', size: 'b', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'عمود لكل سنة من حكايتنا، وكام يوم من أول سلام', den: 'A bar for every year, and the days since hello',
 		html: (s, here) => {
 			const met = parseDate(s.met || '2009-06-10'), n = Math.min(yearsBetween(met) + 1, 20);
@@ -958,6 +970,16 @@ export const WIDGETS = [
 	/* بيتنا */
 	{ id: 'house', g: 'home', size: 'board', ar: 'بيتنا', en: 'Our house', dar: 'بيت مرسوم بالقلم: شبابيكه صفحات البيت، وعلى الباب ورقة النهارده، وبالليل الشبابيك بتنور', den: 'A drawn house: its windows are the home pages, today on the door, lit up at night',
 		html: (s, here) => houseHTML(here) },
+	{ id: 'needs', g: 'home', size: 'strip', ar: 'ناقص إيه؟', en: 'What’s missing?', dar: 'ورقة من بلوك النوت عليها الطلبات اللي لسه ماتجابتش، واللي اتجاب متشطب', den: 'A notepad page of what’s still to buy, the bought ones crossed out',
+		html: (s, here) => `<a class="wg-needs" ${wgGo('shopping.html', here)}><span class="wg-needs__rings" aria-hidden="true"></span><span class="wg-needs__h">${doodle('scroll', 18)} ${L('ناقص إيه في البيت؟', 'What’s missing at home?')}</span><span class="wg-needs__list"><span class="wg-needs__empty">${L('بنشوف الليستة…', 'Checking the list…')}</span></span><span class="wg-needs__n"></span></a>`,
+		fill: async (el, live) => {
+			const items = ((await live.load('shopping')).items || []).filter((x) => x.name);
+			const left = items.filter((x) => !x.done), got = items.filter((x) => x.done);
+			const list = el.querySelector('.wg-needs__list');
+			if (!left.length) { list.innerHTML = `<span class="wg-needs__empty">${L('مفيش حاجة ناقصة — الليستة فاضية ♥', 'Nothing missing — the list is empty ♥')}</span>`; return; }
+			list.innerHTML = [...left.slice(0, 6), ...got.slice(0, Math.max(0, 7 - Math.min(6, left.length)))].map((x, k) => `<span class="wg-needs__it${x.done ? ' is-done' : ''}" style="--k:${k}"><i></i><span dir="auto">${esc(x.name)}</span></span>`).join('');
+			el.querySelector('.wg-needs__n').innerHTML = `<b>${num(left.length)}</b> ${L('ناقصين', 'to get')}`;
+		} },
 	{ id: 'today', g: 'home', size: 'board', ar: 'ورقة النهارده', en: 'Today’s page', dar: 'ورقة النتيجة: اليوم والهجري، وروتين النهارده', den: 'Today from the wall calendar',
 		html: (s, here) => {
 			const d = new Date(); let hijri = '';

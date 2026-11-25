@@ -459,3 +459,85 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .wg-sketch:hover .wg-sketch__in { scale: calc(var(--k, .5) * 1.06); }
 .wg-sketch > b { max-width: 100%; font-weight: 800; font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wg--s .wg-sketch > b { font-size: .68rem; }
+
+/* ---------- عيلتنا: the family wall ---------- */
+.wg > a.wg-fam { grid-template-rows: auto minmax(0, 1fr) auto; align-content: stretch; gap: 2px; padding: 22px 12px 12px; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 14px 14px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--tab, #e2d3f5); }
+.wg-fam__bunting { position: absolute; top: 0; inset-inline: 0; display: flex; justify-content: space-around; height: 22px; border-top: 1.5px solid var(--ink); }
+.wg-fam__bunting i { width: 18px; height: 20px; margin-top: -1px; background: color-mix(in srgb, var(--c) 70%, #fff); border: 1.2px solid var(--ink); border-top: 0; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: 50% 0; animation: wg-flag 3s ease-in-out infinite; animation-delay: calc(var(--k) * -.35s); }
+@keyframes wg-flag { 50% { rotate: 6deg; } }
+.wg-fam__wall { display: grid; align-content: center; gap: 6px; min-height: 0; }
+.wg-fam__row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.wg-fam__heart { color: var(--coral); animation: wg-seal 1.6s ease-in-out infinite; }
+.wg-fam__p { display: grid; justify-items: center; gap: 2px; padding: 5px 5px 4px; background: #fff; border: 1.5px solid #37353f; box-shadow: -2px 3px 0 rgba(55, 53, 63, .2); rotate: calc((var(--k) - 1.5) * 3deg); transition: rotate .25s, translate .25s; }
+.wg-fam:hover .wg-fam__p { rotate: 0deg; }
+.wg-fam:hover .wg-fam__p:nth-child(odd) { translate: 0 -3px; }
+.wg-fam__ph { display: grid; place-items: center; overflow: hidden; color: var(--c); background: color-mix(in srgb, var(--c) 18%, #fff); }
+.wg-fam__ph > [data-media-box], .wg-fam__ph > img { width: 100%; height: 100%; }
+.wg-fam__p.is-big .wg-fam__ph { width: clamp(62px, 6vw, 86px); aspect-ratio: 1; }
+.wg-fam__p.is-small .wg-fam__ph { width: clamp(46px, 4.4vw, 62px); aspect-ratio: 1; }
+.wg-fam__p small { padding: 0 6px; font-weight: 800 !important; font-size: .66rem !important; color: #2b2b33 !important; background: linear-gradient(transparent 50%, color-mix(in srgb, var(--c) 40%, transparent) 50%); }
+.wg-fam__foot { display: grid; justify-items: center; gap: 0; }
+.wg-fam__foot b { font: 700 1.3rem/1.2 'Aref Ruqaa', var(--f-hand); color: var(--gc, #7b4fc4); padding-inline: .2em; background: linear-gradient(transparent 58%, var(--tab, #e2d3f5) 58% 92%, transparent 92%); }
+.wg-fam__go { font-weight: 800; font-size: .76rem; color: #0e6990; }
+
+/* ---------- بيتنا: the house in the diary's pen — dotted paper, a hatched roof, lined walls, highlighter windows ---------- */
+.wg-house { background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 14%, transparent) 1px, transparent 1.4px) 0 0 / 14px 14px; border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--tab, #cfe8d3); }
+.wg-house.is-night { background: #1d2440 radial-gradient(rgba(242, 235, 223, .1) 1px, transparent 1.4px) 0 0 / 14px 14px; }
+.wg-house__sun { top: 10px; inset-inline-start: 18px; width: auto; height: auto; display: grid; place-items: center; padding: 4px; color: #c98a00; background: none; border: 0; border-radius: 50%; box-shadow: none; animation: wg-spin 30s linear infinite; }
+.wg-house__sun::before { content: ''; position: absolute; inset: 8px; z-index: -1; background: var(--hl-yellow, rgba(253, 200, 48, .55)); border-radius: 50%; }
+.wg-house__birds { position: absolute; top: 22px; inset-inline-end: 18%; width: 52px; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; animation: wg-float 4s ease-in-out infinite; }
+.wg-house__moon { top: 10px; inset-inline-start: 18px; width: auto; height: auto; color: #fde49a; box-shadow: none; filter: drop-shadow(0 0 6px rgba(253, 228, 154, .6)); }
+.wg-house__star { width: auto; height: auto; color: #fde49a; background: none; }
+.wg-house__roof path { fill: color-mix(in srgb, #fc8b93 55%, var(--card)); stroke: var(--ink); }
+.wg-house__roof path.t { stroke: color-mix(in srgb, var(--ink) 45%, transparent); }
+.wg-house__name { top: 24px; padding: 1px 14px 2px; rotate: -3deg; color: #2b2b33; text-shadow: none; background: rgba(205, 220, 57, .75) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .45) 5px 10px); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); }
+.wg-house__chim { background: var(--card) repeating-linear-gradient(0deg, transparent 0 7px, color-mix(in srgb, var(--ink) 35%, transparent) 7px 8px); border-color: var(--ink); }
+.wg-house__body { background: var(--card) repeating-linear-gradient(transparent 0 21px, rgba(14, 105, 144, .16) 21px 22px); border-color: var(--ink); border-radius: 0 0 4px 4px; }
+.wg-win { color: var(--text); }
+.wg-win__g { color: #2b2b33; background: linear-gradient(90deg, transparent 47%, #37353f 47% 53%, transparent 53%), linear-gradient(0deg, transparent 46%, #37353f 46% 54%, transparent 54%), var(--wc, #d4ebf7); border: 1.5px solid #37353f; border-radius: var(--sketch-sm, 8px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink); }
+.wg-win__g::before { display: none; }
+.wg-win:nth-of-type(1) { --wc: #fcc5c9; } .wg-win:nth-of-type(2) { --wc: #fde49a; } .wg-win:nth-of-type(3) { --wc: #e3ec9c; } .wg-win:nth-of-type(4) { --wc: #bfe0ef; } .wg-win:nth-of-type(5) { --wc: #e2d3f5; }
+.wg-win small { padding: 0 4px; background: linear-gradient(transparent 55%, var(--wc) 55% 95%, transparent 95%); }
+.wg-win:hover .wg-win__g, .wg-win:focus-visible .wg-win__g { translate: calc(var(--bujo-x, 1) * -2px) -3px; background: linear-gradient(90deg, transparent 47%, #37353f 47% 53%, transparent 53%), linear-gradient(0deg, transparent 46%, #37353f 46% 54%, transparent 54%), var(--wc, #d4ebf7); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--ink); }
+.is-night .wg-win__g { background: linear-gradient(90deg, transparent 47%, #37353f 47% 53%, transparent 53%), linear-gradient(0deg, transparent 46%, #37353f 46% 54%, transparent 54%), #fde49a; box-shadow: 0 0 16px rgba(253, 200, 48, .55), calc(var(--bujo-x, 1) * 3px) 3px 0 0 #000; }
+.is-night .wg-win small { color: #f2ebdf; background: none; }
+.wg-door { background: color-mix(in srgb, #3f8a57 45%, var(--card)) repeating-linear-gradient(90deg, transparent 0 16px, rgba(55, 53, 63, .18) 16px 17px); border-color: var(--ink); border-radius: 40px 44px 0 0 / 38px 42px 0 0; }
+.wg-door__plate { border-radius: var(--sketch-sm, 6px); }
+.wg-door em { color: #2b2b33; padding: 0 5px; background: var(--hl-yellow, #fde49a); border-radius: 3px; }
+.wg-house__grass { height: 12px; background: linear-gradient(transparent 30%, var(--hl-lime, rgba(205, 220, 57, .55)) 30% 85%, transparent 85%); border-top: 1.5px solid var(--ink); box-shadow: none; }
+.is-night .wg-house__grass { background: linear-gradient(transparent 30%, rgba(205, 220, 57, .25) 30% 85%, transparent 85%); border-top-color: rgba(242, 235, 223, .6); }
+.is-night .wg-house__body, .is-night .wg-house__chim { border-color: rgba(242, 235, 223, .7); }
+
+/* ---------- بيتنا: ناقص إيه؟ — a page torn from the notepad ---------- */
+.wg > a.wg-needs { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto; align-items: center; align-content: center; justify-items: stretch; gap: 14px; padding: 20px 18px 12px; text-align: start; background: #fffdf8 repeating-linear-gradient(transparent 0 23px, rgba(14, 105, 144, .18) 23px 24px); color: #2b2b33; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--tab, #cfe8d3); }
+.wg-needs__rings { position: absolute; top: 4px; inset-inline: 14px; height: 10px; background: radial-gradient(circle, #fff 3px, #37353f 3.5px 4.5px, transparent 5px) 0 0 / 22px 10px repeat-x; }
+.wg-needs__h { display: grid; justify-items: center; gap: 2px; max-width: 7em; font: 700 .95rem/1.3 'Aref Ruqaa', var(--f-hand); text-align: center; color: #3f8a57; }
+.wg-needs__list { display: flex; flex-wrap: wrap; gap: 6px 14px; min-width: 0; }
+.wg-needs__it { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: .84rem; animation: wg-in .35s both; animation-delay: calc(var(--k) * 60ms + 150ms); }
+.wg-needs__it i { width: 14px; height: 14px; flex: none; background: #fff; border: 1.5px solid #37353f; border-radius: 3px 5px 3px 4px; }
+.wg-needs__it.is-done { color: #8a8792; }
+.wg-needs__it.is-done span { text-decoration: line-through 2px var(--coral); }
+.wg-needs__it.is-done i { background: #3f8a57; box-shadow: inset 0 0 0 2px #fff; }
+.wg-needs__empty { font: 700 .95rem 'Aref Ruqaa', var(--f-hand); color: #6b6b75; }
+.wg-needs__n { display: grid; justify-items: center; font-weight: 800; font-size: .72rem; color: #6b6b75; }
+.wg-needs__n b { font: 400 1.8rem/1 var(--f-label); color: var(--coral); }
+
+/* ---------- ذكرياتنا: four small cards ---------- */
+.wg > a.wg-mini { grid-template-rows: auto minmax(0, 1fr) auto; align-content: stretch; gap: 4px; padding: 10px 9px 9px; color: #2b2b33; }
+.wg-mini__k { display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-weight: 800; font-size: .66rem; color: var(--gc, #6f8f1f); }
+.wg-mini q { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; align-self: center; font: 700 .9rem/1.45 'Aref Ruqaa', var(--f-hand); }
+.wg-mini small { color: #6b6b75 !important; font-size: .66rem !important; }
+.wg > a.wg-mini--pola { grid-template-rows: minmax(0, 1fr) auto; padding: 7px 7px 6px; background: #fff; rotate: -2deg; }
+.wg-mini--pola::before, .wg-mini--note::before, .wg-mini--guest::before, .wg-mini--first::before { content: ''; position: absolute; top: -5px; left: 50%; z-index: 2; width: 46px; height: 14px; translate: -50% 0; rotate: 4deg; background: rgba(253, 200, 48, .7) repeating-linear-gradient(45deg, transparent 0 4px, rgba(255, 255, 255, .45) 4px 8px); }
+.wg-mini__ph { display: grid; place-items: center; overflow: hidden; color: var(--gc); background: color-mix(in srgb, var(--tab, #e3ec9c) 50%, #fff); border: 1px solid #37353f; }
+.wg-mini__ph > [data-media-box], .wg-mini__ph > img { width: 100%; height: 100%; }
+.wg-mini--pola b { font: 700 .82rem 'Aref Ruqaa', var(--f-hand); }
+.wg > a.wg-mini--note { background: #ffe6ea repeating-linear-gradient(transparent 0 19px, rgba(217, 83, 79, .18) 19px 20px); rotate: 1.5deg; }
+.wg-mini--note::before { background-color: rgba(252, 139, 147, .75); }
+.wg > a.wg-mini--guest { background: #fffaf0; border-color: #b98b2e; box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px #e6c56a, calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--tab, #e3ec9c); rotate: -1deg; }
+.wg-mini--guest::before { background-color: rgba(205, 220, 57, .7); }
+.wg > a.wg-mini--first { background: #f1f8e6; rotate: 2deg; }
+.wg-mini--first::before { background-color: rgba(191, 224, 239, .8); }
+.wg-mini__t { align-self: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font: 700 1rem/1.35 'Aref Ruqaa', var(--f-hand); }
+.wg-mini__k svg { color: var(--coral); }
+.wg > a.wg-mini:hover { rotate: 0deg; }
