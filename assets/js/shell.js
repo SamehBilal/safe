@@ -1000,15 +1000,30 @@ export const WIDGETS = [
 		html: (s, here) => familyFrame(s, here) },
 	{ id: 'cal', g: 'people', size: 'b', idea: 43, ar: 'المناسبة الجاية', en: 'Next occasion', dar: 'نتيجة مقطوعة على المناسبة الجاية وفاضل قد إيه', den: 'A desk calendar torn to the next occasion',
 		html: (s) => calendarHTML(s) },
-	/* the next twelve months, this one first: each family occasion as its little drawing in its month */
-	{ id: 'occyear', g: 'people', size: 'b', ar: 'سنة المناسبات', en: 'The year of occasions', dar: 'الاتناشر شهر الجايين، وكل مناسبة في شهرها', den: 'The next twelve months, each occasion in its month',
+	/* the year ahead as a dial: today at the top, the months round the ring clockwise, each family occasion a little badge
+	   where it falls, a coral arc from today to the next one, and in the middle how many days are left and what it is */
+	{ id: 'occyear', g: 'people', size: 'b', ar: 'سنة المناسبات', en: 'The year of occasions', dar: 'السنة الجاية دايرة، وكل مناسبة مكانها عليها', den: 'The year ahead as a dial, each occasion in its place',
 		html: (s, here) => {
-			const os = occasions(s); if (!os.length) return '';
-			const now = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-			const months = Array.from({ length: 12 }, (_, k) => new Date(now.getFullYear(), now.getMonth() + k, 1));
-			const inMonth = (d) => os.filter((o) => { const w = new Date(now.getFullYear(), now.getMonth(), now.getDate() + o.days); return w.getMonth() === d.getMonth() && w.getFullYear() === d.getFullYear(); });
-			const next = os[0];
-			return `<a class="wg-occy" ${wgGo('calendar.html', here)}><span class="wg-occy__h">${L('السنة الجاية', 'The year ahead')}<b>${num(os.length)} ${L('مناسبة', 'occasions')}</b></span><span class="wg-occy__g">${months.map((d, k) => { const xs = inMonth(d); return `<span class="wg-occy__m${k ? '' : ' is-now'}${xs.includes(next) ? ' is-next' : ''}${xs.length ? ' has' : ''}" style="--k:${k}" title="${esc(xs.map((o) => o.title).join(' · '))}"><small>${esc(d.toLocaleDateString(loc, { month: 'short' }))}</small><i>${xs.slice(0, 3).map((o) => doodle(o.emoji || 'heart', 14)).join('')}</i></span>`; }).join('')}</span></a>`;
+			const os = occasions(s).filter((o) => o.days < 366); if (!os.length) return '';
+			const now = new Date(); now.setHours(12, 0, 0, 0);
+			const loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB', R = 78, C = 100;
+			const at = (d, r = R) => { const t = (d / 365) * 2 * Math.PI; return [C + r * Math.sin(t), C - r * Math.cos(t)]; };
+			const pct = ([x, y]) => `left:${(x / 2).toFixed(2)}%;top:${(y / 2).toFixed(2)}%`;
+			// where each month starts, counted in days from today
+			const months = Array.from({ length: 12 }, (_, k) => { const d = new Date(now.getFullYear(), now.getMonth() + k + 1, 1, 12); return { d, at: Math.round((d - now) / 864e5) }; }).filter((m) => m.at < 365);
+			const next = os[0], [ex, ey] = at(Math.max(next.days, 1));
+			const big = next.days > 182 ? 1 : 0;
+			return `<a class="wg-dial" ${wgGo('calendar.html', here)}><span class="wg-dial__box" style="direction:ltr">
+				<svg viewBox="0 0 200 200" aria-hidden="true">
+					<circle cx="100" cy="100" r="${R}" class="wg-dial__ring"/>
+					${months.map((m) => { const [x1, y1] = at(m.at, R - 9), [x2, y2] = at(m.at, R + 9); return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="wg-dial__tick"/>`; }).join('')}
+					<path d="M100 ${100 - R} A${R} ${R} 0 ${big} 1 ${ex.toFixed(1)} ${ey.toFixed(1)}" class="wg-dial__arc" pathLength="1"/>
+					<circle cx="100" cy="${100 - R}" r="5" class="wg-dial__now"/>
+				</svg>
+				${months.filter((m, k) => k % 3 === 0).map((m) => `<i class="wg-dial__m" style="${pct(at(Math.min(364, m.at + 15), R - 30))}">${esc(m.d.toLocaleDateString(loc, { month: 'short' }))}</i>`).join('')}
+				${os.map((o, k) => `<span class="wg-dial__o${o === next ? ' is-next' : ''}" style="${pct(at(o.days))};--k:${k}" title="${esc(o.title)}">${doodle(o.emoji || 'heart', 13)}</span>`).join('')}
+				<span class="wg-dial__mid"><b>${next.days ? num(next.days) : '♥'}</b><small>${next.days ? L('يوم على', next.days === 1 ? 'day to' : 'days to') : L('النهارده', 'today')}</small><em dir="auto">${esc(next.title)}</em></span>
+			</span><span class="wg-dial__foot">${L(`${num(os.length)} مناسبة في السنة الجاية`, `${os.length} occasions in the year ahead`)}</span></a>`;
 		} },
 	{ id: 'tags', g: 'people', size: 'strip', ar: 'وبعدها', en: 'And after that', dar: 'المناسبتين اللي بعدها، جنب بعض', den: 'The two occasions after it',
 		html: (s) => nextTagsHTML(s) },
