@@ -852,8 +852,8 @@ function addHTML() {
 	return `<div class="add-menu" id="add-menu">
 		<button class="icon-btn add-btn" type="button" aria-expanded="false" aria-controls="add-panel" aria-label="${Y('ضيف حاجة', 'ضيفي حاجة', 'Add something')}" title="${Y('ضيف حاجة', 'ضيفي حاجة', 'Add something')}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
 		<div class="add-panel" id="add-panel" hidden>
-			<p class="add-panel__h">${doodle('pen', 18)} ${Y('عايز تضيف إيه؟', 'عايزة تضيفي إيه؟', 'What would you like to add?')}</p>
-			<div class="add-panel__groups">${by.map(({ g, items }) => `<section class="add-group" style="--tab:${g.tab};--gc:${g.c}"><p class="add-group__h">${esc(L(g.ar, g.en))}</p>${items.map(({ p, ar, en }) => `<a class="add-item" href="${p.href}#add">${icon(p.ic, 18)}<span>${esc(L(ar, en))}</span></a>`).join('')}</section>`).join('')}</div>
+			<p class="add-panel__h"><span>${doodle('pen', 22)}</span><b>${Y('عايز تضيف إيه؟', 'عايزة تضيفي إيه؟', 'What would you like to add?')}</b><small>${L(`${num(ADD.length)} حاجة في ٦ فصول`, `${ADD.length} things in six chapters`)}</small></p>
+			<div class="add-panel__groups">${by.map(({ g, items }) => `<section class="add-group" style="--tab:${g.tab};--gc:${g.c}"><p class="add-group__h"><i aria-hidden="true">${num(0)}${num(GROUPS.indexOf(g) + 1)}</i><b>${esc(L(g.ar, g.en))}</b></p>${items.map(({ p, ar, en }) => `<a class="add-item" href="${p.href}#add">${icon(p.ic, 18)}<span>${esc(L(ar, en))}</span></a>`).join('')}</section>`).join('')}</div>
 		</div>
 	</div>`;
 }

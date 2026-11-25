@@ -930,3 +930,70 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 .mg-fnote__mag { position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #fff8, transparent 50%), #d9534f; border: 1.2px solid #37353f; border-radius: 50%; }
 .mg-fnote.is-p .mg-fnote__mag { background-color: #0e6990; }
 .mg-fnote.is-g .mg-fnote__mag { background-color: #fdc830; }
+
+/* ---------- the chapter's cards fill their side of the menu, top to bottom, the same in all six ---------- */
+@media (min-width: 980px) {
+	.mega-in { align-items: stretch; }
+	.mx-main { align-self: center; }
+	.mx-side { align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-height: 0; }
+	.mx-side > * { margin-top: 0; margin-bottom: 0; }
+	/* حكايتنا and ذكرياتنا: the photo cards grow tall, the band or the film under them */
+	:is(.mega-story, .mega-memories) .mx-side > .mg-cards { flex: 1 1 auto; min-height: 0; align-items: stretch; grid-auto-rows: 1fr; }
+	:is(.mega-story, .mega-memories) .mg-card { aspect-ratio: auto; height: auto; min-height: 220px; }
+	:is(.mega-story, .mega-memories) .mg-card .mg-cover, .mega-memories .mg-pic, .mega-memories .mg-note, .mg-card--data .mg-numbers { height: 100%; }
+	.mega-story .mg-band { flex: none; }
+	.mega-memories .mg-film { flex: none; }
+	/* ليالينا: the four draws grow, tonight's sky under them */
+	.mega-nights .mx-side > .mg-kinds { flex: 1 1 auto; align-content: stretch; }
+	.mega-nights .mg-kind { display: grid; align-content: center; justify-items: center; }
+	.mega-nights .mg-sky { flex: none; min-height: 120px; }
+	/* ولادنا: the figures grow, the tape under them */
+	.mega-kids .mx-side > .mg-figs { flex: 1 1 auto; align-items: stretch; grid-auto-rows: 1fr; }
+	.mega-kids .mg-fig { display: grid; align-content: center; justify-items: center; gap: 10px; }
+	.mega-kids .mg-fig-box { width: clamp(96px, 9vw, 140px); height: clamp(96px, 9vw, 140px); }
+	.mega-kids .mg-fig-t b { font-size: 1.25rem; }
+	.mega-kids .mg-fig-emoji .dd { width: clamp(44px, 4.6vw, 70px); height: clamp(44px, 4.6vw, 70px); }
+	.mega-kids .mg-fig-t small { font-size: .9rem; }
+	/* بيتنا: the day grows, the fridge under it */
+	.mega-home .mx-side > .mg-home { flex: 1 1 auto; grid-template-rows: 1fr auto; }
+	.mega-home .mg-today { align-content: center; }
+	.mega-home .mg-today { gap: 6px; }
+	.mega-home .mg-today b { font-size: clamp(4.4rem, 7vw, 6.4rem); }
+	.mega-home .mg-today__m { padding: 10px 0; font-size: 1.3rem; }
+	.mega-home .mg-today__w { font-size: 1.15rem; }
+	.mega-home .mg-today small { font-size: .92rem; }
+	.mega-home .mg-today .mg-go { font-size: .95rem; }
+	.mega-home .mg-fnote { padding: 18px 8px 12px; }
+	.mega-home .mg-fnote b { font-size: .84rem; }
+	.mega-home .mg-fnote small { font-size: .72rem; }
+	/* عيلتنا: the calendar and the frame grow, what comes after under them */
+	.mega-people .mx-side > .mx-wpair { flex: 1 1 auto; align-items: stretch; }
+	.mega-people .mx-wpair > * { align-self: stretch; }
+	.mega-people .mg-cal { align-self: stretch; display: grid; align-content: center; }
+	.mega-people .mg-frame-fam { align-content: center; }
+	.mega-people .mg-frame-fam__pic { width: 64px; height: 64px; }
+}
+
+/* ---------- the «+» menu in the diary's own hand: a page of dotted paper with washi tape on top, the question in
+   handwriting under a highlighter, each chapter an index card (its number in an ink circle, its name highlighted in
+   its colour, a hard shadow in its colour) and each thing to add with its icon in the menus' hand-drawn blob ---------- */
+.add-panel { --ink: #37353f; padding: 26px 18px 20px; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 16px 16px; border: 1.5px solid var(--ink); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--ink), 0 26px 50px rgba(19, 52, 71, .2); overflow-x: hidden; }
+.add-panel::before { content: ""; position: absolute; top: 6px; left: 50%; display: block; width: 120px; height: 22px; translate: -50% 0; rotate: -2deg; background: rgba(252, 139, 147, .75) repeating-linear-gradient(45deg, transparent 0 4px, rgba(255, 255, 255, .45) 4px 8px); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); z-index: 2; }
+.add-panel__h { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 16px; }
+.add-panel__h > span { display: grid; place-items: center; width: 40px; height: 40px; color: #fff; background: var(--coral); border: 1.5px solid var(--ink); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); }
+.add-panel__h b { padding-inline: .2em; font: 700 1.9rem/1.1 var(--f-hand); color: var(--text); background: linear-gradient(transparent 58%, var(--hl-yellow, #fdc830) 58% 92%, transparent 92%); }
+:lang(ar) .add-panel__h b { font: 700 1.45rem/1.4 'Aref Ruqaa', var(--f-body); }
+.add-panel__h small { flex-basis: 100%; padding-inline-start: 50px; font-weight: 700; font-size: .82rem; color: var(--muted); }
+.add-panel__groups { gap: 18px 14px; }
+.add-group { position: relative; gap: 2px; padding: 12px 10px 10px; background: var(--card); border: 1.5px solid var(--ink); border-top-width: 1.5px; border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--tab); }
+.add-group:nth-child(odd) { rotate: -.4deg; } .add-group:nth-child(even) { rotate: .5deg; }
+.add-group__h { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding-bottom: 8px; border-bottom: 1.5px dashed color-mix(in srgb, var(--ink) 35%, transparent); }
+.add-group__h i { display: grid; place-items: center; flex: none; width: 28px; height: 28px; font: 400 .9rem/1 var(--f-label); font-style: normal; color: #fff; background: #37353f; border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--tab); }
+.add-group__h b { padding-inline: .2em; font: 400 1.2rem/1.2 var(--f-label); letter-spacing: .03em; color: var(--text); background: linear-gradient(transparent 55%, var(--tab) 55% 92%, transparent 92%); }
+:lang(ar) .add-group__h b { font: 700 1.05rem/1.4 'Aref Ruqaa', var(--f-body); letter-spacing: 0; }
+.add-item { gap: 10px; padding: 5px 6px; font-size: .86rem; border: 1.5px solid transparent; border-radius: var(--sketch-sm, 10px); transition: background .15s, border-color .15s, translate .15s; }
+.add-item .ic { display: grid; place-items: center; width: 30px; height: 30px; color: var(--gc); background: color-mix(in srgb, var(--tab) 55%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+.add-item:hover, .add-item:focus-visible { background: color-mix(in srgb, var(--tab) 30%, var(--card)); border-color: var(--ink); translate: calc(var(--bujo-x, 1) * -1px) -1px; }
+.add-btn { box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink); }
+.add-btn[aria-expanded='true'] { background: var(--hl-yellow, #fdc830); color: #2b2b33; }
+@media (max-width: 480px) { .add-panel { box-shadow: 0 20px 40px rgba(0, 0, 0, .25); } .add-group:nth-child(n) { rotate: 0deg; } }
