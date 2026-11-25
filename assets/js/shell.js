@@ -819,20 +819,32 @@ function wgTick() {
 
 /* ولادنا: a sticker card for each of the boys — his colour in crayon stripes, confetti, his face bobbing in a sunburst,
    his name on a ribbon, his age and how long to his birthday */
+/* ولادنا: each of the boys on an ID badge hanging from a lanyard in his colour — the badge's header band, his photo
+   beside his name and age, a bar filling up through the year toward his next birthday, and a barcode; it sways a
+   little on its strap, and swings when you point at it */
 function kidCard(m, here, i = 0) {
-	let bday = '';
+	let bday = '', fill = 0;
 	if (m.born) {
 		const b = parseDate(m.born), now = new Date(); now.setHours(12, 0, 0, 0);
 		let n = new Date(now.getFullYear(), b.getMonth(), b.getDate(), 12); if (n < now) n = new Date(now.getFullYear() + 1, b.getMonth(), b.getDate(), 12);
 		const d = Math.round((n - now) / 864e5);
-		bday = d === 0 ? L('عيد ميلاده النهارده!', 'Birthday today!') : L(`عيد ميلاده بعد ${num(d)} يوم`, `birthday in ${d} days`);
+		fill = Math.round(((365 - d) / 365) * 100);
+		bday = d === 0 ? L('عيد ميلاده النهارده!', 'Birthday today!') : L(`عيد ميلاده بعد ${num(d)} يوم`, `Birthday in ${d} days`);
 	}
 	const href = `member.html?id=${esc(m.id)}`;
+	const bars = Array.from({ length: 22 }, (_, k) => `<i style="width:${[1, 2, 1, 3, 1, 2, 2, 1, 3, 1, 1, 2][(k + i * 5) % 12]}px"></i>`).join('');
 	return `<a class="wg-kidc" href="${href}" style="--c:${esc(m.color || '#0e6990')};--i:${i}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
-		<span class="wg-kidc__fx" aria-hidden="true">${['star', 'heart', 'sparkle', 'star'].map((d, k) => `<i style="--k:${k}">${doodle(d, 16)}</i>`).join('')}</span>
-		<span class="wg-kidc__face">${m.photo ? `<span class="wg-kidc__pic" data-media-box>${img(m.photo, '', 'wg-fill')}</span>` : `<span class="wg-kidc__pic">${doodle(m.emoji || 'baby', 54)}</span>`}</span>
-		<b class="wg-kidc__name">${T(m.name)}</b>
-		<span class="wg-kidc__chips">${m.born ? `<span>${age(m.born)}</span>` : ''}${bday ? `<span class="is-b">${doodle('cake', 13)} ${bday}</span>` : ''}</span>
+		<span class="wg-kidc__strap" aria-hidden="true"></span>
+		<span class="wg-kidc__badge">
+			<span class="wg-kidc__clip" aria-hidden="true"></span>
+			<span class="wg-kidc__band">${L('ولادنا', 'Our kids')}<i>${L('كارنيه', 'ID')} ${num(i + 1)}</i></span>
+			<span class="wg-kidc__row">
+				${m.photo ? `<span class="wg-kidc__pic" data-media-box>${img(m.photo, '', 'wg-fill')}</span>` : `<span class="wg-kidc__pic">${doodle(m.emoji || 'baby', 40)}</span>`}
+				<span class="wg-kidc__id"><b class="wg-kidc__name">${T(m.name)}</b>${m.born ? `<small>${age(m.born)}</small>` : ''}</span>
+			</span>
+			${bday ? `<span class="wg-kidc__bday"><span>${doodle('cake', 14)} ${bday}</span><span class="wg-kidc__bar" style="--p:${fill}%"><i></i></span></span>` : ''}
+			<span class="wg-kidc__code" aria-hidden="true">${bars}</span>
+		</span>
 	</a>`;
 }
 

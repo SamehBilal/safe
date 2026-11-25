@@ -379,31 +379,39 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .mega.is-open .wg > .mg-data .mg-bars i { animation-name: wg-bar; }
 @keyframes wg-bar { from { transform: scaleY(0); } }
 
-/* ---------- ولادنا: sticker cards ---------- */
-.wg-kids { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 18px; height: 100%; padding: 6px 4px 4px; }
-.wg-kidc { position: relative; display: grid; align-content: center; justify-items: center; gap: 6px; padding: 18px 10px 14px; overflow: hidden; color: #2b2b33; text-align: center; text-decoration: none;
-	background: radial-gradient(color-mix(in srgb, var(--c) 30%, transparent) 2px, transparent 2.5px) 0 0 / 16px 16px, repeating-linear-gradient(-12deg, color-mix(in srgb, var(--c) 10%, #fffdf8) 0 10px, #fffdf8 10px 20px);
-	border: 2px solid #37353f; border-radius: 22px 8px 24px 10px / 10px 24px 8px 22px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--c);
-	rotate: calc((var(--i) * 2 - 1) * 1.6deg); transition: rotate .3s var(--ease-pop, ease), translate .3s var(--ease-pop, ease), box-shadow .3s; }
-.wg-kidc::before { content: ''; position: absolute; top: -2px; left: 50%; width: 84px; height: 22px; translate: -50% 0; rotate: -4deg; background: color-mix(in srgb, var(--c) 55%, #fff) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .5) 5px 10px); opacity: .9; }
-.wg-kidc:hover, .wg-kidc:focus-visible { rotate: 0deg; translate: 0 -6px; box-shadow: calc(var(--bujo-x, 1) * 9px) 10px 0 0 var(--c); }
-.wg-kidc:hover .wg-kidc__face { animation-duration: .5s; }
-.wg-kidc__fx i { position: absolute; color: var(--c); animation: wg-twinkle 2.4s ease-in-out infinite; animation-delay: calc(var(--k) * -.6s); }
-.wg-kidc__fx i:nth-child(1) { top: 16%; inset-inline-start: 12%; } .wg-kidc__fx i:nth-child(2) { top: 22%; inset-inline-end: 12%; color: var(--coral); }
-.wg-kidc__fx i:nth-child(3) { bottom: 30%; inset-inline-start: 9%; color: #e0a800; } .wg-kidc__fx i:nth-child(4) { bottom: 36%; inset-inline-end: 9%; }
-@keyframes wg-twinkle { 50% { scale: 1.35; rotate: 18deg; opacity: .55; } }
-/* the face in a sunburst, bobbing */
-.wg-kidc__face { position: relative; display: grid; place-items: center; width: clamp(96px, 9vw, 132px); aspect-ratio: 1; animation: wg-bounce 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * -.9s); }
-.wg-kidc__face::before { content: ''; position: absolute; inset: -12%; background: repeating-conic-gradient(color-mix(in srgb, var(--c) 45%, #fff) 0 12deg, transparent 12deg 24deg); border-radius: 50%; animation: wg-spin 24s linear infinite; mask: radial-gradient(circle, #000 52%, transparent 71%); }
-.wg-kidc__pic { position: relative; display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden; color: var(--c); background: color-mix(in srgb, var(--c) 16%, #fff); border: 3px solid #37353f; border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; box-shadow: 0 0 0 5px #fffdf8, 0 0 0 7px var(--c); }
+/* ---------- ولادنا: ID badges on lanyards ---------- */
+.wg-kids { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 18px; height: 100%; padding: 0 6px 6px; }
+.wg-kidc { position: relative; display: grid; grid-template-rows: 26px minmax(0, 1fr); justify-items: center; min-height: 0; color: #2b2b33; text-decoration: none; transform-origin: 50% 0; animation: wg-kid-sway 5s ease-in-out infinite; animation-delay: calc(var(--i) * -2.3s); }
+@keyframes wg-kid-sway { 0%, 100% { rotate: -1.6deg; } 50% { rotate: 1.6deg; } }
+.wg-kidc:hover, .wg-kidc:focus-visible { animation: wg-kid-swing .9s cubic-bezier(.3, .6, .3, 1); }
+@keyframes wg-kid-swing { 0% { rotate: 0deg; } 25% { rotate: 5deg; } 55% { rotate: -3deg; } 80% { rotate: 1.5deg; } 100% { rotate: 0deg; } }
+/* the strap: two bands of his colour meeting at the clip */
+.wg-kidc__strap { position: relative; width: 70px; height: 100%; }
+.wg-kidc__strap::before, .wg-kidc__strap::after { content: ''; position: absolute; bottom: -4px; width: 12px; height: 44px; background: repeating-linear-gradient(0deg, var(--c) 0 6px, color-mix(in srgb, var(--c) 70%, #fff) 6px 9px); border: 1.5px solid #37353f; border-bottom: 0; }
+.wg-kidc__strap::before { left: 14px; rotate: 24deg; transform-origin: 50% 100%; }
+.wg-kidc__strap::after { right: 14px; rotate: -24deg; transform-origin: 50% 100%; }
+/* the badge */
+.wg-kidc__badge { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 8px; width: 100%; min-height: 0; padding: 0 0 10px; overflow: hidden; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 12px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--c) 55%, transparent), 0 10px 18px -10px rgba(30, 20, 10, .4); }
+.wg-kidc__clip { position: absolute; z-index: 2; top: 5px; left: 50%; width: 34px; height: 9px; translate: -50% 0; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 6px; }
+.wg-kidc__band { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 18px 12px 7px; font: 400 1.05rem/1 var(--f-label); letter-spacing: .08em; color: #fff; background: var(--c); border-bottom: 1.5px solid #37353f; }
+:lang(ar) .wg-kidc__band { font: 800 .82rem/1.2 var(--f-body); letter-spacing: 0; }
+.wg-kidc__band i { padding: 1px 7px; font: 800 .62rem/1.4 var(--f-body); font-style: normal; letter-spacing: .06em; color: var(--c); background: #fff; border-radius: 999px; }
+.wg-kidc__row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; min-height: 0; padding: 0 12px; }
+.wg-kidc__pic { display: grid; place-items: center; width: clamp(62px, 6vw, 84px); aspect-ratio: 4 / 5; overflow: hidden; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); border: 1.5px solid #37353f; border-radius: 8px; }
 .wg-kidc__pic > [data-media-box], .wg-kidc__pic > img { width: 100%; height: 100%; }
-@keyframes wg-bounce { 0%, 100% { translate: 0 0; rotate: -3deg; } 50% { translate: 0 -6px; rotate: 3deg; } }
-/* the name on a ribbon */
-.wg-kidc__name { position: relative; margin-top: 4px; padding: 3px 22px 5px; font: 400 1.45rem/1.15 var(--f-label); letter-spacing: .03em; color: #fff; background: var(--c); clip-path: polygon(0 0, 100% 0, 94% 50%, 100% 100%, 0 100%, 6% 50%); text-shadow: 0 2px 0 rgba(0, 0, 0, .18); }
-:lang(ar) .wg-kidc__name { font: 400 1.4rem/1.3 'Lalezar', var(--f-label); letter-spacing: 0; }
-.wg-kidc__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
-.wg-kidc__chips span { display: inline-flex; align-items: center; gap: 4px; padding: 1px 10px; font-weight: 800; font-size: .74rem; background: #fff; border: 1.5px solid #37353f; border-radius: 999px; }
-.wg-kidc__chips .is-b { background: #fde49a; }
+.wg-kidc__id { display: grid; gap: 4px; min-width: 0; text-align: start; }
+.wg-kidc__name { font: 400 clamp(1.4rem, 2vw, 1.9rem)/1.05 var(--f-label); letter-spacing: .03em; color: var(--c); overflow-wrap: anywhere; }
+:lang(ar) .wg-kidc__name { font: 400 clamp(1.3rem, 1.9vw, 1.7rem)/1.25 'Lalezar', var(--f-label); letter-spacing: 0; }
+.wg-kidc__id small { justify-self: start; padding: 1px 9px; font-size: .74rem; font-weight: 800; background: var(--hl-yellow, #fdc830); border: 1.5px solid #37353f; border-radius: 999px; }
+.wg-kidc__bday { display: grid; gap: 4px; padding: 0 12px; font-size: .7rem; font-weight: 800; color: #5a5560; }
+.wg-kidc__bday > span:first-child { display: flex; align-items: center; gap: 4px; }
+.wg-kidc__bday svg { color: var(--c); }
+.wg-kidc__bar { position: relative; height: 8px; overflow: hidden; background: color-mix(in srgb, var(--c) 12%, #fff); border: 1.2px solid #37353f; border-radius: 999px; }
+.wg-kidc__bar i { position: absolute; inset-block: 0; inset-inline-start: 0; width: var(--p); background: repeating-linear-gradient(-45deg, var(--c) 0 5px, color-mix(in srgb, var(--c) 70%, #fff) 5px 10px); animation: wg-kid-fill 1.2s .3s cubic-bezier(.3, .7, .3, 1) both; }
+@keyframes wg-kid-fill { from { width: 0; } }
+.wg-kidc__code { display: flex; justify-content: center; align-items: stretch; gap: 2px; height: 16px; padding: 0 12px; opacity: .75; }
+.wg-kidc__code i { background: #37353f; }
+@media (prefers-reduced-motion: reduce) { .wg-kidc, .wg-kidc:hover { animation: none; } .wg-kidc__bar i { animation: none; } }
 
 /* ---------- بيتنا: the house ---------- */
 .wg-house { position: relative; display: grid; grid-template-rows: 1fr auto; height: 100%; overflow: hidden; border: 1.5px solid var(--ink); border-radius: var(--sketch, 16px); background: linear-gradient(#d8eef7, #f3f9f2 72%); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--tab, #cfe8d3); transition: background .6s; }

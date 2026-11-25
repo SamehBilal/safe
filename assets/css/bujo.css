@@ -830,7 +830,8 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
    on one side, its pictures on the other — the memories and the family mirrored, as before ---------- */
 @media (min-width: 980px) {
 	.mega .mega-in { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 22px 34px; }
-	.mega-memories .mx-main, .mega-people .mx-main { order: 2; }
+	/* the menus take turns: the pages on one side, then the other */
+	.mega-memories .mx-main, .mega-kids .mx-main, .mega-people .mx-main { order: 2; }
 	.mx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 	.mx-item { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; column-gap: 12px; row-gap: 0; min-height: 0; padding: 10px 12px; }
 	.mx-item .ic { grid-row: 1 / span 2; width: 38px; height: 38px; margin: 0; }
