@@ -747,7 +747,7 @@ function familyFrame(s, here) {
    menu shows the widgets it always had. `idea` is the number of the idea on widgets.html it came from. ---------- */
 export const WG_SIZES = { s: [1, 1, 'صغيرة', 'Small'], w: [2, 1, 'عريضة', 'Wide'], t: [1, 2, 'طويلة', 'Tall'], b: [2, 2, 'كبيرة', 'Big'], strip: [4, 1, 'شريط', 'Strip'], board: [4, 2, 'لوحة', 'Board'] };
 export const WG_CELLS = 12;
-export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['today', 'fridge'], people: ['frame', 'cal', 'tags'] };
+export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['house', 'week'], people: ['frame', 'cal', 'tags'] };
 const WG_KEY = 'us.widgets';
 const cells = (w) => WG_SIZES[w.size][0] * WG_SIZES[w.size][1];
 export function wgLayout(g) {
@@ -806,6 +806,51 @@ let wgTimer = 0;
 function wgTick() {
 	if (wgTimer) return;
 	wgTimer = setInterval(() => { for (const el of document.querySelectorAll('[data-since]')) el.innerHTML = sinceHTML(el.dataset.since); }, 1000);
+}
+
+/* ولادنا: a sticker card for each of the boys — his colour in crayon stripes, confetti, his face bobbing in a sunburst,
+   his name on a ribbon, his age and how long to his birthday */
+function kidCard(m, here, i = 0) {
+	let bday = '';
+	if (m.born) {
+		const b = parseDate(m.born), now = new Date(); now.setHours(12, 0, 0, 0);
+		let n = new Date(now.getFullYear(), b.getMonth(), b.getDate(), 12); if (n < now) n = new Date(now.getFullYear() + 1, b.getMonth(), b.getDate(), 12);
+		const d = Math.round((n - now) / 864e5);
+		bday = d === 0 ? L('عيد ميلاده النهارده!', 'Birthday today!') : L(`عيد ميلاده بعد ${num(d)} يوم`, `birthday in ${d} days`);
+	}
+	const href = `member.html?id=${esc(m.id)}`;
+	return `<a class="wg-kidc" href="${href}" style="--c:${esc(m.color || '#0e6990')};--i:${i}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
+		<span class="wg-kidc__fx" aria-hidden="true">${['star', 'heart', 'sparkle', 'star'].map((d, k) => `<i style="--k:${k}">${doodle(d, 16)}</i>`).join('')}</span>
+		<span class="wg-kidc__face">${m.photo ? `<span class="wg-kidc__pic" data-media-box>${img(m.photo, '', 'wg-fill')}</span>` : `<span class="wg-kidc__pic">${doodle(m.emoji || 'baby', 54)}</span>`}</span>
+		<b class="wg-kidc__name">${T(m.name)}</b>
+		<span class="wg-kidc__chips">${m.born ? `<span>${age(m.born)}</span>` : ''}${bday ? `<span class="is-b">${doodle('cake', 13)} ${bday}</span>` : ''}</span>
+	</a>`;
+}
+
+/* بيتنا: the house, drawn in the diary's pen — a tiled roof with a chimney puffing, five windows that are the home's
+   pages, today's date on the door; a sun turning over it by day, the moon and stars and the windows lit by night */
+function houseHTML(here) {
+	const d = new Date(), h = d.getHours(), night = h < 6 || h >= 18;
+	let hijri = '';
+	try { hijri = new Intl.DateTimeFormat(`${loc()}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d); } catch { /* none */ }
+	const win = (href, ic, ar, en, k) => `<a class="wg-win" ${wgGo(href, here)} style="--k:${k}"><span class="wg-win__g">${doodle(ic, 22)}</span><small>${L(ar, en)}</small></a>`;
+	return `<div class="wg-house${night ? ' is-night' : ''}">
+		<span class="wg-house__sky" aria-hidden="true">${night ? `<i class="wg-house__moon"></i>${Array.from({ length: 9 }, (_, k) => `<i class="wg-house__star" style="--x:${(k * 37) % 92 + 4}%;--y:${(k * 23) % 60 + 6}%;--k:${k}"></i>`).join('')}` : `<i class="wg-house__sun"></i><i class="wg-house__cloud"></i><i class="wg-house__cloud is-2"></i>`}</span>
+		<div class="wg-house__h">
+			<span class="wg-house__chim" aria-hidden="true"><b></b><b></b><b></b></span>
+			<svg class="wg-house__roof" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><path d="M8 68 L150 4 L292 68 Z" vector-effect="non-scaling-stroke"/><path d="M48 50 L252 50 M88 32 L212 32 M120 18 L180 18" class="t" vector-effect="non-scaling-stroke"/></svg>
+			<span class="wg-house__name">${L('بيتنا', 'Our home')}</span>
+			<div class="wg-house__body">
+				${win('meals.html', 'dinner', 'المنيو', 'Menu', 0)}
+				${win('shopping.html', 'scroll', 'الطلبات', 'Shopping', 1)}
+				${win('chores.html', 'house', 'مين عليه الدور', 'Whose turn', 2)}
+				${win('expenses.html', 'coins', 'الفلوس', 'Money', 3)}
+				${win('fixes.html', 'wrench', 'التصليحات', 'Repairs', 4)}
+				<a class="wg-door" ${wgGo('routine.html', here)}><span class="wg-door__plate"><small>${esc(new Intl.DateTimeFormat(loc(), { weekday: 'long' }).format(d))}</small><b>${num(d.getDate())}</b><small>${esc(new Intl.DateTimeFormat(loc(), { month: 'long' }).format(d))}</small></span>${hijri ? `<em>${esc(hijri)}</em>` : ''}<i class="wg-door__knob"></i></a>
+			</div>
+		</div>
+		<span class="wg-house__grass" aria-hidden="true"></span>
+	</div>`;
 }
 
 export const WIDGETS = [
@@ -901,16 +946,18 @@ export const WIDGETS = [
 		fill: async (el, live) => { const d = await live.load('movies'), list = (d.towatch || []).filter((x) => x.title); if (!list.length) return; el.querySelector('.wg-film__tx').innerHTML = `<small>${L('الفيلم الجاي', 'Up next')}</small><b dir="auto">${esc(list[0].title)}</b><span class="wg-chip">${L(`في القايمة: ${num(list.length)}`, `${list.length} on the list`)}</span>`; } },
 
 	/* ولادنا */
-	{ id: 'figs', g: 'kids', size: 'board', ar: 'ولادنا', en: 'Our kids', dar: 'كل واحد في كارت بصورته وعمره', den: 'Each of them with photo and age',
-		html: (s, here) => { const members = s.family?.members || [], kids = members.filter((m) => m.kid); return `<div class="mg-figs">${(kids.length ? kids : members).map((m) => `<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}><span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span><span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span></a>`).join('')}</div>`; } },
+	{ id: 'figs', g: 'kids', size: 'board', ar: 'ولادنا', en: 'Our kids', dar: 'كل واحد في كارت ملزق بلونه: صورته، اسمه، عمره، وفاضل قد إيه على عيد ميلاده', den: 'A sticker card each: photo, name, age, and the next birthday',
+		html: (s, here) => { const members = s.family?.members || [], kids = members.filter((m) => m.kid); return `<div class="wg-kids">${(kids.length ? kids : members).slice(0, 4).map((m, i) => kidCard(m, here, i)).join('')}</div>`; } },
 	{ id: 'tape', g: 'kids', size: 'strip', idea: 27, ar: 'المازورة', en: 'The tape', dar: 'مازورة عليها كل واحد فينا بسنه', den: 'All of us on a tailor’s tape',
 		html: (s) => tapeHTML(s.family?.members || []) },
 	{ id: 'ages', g: 'kids', size: 'w', idea: 33, ar: 'الشمع', en: 'Candles', dar: 'شمعة لكل سنة، والعمر بالسنين والشهور والأيام', den: 'A candle for every year',
 		html: (s, here) => { const kids = (s.family?.members || []).filter((m) => m.kid && m.born).slice(0, 2); if (!kids.length) return ''; return `<a class="wg-cake" ${wgGo('birthday.html', here)}>${kids.map((m) => { const y = Math.min(8, yearsBetween(parseDate(m.born))); return `<span class="wg-cake__k" style="--c:${esc(m.color || '#0e6990')}"><span class="wg-cake__c">${Array.from({ length: Math.max(1, y) }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</span><span class="wg-cake__b"></span><b>${T(m.name)}</b><small>${age(m.born)}</small></span>`; }).join('')}</a>`; } },
-	...[0, 1].map((k) => ({ id: `kid${k + 1}`, g: 'kids', size: 't', ar: k ? 'الولد التاني' : 'الولد الأول', en: k ? 'Second child' : 'First child', dar: 'صورته في كارت طويل، واسمه وعمره', den: 'A tall card with photo, name and age',
-		html: (s, here) => { const m = (s.family?.members || []).filter((x) => x.kid)[k]; if (!m) return ''; return `<a class="wg-kid" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}><span class="wg-kid__p">${m.photo ? `<span data-media-box>${img(m.photo, '', 'wg-fill')}</span>` : doodle(m.emoji || 'baby', 46)}</span><b>${T(m.name)}</b><small>${m.born ? age(m.born) : ''}</small></a>`; } })),
+	...[0, 1].map((k) => ({ id: `kid${k + 1}`, g: 'kids', size: 't', ar: k ? 'الولد التاني' : 'الولد الأول', en: k ? 'Second child' : 'First child', dar: 'كارته الملزق لوحده، طويل', den: 'His sticker card on its own, tall',
+		html: (s, here) => { const m = (s.family?.members || []).filter((x) => x.kid)[k]; return m ? `<div class="wg-kids">${kidCard(m, here, k)}</div>` : ''; } })),
 
 	/* بيتنا */
+	{ id: 'house', g: 'home', size: 'board', ar: 'بيتنا', en: 'Our house', dar: 'بيت مرسوم بالقلم: شبابيكه صفحات البيت، وعلى الباب ورقة النهارده، وبالليل الشبابيك بتنور', den: 'A drawn house: its windows are the home pages, today on the door, lit up at night',
+		html: (s, here) => houseHTML(here) },
 	{ id: 'today', g: 'home', size: 'board', ar: 'ورقة النهارده', en: 'Today’s page', dar: 'ورقة النتيجة: اليوم والهجري، وروتين النهارده', den: 'Today from the wall calendar',
 		html: (s, here) => {
 			const d = new Date(); let hijri = '';
