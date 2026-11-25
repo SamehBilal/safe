@@ -2553,3 +2553,14 @@
 .lp-list--drawings .fd-magnet::after { right: 0; rotate: 4deg; filter: brightness(.93); }
 .lp-list--drawings .lp-card:nth-child(3n + 2) .fd-magnet::before, .lp-list--drawings .lp-card:nth-child(3n + 2) .fd-magnet::after { background: #bfe0ef; }
 .lp-list--drawings .lp-card:nth-child(3n) .fd-magnet::before, .lp-list--drawings .lp-card:nth-child(3n) .fd-magnet::after { background: #e3ec9c; }
+
+/* فاكر؟ — eight games: four across on a wide screen; «زووم» shows a corner of the photo close up, then the whole of it;
+   «سباق الدقيقة» runs a bar down under the card's tab */
+.fk-games { grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); }
+@media (min-width: 900px) { .fk-games { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.fk-pic__crop { display: block; width: 100%; overflow: hidden; }
+.fk-pic--zoom .fk-pic__img { transform-origin: var(--at, 50% 50%); scale: 4.2; transition: scale 1.1s cubic-bezier(.22, 1, .36, 1); }
+.fk-pic--zoom.is-out .fk-pic__img { scale: 1; }
+.fk-clock { position: absolute; top: 0; inset-inline: 0; height: 7px; overflow: hidden; background: rgba(55, 53, 63, .1); border-radius: 12px 12px 0 0; }
+.fk-clock i { display: block; width: calc(var(--left, 1) * 100%); height: 100%; background: linear-gradient(90deg, #e8505b, #fdc830); transition: width .2s linear; }
+@media (prefers-reduced-motion: reduce) { .fk-pic--zoom .fk-pic__img { transition: none; } }
