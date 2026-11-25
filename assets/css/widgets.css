@@ -634,3 +634,7 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .wg-occy__m.is-next i { color: var(--ink, #37353f); animation: wg-occy-bob 1.8s ease-in-out infinite; }
 @keyframes wg-occy-bob { 50% { translate: 0 -2px; } }
 @media (prefers-reduced-motion: reduce) { .wg-occy__m { animation: none; opacity: 1; scale: 1; } .wg-occy__m.is-next i { animation: none; } }
+/* the month's red band sits on the page's top edge; the day, what it is and how long fill the space under it */
+.wgx-cal .mg-cal-page { align-content: stretch; grid-template-rows: auto 1fr 1fr auto; }
+.wgx-cal .mg-cal-month { align-self: start; }
+.wgx-cal .mg-cal-wday, .wgx-cal .mg-cal-left { align-self: center; }
