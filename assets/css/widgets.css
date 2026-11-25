@@ -370,3 +370,11 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 @keyframes k-blink { 50% { opacity: .2; } }
 .wg-gold__frame > *, .wg-kid__p > *, .wg-cork__p > [data-media-box], .wg-stack__p > *, .wg-collage span > * { display: block; width: 100%; height: 100%; }
 .wg-gold__frame { place-items: stretch; }
+
+/* ذكرياتنا: us in numbers, back in the taped chart card it had in عيلتنا — big, beside the album and the notes */
+.wg > .mg-data { display: grid; align-content: center; justify-items: center; gap: 4px; height: calc(100% - 12px); margin-top: 12px; padding: 34px 16px 16px; text-align: center; text-decoration: none; rotate: -1deg; }
+.wg > .mg-data .mg-new { position: absolute; }
+.wg > .mg-data .mg-bars { display: flex; align-items: flex-end; justify-self: stretch; height: 110px; margin-top: 18px; }
+.wg > .mg-data .mg-bars i { flex: 1; animation: wg-bar .7s var(--ease-pop, ease) both; animation-delay: calc(var(--k, 0) * 1ms); transform-origin: bottom; }
+.mega.is-open .wg > .mg-data .mg-bars i { animation-name: wg-bar; }
+@keyframes wg-bar { from { transform: scaleY(0); } }

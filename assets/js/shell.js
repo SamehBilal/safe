@@ -729,15 +729,6 @@ function featureHTML(g, s) {
 		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
 }
 
-/* ذكرياتنا: us in numbers, a card among the others — the years as bars, the days since hello */
-function numbersCard(s, here) {
-	const met = parseDate(s.met || '2009-06-10'), yrs = yearsBetween(met), n = Math.min(yrs + 1, 14);
-	return `<a class="mg-card mg-card--data" href="numbers.html"${here === 'numbers.html' ? ' aria-current="page"' : ''}>
-		<span class="mg-numbers" aria-hidden="true"><span class="mg-bars">${Array.from({ length: n }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / n)}%"></i>`).join('')}</span><b>${num(daysBetween(met))}</b><small>${L('يوم من أول سلام', 'days since hello')}</small></span>
-		<span class="mg-card-t"><b>${L('بالأرقام', 'In numbers')}</b><small>${L(`${num(yrs)} سنة سوا`, `${yrs} years together`)}</small></span>
-	</a>`;
-}
-
 /* عيلتنا: the four of us in a frame on the wall, each face round, and how long we've been a family */
 function familyFrame(s, here) {
 	const members = (s.family?.members || []).slice(0, 4);
@@ -756,7 +747,7 @@ function familyFrame(s, here) {
    menu shows the widgets it always had. `idea` is the number of the idea on widgets.html it came from. ---------- */
 export const WG_SIZES = { s: [1, 1, 'صغيرة', 'Small'], w: [2, 1, 'عريضة', 'Wide'], t: [1, 2, 'طويلة', 'Tall'], b: [2, 2, 'كبيرة', 'Big'], strip: [4, 1, 'شريط', 'Strip'], board: [4, 2, 'لوحة', 'Board'] };
 export const WG_CELLS = 12;
-export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'guest', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['today', 'fridge'], people: ['frame', 'cal', 'tags'] };
+export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['today', 'fridge'], people: ['frame', 'cal', 'tags'] };
 const WG_KEY = 'us.widgets';
 const cells = (w) => WG_SIZES[w.size][0] * WG_SIZES[w.size][1];
 export function wgLayout(g) {
@@ -859,8 +850,17 @@ export const WIDGETS = [
 		html: (s) => `<div class="mg-cards"><a class="mg-card mg-card--note" href="notes.html"><span class="mg-note" id="mg-note">${noteHTML(s)}</span><span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span></a></div>` },
 	{ id: 'guest', g: 'memories', size: 't', ar: 'دفتر المعازيم', en: 'Guestbook', dar: 'صورة دفتر المعازيم وعدد التهاني', den: 'The guestbook and its wishes',
 		html: (s) => { const gb = s.guestbook; return `<div class="mg-cards">${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>${img(gb.photo, '', 'mg-cover')}<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span></a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}</div>`; } },
-	{ id: 'numbers', g: 'memories', size: 't', ar: 'بالأرقام', en: 'In numbers', dar: 'السنين عواميد، والأيام من أول سلام', den: 'The years as bars, the days since hello',
-		html: (s, here) => `<div class="mg-cards">${numbersCard(s, here)}</div>` },
+	{ id: 'numbers', g: 'memories', size: 'b', ar: 'إحنا بالأرقام', en: 'Us in numbers', dar: 'عمود لكل سنة من حكايتنا، وكام يوم من أول سلام', den: 'A bar for every year, and the days since hello',
+		html: (s, here) => {
+			const met = parseDate(s.met || '2009-06-10'), n = Math.min(yearsBetween(met) + 1, 20);
+			return `<a class="mg-data" ${wgGo('numbers.html', here)}>
+				<span class="mg-new">${L('بالأرقام', 'In numbers')}</span>
+				<span class="mg-bars" aria-hidden="true">${Array.from({ length: n }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / n)}%;--k:${k * 45}"></i>`).join('')}</span>
+				<b>${num(daysBetween(met))} ${L('يوم من أول سلام', 'days since hello')}</b>
+				<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
+				<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
+			</a>`;
+		} },
 	{ id: 'film', g: 'memories', size: 'strip', ar: 'شريط الذكريات', en: 'The film strip', dar: 'خمس ذكريات بصورها على شريط فيلم', den: 'Five moments on a strip of film',
 		html: (s) => `<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>` },
 	{ id: 'stack', g: 'memories', size: 'b', idea: 10, ar: 'كومة الصور', en: 'The photo pile', dar: 'تلات صور فوق بعض، تتفرد لما تعدي عليها', den: 'Three photos that fan out when you pass',
