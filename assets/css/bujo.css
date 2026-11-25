@@ -859,28 +859,6 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 	.mega-nights .mg-kind small { display: none; }
 }
 
-/* ---------- the «+» beside the search (shell.js addHTML): everything we can add, by chapter in its own colour, each
-   opening its page with the form open ---------- */
-.add-menu { position: relative; }
-.add-btn { color: #fff; background: var(--coral); }
-.add-btn svg { transition: rotate .25s var(--ease-pop, ease); }
-.add-btn[aria-expanded='true'] svg { rotate: 45deg; }
-.add-panel { position: absolute; top: calc(100% + 12px); inset-inline-end: 0; z-index: 60; width: min(720px, calc(100vw - 24px)); max-height: min(72vh, 620px); overflow: auto; overscroll-behavior: contain; padding: 16px 16px 18px; color: var(--text); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow), 0 24px 50px rgba(19, 52, 71, .22); animation: add-in .22s var(--ease-out, ease); }
-.add-panel[hidden] { display: none; }
-@keyframes add-in { from { opacity: 0; transform: translateY(-6px); } }
-.add-panel__h { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-weight: 800; font-size: 1.02rem; }
-.add-panel__groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 12px; }
-.add-group { display: grid; align-content: start; gap: 4px; padding: 10px 10px 8px; background: color-mix(in srgb, var(--tab) 22%, var(--card)); border: 1.5px solid color-mix(in srgb, var(--ink) 25%, transparent); border-top: 4px solid var(--tab); border-radius: 10px; }
-.add-group__h { margin: 0 0 2px; font-weight: 800; font-size: .8rem; color: var(--gc); }
-.add-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: .88rem; font-weight: 700; color: var(--text); text-decoration: none; border-radius: 8px; }
-.add-item .ic { flex: none; color: var(--gc); }
-.add-item:hover, .add-item:focus-visible { background: color-mix(in srgb, var(--tab) 55%, var(--card)); outline: none; }
-@media (max-width: 760px) { .add-panel__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) {
-	.add-panel { position: fixed; top: calc(var(--hd, 64px) + 6px); inset-inline: 10px; width: auto; max-height: calc(100svh - var(--hd, 64px) - 20px); }
-	.add-panel__groups { grid-template-columns: minmax(0, 1fr); }
-}
-
 /* ---------- the mega menus all the same height, the pages and the chapter's cards in the middle of it ---------- */
 @media (min-width: 980px) {
 	.mega-in { min-height: var(--mega-h, 500px); align-items: center; }
@@ -931,26 +909,53 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 .mg-fnote.is-p .mg-fnote__mag { background-color: #0e6990; }
 .mg-fnote.is-g .mg-fnote__mag { background-color: #fdc830; }
 
-/* ---------- the «+» menu in the diary's own hand: a page of dotted paper with washi tape on top, the question in
-   handwriting under a highlighter, each chapter an index card (its number in an ink circle, its name highlighted in
-   its colour, a hard shadow in its colour) and each thing to add with its icon in the menus' hand-drawn blob ---------- */
-.add-panel { --ink: #37353f; padding: 26px 18px 20px; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 16px 16px; border: 1.5px solid var(--ink); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--ink), 0 26px 50px rgba(19, 52, 71, .2); overflow-x: hidden; }
-.add-panel::before { content: ""; position: absolute; top: 6px; left: 50%; display: block; width: 120px; height: 22px; translate: -50% 0; rotate: -2deg; background: rgba(252, 139, 147, .75) repeating-linear-gradient(45deg, transparent 0 4px, rgba(255, 255, 255, .45) 4px 8px); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); z-index: 2; }
-.add-panel__h { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 0 0 16px; }
-.add-panel__h > span { display: grid; place-items: center; width: 40px; height: 40px; color: #fff; background: var(--coral); border: 1.5px solid var(--ink); border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow, #fdc830); }
-.add-panel__h b { padding-inline: .2em; font: 700 1.9rem/1.1 var(--f-hand); color: var(--text); background: linear-gradient(transparent 58%, var(--hl-yellow, #fdc830) 58% 92%, transparent 92%); }
-:lang(ar) .add-panel__h b { font: 700 1.45rem/1.4 'Aref Ruqaa', var(--f-body); }
-.add-panel__h small { flex-basis: 100%; padding-inline-start: 50px; font-weight: 700; font-size: .82rem; color: var(--muted); }
-.add-panel__groups { gap: 18px 14px; }
-.add-group { position: relative; gap: 2px; padding: 12px 10px 10px; background: var(--card); border: 1.5px solid var(--ink); border-top-width: 1.5px; border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--tab); }
-.add-group:nth-child(odd) { rotate: -.4deg; } .add-group:nth-child(even) { rotate: .5deg; }
-.add-group__h { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding-bottom: 8px; border-bottom: 1.5px dashed color-mix(in srgb, var(--ink) 35%, transparent); }
-.add-group__h i { display: grid; place-items: center; flex: none; width: 28px; height: 28px; font: 400 .9rem/1 var(--f-label); font-style: normal; color: #fff; background: #37353f; border-radius: 50%; box-shadow: calc(var(--bujo-x, 1) * 2px) 2px 0 0 var(--tab); }
-.add-group__h b { padding-inline: .2em; font: 400 1.2rem/1.2 var(--f-label); letter-spacing: .03em; color: var(--text); background: linear-gradient(transparent 55%, var(--tab) 55% 92%, transparent 92%); }
-:lang(ar) .add-group__h b { font: 700 1.05rem/1.4 'Aref Ruqaa', var(--f-body); letter-spacing: 0; }
-.add-item { gap: 10px; padding: 5px 6px; font-size: .86rem; border: 1.5px solid transparent; border-radius: var(--sketch-sm, 10px); transition: background .15s, border-color .15s, translate .15s; }
-.add-item .ic { display: grid; place-items: center; width: 30px; height: 30px; color: var(--gc); background: color-mix(in srgb, var(--tab) 55%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
-.add-item:hover, .add-item:focus-visible { background: color-mix(in srgb, var(--tab) 30%, var(--card)); border-color: var(--ink); translate: calc(var(--bujo-x, 1) * -1px) -1px; }
-.add-btn { box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink); }
+/* ---------- the «+» beside the search (shell.js addHTML): a planner spread across the whole width, under the header —
+   the question in handwriting, then one ruled column per chapter, each headed by a strip of washi tape in its colour,
+   and every thing to add a bullet line on the ruled paper («+» in a circle, as in the journal's key), struck through
+   with the chapter's highlighter under the hand. Everything shows at once, no scrolling. ---------- */
+.add-menu { position: relative; }
+.add-btn { color: #fff; background: var(--coral); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink); }
+.add-btn svg { transition: rotate .25s var(--ease-pop, ease); }
 .add-btn[aria-expanded='true'] { background: var(--hl-yellow, #fdc830); color: #2b2b33; }
-@media (max-width: 480px) { .add-panel { box-shadow: 0 20px 40px rgba(0, 0, 0, .25); } .add-group:nth-child(n) { rotate: 0deg; } }
+.add-btn[aria-expanded='true'] svg { rotate: 45deg; }
+.add-panel { position: fixed; top: calc(var(--hd, 68px) + env(safe-area-inset-top, 0px)); inset-inline: 0; z-index: 79; padding: 18px max(20px, env(safe-area-inset-right, 0px)) 22px max(20px, env(safe-area-inset-left, 0px)); color: var(--text); background: var(--card) repeating-linear-gradient(transparent 0 29px, color-mix(in srgb, #0e6990 14%, transparent) 29px 30px); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); box-shadow: 0 6px 0 0 var(--hl-pink, rgba(252, 139, 147, .5)), 0 30px 60px rgba(19, 52, 71, .18); animation: add-drop .28s var(--ease-out, ease) both; }
+.add-panel[hidden] { display: none; }
+.add-panel::before { content: ''; position: absolute; top: 0; bottom: 0; inset-inline-start: max(64px, calc((100% - 1240px) / 2 + 44px)); width: 2px; background: color-mix(in srgb, #d9534f 45%, transparent); pointer-events: none; }
+@keyframes add-drop { from { opacity: 0; transform: translateY(-10px); } }
+.add-panel__h, .add-panel__groups { position: relative; max-width: 1240px; margin-inline: auto; }
+.add-panel__h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 14px; padding-inline-start: 60px; }
+.add-panel__h > span { display: none; }
+.add-panel__h b { padding-inline: .25em; font: 700 1.8rem/1.2 'Aref Ruqaa', var(--f-hand); background: linear-gradient(transparent 58%, var(--hl-yellow) 58% 92%, transparent 92%); }
+.add-panel__h small { font-weight: 700; font-size: .85rem; color: var(--muted); }
+.add-panel__groups { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; padding-inline-start: 60px; }
+.add-group { position: relative; display: grid; align-content: start; gap: 0; padding: 0 12px 4px; border-inline-start: 1.5px dashed color-mix(in srgb, var(--ink) 30%, transparent); animation: add-col .35s var(--ease-pop, ease) both; }
+.add-group:nth-child(1) { animation-delay: 0ms; } .add-group:nth-child(2) { animation-delay: 40ms; } .add-group:nth-child(3) { animation-delay: 80ms; } .add-group:nth-child(4) { animation-delay: 120ms; } .add-group:nth-child(5) { animation-delay: 160ms; } .add-group:nth-child(6) { animation-delay: 200ms; }
+@keyframes add-col { from { opacity: 0; transform: translateY(8px); } }
+.add-group__h { display: flex; align-items: center; justify-content: center; gap: 6px; height: 30px; margin: 0 0 4px; padding: 0 10px; font: 800 .9rem/1 var(--f-body); color: #2b2b33; background: var(--tab) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .45) 5px 10px); rotate: -1.5deg; box-shadow: 0 2px 4px rgba(0, 0, 0, .12); }
+.add-group:nth-child(even) .add-group__h { rotate: 1.2deg; }
+.add-group__h i { font: 400 .95rem/1 var(--f-label); font-style: normal; opacity: .7; }
+.add-item { position: relative; display: flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 4px; font-size: .86rem; font-weight: 700; line-height: 1.2; color: var(--text); text-decoration: none; }
+.add-item::before { content: '+'; display: grid; place-items: center; flex: none; width: 17px; height: 17px; font: 800 .8rem/1 var(--f-body); color: var(--gc); border: 1.5px solid currentColor; border-radius: 50%; transition: background .15s, color .15s; }
+.add-item .ic { display: none; }
+.add-item span { padding-inline: 2px; background: linear-gradient(transparent 55%, var(--tab) 55% 92%, transparent 92%) no-repeat 0 0 / 0% 100%; transition: background-size .25s var(--ease-out, ease); }
+[dir='rtl'] .add-item span { background-position: 100% 0; }
+.add-item:hover span, .add-item:focus-visible span { background-size: 100% 100%; }
+.add-item:hover::before, .add-item:focus-visible::before { color: #fff; background: var(--gc); border-color: var(--gc); }
+.add-item:focus-visible { outline: none; }
+@media (max-width: 1100px) { .add-panel__groups { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; } .add-panel::before { display: none; } .add-panel__h, .add-panel__groups { padding-inline-start: 0; } }
+@media (max-width: 640px) {
+	.add-panel { max-height: calc(100svh - var(--hd, 68px) - env(safe-area-inset-top, 0px)); overflow-y: auto; overscroll-behavior: contain; }
+	.add-panel__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.add-panel__h b { font-size: 1.45rem; }
+}
+
+/* the footer's last row: the quick links, then the orca or the owl, then the copyright — one under the other, centred */
+.ft-maker { grid-template-columns: minmax(0, 1fr) !important; justify-items: center !important; text-align: center; gap: 16px; }
+.ft-quick { justify-content: center !important; }
+.ft-copy { flex-direction: column; justify-content: center !important; align-items: center; gap: 8px; text-align: center; }
+.ft-copy > span { display: inline-flex; align-items: center; gap: 6px; }
+/* the ruling belongs to each column, starting under its tape, so every line of the planner sits on a bullet */
+.add-panel { background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 10%, transparent) 1px, transparent 1.4px) 0 0 / 16px 16px; }
+.add-group { background: repeating-linear-gradient(transparent 0 29px, color-mix(in srgb, #0e6990 18%, transparent) 29px 30px) 0 34px / 100% calc(100% - 34px) no-repeat; }
+.add-item { height: 30px; }
+.add-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

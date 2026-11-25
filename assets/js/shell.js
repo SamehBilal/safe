@@ -1661,8 +1661,8 @@ function footerHTML(s) {
 				<a href="index.html?intro">${icon('heart', 16)} ${Y('شوف المقدمة تاني', 'شوفي المقدمة تاني', 'Replay intro')}</a>
 			</nav>
 			${App.lang === 'ar'
-				? `<p class="ft-copy" dir="rtl">حقوق النشر @${new Date().getFullYear()}، ${petHTML()}كل الحب محفوظ. <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
-				: `<p class="ft-copy" dir="ltr">Copyright @${new Date().getFullYear()}, ${petHTML()}All love reserved. <span>Crafted with <span class="ft-heart">${doodle('heart', 16)}</span> Sameh Bilal</span></p>`}
+				? `<p class="ft-copy" dir="rtl">${petHTML()}<span class="ft-copy__c">حقوق النشر @${new Date().getFullYear()}، كل الحب محفوظ.</span> <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
+				: `<p class="ft-copy" dir="ltr">${petHTML()}<span class="ft-copy__c">Copyright @${new Date().getFullYear()}, All love reserved.</span> <span>Crafted with <span class="ft-heart">${doodle('heart', 16)}</span> Sameh Bilal</span></p>`}
 		</div>
 	</div>
 	<p class="ft-end">${T(s.closing)} <span aria-hidden="true">♥</span></p></div>`;

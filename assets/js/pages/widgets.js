@@ -84,13 +84,13 @@ export default {
 
 		const paintShelf = () => {
 			const ids = wgLayout(g), free = WG_CELLS - wgCells(ids);
-			const list = WIDGETS.filter((w) => w.g === g && !w.sketch);
+			const list = WIDGETS.filter((w) => w.g === g);
 			$('#wgp-shelf', main).innerHTML = `<div class="wgp-grid mega-${g}" style="--tab:${grp().tab};--gc:${grp().c}">${list.map((w, i) => {
 				const [c, r] = SIZE_OF(w), on = ids.includes(w.id), fits = c * r <= free;
 				let h = ''; try { h = w.html(s, '') || ''; } catch { h = ''; }
 				return `<article class="wgp-card wg--${w.size}${on ? ' is-on' : ''}" style="--c:${c};--r:${r};--i:${i}" data-wg="${w.id}">
 					<div class="wgp-live wg wgx-${w.id}">${h || `<span class="wgp-nodata">${L('محتاجة بيانات لسه مش موجودة', 'Needs data we don’t have yet')}</span>`}</div>
-					<div class="wgp-alt"><b>${esc(nameOf(w))}</b><small>${esc(L(w.dar, w.den))}</small></div>
+					<div class="wgp-alt"><b>${esc(nameOf(w))}</b><small>${esc(w.sketch ? IDEAS[w.idea - 1]?.d || '' : L(w.dar, w.den))}</small></div>
 					<div class="wgp-cap"><span class="wgp-sz wgp-sz--${w.size}"><i style="--c:${c};--r:${r}"></i></span><b>${esc(nameOf(w))}</b>
 						<button class="wgp-add" type="button" data-add="${w.id}"${on || !fits ? ' disabled' : ''}>${on ? `${doodle('heart', 14)} ${L('موجودة', 'Added')}` : fits ? `+ ${Y('حطها', 'حطيها', 'Add')}` : L('مفيش مكان', 'No room')}</button></div>
 				</article>`;
