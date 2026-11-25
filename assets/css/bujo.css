@@ -1044,3 +1044,6 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 
 /* ---------- ألبوم الصور: a narrower search ---------- */
 @media (min-width: 761px) { .tp-find .tp-find__field { flex: 0 1 210px; min-width: 150px; } }
+
+/* رسايل حب: the top sits on the page itself — no card of its own around the envelope, the mailboxes and the count */
+.nh.nh2 { padding-inline: clamp(14px, 3vw, 34px); background: none; border: 0; border-radius: 0; box-shadow: none; }
