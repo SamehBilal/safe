@@ -605,6 +605,7 @@ export const PAGES = [
 	{ href: 'nokta.html', id: 'nokta', ic: 'coins', ar: 'النقطة', en: 'The nokta', dar: 'مين نقّطنا وردّيناها', den: 'Who gave, and what we gave back', group: 'people' },
 	{ href: 'distances.html', id: 'distances', ic: 'route', ar: 'المسافات', en: 'Miles apart', dar: 'إحنا الأربعة بعاد قد إيه', den: 'How far apart we are', group: 'people' },
 	{ href: 'search.html', id: 'search', ic: 'search', ar: 'دوّر', en: 'Search', dar: 'دوّر في كل حاجة كتبناها', den: 'Look through everything we’ve written', group: 'app' },
+	{ href: 'widgets.html', id: 'widgets', ic: 'star', ar: 'ويدجتس القوايم', en: 'Menu widgets', dar: 'اختار إيه اللي يظهر في كل قايمة، بأي مقاس، ومية فكرة لويدجتس جديدة', den: 'Choose what each menu shows, in any size, and a hundred new widget ideas', group: 'app' },
 	{ href: 'settings.html', id: 'settings', ic: 'gear', ar: 'الإعدادات', en: 'Settings', dar: 'مين ماسك الموبايل، وإزاي الجديد يتبعت', den: 'Whose phone, and sharing what’s new', group: 'app' }
 ];
 
@@ -728,73 +729,6 @@ function featureHTML(g, s) {
 		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
 }
 
-/* the pictures beside each chapter's pages in the header's menu, as they were before the six chapters: the big days
-   as photo cards and today in our story; the album, a love note, the guestbook and the tickets over a strip of film;
-   the four draws and tonight's real moon; the boys and the tailor's tape; the desk calendar, what comes after it and
-   us in numbers. بيتنا, new, has its day card. */
-function widgetsHTML(g, s) {
-	const here = currentFile();
-	if (g === 'story') {
-		const chapters = (s.chapters || []).slice(0, 3);
-		const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
-		const today = todays.find((x) => firstPhoto(x)) || todays[0];
-		const todayPhoto = today && firstPhoto(today);
-		return `${chapters.length ? `<div class="mg-cards">${chapters.map((c) => `
-			<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>
-				${img(firstPhoto(c), '', 'mg-cover')}
-				<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span>
-			</a>`).join('')}</div>` : ''}
-		<a class="mg-band${todayPhoto ? ' has-photo' : ''}" href="${today ? `moment.html?id=${esc(today.id)}` : 'story.html'}">
-			${todayPhoto ? `<span class="mg-band-pic" data-media-box>${img(todayPhoto, '', 'mg-band-img')}</span>` : ''}
-			<b>${today ? L('النهارده في حكايتنا', 'Today in our story') : L('من أول رسالة لحد النهارده', 'From the first message until today')}</b>
-			<small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small>
-		</a>`;
-	}
-	if (g === 'memories') {
-		const gb = s.guestbook;
-		return `<div class="mg-cards">
-			<a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a>
-			<a class="mg-card mg-card--note" href="notes.html">
-				<span class="mg-note" id="mg-note">${noteHTML(s)}</span>
-				<span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span>
-			</a>
-			${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>
-				${img(gb.photo, '', 'mg-cover')}
-				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
-			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
-			${numbersCard(s, here)}
-		</div>
-		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`;
-	}
-	if (g === 'nights') {
-		const kind = qs('k');
-		return `<div class="mg-kinds">${DRAW_KINDS.map((k) => `
-			<a class="mg-kind" href="draw.html?k=${k.id}" style="--c:${k.color}"${here === 'draw.html' && kind === k.id ? ' aria-current="page"' : ''}>
-				<span class="mg-kind-e" aria-hidden="true">${doodle(k.emoji, 40)}</span><b>${esc(L(k.ar, k.en))}</b><small>${esc(L(k.dar, k.den))}</small>
-			</a>`).join('')}</div>
-		<a class="mg-sky" id="mg-sky" href="draw.html">${skyHTML()}</a>`;
-	}
-	if (g === 'kids') {
-		const members = s.family?.members || [];
-		const kids = members.filter((m) => m.kid);
-		return `<div class="mg-figs">${(kids.length ? kids : members).map((m) => `
-			<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}>
-				<span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span>
-				<span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span>
-			</a>`).join('')}</div>
-		${tapeHTML(members)}`;
-	}
-	if (g === 'people') {
-		return `<div class="mx-wpair">
-			${familyFrame(s, here)}
-			${calendarHTML(s)}
-		</div>
-		${nextTagsHTML(s)}`;
-	}
-	if (g === 'home') return homeWidgets(s, here);
-	return featureHTML(g, s);
-}
-
 /* ذكرياتنا: us in numbers, a card among the others — the years as bars, the days since hello */
 function numbersCard(s, here) {
 	const met = parseDate(s.met || '2009-06-10'), yrs = yearsBetween(met), n = Math.min(yrs + 1, 14);
@@ -816,28 +750,219 @@ function familyFrame(s, here) {
 	</a>`;
 }
 
-/* بيتنا: today's page torn from the wall calendar (the day, the Hijri date, the routine), and three notes stuck on
-   the fridge door: the shopping list, the week's menu and the month's money */
-function homeWidgets(s, here) {
-	const d = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-	let hijri = '';
-	try { hijri = new Intl.DateTimeFormat(`${loc}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d); } catch { /* no Hijri here */ }
-	const note = (href, ic, b, small, cls) => `<a class="mg-fnote ${cls}" href="${href}"${here === href ? ' aria-current="page"' : ''}><i class="mg-fnote__mag" aria-hidden="true"></i>${doodle(ic, 26)}<b>${b}</b><small>${small}</small></a>`;
-	return `<div class="mg-home">
-		<a class="mg-today" href="routine.html"${here === 'routine.html' ? ' aria-current="page"' : ''}>
-			<span class="mg-today__m">${esc(new Intl.DateTimeFormat(loc, { month: 'long' }).format(d))}</span>
-			<b>${num(d.getDate())}</b>
-			<span class="mg-today__w">${esc(new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(d))}</span>
-			${hijri ? `<small>${esc(hijri)}</small>` : ''}
-			<span class="mg-go">${L('روتين النهارده', 'Today’s routine')} ${App.arrow}</span>
-		</a>
-		<div class="mg-fridge">
-			${note('shopping.html', 'scroll', L('الطلبات', 'Shopping'), L('ناقص إيه في البيت؟', 'What’s missing at home?'), 'is-y')}
-			${note('meals.html', 'dinner', L('منيو الأسبوع', 'This week’s menu'), L('هناكل إيه النهارده؟', 'What’s for dinner?'), 'is-p')}
-			${note('expenses.html', 'coins', L('مصاريف الشهر', 'This month’s money'), L('دفعنا إيه وفاضل إيه', 'What’s paid, what’s left'), 'is-g')}
-		</div>
-	</div>`;
+/* ---------- the menus' widgets: each chapter's side of the mega menu is a board of four by three cells, and every
+   widget takes a size on it — small (1×1), wide (2×1), tall (1×2), big (2×2), a strip (4×1) or a board (4×2).
+   Which widgets each menu shows, in what order, is chosen on widgets.html and kept on this phone; until then each
+   menu shows the widgets it always had. `idea` is the number of the idea on widgets.html it came from. ---------- */
+export const WG_SIZES = { s: [1, 1, 'صغيرة', 'Small'], w: [2, 1, 'عريضة', 'Wide'], t: [1, 2, 'طويلة', 'Tall'], b: [2, 2, 'كبيرة', 'Big'], strip: [4, 1, 'شريط', 'Strip'], board: [4, 2, 'لوحة', 'Board'] };
+export const WG_CELLS = 12;
+export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'guest', 'numbers', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['today', 'fridge'], people: ['frame', 'cal', 'tags'] };
+const WG_KEY = 'us.widgets';
+const cells = (w) => WG_SIZES[w.size][0] * WG_SIZES[w.size][1];
+export function wgLayout(g) {
+	try {
+		const v = JSON.parse(store.get(WG_KEY) || '{}')[g];
+		if (Array.isArray(v)) return v.filter((id, i) => WIDGETS.some((w) => w.id === id && w.g === g) && v.indexOf(id) === i);
+	} catch { /* the menu as it always was */ }
+	return WG_DEFAULT[g].slice();
 }
+/** keep a menu's widgets (null: back to how it always was) */
+export function setWgLayout(g, ids) {
+	let all = {};
+	try { all = JSON.parse(store.get(WG_KEY) || '{}') || {}; } catch { /* start over */ }
+	if (ids) all[g] = ids; else delete all[g];
+	store.set(WG_KEY, JSON.stringify(all));
+}
+export const wgCells = (ids) => ids.reduce((n, id) => n + cells(WIDGETS.find((w) => w.id === id) || { size: 's' }), 0);
+
+const loc = () => (App.lang === 'ar' ? 'ar-EG' : 'en-GB');
+const dateIn = (days) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + days); return d; };
+const photosOf = (s) => (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
+const someOf = (list, n) => { const out = [], pool = list.slice(); while (out.length < n && pool.length) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]); return out; };
+const wgGo = (href, here) => `href="${href}"${here === href ? ' aria-current="page"' : ''}`;
+
+/* the next wedding anniversary: how far round the year we are, and how many days are left */
+function nextWedding(s) {
+	if (!s.married) return null;
+	const w = parseDate(s.married), now = new Date(); now.setHours(12, 0, 0, 0);
+	let next = new Date(now.getFullYear(), w.getMonth(), w.getDate(), 12);
+	if (next < now) next = new Date(now.getFullYear() + 1, w.getMonth(), w.getDate(), 12);
+	const last = new Date(next.getFullYear() - 1, w.getMonth(), w.getDate(), 12);
+	const days = Math.round((next - now) / 864e5);
+	return { days, p: Math.round(((now - last) / (next - last)) * 100), years: next.getFullYear() - w.getFullYear() };
+}
+/* how many days to the first of Ramadan by the Umm al-Qura calendar (or which day of it today is) */
+export function ramadanIn(now = new Date()) {
+	try {
+		const f = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { month: 'numeric', day: 'numeric' });
+		const d = new Date(now); d.setHours(12, 0, 0, 0);
+		for (let i = 0; i < 400; i++) {
+			const p = Object.fromEntries(f.formatToParts(d).map((x) => [x.type, x.value]));
+			if (+p.month === 9) return i === 0 ? { days: 0, day: +p.day } : { days: i, day: 0 };
+			d.setDate(d.getDate() + 1);
+		}
+	} catch { /* no Hijri calendar here */ }
+	return null;
+}
+/* the counter since the first hello, redrawn every second while it's on the page */
+function sinceHTML(iso) {
+	const ms = Math.max(0, Date.now() - parseDate(iso).getTime());
+	const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, sec = Math.floor(ms / 1e3) % 60;
+	const two = (n) => num(n).padStart(2, App.lang === 'ar' ? '٠' : '0');
+	return `<span class="wg-since__d">${[...num(d)].map((c) => `<i>${c}</i>`).join('')}</span><small>${L('يوم', 'days')} · <b>${two(h)}</b>:<b>${two(m)}</b>:<b class="wg-sec">${two(sec)}</b></small>`;
+}
+let wgTimer = 0;
+function wgTick() {
+	if (wgTimer) return;
+	wgTimer = setInterval(() => { for (const el of document.querySelectorAll('[data-since]')) el.innerHTML = sinceHTML(el.dataset.since); }, 1000);
+}
+
+export const WIDGETS = [
+	/* حكايتنا */
+	{ id: 'days', g: 'story', size: 'board', ar: 'الأيام الفارقة', en: 'Our big days', dar: 'تلات صور من أيامنا الكبيرة، كل واحدة بتاريخها', den: 'Three of our big days, in photos',
+		html: (s) => { const ch = (s.chapters || []).slice(0, 3); return ch.length ? `<div class="mg-cards">${ch.map((c) => `<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>${img(firstPhoto(c), '', 'mg-cover')}<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span></a>`).join('')}</div>` : ''; } },
+	{ id: 'band', g: 'story', size: 'strip', ar: 'النهارده في حكايتنا', en: 'Today in our story', dar: 'لو النهارده فيه ذكرى بتظهر هنا بصورتها', den: 'Today’s moment, if there is one',
+		html: (s) => {
+			const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date)), today = todays.find((x) => firstPhoto(x)) || todays[0], ph = today && firstPhoto(today);
+			return `<a class="mg-band${ph ? ' has-photo' : ''}" href="${today ? `moment.html?id=${esc(today.id)}` : 'story.html'}">${ph ? `<span class="mg-band-pic" data-media-box>${img(ph, '', 'mg-band-img')}</span>` : ''}<b>${today ? L('النهارده في حكايتنا', 'Today in our story') : L('من أول رسالة لحد النهارده', 'From the first message until today')}</b><small>${today ? `${T(today.title)} · ${yearsAgo(today.date)}` : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`} ${App.arrow}</small></a>`;
+		} },
+	{ id: 'since', g: 'story', size: 'w', idea: 1, ar: 'عداد من أول سلام', en: 'Since hello', dar: 'أيام وساعات ودقايق وثواني بتعد قدامك', den: 'Days, hours, minutes and seconds, counting',
+		html: (s, here) => { wgTick(); return `<a class="wg-since" ${wgGo('numbers.html', here)}><span class="wg-k">${L('من أول سلام', 'Since our first hello')}</span><span class="wg-since__n" data-since="${esc(s.met || '2009-06-10')}">${sinceHTML(s.met || '2009-06-10')}</span></a>`; } },
+	{ id: 'wedring', g: 'story', size: 's', idea: 5, ar: 'العد لعيد الجواز', en: 'To our anniversary', dar: 'حلقة بتتملى على مدار السنة لحد العيد الجاي', den: 'A ring filling up through the year',
+		html: (s, here) => { const n = nextWedding(s); if (!n) return ''; return `<a class="wg-ring" ${wgGo('anniversaries.html', here)} style="--p:${n.p}"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="42" class="wg-ring__bg"/><circle cx="50" cy="50" r="42" class="wg-ring__fg" pathLength="100"/></svg><span class="wg-ring__tx"><b>${n.days ? num(n.days) : doodle('ring', 30)}</b><small>${n.days ? L('يوم لعيد جوازنا', 'days to go') : L('النهارده!', 'Today!')}</small></span></a>`; } },
+	{ id: 'thread', g: 'story', size: 'strip', idea: 2, ar: 'خيط الحكاية', en: 'The thread', dar: 'خط واحد عليه أيامنا الكبيرة، ونقطة «إحنا هنا» على آخره', den: 'Our big days on one line, and «we are here»',
+		html: (s, here) => {
+			const ch = (s.chapters || []).filter((c) => c.date).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+			if (!ch.length) return '';
+			const at = (i) => (i / ch.length) * 100; // evenly, so the years never sit on top of each other
+			return `<a class="wg-thread" ${wgGo('chapters.html', here)}><span class="wg-k">${L('خيط الحكاية', 'The thread of our story')}</span><span class="wg-thread__line">${ch.map((c, i) => `<i style="--x:${at(i)}%;--i:${i}" title="${T(c.title)}"><small>${num(parseDate(c.date).getFullYear())}</small></i>`).join('')}<i class="is-now" style="--x:100%"><small>${L('إحنا هنا', 'we are here')}</small></i></span></a>`;
+		} },
+	{ id: 'ago', g: 'story', size: 'w', idea: 56, ar: 'من كام سنة؟', en: 'Years ago today', dar: 'اللي حصل النهارده من سنين، أو أقرب يوم فارق جاي', den: 'What happened today years ago, or the next big day',
+		html: (s) => {
+			const today = (s.timeline || []).find((x) => !x.when && isToday(x.date));
+			if (today) return `<a class="wg-ago" href="moment.html?id=${esc(today.id)}"><b>${num(new Date().getFullYear() - parseDate(today.date).getFullYear())}</b><span><small>${L('سنين من النهارده', 'years ago today')}</small>${T(today.title)}</span></a>`;
+			const now = new Date(), up = (s.chapters || []).filter((c) => c.date).map((c) => { const d = parseDate(c.date); let n = new Date(now.getFullYear(), d.getMonth(), d.getDate(), 12); if (n < now) n = new Date(now.getFullYear() + 1, d.getMonth(), d.getDate(), 12); return { c, n, y: n.getFullYear() - d.getFullYear(), days: Math.ceil((n - now) / 864e5) }; }).sort((a, b) => a.n - b.n)[0];
+			if (!up) return '';
+			return `<a class="wg-ago" href="chapter.html?id=${esc(up.c.id)}"><b>${num(up.y)}</b><span><small>${L(`سنين بعد ${num(up.days)} يوم على`, `years in ${up.days} days since`)}</small>${T(up.c.title)}</span></a>`;
+		} },
+	{ id: 'wedphoto', g: 'story', size: 't', idea: 59, ar: 'صورة الفرح', en: 'The wedding photo', dar: 'صورة الفرح في برواز دهبي، وكام سنة جواز', den: 'Our wedding in a gold frame',
+		html: (s, here) => {
+			const ch = s.chapters || [], c = ch.find((x) => x.date === s.married) || ch.find((x) => /فرح|wedding/i.test(T(x.title))) || ch[0];
+			const ph = c && firstPhoto(c); if (!ph && !s.married) return '';
+			return `<a class="wg-gold" ${wgGo('anniversaries.html', here)}><span class="wg-gold__frame" data-media-box>${ph ? img(ph, '', 'wg-fill') : doodle('bride', 50)}</span><b>${s.married ? L(`${num(yearsBetween(parseDate(s.married)))} سنين جواز`, `${yearsBetween(parseDate(s.married))} years married`) : T(c.title)}</b></a>`;
+		} },
+
+	/* ذكرياتنا */
+	{ id: 'album', g: 'memories', size: 't', ar: 'ألبوم الصور', en: 'Photo album', dar: 'صورة من الألبوم، غيرها كل ما تفتح', den: 'A photo from the album, new each time',
+		html: (s) => `<div class="mg-cards"><a class="mg-card" href="gallery.html" id="mg-album">${albumHTML(s)}</a></div>` },
+	{ id: 'note', g: 'memories', size: 't', ar: 'رسالة حب', en: 'A love note', dar: 'رسالة من رسايلنا على ورقة', den: 'One of our notes',
+		html: (s) => `<div class="mg-cards"><a class="mg-card mg-card--note" href="notes.html"><span class="mg-note" id="mg-note">${noteHTML(s)}</span><span class="mg-card-t"><b>${L('رسايل حب', 'Love notes')}</b><small>${num((s.notes || []).length)} ${L('رسالة', 'notes')}</small></span></a></div>` },
+	{ id: 'guest', g: 'memories', size: 't', ar: 'دفتر المعازيم', en: 'Guestbook', dar: 'صورة دفتر المعازيم وعدد التهاني', den: 'The guestbook and its wishes',
+		html: (s) => { const gb = s.guestbook; return `<div class="mg-cards">${gb?.entries?.length ? `<a class="mg-card" href="guestbook.html" data-media-box>${img(gb.photo, '', 'mg-cover')}<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span></a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}</div>`; } },
+	{ id: 'numbers', g: 'memories', size: 't', ar: 'بالأرقام', en: 'In numbers', dar: 'السنين عواميد، والأيام من أول سلام', den: 'The years as bars, the days since hello',
+		html: (s, here) => `<div class="mg-cards">${numbersCard(s, here)}</div>` },
+	{ id: 'film', g: 'memories', size: 'strip', ar: 'شريط الذكريات', en: 'The film strip', dar: 'خمس ذكريات بصورها على شريط فيلم', den: 'Five moments on a strip of film',
+		html: (s) => `<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>` },
+	{ id: 'stack', g: 'memories', size: 'b', idea: 10, ar: 'كومة الصور', en: 'The photo pile', dar: 'تلات صور فوق بعض، تتفرد لما تعدي عليها', den: 'Three photos that fan out when you pass',
+		html: (s, here) => { const ps = someOf(photosOf(s), 3); if (!ps.length) return ''; return `<a class="wg-stack" ${wgGo('gallery.html', here)}>${ps.map((p, i) => `<span class="wg-stack__p" style="--i:${i}" data-media-box>${img(p, '', 'wg-fill')}</span>`).join('')}<b>${L('ألبوم الصور', 'Photo album')}</b></a>`; } },
+	{ id: 'letter', g: 'memories', size: 'w', idea: 11, ar: 'جواب مقفول', en: 'A sealed letter', dar: 'ظرف بختم شمع، وكام جواب مستني', den: 'An envelope with a wax seal',
+		html: (s, here) => `<a class="wg-env" ${wgGo('letters.html', here)}><span class="wg-env__e" aria-hidden="true"><i class="wg-env__flap"></i><i class="wg-env__seal">${doodle('heart', 16)}</i></span><span><b>${L('جوابات', 'Letters')}</b><small>${L(`${num((s.letters || []).length)} جواب مستني يتفتح`, `${(s.letters || []).length} waiting to be opened`)}</small></span></a>` },
+	{ id: 'stats', g: 'memories', size: 'w', idea: 16, ar: 'تلات أرقام', en: 'Three numbers', dar: 'كام صورة، كام رسالة، كام ذكرى، بأرقام بتعد لفوق', den: 'Photos, notes and moments, counting up',
+		html: (s, here) => `<a class="wg-stats" ${wgGo('numbers.html', here)}>${[[photosOf(s).length, L('صورة', 'photos'), '#fcc5c9'], [(s.notes || []).length, L('رسالة', 'notes'), '#e3ec9c'], [(s.timeline || []).length, L('ذكرى', 'moments'), '#fde49a']].map(([n, l, c], i) => `<span style="--n:${n};--c:${c};--i:${i}"><b class="wg-count"></b><small>${l}</small></span>`).join('')}</a>` },
+	{ id: 'year', g: 'memories', size: 'strip', idea: 17, ar: 'السنة في مربعات', en: 'The year in squares', dar: 'كل يوم في السنة مربع، بيغمق كل ما عندنا فيه ذكريات أكتر', den: 'Every day a square, darker with more memories',
+		html: (s, here) => {
+			const by = new Map(); for (const x of [...(s.timeline || []), ...(s.gallery || [])]) { if (!x.date) continue; const d = parseDate(x.date); const k = `${d.getMonth()}-${d.getDate()}`; by.set(k, (by.get(k) || 0) + 1); }
+			const max = Math.max(1, ...by.values()), start = new Date(new Date().getFullYear(), 0, 1); start.setDate(start.getDate() - start.getDay());
+			const cellsH = Array.from({ length: 53 * 7 }, (_, i) => { const d = new Date(start); d.setDate(d.getDate() + i); const n = by.get(`${d.getMonth()}-${d.getDate()}`) || 0; return `<i style="--o:${n ? 0.25 + 0.75 * (n / max) : 0.08}"${isToday(`${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`) ? ' class="is-today"' : ''}></i>`; }).join('');
+			return `<a class="wg-year" ${wgGo('onthisday.html', here)}><span class="wg-k">${L('سنة من الذكريات', 'A year of memories')}</span><span class="wg-year__g">${cellsH}</span></a>`;
+		} },
+	{ id: 'pinned', g: 'memories', size: 't', idea: 62, ar: 'صورة على الحيطة', en: 'Pinned photo', dar: 'صورة بدبوس على لوحة فلين، تتبدل كل ما تفتح', den: 'A photo pinned to the corkboard',
+		html: (s, here) => { const [p] = someOf(photosOf(s), 1); if (!p) return ''; return `<a class="wg-cork" ${wgGo('gallery.html', here)}><span class="wg-cork__p" data-media-box><i class="wg-cork__pin"></i>${img(p, '', 'wg-fill')}</span></a>`; } },
+	{ id: 'collage', g: 'memories', size: 'b', idea: 65, ar: 'الكولاج', en: 'Collage', dar: 'أربع صور مربعة متلزقة جنب بعض بشريط', den: 'Four square photos taped together',
+		html: (s, here) => { const ps = someOf(photosOf(s), 4); if (ps.length < 4) return ''; return `<a class="wg-collage" ${wgGo('gallery.html', here)}><i class="wg-tape"></i>${ps.map((p) => `<span data-media-box>${img(p, '', 'wg-fill')}</span>`).join('')}</a>`; } },
+
+	/* ليالينا */
+	{ id: 'kinds', g: 'nights', size: 'board', ar: 'قرعة الليلة', en: 'Tonight’s draws', dar: 'التمن قرعات، كل واحدة بلونها', den: 'The eight draws, each in its colour',
+		html: (s, here) => { const kind = qs('k'); return `<div class="mg-kinds">${DRAW_KINDS.map((k) => `<a class="mg-kind" href="draw.html?k=${k.id}" style="--c:${k.color}"${here === 'draw.html' && kind === k.id ? ' aria-current="page"' : ''}><span class="mg-kind-e" aria-hidden="true">${doodle(k.emoji, 40)}</span><b>${esc(L(k.ar, k.en))}</b><small>${esc(L(k.dar, k.den))}</small></a>`).join('')}</div>`; } },
+	{ id: 'sky', g: 'nights', size: 'strip', idea: 25, ar: 'سما الليلة', en: 'Tonight’s sky', dar: 'قمر الليلة الحقيقي، وفكرة سهرة تحته', den: 'The real moon tonight and an idea',
+		html: () => `<a class="mg-sky" id="mg-sky" href="draw.html">${skyHTML()}</a>` },
+	{ id: 'wheel', g: 'nights', size: 'b', idea: 18, ar: 'عجلة الليلة', en: 'The wheel', dar: 'عجلة بألوان القرعات بتلف، دوس عليها تختار', den: 'A wheel of the draws, turning',
+		html: (s, here) => { const k = DRAW_KINDS, step = 360 / k.length; return `<a class="wg-wheel" ${wgGo('draw.html', here)}><span class="wg-wheel__w" style="background:conic-gradient(${k.map((x, i) => `${x.color} ${i * step}deg ${(i + 1) * step}deg`).join(',')})">${k.map((x, i) => `<i style="--a:${i * step + step / 2}deg">${doodle(x.emoji, 18)}</i>`).join('')}</span><span class="wg-wheel__hub">${L('لف', 'Spin')}</span><span class="wg-wheel__arrow" aria-hidden="true"></span></a>`; } },
+	{ id: 'moon', g: 'nights', size: 's', ar: 'القمر', en: 'The moon', dar: 'قمر الليلة لوحده، باسمه', den: 'Just tonight’s moon',
+		html: (s, here) => { const m = moonTonight(); return `<a class="wg-moon" ${wgGo('offline.html', here)}>${m.svg}<b>${esc(m.name)}</b></a>`; } },
+	{ id: 'jar', g: 'nights', size: 't', idea: 24, ar: 'برطمان الأمنيات', en: 'The wishes jar', dar: 'برطمان فيه ورقة لكل أمنية، وأمنية منهم تحته', den: 'A paper for each wish',
+		html: (s, here) => `<a class="wg-jar" ${wgGo('wishes.html', here)} data-fill="jar"><span class="wg-jar__lid"></span><span class="wg-jar__g">${Array.from({ length: 9 }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</span><small class="wg-jar__tx">${L('برطمان الأمنيات', 'Wishes jar')}</small></a>`,
+		fill: async (el, live) => { const w = ((await live.load('wishes')).items || []).filter((x) => x.text); if (!w.length) return; el.querySelector('.wg-jar__g').innerHTML = Array.from({ length: Math.min(18, w.length) }, (_, i) => `<i style="--i:${i}"></i>`).join(''); el.querySelector('.wg-jar__tx').innerHTML = `<b>${num(w.length)}</b> ${L('أمنية', 'wishes')}`; } },
+	{ id: 'cassette', g: 'nights', size: 'w', idea: 20, ar: 'كاسيت النهارده', en: 'Today’s cassette', dar: 'أغنية من أغانينا على شريط كاسيت ببكر بتلف', den: 'One of our songs on a cassette',
+		html: (s, here) => `<a class="wg-tape" ${wgGo('music.html', here)} data-fill="song"><span class="wg-tape__label">${L('أغانينا', 'Our songs')}</span><span class="wg-tape__reels"><i></i><i></i></span></a>`,
+		fill: async (el, live) => { const songs = ((await live.load('music')).items || []).filter((x) => x.title); if (!songs.length) return; const x = pick(songs); el.querySelector('.wg-tape__label').innerHTML = `<b dir="auto">${esc(x.title)}</b>${x.artist ? `<small dir="auto">${esc(x.artist)}</small>` : ''}`; } },
+	{ id: 'nextfilm', g: 'nights', size: 'w', idea: 19, ar: 'الفيلم الجاي', en: 'Next film', dar: 'أول فيلم في «هنتفرج عليه»، وكام واحد مستني', den: 'The first film on the to-watch list',
+		html: (s, here) => `<a class="wg-film" ${wgGo('movies.html', here)} data-fill="film"><span class="wg-film__reel" aria-hidden="true">${doodle('clapper', 34)}</span><span class="wg-film__tx"><small>${L('الفيلم الجاي', 'Up next')}</small><b>${L('اتفرجنا على إيه', 'What we watched')}</b></span></a>`,
+		fill: async (el, live) => { const d = await live.load('movies'), list = (d.towatch || []).filter((x) => x.title); if (!list.length) return; el.querySelector('.wg-film__tx').innerHTML = `<small>${L('الفيلم الجاي', 'Up next')}</small><b dir="auto">${esc(list[0].title)}</b><span class="wg-chip">${L(`في القايمة: ${num(list.length)}`, `${list.length} on the list`)}</span>`; } },
+
+	/* ولادنا */
+	{ id: 'figs', g: 'kids', size: 'board', ar: 'ولادنا', en: 'Our kids', dar: 'كل واحد في كارت بصورته وعمره', den: 'Each of them with photo and age',
+		html: (s, here) => { const members = s.family?.members || [], kids = members.filter((m) => m.kid); return `<div class="mg-figs">${(kids.length ? kids : members).map((m) => `<a class="mg-fig" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}><span class="mg-fig-box">${m.photo ? img(m.photo, '', 'mg-fig-img') : `<span class="mg-fig-emoji">${doodle(m.emoji, 40)}</span>`}</span><span class="mg-fig-t"><b>${T(m.name)}</b><small>${m.born && m.kid ? age(m.born) : T(m.role)}</small></span></a>`).join('')}</div>`; } },
+	{ id: 'tape', g: 'kids', size: 'strip', idea: 27, ar: 'المازورة', en: 'The tape', dar: 'مازورة عليها كل واحد فينا بسنه', den: 'All of us on a tailor’s tape',
+		html: (s) => tapeHTML(s.family?.members || []) },
+	{ id: 'ages', g: 'kids', size: 'w', idea: 33, ar: 'الشمع', en: 'Candles', dar: 'شمعة لكل سنة، والعمر بالسنين والشهور والأيام', den: 'A candle for every year',
+		html: (s, here) => { const kids = (s.family?.members || []).filter((m) => m.kid && m.born).slice(0, 2); if (!kids.length) return ''; return `<a class="wg-cake" ${wgGo('birthday.html', here)}>${kids.map((m) => { const y = Math.min(8, yearsBetween(parseDate(m.born))); return `<span class="wg-cake__k" style="--c:${esc(m.color || '#0e6990')}"><span class="wg-cake__c">${Array.from({ length: Math.max(1, y) }, (_, i) => `<i style="--i:${i}"></i>`).join('')}</span><span class="wg-cake__b"></span><b>${T(m.name)}</b><small>${age(m.born)}</small></span>`; }).join('')}</a>`; } },
+	...[0, 1].map((k) => ({ id: `kid${k + 1}`, g: 'kids', size: 't', ar: k ? 'الولد التاني' : 'الولد الأول', en: k ? 'Second child' : 'First child', dar: 'صورته في كارت طويل، واسمه وعمره', den: 'A tall card with photo, name and age',
+		html: (s, here) => { const m = (s.family?.members || []).filter((x) => x.kid)[k]; if (!m) return ''; return `<a class="wg-kid" href="member.html?id=${esc(m.id)}" style="--c:${esc(m.color || '#0e6990')}"${here === 'member.html' && qs('id') === m.id ? ' aria-current="page"' : ''}><span class="wg-kid__p">${m.photo ? `<span data-media-box>${img(m.photo, '', 'wg-fill')}</span>` : doodle(m.emoji || 'baby', 46)}</span><b>${T(m.name)}</b><small>${m.born ? age(m.born) : ''}</small></a>`; } })),
+
+	/* بيتنا */
+	{ id: 'today', g: 'home', size: 'board', ar: 'ورقة النهارده', en: 'Today’s page', dar: 'ورقة النتيجة: اليوم والهجري، وروتين النهارده', den: 'Today from the wall calendar',
+		html: (s, here) => {
+			const d = new Date(); let hijri = '';
+			try { hijri = new Intl.DateTimeFormat(`${loc()}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d); } catch { /* no Hijri here */ }
+			return `<div class="mg-home"><a class="mg-today" ${wgGo('routine.html', here)}><span class="mg-today__m">${esc(new Intl.DateTimeFormat(loc(), { month: 'long' }).format(d))}</span><b>${num(d.getDate())}</b><span class="mg-today__w">${esc(new Intl.DateTimeFormat(loc(), { weekday: 'long' }).format(d))}</span>${hijri ? `<small>${esc(hijri)}</small>` : ''}<span class="mg-go">${L('روتين النهارده', 'Today’s routine')} ${App.arrow}</span></a></div>`;
+		} },
+	{ id: 'fridge', g: 'home', size: 'strip', ar: 'باب التلاجة', en: 'The fridge door', dar: 'تلات ورقات بمغناطيس: الطلبات والمنيو والمصاريف', den: 'Shopping, menu and money on the fridge',
+		html: (s, here) => { const note = (href, ic, b, small, cls) => `<a class="mg-fnote ${cls}" ${wgGo(href, here)}><i class="mg-fnote__mag" aria-hidden="true"></i>${doodle(ic, 26)}<b>${b}</b><small>${small}</small></a>`; return `<div class="mg-fridge">${note('shopping.html', 'scroll', L('الطلبات', 'Shopping'), L('ناقص إيه في البيت؟', 'What’s missing at home?'), 'is-y')}${note('meals.html', 'dinner', L('منيو الأسبوع', 'This week’s menu'), L('هناكل إيه النهارده؟', 'What’s for dinner?'), 'is-p')}${note('expenses.html', 'coins', L('مصاريف الشهر', 'This month’s money'), L('دفعنا إيه وفاضل إيه', 'What’s paid, what’s left'), 'is-g')}</div>`; } },
+	{ id: 'clock', g: 'home', size: 's', ar: 'ساعة المطبخ', en: 'Kitchen clock', dar: 'ساعة حيطة شغالة بالوقت الحقيقي', den: 'A wall clock, really ticking',
+		html: (s, here) => { const d = new Date(), sec = d.getSeconds(), m = d.getMinutes() * 60 + sec, h = (d.getHours() % 12) * 3600 + m; return `<a class="wg-clock" ${wgGo('routine.html', here)} aria-label="${esc(new Intl.DateTimeFormat(loc(), { hour: 'numeric', minute: '2-digit' }).format(d))}"><span class="wg-clock__f">${Array.from({ length: 12 }, (_, i) => `<i style="--a:${i * 30}deg"></i>`).join('')}<b class="wg-clock__h" style="animation-delay:-${h}s"></b><b class="wg-clock__m" style="animation-delay:-${m}s"></b><b class="wg-clock__s" style="animation-delay:-${sec}s"></b></span></a>`; } },
+	{ id: 'week', g: 'home', size: 'strip', idea: 92, ar: 'الأسبوع', en: 'The week', dar: 'أيام الأسبوع والنهارده منور، بالهجري تحت كل يوم', den: 'This week, today lit up',
+		html: (s, here) => { const now = new Date(), start = new Date(now); start.setDate(now.getDate() - ((now.getDay() + 1) % 7)); let hf = null; try { hf = new Intl.DateTimeFormat(`${loc()}-u-ca-islamic-umalqura`, { day: 'numeric' }); } catch { /* none */ } return `<a class="wg-week" ${wgGo('routine.html', here)}>${Array.from({ length: 7 }, (_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); const on = d.toDateString() === now.toDateString(); return `<span class="${on ? 'is-on' : ''}" style="--i:${i}"><small>${esc(new Intl.DateTimeFormat(loc(), { weekday: 'short' }).format(d))}</small><b>${num(d.getDate())}</b>${hf ? `<em>${esc(hf.format(d))}</em>` : ''}</span>`; }).join('')}</a>`; } },
+	{ id: 'month', g: 'home', size: 'w', ar: 'الشهر عدى منه قد إيه', en: 'The month so far', dar: 'شريط بيتملى مع أيام الشهر، وفاضل كام يوم', den: 'How much of the month has gone',
+		html: (s, here) => { const d = new Date(), all = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(), p = Math.round((d.getDate() / all) * 100); return `<a class="wg-month" ${wgGo('expenses.html', here)} style="--p:${p}%"><span class="wg-k">${esc(new Intl.DateTimeFormat(loc(), { month: 'long' }).format(d))}</span><span class="wg-month__bar"><i></i></span><small>${L(`عدى ${num(d.getDate())} يوم · فاضل ${num(all - d.getDate())}`, `${d.getDate()} days gone · ${all - d.getDate()} left`)}</small></a>`; } },
+
+	/* عيلتنا وناسنا */
+	{ id: 'frame', g: 'people', size: 'b', idea: 100, ar: 'برواز العيلة', en: 'The family frame', dar: 'إحنا الأربعة في برواز، وكام سنة عيلة', den: 'The four of us in a frame',
+		html: (s, here) => familyFrame(s, here) },
+	{ id: 'cal', g: 'people', size: 'b', idea: 43, ar: 'المناسبة الجاية', en: 'Next occasion', dar: 'نتيجة مقطوعة على المناسبة الجاية وفاضل قد إيه', den: 'A desk calendar torn to the next occasion',
+		html: (s) => calendarHTML(s) },
+	{ id: 'tags', g: 'people', size: 'strip', ar: 'وبعدها', en: 'And after that', dar: 'المناسبتين اللي بعدها، جنب بعض', den: 'The two occasions after it',
+		html: (s) => nextTagsHTML(s) },
+	{ id: 'lantern', g: 'people', size: 't', idea: 44, ar: 'فانوس رمضان', en: 'The lantern', dar: 'فانوس منور بيعد الأيام لرمضان', den: 'A lantern counting down to Ramadan',
+		html: (s, here) => { const r = ramadanIn(); if (!r) return ''; return `<a class="wg-lantern" ${wgGo('ramadan.html', here)}><svg viewBox="0 0 60 110" aria-hidden="true"><path d="M30 0v12" class="wg-l-s"/><path d="M18 14h24l-4 10H22z" class="wg-l-c"/><path d="M20 24h20l8 30-8 30H20l-8-30z" class="wg-l-g"/><path d="M30 24v60M12 54h36" class="wg-l-r"/><path d="M20 84h20l-4 10H24z" class="wg-l-c"/></svg><b>${r.days ? num(r.days) : num(r.day)}</b><small>${r.days ? L('يوم لرمضان', 'days to Ramadan') : L('يوم من رمضان', 'of Ramadan')}</small></a>`; } },
+	{ id: 'balloons', g: 'people', size: 'w', idea: 97, ar: 'بلالين الشهر', en: 'Birthday balloons', dar: 'بلونة لكل حد عيد ميلاده قرب', den: 'A balloon for each birthday coming up',
+		html: (s, here) => { const b = occasions(s).filter((o) => o.kind === 'birthday' && o.days <= 60).slice(0, 4); if (!b.length) return ''; const cs = ['#fcc5c9', '#bfe0ef', '#fde49a', '#cfe8d3']; return `<a class="wg-balloons" ${wgGo('birthday.html', here)}>${b.map((o, i) => `<span style="--c:${cs[i]};--i:${i}"><i></i><b>${esc(o.title)}</b><small>${o.days ? L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`) : L('النهارده', 'today')}</small></span>`).join('')}</a>`; } },
+	{ id: 'tree', g: 'people', size: 'b', idea: 50, ar: 'الشجرة الصغيرة', en: 'The little tree', dar: 'شجرة فروعها إحنا، كل واحد في دايرة بلونه', den: 'A tree with each of us on a branch',
+		html: (s, here) => { const m = (s.family?.members || []).slice(0, 6); if (!m.length) return ''; const spots = [[50, 30], [150, 30], [64, 76], [136, 76], [100, 56], [100, 18]]; return `<a class="wg-tree" ${wgGo('familytree.html', here)}><svg viewBox="0 0 200 140" aria-hidden="true"><path d="M100 138V70M100 70L50 34M100 70l50-36M100 96L64 76M100 96l36-20M100 70V18" class="wg-tree__b"/>${m.map((x, i) => `<g style="--i:${i}"><circle cx="${spots[i][0]}" cy="${spots[i][1]}" r="15" fill="${esc(x.color || '#e2d3f5')}" class="wg-tree__f"/><text x="${spots[i][0]}" y="${spots[i][1] + 30}" text-anchor="middle">${T(x.name)}</text></g>`).join('')}</svg></a>`; } },
+	{ id: 'nextocc', g: 'people', size: 's', ar: 'كام يوم؟', en: 'How many days?', dar: 'رقم واحد كبير: فاضل كام يوم على المناسبة الجاية', den: 'Days to the next occasion, big',
+		html: (s, here) => { const [o] = occasions(s); if (!o) return ''; return `<a class="wg-big" ${wgGo('calendar.html', here)}><b>${o.days ? num(o.days) : doodle(o.emoji || 'cake', 34)}</b><small>${esc(o.title)}</small></a>`; } }
+];
+
+/** a menu's board: its widgets on the four by three grid, each in its own cell */
+export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g)) {
+	return `<div class="wg-board">${ids.map((id, i) => {
+		const w = WIDGETS.find((x) => x.id === id && x.g === g);
+		if (!w) return '';
+		let h = '';
+		try { h = w.html(s, here) || ''; } catch { h = ''; }
+		const [c, r] = WG_SIZES[w.size];
+		return `<div class="wg wg--${w.size} wgx-${w.id}" style="--c:${c};--r:${r};--i:${i}" data-wg="${w.id}">${h || `<a class="wg-empty" href="widgets.html#${g}">${esc(L(w.ar, w.en))}<small>${L('لسه مفيش حاجة هنا', 'Nothing here yet')}</small></a>`}</div>`;
+	}).join('')}</div>`;
+}
+/** what some widgets add once the shared lists have loaded (the wishes jar, a song, the next film) */
+export async function fillWidgets(root) {
+	const els = [...root.querySelectorAll('[data-wg]')].map((el) => ({ el, w: WIDGETS.find((x) => x.id === el.dataset.wg) })).filter((x) => x.w?.fill);
+	if (!els.length) return;
+	let live;
+	try { live = await import('./live.js'); } catch { return; }
+	for (const { el, w } of els) w.fill(el, live).catch(() => {});
+}
+
 /* Everything we can add, by chapter, for the «+» beside the search: each opens its page with the form open (#add). */
 const ADD = [
 	['journal', 'اكتب صفحة في الدفتر', 'Write a journal page'], ['ourfirsts', 'أول مرة لينا', 'A first of ours'], ['beforeus', 'محطة قبل ما نتقابل', 'A stop before us'], ['anniversaries', 'عيد جواز', 'An anniversary'], ['cities', 'مكان على خريطة مدننا', 'A spot on our city maps'],
@@ -870,10 +995,10 @@ function megaHTML(s) {
 		const ps = PAGES.filter((p) => p.group === g.id);
 		return `<div class="mega mega-${g.id}" id="mega-${g.id}" role="group" aria-label="${esc(L(g.ar, g.en))}" style="--tab:${g.tab};--gc:${g.c}"><div class="mega-in">
 			<div class="mx-main">
-				<p class="mx-head"><i aria-hidden="true">${n < 9 ? num(0) : ''}${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${esc(L(...g.say))}</small><span class="mx-count">${num(ps.length)} ${L('صفحات', 'pages')}</span></p>
+				<p class="mx-head"><i aria-hidden="true">${n < 9 ? num(0) : ''}${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${esc(L(...g.say))}</small><span class="mx-count">${num(ps.length)} ${L('صفحات', 'pages')}</span><a class="mx-edit" href="widgets.html#${g.id}" title="${L('اختار الويدجتس اللي هنا', 'Choose the widgets here')}">${doodle('pencil', 14)} ${L('غيّر الويدجتس', 'Change widgets')}</a></p>
 				<div class="mx-grid">${ps.map((p, k) => `<a class="mx-item" href="${p.href}"${cur(p.href)} style="--i:${k}">${icon(p.ic, 20)}<b>${esc(L(p.ar, p.en))}</b><small>${esc(L(p.dar || '', p.den || ''))}</small></a>`).join('')}</div>
 			</div>
-			<div class="mx-side mx-side--${g.id}">${widgetsHTML(g.id, s)}</div>
+			<div class="mx-side mx-side--${g.id}">${boardHTML(g.id, s, here)}</div>
 		</div></div>`;
 	};
 	return `<nav class="mnav" aria-label="${L('القائمة الرئيسية', 'Main')}">
@@ -1238,6 +1363,7 @@ function renderChrome() {
 		if (on) hydrate($('.pnav', header));
 	};
 	header._menu = setMenu;
+	fillWidgets($('.mnav', header));
 	$('.menu-btn', header).onclick = () => setMenu(!header.classList.contains('menu-open'));
 	$('.pnav', header).onclick = (ev) => { if (ev.target.closest('a')) setMenu(false); };
 	{
@@ -1495,7 +1621,7 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'widgets', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
 const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', clubs: 'more', debts: 'more', drawings: 'more', duties: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', meals: 'more', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', papers: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', school: 'more', secret: 'secret', shopping: 'more', tickets: 'more', warranty: 'more' };
 function ownCSS(id) {

@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-5d0e7c9976';
+var VERSION = 'us-c8a4526f7b';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -82,6 +82,7 @@ var SHELL = [
 	'trip.html',
 	'trips.html',
 	'warranty.html',
+	'widgets.html',
 	'wishes.html',
 	'yearly.html',
 	'manifest.webmanifest',
@@ -96,6 +97,7 @@ var SHELL = [
 	'assets/css/plans.css',
 	'assets/css/secret.css',
 	'assets/css/trips.css',
+	'assets/css/widgets.css',
 	'assets/js/bdmore.js',
 	'assets/js/bdsky.js',
 	'assets/js/calm.js',
@@ -123,6 +125,7 @@ var SHELL = [
 	'assets/js/stardust.js',
 	'assets/js/tilemap.js',
 	'assets/js/tree.js',
+	'assets/js/widgetideas.js',
 	'assets/js/pages/adventures.js',
 	'assets/js/pages/anniversaries.js',
 	'assets/js/pages/beforeus.js',
@@ -192,6 +195,7 @@ var SHELL = [
 	'assets/js/pages/trip.js',
 	'assets/js/pages/trips.js',
 	'assets/js/pages/warranty.js',
+	'assets/js/pages/widgets.js',
 	'assets/js/pages/wishes.js',
 	'assets/js/pages/yearly.js',
 	'assets/icons/apple-touch-icon.png',

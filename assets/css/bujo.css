@@ -931,49 +931,6 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 .mg-fnote.is-p .mg-fnote__mag { background-color: #0e6990; }
 .mg-fnote.is-g .mg-fnote__mag { background-color: #fdc830; }
 
-/* ---------- the chapter's cards fill their side of the menu, top to bottom, the same in all six ---------- */
-@media (min-width: 980px) {
-	.mega-in { align-items: stretch; }
-	.mx-main { align-self: center; }
-	.mx-side { align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-height: 0; }
-	.mx-side > * { margin-top: 0; margin-bottom: 0; }
-	/* حكايتنا and ذكرياتنا: the photo cards grow tall, the band or the film under them */
-	:is(.mega-story, .mega-memories) .mx-side > .mg-cards { flex: 1 1 auto; min-height: 0; align-items: stretch; grid-auto-rows: 1fr; }
-	:is(.mega-story, .mega-memories) .mg-card { aspect-ratio: auto; height: auto; min-height: 220px; }
-	:is(.mega-story, .mega-memories) .mg-card .mg-cover, .mega-memories .mg-pic, .mega-memories .mg-note, .mg-card--data .mg-numbers { height: 100%; }
-	.mega-story .mg-band { flex: none; }
-	.mega-memories .mg-film { flex: none; }
-	/* ليالينا: the four draws grow, tonight's sky under them */
-	.mega-nights .mx-side > .mg-kinds { flex: 1 1 auto; align-content: stretch; }
-	.mega-nights .mg-kind { display: grid; align-content: center; justify-items: center; }
-	.mega-nights .mg-sky { flex: none; min-height: 120px; }
-	/* ولادنا: the figures grow, the tape under them */
-	.mega-kids .mx-side > .mg-figs { flex: 1 1 auto; align-items: stretch; grid-auto-rows: 1fr; }
-	.mega-kids .mg-fig { display: grid; align-content: center; justify-items: center; gap: 10px; }
-	.mega-kids .mg-fig-box { width: clamp(96px, 9vw, 140px); height: clamp(96px, 9vw, 140px); }
-	.mega-kids .mg-fig-t b { font-size: 1.25rem; }
-	.mega-kids .mg-fig-emoji .dd { width: clamp(44px, 4.6vw, 70px); height: clamp(44px, 4.6vw, 70px); }
-	.mega-kids .mg-fig-t small { font-size: .9rem; }
-	/* بيتنا: the day grows, the fridge under it */
-	.mega-home .mx-side > .mg-home { flex: 1 1 auto; grid-template-rows: 1fr auto; }
-	.mega-home .mg-today { align-content: center; }
-	.mega-home .mg-today { gap: 6px; }
-	.mega-home .mg-today b { font-size: clamp(4.4rem, 7vw, 6.4rem); }
-	.mega-home .mg-today__m { padding: 10px 0; font-size: 1.3rem; }
-	.mega-home .mg-today__w { font-size: 1.15rem; }
-	.mega-home .mg-today small { font-size: .92rem; }
-	.mega-home .mg-today .mg-go { font-size: .95rem; }
-	.mega-home .mg-fnote { padding: 18px 8px 12px; }
-	.mega-home .mg-fnote b { font-size: .84rem; }
-	.mega-home .mg-fnote small { font-size: .72rem; }
-	/* عيلتنا: the calendar and the frame grow, what comes after under them */
-	.mega-people .mx-side > .mx-wpair { flex: 1 1 auto; align-items: stretch; }
-	.mega-people .mx-wpair > * { align-self: stretch; }
-	.mega-people .mg-cal { align-self: stretch; display: grid; align-content: center; }
-	.mega-people .mg-frame-fam { align-content: center; }
-	.mega-people .mg-frame-fam__pic { width: 64px; height: 64px; }
-}
-
 /* ---------- the «+» menu in the diary's own hand: a page of dotted paper with washi tape on top, the question in
    handwriting under a highlighter, each chapter an index card (its number in an ink circle, its name highlighted in
    its colour, a hard shadow in its colour) and each thing to add with its icon in the menus' hand-drawn blob ---------- */

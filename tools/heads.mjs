@@ -28,7 +28,7 @@ const DETAIL = {
 	journey: { ar: 'رحلة', en: 'A trip', dar: 'رحلة من رحلاتنا، محطة ورا محطة على الخريطة', den: 'One of our trips, stop by stop on the map' }
 };
 
-const BASE_CSS = ['app', 'chrome', 'live', 'trips', 'plans', 'bujo'];
+const BASE_CSS = ['app', 'chrome', 'live', 'trips', 'plans', 'bujo', 'widgets'];
 const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 /* every script a module pulls in with a static import, depth first */
