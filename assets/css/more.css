@@ -2545,3 +2545,11 @@
 .od2 .od-hero__years, .od2 .od-hero__btns { justify-content: center; }
 .lp-list--favorites .fv-page__h b, .lp-list--favorites .fv-page__h .fv-card-e { color: #2b2b33 !important; }
 .lp-list--favorites .fv-page__h .fv-card-e { color: var(--c) !important; }
+
+/* رسوماتنا: each card held by the same inked clothespin as the drawings on the string above the title */
+.lp-list--drawings .fd-magnet { top: -22px; width: 18px; height: 42px; border-radius: 0; background: radial-gradient(circle, transparent 3.5px, #8a8792 3.7px 5.2px, transparent 5.6px) 50% 36% / 18px 18px no-repeat; box-shadow: none; z-index: 3; rotate: calc(var(--r, 0deg) * -1); }
+.lp-list--drawings .fd-magnet::before, .lp-list--drawings .fd-magnet::after { content: ''; position: absolute; top: 0; z-index: -1; width: 9px; height: 100%; background: #fcc5c9; border: 1.5px solid #37353f; border-radius: 3px 3px 2px 2px; transform-origin: 50% 0; }
+.lp-list--drawings .fd-magnet::before { left: 0; rotate: -4deg; }
+.lp-list--drawings .fd-magnet::after { right: 0; rotate: 4deg; filter: brightness(.93); }
+.lp-list--drawings .lp-card:nth-child(3n + 2) .fd-magnet::before, .lp-list--drawings .lp-card:nth-child(3n + 2) .fd-magnet::after { background: #bfe0ef; }
+.lp-list--drawings .lp-card:nth-child(3n) .fd-magnet::before, .lp-list--drawings .lp-card:nth-child(3n) .fd-magnet::after { background: #e3ec9c; }
