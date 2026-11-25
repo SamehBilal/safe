@@ -2,8 +2,8 @@ import { L, esc } from '../shell.js';
 import { listPage, shorten } from '../listpage.js';
 import { doodle } from '../doodles.js';
 
-/* «منيو الأسبوع»: what we'll eat this week — for each day breakfast, lunch and dinner, the dish, who's cooking, a note.
-   Above the title the fridge door with the week's planner held up by magnets, today's square circled. Under it the
+/* «منيو الأسبوع»: what we'll eat this week — for each day breakfast, lunch and dinner, the dish, who's cooking, a note,
+   a photo. Above the title a café chalkboard on its easel with today's three meals chalked up, and the week as plates. Under it the
    week, a card for each day (Saturday first, today marked) with its meals in it. Shared: content/live/meals.bin. */
 
 export const DAYS = [['sat', 'السبت', 'Saturday'], ['sun', 'الحد', 'Sunday'], ['mon', 'الاتنين', 'Monday'], ['tue', 'التلات', 'Tuesday'], ['wed', 'الأربع', 'Wednesday'], ['thu', 'الخميس', 'Thursday'], ['fri', 'الجمعة', 'Friday']];
@@ -21,21 +21,24 @@ export default listPage({
 		{ n: 'meal', t: 'sel', l: ['فطار ولا غدا ولا عشا؟', 'Breakfast, lunch or dinner?'], opts: MEALS.map(([v, , ar, en]) => [v, ar, en]) },
 		{ n: 'dish', t: 'text', l: ['الأكلة', 'The dish'], req: 1, grow: 1, ph: ['محشي، مكرونة بشاميل…', 'Stuffed vine leaves, pasta bake…'], ideas: [['ملوخية وفراخ'], ['مكرونة بشاميل'], ['محشي'], ['فول وطعمية'], ['كشري'], ['سمك ورز'], ['بطاطس بالفرن'], ['شوربة عدس'], ['بيتزا في البيت'], ['دليفري ♥']] },
 		{ n: 'cook', t: 'sel', l: ['مين هيطبخ؟', 'Who’s cooking?'], opts: 'whoBoth' },
-		{ n: 'note', t: 'text', l: ['ملاحظة (ناقصنا إيه؟)', 'A note (anything to buy?)'], grow: 1 }
+		{ n: 'note', t: 'text', l: ['ملاحظة (ناقصنا إيه؟)', 'A note (anything to buy?)'], grow: 1 },
+		{ n: 'photo', t: 'photo', l: ['صورة الأكلة (اختياري)', 'A photo of the dish (optional)'], full: 1 }
 	],
 	prepare: (x) => { x.day = x.day || todayKey(); x.meal = x.meal || 'lunch'; },
 	sort: (a, b) => order(a) - order(b),
-	band: (items) => {
-		const t = todayKey();
-		return `<div class="ml-b">
-			<div class="ml-fridge">
-				<span class="ml-fridge__handle" aria-hidden="true"></span>
-				<div class="ml-plan">
-					<span class="ml-mag ml-mag--a" aria-hidden="true"></span><span class="ml-mag ml-mag--b" aria-hidden="true"></span>
-					<p class="ml-plan__h">${L('منيو الأسبوع', 'This week')} ♥</p>
-					<ul class="ml-plan__days">${DAYS.map(([k, ar, en]) => { const ms = items.filter((x) => x.day === k); return `<li class="${k === t ? 'is-today' : ''}"><b>${esc(L(ar, en.slice(0, 3)))}</b>${ms.slice(0, 2).map((x) => `<span dir="auto">${esc(shorten(x.dish, 11))}</span>`).join('') || '<span class="is-none">—</span>'}</li>`; }).join('')}</ul>
-				</div>
+	band: (items, c) => {
+		const t = todayKey(), today = items.filter((x) => x.day === t);
+		const tday = DAYS.find((d) => d[0] === t);
+		return `<div class="mlb">
+			<div class="mlb-board">
+				<span class="mlb-board__top" aria-hidden="true">${doodle('dinner', 26)}</span>
+				<p class="mlb-board__h">${L('منيو النهارده', 'Today’s menu')}</p>
+				<p class="mlb-board__d">${esc(L(tday[1], tday[2]))}</p>
+				<ul class="mlb-board__menu">${MEALS.map(([m, ic, ar, en]) => { const x = today.find((y) => y.meal === m); return `<li class="${x ? '' : 'is-none'}"><span class="mlb-board__k">${doodle(ic, 16)} ${esc(L(ar, en))}</span><i aria-hidden="true"></i><b dir="auto">${x ? esc(shorten(x.dish, 22)) : L('لسه', 'not yet')}</b>${x?.cook ? `<small>${esc(c.whoName(x.cook))}</small>` : ''}</li>`; }).join('')}</ul>
+				<span class="mlb-board__chalk" aria-hidden="true"></span>
 			</div>
+			<span class="mlb-easel" aria-hidden="true"><i></i><i></i><i></i></span>
+			<ol class="mlb-week">${DAYS.map(([k, ar, en]) => { const n = items.filter((x) => x.day === k).length; return `<li class="${k === t ? 'is-today' : ''}"><span class="mlb-plate">${'<i></i>'.repeat(Math.min(3, n))}</span><small>${esc(L(ar, en.slice(0, 3)))}</small></li>`; }).join('')}</ol>
 		</div>`;
 	},
 	/* the week, a card for each day, in the space above the (empty) list */
@@ -48,6 +51,7 @@ export default listPage({
 				<h3>${esc(L(ar, en))}${k === t ? ` <small>${L('النهارده', 'Today')}</small>` : ''}</h3>
 				${ms.length ? `<ul>${ms.map((x) => { const [, ic, mar, men] = mealOf(x.meal); return `<li class="ml-it">
 					<span class="ml-it__k">${doodle(ic, 15)} ${esc(L(mar, men))}</span>
+					${x.photo ? `<span class="ml-it__ph">${c.photo(x)}</span>` : ''}
 					<b dir="auto">${esc(x.dish)}</b>
 					${x.cook ? `<small>${doodle('pen', 12)} ${esc(c.whoName(x.cook))}</small>` : ''}
 					${x.note ? `<small class="ml-it__note" dir="auto">${esc(x.note)}</small>` : ''}

@@ -121,6 +121,9 @@ function wirePaper(main) {
 		if (isOpen) return go(i);
 		isOpen = true;
 		y0 = scrollY;
+		// the paper opens over the whole window: out from under the page (whose moves and fades would hold a fixed layer
+		// inside them) to the top of the document
+		if (fbo.parentElement !== document.body) document.body.append(fbo);
 		clearTimeout(timer);
 		fb.classList.remove('is-closing');
 		fb.classList.add('is-open');
@@ -164,7 +167,7 @@ function wirePaper(main) {
 	np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = +b.dataset.go < 0; });
 	// a link to the tree (family.html#tree, or the old familytree.html) lands on the book's cover
 	if (location.hash === '#tree') setTimeout(() => fb.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }), 300);
-	return () => { removeEventListener('keydown', onKey); clearTimeout(timer); document.documentElement.classList.remove('fbo-lock'); };
+	return () => { removeEventListener('keydown', onKey); clearTimeout(timer); document.documentElement.classList.remove('fbo-lock'); fbo.remove(); };
 }
 async function fillPaper(main, s, f) {
 	const box = main.querySelector('#np-front'), misc = main.querySelector('#np-misc');

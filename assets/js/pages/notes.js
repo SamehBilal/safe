@@ -24,7 +24,15 @@ function hero(s, notes) {
 	const dated = notes.map((n) => n.date).filter(Boolean).sort();
 	const withPhoto = notes.filter((n) => n.photo).length;
 	const pct = notes.length ? Math.round((him / notes.length) * 100) : 50;
-	return `<div class="nh">
+	const box = (w, n) => `<div class="nh2-box is-${w}" aria-hidden="true">
+			<span class="nh2-box__flag"></span>
+			<span class="nh2-box__body"><span class="nh2-box__slot"></span><b>${num(n)}</b><small>${L('رسالة', 'notes')}</small></span>
+			<span class="nh2-box__post"></span>
+			<span class="nh2-box__name">${L('من', 'From')} ${T(w === 'him' ? s.him : s.her)}</span>
+		</div>`;
+	return `<div class="nh nh2">
+		${box('him', him)}
+		<div class="nh2-mid">
 		<div class="nh-env" aria-live="polite">
 			<div class="nh-env__back"></div>
 			<figure class="nh-slip" id="nh-slip"></figure>
@@ -47,6 +55,8 @@ function hero(s, notes) {
 				<button class="btn btn--sm" type="button" id="nh-next">${doodle('letter', 18)} ${Y('اقرا واحدة تانية', 'اقري واحدة تانية', 'Read another')}</button>
 			</div>
 		</div>
+		</div>
+		${box('her', her)}
 	</div>`;
 }
 

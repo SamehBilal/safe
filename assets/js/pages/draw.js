@@ -136,7 +136,10 @@ export default {
 				<div><b dir="auto">${esc(h.text)}</b><small>${longDate(h.date)} · ${esc(L(kk.ar, kk.en))}${h.by ? ` · ${name(h.by)}` : ''}</small>
 				${h.hearts ? `<span class="hearts-row" aria-label="${h.hearts}/5">${'♥'.repeat(h.hearts)}<i>${'♥'.repeat(5 - h.hearts)}</i></span>` : ''}
 				${h.note ? `<p dir="auto">${esc(h.note)}</p>` : ''}</div>
-				${h.sketch ? `<img class="zoom" data-sketch="${esc(h.sketch)}" alt="${esc(h.text)}">` : live.canWrite() ? `<button type="button" class="link" data-sketch-for="${esc(h.id)}">${doodle('pencil', 16)} ${Y('ارسمها', 'ارسميها', 'Sketch it')}</button>` : ''}
+				<div class="night__pics">
+					${h.photo ? `<img class="zoom night__photo" data-sketch="${esc(h.photo)}" alt="${esc(h.text)}">` : live.canWrite() ? `<label class="link night__add">${doodle('camera', 16)} ${L('صورة', 'A photo')}<input type="file" accept="image/*" data-photo-for="${esc(h.id)}" hidden></label>` : ''}
+					${h.sketch ? `<img class="zoom night__sketch" data-sketch="${esc(h.sketch)}" alt="${esc(h.text)}">` : live.canWrite() ? `<button type="button" class="link" data-sketch-for="${esc(h.id)}">${doodle('pencil', 16)} ${Y('ارسمها', 'ارسميها', 'Sketch it')}</button>` : ''}
+				</div>
 			</article>`;
 		};
 		const paintHistory = () => {
@@ -151,6 +154,20 @@ export default {
 			});
 			paintSky();
 		};
+
+		/* a photo for an old night: shrunk and encrypted on the phone, like every photo here */
+		main.addEventListener('change', async (e) => {
+			const inp = e.target.closest('[data-photo-for]');
+			if (!inp?.files?.[0]) return;
+			const id = inp.dataset.photoFor;
+			inp.closest('label')?.classList.add('is-busy');
+			try {
+				const photo = await live.putSketch(await shrinkPhoto(inp.files[0], 1200));
+				data = await live.save('draw', (d) => { const x = (d.history || []).find((y) => y.id === id); if (x) x.photo = photo; }, init);
+				fill();
+				paintHistory();
+			} catch (err) { alert(live.why(err)); }
+		});
 
 		/* sketch an old night */
 		main.addEventListener('click', async (e) => {
@@ -371,6 +388,8 @@ export default {
 				<div class="result__sketch" id="res-sketch"></div>
 				${ok ? `<form id="log" class="result__log">
 					<label class="f"><span>${L('حاجة عايزين نفتكرها؟', 'Anything to remember?')}</span><input name="note" dir="auto" maxlength="200"></label>
+					<label class="btn btn--sm btn--ghost result__photo">${doodle('camera', 18)} ${L('صورة من الليلة', 'A photo of the night')}<input type="file" name="photo" accept="image/*" hidden></label>
+					<span class="result__photo-show" id="res-photo"></span>
 					<fieldset class="rate"><legend>${Y('قيّم الليلة', 'قيّمي الليلة', 'Rate the night')}</legend>${[5, 4, 3, 2, 1].map((h) => `<input type="radio" name="hearts" id="h${h}" value="${h}"><label for="h${h}" title="${h}">♥</label>`).join('')}</fieldset>
 					<p class="form-msg" id="log-msg" role="status"></p>
 				</form>` : ''}
@@ -387,6 +406,8 @@ export default {
 				const blob = await openSketch({ title: label(x), hint: t(kk.sketch) });
 				if (blob) { pendingSketch = blob; $('#res-sketch', result).innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="">`; }
 			};
+			const pf = $('#log [name="photo"]', result);
+			if (pf) pf.onchange = () => { const f = pf.files?.[0]; $('#res-photo', result).innerHTML = f ? `<img src="${URL.createObjectURL(f)}" alt="">` : ''; };
 			const logBtn = $('#res-log', result);
 			if (logBtn) logBtn.onclick = async () => {
 				const form = $('#log', result);
@@ -395,7 +416,9 @@ export default {
 				msg.textContent = L('بنسجل…', 'Logging…');
 				try {
 					const sketch = pendingSketch ? await live.putSketch(pendingSketch) : undefined;
-					const entry = { id: live.newId(), kind: kk.id, text: label(x), date: live.today(), by: live.me(), note: form.note.value.trim() || undefined, hearts: +(form.hearts.value || 0) || undefined, sketch, at: Date.now() };
+					const file = form.photo?.files?.[0];
+					const photo = file ? await live.putSketch(await shrinkPhoto(file, 1200)) : undefined;
+					const entry = { id: live.newId(), kind: kk.id, text: label(x), date: live.today(), by: live.me(), note: form.note.value.trim() || undefined, hearts: +(form.hearts.value || 0) || undefined, sketch, photo, at: Date.now() };
 					data = await live.save('draw', (d) => { (d.history = d.history || []).push(entry); }, init);
 					fill();
 					msg.textContent = L('اتسجلت في ليالينا ♥', 'Logged in our nights ♥');

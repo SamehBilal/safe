@@ -97,15 +97,23 @@ export default {
 					<div class="f-actions"><button type="button" class="btn btn--ghost" id="rt-cancel" hidden>${L('إلغاء', 'Cancel')}</button><button type="submit" class="btn btn--coral">${doodle('clock', 18)} <span id="rt-submit">${Y('ضيفه', 'ضيفيه', 'Add it')}</span></button></div>
 				</form>
 			</details>
+			<div class="rt-layout">
+			<aside class="rt-side">
+			<p class="rt-side__h">${doodle('calendar', 16)} ${L('أنهي يوم؟', 'Which day?')}</p>
 			<div class="rt-week chips" id="rt-week" role="tablist" aria-label="${L('أنهي يوم؟', 'Which day?')}">${DAYS.map((d) => `<button class="chip${d === today ? ' is-on' : ''}" type="button" role="tab" data-day="${d}" aria-selected="${d === today}">${DAY[App.lang === 'ar' ? 'ar' : 'en'][d]}${d === today ? ` <small>${L('النهارده', 'today')}</small>` : ''}</button>`).join('')}</div>
+			<p class="rt-side__h">${doodle('family', 16)} ${L('روتين مين؟', 'Whose routine?')}</p>
 			<div class="rt-tabs" id="rt-tabs" role="tablist" aria-label="${L('روتين مين؟', 'Whose routine?')}">
 				<button class="rt-tab is-on" type="button" role="tab" data-who="" style="--c:#37353f">${doodle('clock', 22)}<span>${L('الكل', 'Everyone')}</span></button>
 				<button class="rt-tab" type="button" role="tab" data-who="all" style="--c:${FAMILY.c}">${doodle('family', 22)}<span>${L('العيلة', 'Family')}</span></button>
 				${members.map((m) => `<button class="rt-tab" type="button" role="tab" data-who="${esc(m.id)}" style="--c:${esc(m.color)}"><span class="rt-tab__av">${m.photo ? img(m.photo, '', '') : doodle(m.emoji, 20)}</span><span>${esc(App.t(m.name))}</span></button>`).join('')}
 			</div>
-			<div class="rb-wrap" id="rt-boards"></div>
 			<p class="rt-progress" id="rt-progress"></p>
+			</aside>
+			<div class="rt-main">
+			<div class="rb-wrap" id="rt-boards"></div>
 			<div class="rt-day-list" id="rt-list"><p class="empty">${L('بنجيب الروتين…', 'Fetching the routine…')}</p></div>
+			</div>
+			</div>
 		</div></section>
 		${related(['chores', 'calendar', 'family'])}`;
 	},

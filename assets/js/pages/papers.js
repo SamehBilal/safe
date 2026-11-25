@@ -23,7 +23,8 @@ export default listPage({
 		{ n: 'whose', t: 'sel', l: ['بتاعة مين؟', 'Whose?'], opts: (s) => [['both', L('إحنا الاتنين', 'Both of us')], ['him', t(s.him)], ['her', t(s.her)], ...(s.family?.members || []).filter((m) => m.kid).map((k) => [k.id, t(k.name)])] },
 		{ n: 'expires', t: 'date', l: ['بتخلص إمتى؟', 'Expires on'], req: 1 },
 		{ n: 'kept', t: 'text', l: ['محطوطة فين؟', 'Kept where?'], ph: ['الدرج الأحمر، الشنطة الزرقا…', 'The red drawer…'] },
-		{ n: 'note', t: 'area', l: ['ملاحظات (تتجدد فين، محتاجة إيه)', 'Notes (where to renew, what it needs)'], rows: 2 }
+		{ n: 'note', t: 'area', l: ['ملاحظات (تتجدد فين، محتاجة إيه)', 'Notes (where to renew, what it needs)'], rows: 2 },
+		{ n: 'photo', t: 'photo', l: ['صورة (الغلاف أو المكان اللي محطوطة فيه — من غير ما الأرقام تبان)', 'A photo (the cover, or where it’s kept — without the numbers showing)'], full: 1 }
 	],
 	note: ['متكتبش أرقام الورق نفسه هنا — بس المواعيد ومكانه ♥', 'Don’t write the papers’ numbers here — only the dates and where they are ♥'],
 	prepare: (x) => { x.pkind = x.pkind || 'other'; },
@@ -56,6 +57,7 @@ export default listPage({
 					<p class="pa-card__who">${x.whose ? esc(c.whoName(x.whose)) : ''}</p>
 				</div>
 			</div>
+			${x.photo ? `<span class="pa-card__ph">${c.photo(x)}</span>` : ''}
 			<p class="pa-card__meta">
 				${x.expires ? `<span>${doodle('calendar', 14)} ${L('بتخلص', 'Expires')} ${c.date(x.expires)}</span>` : ''}
 				${x.kept ? `<span>${doodle('pin', 14)} <span dir="auto">${esc(x.kept)}</span></span>` : ''}

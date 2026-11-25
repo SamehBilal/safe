@@ -991,3 +991,55 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 .ft-pet { max-width: 100%; overflow-x: clip; }
 .ft-copy { flex-wrap: nowrap; }
 .ft-copy .ft-pet { flex: none; }
+
+/* ---------- تقويمنا: the form at the top, and a delete beside our own family occasions in «جاي قريب» ---------- */
+.cal-add { margin-top: 0 !important; }
+.cal-up > .cal-hero, .cal-stubs > li { position: relative; }
+.cal-del { position: absolute; top: 6px; inset-inline-end: 6px; z-index: 2; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: var(--muted); background: var(--card); border: 1.5px solid color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 50%; cursor: pointer; opacity: .55; transition: opacity .15s, color .15s, border-color .15s; }
+.cal-up > .cal-hero ~ .cal-del { top: 10px; inset-inline-end: 10px; }
+.cal-stubs > li:hover .cal-del, .cal-del:focus-visible, .cal-up:hover > .cal-del { opacity: 1; }
+.cal-del:hover { color: #fff; background: var(--coral); border-color: var(--ink); }
+.cal-up { position: relative; }
+
+/* ---------- رمضان والعيد: every tradition the same size, whatever its length ---------- */
+.rm-trad { grid-auto-rows: 1fr; align-items: stretch; }
+.rm-trad > li { display: flex; min-width: 0; }
+.rm-trad .rm-check { flex: 1; display: flex; align-items: center; min-height: 64px; height: 100%; box-sizing: border-box; }
+.rm-trad .rm-check span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; }
+.rm-trad__add form { height: 100%; align-items: stretch; }
+.rm-trad__add input { height: 100%; min-height: 64px; box-sizing: border-box; }
+
+/* ---------- قرعة الليلة: a photo of the night beside its sketch ---------- */
+.night__pics { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.night__pics img { width: 160px; max-width: 46%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink); background: #fff; }
+.night__photo { padding: 5px 5px 18px; rotate: -2deg; box-shadow: 0 6px 14px rgba(0, 0, 0, .15); }
+.night__sketch { rotate: 1.5deg; }
+.night__add { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.night__add.is-busy { opacity: .5; pointer-events: none; }
+.result__photo { margin: 4px 0 8px; cursor: pointer; }
+.result__photo-show img { display: block; max-width: 200px; margin: 0 auto 10px; padding: 6px 6px 20px; background: #fff; border: 1.5px solid var(--ink); rotate: -2deg; box-shadow: 0 6px 14px rgba(0, 0, 0, .15); }
+
+/* ---------- رسايل حب: two mailboxes either side of the envelope ---------- */
+.nh.nh2 { grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: clamp(14px, 3vw, 36px); }
+.nh2-mid { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: clamp(18px, 3vw, 40px); min-width: 0; }
+.nh2-box { --c: #0e6990; --t: #bfe0ef; position: relative; display: grid; justify-items: center; width: 118px; padding-bottom: 4px; }
+.nh2-box.is-her { --c: #d9534f; --t: #fcc5c9; }
+.nh2-box__body { position: relative; z-index: 1; display: grid; justify-items: center; align-content: end; gap: 0; width: 104px; height: 120px; padding-bottom: 12px; color: #2b2b33; background: var(--t); border: 2px solid var(--ink); border-radius: 52px 52px 8px 8px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--c); }
+.nh2-box__slot { position: absolute; top: 34px; left: 50%; width: 50px; height: 7px; translate: -50% 0; background: #37353f; border-radius: 4px; }
+.nh2-box__body b { font: 400 2.1rem/1 var(--f-label); color: var(--c); }
+.nh2-box__body small { font-weight: 800; font-size: .72rem; color: #4a4752; }
+.nh2-box__flag { position: absolute; top: 26px; inset-inline-end: -8px; z-index: 0; width: 6px; height: 54px; background: #8a8792; border: 1.5px solid #37353f; border-radius: 3px; transform-origin: 50% 100%; animation: nh2-flag 3s ease-in-out infinite; }
+.nh2-box__flag::after { content: ''; position: absolute; top: -2px; inset-inline-start: 4px; width: 26px; height: 16px; background: var(--c); border: 1.5px solid #37353f; border-radius: 2px 4px 4px 2px; }
+.nh2-box.is-her .nh2-box__flag { animation-delay: -1.5s; }
+@keyframes nh2-flag { 0%, 100% { rotate: 0deg; } 50% { rotate: calc(var(--bujo-x, 1) * 10deg); } }
+.nh2-box__post { width: 14px; height: 42px; background: #b98b5e repeating-linear-gradient(0deg, transparent 0 8px, rgba(0, 0, 0, .12) 8px 9px); border: 2px solid #37353f; border-top: 0; }
+.nh2-box__name { margin-top: 6px; padding: 1px 10px; font-weight: 800; font-size: .8rem; color: #2b2b33; background: linear-gradient(transparent 50%, var(--t) 50%); }
+@media (max-width: 1100px) { .nh2-mid { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; } .nh2-mid .nh-body { justify-items: center; } }
+@media (max-width: 760px) {
+	.nh.nh2 { grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: center; }
+	.nh2-mid { grid-column: 1 / -1; grid-row: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .nh2-box__flag { animation: none; } }
+
+/* ---------- ألبوم الصور: a narrower search ---------- */
+@media (min-width: 761px) { .tp-find .tp-find__field { flex: 0 1 210px; min-width: 150px; } }

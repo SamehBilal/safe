@@ -2420,3 +2420,128 @@
 	.pa-sheet { width: 90px; inset-inline-start: calc(14px + var(--i) * 52px); }
 }
 @media (prefers-reduced-motion: reduce) { .cb-cup { animation: none; } }
+
+/* ---------- photos on the cards of واجباتنا, ورقنا المهم and منيو الأسبوع ---------- */
+.du-card__ph, .pa-card__ph { display: block; margin: 4px 0 10px; }
+.du-card__ph img, .pa-card__ph img { display: block; width: 100%; max-height: 190px; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 6px; background: #fff; padding: 5px; box-sizing: border-box; rotate: -.8deg; box-shadow: 0 6px 14px rgba(0, 0, 0, .12); }
+.ml-it__ph { display: block; margin: 4px 0; }
+.ml-it__ph img { display: block; width: 100%; max-height: 120px; object-fit: cover; border-radius: 6px; border: 1.5px solid var(--ink); }
+
+/* ---------- منيو الأسبوع: the café chalkboard on its easel, and the week as plates ---------- */
+.mlb { position: relative; display: grid; justify-items: center; gap: 0; width: min(560px, 100%); padding-bottom: 6px; }
+.mlb-board { position: relative; z-index: 1; width: 100%; box-sizing: border-box; padding: 18px 26px 22px; color: #f2ebdf; background: #2f3b36 radial-gradient(circle at 30% 20%, rgba(255, 255, 255, .07), transparent 60%); border: 10px solid #b98b5e; border-radius: 6px; box-shadow: inset 0 0 0 1.5px #37353f, 0 0 0 1.5px #37353f, 0 14px 26px rgba(0, 0, 0, .22); rotate: -1deg; }
+.mlb-board__top { position: absolute; top: -26px; left: 50%; display: grid; place-items: center; width: 46px; height: 46px; translate: -50% 0; color: #2b2b33; background: #fde49a; border: 1.5px solid #37353f; border-radius: 50%; }
+.mlb-board__h { margin: 4px 0 0; font: 700 1.9rem/1.2 'Aref Ruqaa', var(--f-hand); text-align: center; color: #fff; text-decoration: underline wavy rgba(253, 200, 48, .7) 2px; text-underline-offset: 7px; }
+:lang(en) .mlb-board__h { font-family: 'Caveat', var(--f-hand); font-size: 2.2rem; }
+.mlb-board__d { margin: 2px 0 12px; text-align: center; font: 700 .85rem var(--f-body); color: rgba(242, 235, 223, .7); }
+.mlb-board__menu { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.mlb-board__menu li { display: grid; grid-template-columns: auto minmax(20px, 1fr) auto; align-items: baseline; gap: 2px 8px; font: 700 1.1rem/1.35 'Aref Ruqaa', var(--f-hand); }
+.mlb-board__menu li.is-none { opacity: .55; }
+.mlb-board__k { display: inline-flex; align-items: center; gap: 5px; font: 800 .82rem var(--f-body); color: #fde49a; }
+.mlb-board__menu i { border-bottom: 2px dotted rgba(242, 235, 223, .45); translate: 0 -4px; }
+.mlb-board__menu small { grid-column: 3; justify-self: end; font: 700 .7rem var(--f-body); color: rgba(242, 235, 223, .65); }
+.mlb-board__chalk { position: absolute; bottom: -9px; inset-inline-start: 22%; width: 38px; height: 7px; background: #fff; border-radius: 3px; box-shadow: 46px 1px 0 0 #fcc5c9; }
+.mlb-easel { position: relative; width: 70%; height: 36px; margin-top: -4px; }
+.mlb-easel i { position: absolute; top: 0; width: 8px; height: 40px; background: #b98b5e; border: 1.5px solid #37353f; border-radius: 2px; }
+.mlb-easel i:nth-child(1) { inset-inline-start: 12%; rotate: 14deg; } .mlb-easel i:nth-child(2) { inset-inline-end: 12%; rotate: -14deg; } .mlb-easel i:nth-child(3) { left: 50%; translate: -50% 0; height: 30px; opacity: .6; }
+.mlb-week { display: flex; justify-content: center; gap: clamp(6px, 1.5vw, 14px); margin: 10px 0 0; padding: 0; list-style: none; }
+.mlb-week li { display: grid; justify-items: center; gap: 3px; }
+.mlb-plate { display: flex; align-items: center; justify-content: center; gap: 2px; width: 40px; height: 40px; background: #fff; border: 1.5px solid #37353f; border-radius: 50%; box-shadow: inset 0 0 0 5px #f1ebe0, 0 3px 0 rgba(0, 0, 0, .12); }
+.mlb-plate i { width: 7px; height: 7px; background: var(--coral); border-radius: 50%; }
+.mlb-week small { font-weight: 800; font-size: .7rem; color: var(--muted); }
+.mlb-week li.is-today .mlb-plate { box-shadow: inset 0 0 0 5px #fde49a, 0 0 0 3px var(--coral); }
+.mlb-week li.is-today small { color: var(--coral); }
+
+/* ---------- مدرستهم: wider report cards ---------- */
+.lp-list--school { grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); gap: 24px; }
+.lp-list--school .sc-card { grid-template-columns: auto minmax(0, 1fr); gap: 20px; padding: 20px 22px; background: var(--card) repeating-linear-gradient(transparent 0 27px, rgba(14, 105, 144, .12) 27px 28px); border-inline-start: 6px solid var(--c, #8a8494); }
+.lp-list--school .sc-card h3 { font-size: 1.25rem; }
+.lp-list--school .sc-card__ring { width: 92px; height: 92px; }
+
+/* ---------- رسوماتنا: the pegs on the string as wooden clothespins drawn in ink, a spring across each ---------- */
+.dwb-peg { top: -18px; width: 14px; height: 34px; background: none; border: 0; border-radius: 0; }
+.dwb-peg::before, .dwb-peg::after { content: ''; position: absolute; top: 0; width: 7px; height: 100%; background: #e9c98f; border: 1.5px solid #37353f; border-radius: 3px 3px 2px 2px; }
+.dwb-peg::before { left: 0; rotate: -4deg; transform-origin: 50% 0; }
+.dwb-peg::after { right: 0; rotate: 4deg; transform-origin: 50% 0; background: #dcb877; }
+.dwb-hung:nth-child(3n + 1) .dwb-peg::before, .dwb-hung:nth-child(3n + 1) .dwb-peg::after { background: #fcc5c9; }
+.dwb-hung:nth-child(3n + 2) .dwb-peg::before, .dwb-hung:nth-child(3n + 2) .dwb-peg::after { background: #bfe0ef; }
+.dwb-hung:nth-child(3n) .dwb-peg::before, .dwb-hung:nth-child(3n) .dwb-peg::after { background: #e3ec9c; }
+.dwb-peg { background: radial-gradient(circle, transparent 3px, #8a8792 3.2px 4.6px, transparent 5px) 50% 38% / 14px 14px no-repeat; z-index: 2; }
+
+/* ---------- بيحب إيه دلوقتي: each card a page from a notebook — ruled lines, a margin, punched holes, washi tape ---------- */
+.lp-list--favorites .fv-page { position: relative; overflow: visible; padding-inline-start: 34px; background: #fffdf8 repeating-linear-gradient(transparent 0 27px, rgba(14, 105, 144, .16) 27px 28px); border: 1.5px solid #37353f; border-radius: 3px; box-shadow: calc(var(--bujo-x, 1) * 5px) 6px 0 0 color-mix(in srgb, var(--c) 45%, transparent), 0 10px 24px rgba(0, 0, 0, .08); color: #2b2b33; }
+.lp-list--favorites .fv-page::before { content: ''; position: absolute; top: 0; bottom: 0; inset-inline-start: 24px; width: 2px; background: rgba(217, 83, 79, .45); }
+.lp-list--favorites .fv-page::after { content: ''; position: absolute; top: 14px; bottom: 14px; inset-inline-start: 6px; width: 10px; background: radial-gradient(circle, var(--paper, #faf8f5) 4px, rgba(55, 53, 63, .5) 4.5px 5.5px, transparent 6px) 50% 0 / 10px 46px repeat-y; }
+.lp-list--favorites .fv-page__h { position: relative; background: none !important; color: #2b2b33 !important; border-bottom: 1.5px dashed rgba(55, 53, 63, .35); }
+.lp-list--favorites .fv-page__h b { padding-inline: .2em; font: 700 1.3rem/1.3 'Aref Ruqaa', var(--f-hand); background: linear-gradient(transparent 55%, color-mix(in srgb, var(--c) 40%, transparent) 55% 92%, transparent 92%); }
+.lp-list--favorites .fv-page__h small, .lp-list--favorites .fv-page__date { color: #6b6b75 !important; }
+.lp-list--favorites .fv-page__h::before { content: ''; position: absolute; top: -14px; inset-inline-end: 22%; width: 86px; height: 22px; rotate: 3deg; background: color-mix(in srgb, var(--c) 55%, #fff) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .45) 5px 10px); box-shadow: 0 1px 3px rgba(0, 0, 0, .15); }
+.lp-list--favorites .fv-page:nth-child(odd) { rotate: -.5deg; } .lp-list--favorites .fv-page:nth-child(even) { rotate: .5deg; }
+
+/* ---------- عيلتنا: the paper over the whole window, on a solid table ---------- */
+.fbo { background: #1c1f33; }
+.fbo__in { padding: 0; }
+.fbo .np2 { max-width: none; width: 100%; min-height: 100svh; margin: 0; border-inline: 0; box-shadow: none; border-radius: 0; }
+.fbo__x { top: calc(12px + env(safe-area-inset-top, 0px)); }
+
+/* ---------- فاكر؟: the games to pick from, «رتّب الحكاية» and «لعبة الكروت» ---------- */
+.fk-games { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; width: 100%; margin: 6px 0 14px; }
+.fk-gm { display: grid; justify-items: center; gap: 4px; padding: 14px 10px 12px; color: var(--text); text-align: center; background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow); cursor: pointer; rotate: calc((var(--k) % 2 * 2 - 1) * .8deg); transition: translate .15s, rotate .2s, box-shadow .15s, background .15s; }
+.fk-gm:hover { rotate: 0deg; translate: 0 -2px; }
+.fk-gm.is-on { rotate: 0deg; background: color-mix(in srgb, var(--hl-yellow) 55%, var(--card)); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--ink); }
+.fk-gm__ic { display: grid; place-items: center; width: 46px; height: 46px; color: var(--coral); background: color-mix(in srgb, var(--hl-pink) 50%, var(--card)); border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
+.fk-gm b { font-weight: 800; font-size: .95rem; }
+.fk-gm small { color: var(--muted); font-size: .74rem; line-height: 1.4; }
+.fk-order { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 14px 0; padding: 0; list-style: none; }
+.fk-ord { position: relative; display: grid; gap: 6px; width: 100%; padding: 6px 6px 10px; color: #2b2b33; text-align: center; background: #fff; border: 1.5px solid #37353f; border-radius: 4px; box-shadow: -3px 4px 0 rgba(55, 53, 63, .2); cursor: pointer; transition: translate .15s, rotate .2s; }
+.fk-order li:nth-child(odd) .fk-ord { rotate: -1.5deg; } .fk-order li:nth-child(even) .fk-ord { rotate: 1.5deg; }
+.fk-ord:hover { translate: 0 -3px; rotate: 0deg; }
+.fk-ord__pic { display: grid; place-items: center; aspect-ratio: 1; overflow: hidden; background: #f3efe2; color: var(--coral); }
+.fk-ord__img { width: 100%; height: 100%; object-fit: cover; }
+.fk-ord b { font-weight: 800; font-size: .82rem; line-height: 1.4; }
+.fk-ord__n { position: absolute; top: -12px; inset-inline-end: -10px; display: grid; place-items: center; min-width: 34px; height: 34px; padding: 0 6px; font: 400 1.2rem var(--f-label); font-style: normal; color: #fff; background: transparent; border-radius: 50%; }
+.fk-ord.is-on .fk-ord__n { background: #37353f; box-shadow: 0 0 0 3px var(--card); }
+.fk-ord.is-ok { box-shadow: 0 0 0 3px #3f8a57; } .fk-ord.is-ok .fk-ord__n { background: #3f8a57; }
+.fk-ord.is-bad { box-shadow: 0 0 0 3px var(--coral); } .fk-ord.is-bad .fk-ord__n { background: var(--coral); }
+.fk-ord__n small { display: block; font: 700 .55rem/1.2 var(--f-body); }
+.fk-ord.is-ok .fk-ord__n, .fk-ord.is-bad .fk-ord__n { min-width: 58px; height: auto; padding: 4px 6px; border-radius: 10px; }
+.fk-match { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 14px auto; max-width: 560px; }
+.fk-mc { aspect-ratio: 1; padding: 0; background: none; border: 0; cursor: pointer; perspective: 600px; }
+.fk-mc__in { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .45s var(--ease-pop, ease); }
+.fk-mc.is-up .fk-mc__in { transform: rotateY(180deg); }
+.fk-mc__back, .fk-mc__face { position: absolute; inset: 0; display: grid; place-items: center; backface-visibility: hidden; border: 1.5px solid #37353f; border-radius: 8px; overflow: hidden; }
+.fk-mc__back { color: #fff; background: var(--coral) repeating-linear-gradient(45deg, transparent 0 8px, rgba(255, 255, 255, .18) 8px 16px); box-shadow: -3px 4px 0 rgba(55, 53, 63, .2); }
+.fk-mc__face { transform: rotateY(180deg); background: #fff; padding: 4px; }
+.fk-mc__img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+.fk-mc.is-done .fk-mc__face { box-shadow: 0 0 0 3px #3f8a57; }
+.fk-mc.is-done { cursor: default; }
+@media (max-width: 520px) { .fk-match { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* ---------- روتيننا: a planner spread — the bookmark down the side, the day on the page ---------- */
+@media (min-width: 900px) {
+	.rt-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 28px; align-items: start; }
+	.rt-side { position: sticky; top: calc(var(--hd, 68px) + 16px); display: grid; gap: 10px; padding: 18px 16px 20px; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 14px 14px; border: 1.5px solid var(--ink); border-top: 6px solid var(--hl-yellow); border-radius: var(--sketch, 14px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--hl-lime); }
+	.rt-side .rt-week { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; justify-content: stretch; }
+	.rt-side .rt-week .chip { justify-content: center; }
+	.rt-side .rt-week .chip:first-child { grid-column: 1 / -1; }
+	.rt-side .rt-tabs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; margin: 0; overflow: visible; }
+	.rt-side .rt-tab { flex-direction: row; justify-content: flex-start; gap: 10px; width: 100%; padding: 6px 10px; }
+	.rt-side .rt-progress { margin: 6px 0 0; text-align: center; }
+	.rt-main { min-width: 0; }
+}
+.rt-side__h { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-weight: 800; font-size: .85rem; color: var(--muted); }
+@media (max-width: 899px) { .rt-side__h { display: none; } }
+
+/* ---------- سنة من الذكريات: one centred page ---------- */
+.od-hero.od2 { position: relative; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; text-align: center; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 16px 16px; }
+.od2-tape { position: absolute; top: -12px; left: 50%; width: 130px; height: 26px; translate: -50% 0; rotate: -2deg; background: rgba(252, 139, 147, .75) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .45) 5px 10px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.od2-stage { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 60px); }
+.od2-arrow { width: 54px; height: 54px; border-radius: 50%; color: #2b2b33; background: var(--hl-yellow); }
+.od2 .od-hero__cal { scale: 1.15; transform-origin: 50% 60%; margin: 10px 0 14px; }
+.od2 .od-hero__body { justify-items: center; }
+.od2 .od-hero__day { justify-content: center; }
+.od2 .od-hero__day h2 { padding-inline: .2em; font: 700 clamp(2.2rem, 5vw, 3.2rem)/1.2 'Aref Ruqaa', var(--f-hand); color: var(--text); background: linear-gradient(transparent 58%, var(--hl-yellow) 58% 92%, transparent 92%); letter-spacing: 0; }
+:lang(en) .od2 .od-hero__day h2 { font-family: 'Lobster', var(--f-hand); font-weight: 400; }
+.od2 .od-hero__years, .od2 .od-hero__btns { justify-content: center; }
+.lp-list--favorites .fv-page__h b, .lp-list--favorites .fv-page__h .fv-card-e { color: #2b2b33 !important; }
+.lp-list--favorites .fv-page__h .fv-card-e { color: var(--c) !important; }

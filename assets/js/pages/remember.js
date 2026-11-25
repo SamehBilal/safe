@@ -2,8 +2,11 @@ import { L, Y, T, t, esc, img, isVideo, hydrate, pageHead, related, fmtDate, App
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 
-/* «فاكر؟» — a game made of our own story: a round of ten questions drawn from what's already here — which year a
-   photo is from, what a photo was, who wrote a love note, which of two moments came first, where a photo was taken.
+/* «فاكر؟» — games made of our own story, four to pick from: ten questions drawn from what's already here (which year
+   or month a photo is from, what a photo was, who wrote a love note or a guestbook wish, who's in a family photo, when a
+   big day was, which of two moments came first, where a photo was taken); «صح ولا غلط», quick lines to call true or
+   false; «رتّب الحكاية», five moments to tap in the order they happened; and «لعبة الكروت», our photos face down to
+   turn over two at a time and find each pair.
    Each round's score is kept (the «remember» list) so we can see who remembers more.
    Band: three polaroids fanned out, the middle one face down with a big «؟» on its back, and a scorecard pinned
    beside them with each of us and our best round this year. */
@@ -54,11 +57,67 @@ function questions(s) {
 		opts: shuffle([p, ...shuffle(places.filter((o) => o !== p)).slice(0, 3)]).map((o) => ({ label: T(o.title), ok: o === p })),
 		after: `${T(p.title)}${p.place ? ` — ${T(p.place)}` : ''} · <a href="places.html">${L('أماكننا', 'Our places')}</a>`
 	})));
+	// which month a photo is from
+	const month = (m) => new Date(2024, m, 15).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: 'long' });
+	kinds.push(shuffle(shot.filter((x) => String(x.date).length >= 7)).slice(0, 4).map((x) => {
+		const m = +String(x.date).slice(5, 7) - 1, others = shuffle([...Array(12).keys()].filter((v) => v !== m)).slice(0, 3);
+		return { photo: pick(photosOf(x)), q: L('الصورة دي في أنهي شهر؟', 'Which month is this photo from?'), opts: shuffle([m, ...others]).map((v) => ({ label: esc(month(v)), ok: v === m })), after: seen(x) };
+	}));
+	// who wrote this wish in the guestbook
+	const wishes = (s.guestbook?.entries || []).filter((e) => t(e.text) && t(e.name));
+	const names = [...new Set(wishes.map((e) => t(e.name)))];
+	if (names.length >= 3) kinds.push(shuffle(wishes).slice(0, 4).map((e) => ({
+		quote: t(e.text), q: L('مين كتب التهنئة دي في دفتر المعازيم؟', 'Who wrote this in the guestbook?'),
+		opts: shuffle([t(e.name), ...shuffle(names.filter((n) => n !== t(e.name))).slice(0, 3)]).map((n) => ({ label: esc(n), ok: n === t(e.name) })),
+		after: `${esc(t(e.name))} — <a href="guestbook.html">${L('دفتر المعازيم', 'The guestbook')}</a>`
+	})));
+	// who's this
+	const faces = (s.family?.members || []).filter((m) => still(m.photo) && t(m.name));
+	if (faces.length >= 2) kinds.push(shuffle(faces).slice(0, 2).map((m) => ({
+		photo: still(m.photo), q: L('مين ده؟', 'Who’s this?'),
+		opts: shuffle(faces).slice(0, 4).map((o) => ({ label: T(o.name), ok: o === m })).concat(faces.slice(0, 4).includes(m) ? [] : []),
+		after: `<a href="member.html?id=${encodeURIComponent(m.id)}">${T(m.name)}</a>`
+	})).map((q) => (q.opts.some((o) => o.ok) ? q : null)).filter(Boolean));
+	// when was the big day
+	const big = (s.chapters || []).filter((c) => c.date && t(c.title));
+	if (big.length >= 4) kinds.push(shuffle(big).slice(0, 3).map((c) => ({
+		big: '♥', q: L(`يوم «${t(c.title)}» كان إمتى؟`, `When was “${t(c.title)}”?`),
+		opts: shuffle([c, ...shuffle(big.filter((o) => o.date !== c.date)).slice(0, 3)]).map((o) => ({ label: esc(fmtDate(o.date)), ok: o === c })),
+		after: `<a href="chapter.html?id=${encodeURIComponent(c.id)}">${T(c.title)}</a> · ${esc(fmtDate(c.date))}`
+	})));
 	// one of each kind in turn, so no round is all years
 	const out = [], lists = kinds.filter((k) => k.length);
 	while (out.length < ROUND && lists.some((k) => k.length)) for (const k of shuffle(lists)) if (k.length && out.length < ROUND) out.push(k.shift());
 	return out;
 }
+
+/* «صح ولا غلط»: a moment and a year, the right one or one a year or two off */
+function trueFalse(s) {
+	const moments = (s.timeline || []).filter((x) => !x.when && yearOf(x.date) && t(x.title));
+	return shuffle(moments).slice(0, ROUND).map((x) => {
+		const real = yearOf(x.date), lie = Math.random() < 0.5, y = lie ? real + pick([-2, -1, 1, 2]) : real;
+		return { big: '؟', q: L(`«${t(x.title)}» كانت سنة ${num(y)}`, `“${t(x.title)}” was in ${y}`), opts: [{ label: L('صح', 'True'), ok: !lie }, { label: L('غلط', 'False'), ok: lie }], after: `<a href="moment.html?id=${encodeURIComponent(x.id)}">${T(x.title)}</a> · ${esc(fmtDate(x.date))}` };
+	});
+}
+/* «رتّب الحكاية»: five moments on different days, photos first */
+function toOrder(s) {
+	const all = shuffle((s.timeline || []).filter((x) => !x.when && x.date && t(x.title)));
+	const withPics = all.filter((x) => photosOf(x).length), pool = [...withPics, ...all.filter((x) => !photosOf(x).length)];
+	const out = [];
+	for (const x of pool) if (out.length < 5 && !out.some((o) => o.date === x.date)) out.push(x);
+	return out;
+}
+/* «لعبة الكروت»: six of our photos, each twice */
+function toMatch(s) {
+	const pics = [...new Set([...(s.gallery || []).flatMap(photosOf), ...(s.timeline || []).flatMap(photosOf)])];
+	return shuffle(pics).slice(0, 6);
+}
+const GAMES = [
+	['quiz', 'chat', 'عشر أسئلة', 'Ten questions', 'صور وسنين ورسايل وأماكن ووشوش', 'Photos, years, notes, places, faces'],
+	['tf', 'sparkle', 'صح ولا غلط', 'True or false', 'جمل سريعة عن حكايتنا', 'Quick lines about us'],
+	['order', 'clock', 'رتّب الحكاية', 'Put it in order', 'خمس لحظات، رتبها من الأقدم', 'Five moments, oldest first'],
+	['match', 'camera', 'لعبة الكروت', 'Pairs', 'اقلب الكروت ولاقي كل صورتين زي بعض', 'Flip the cards, find each pair']
+];
 
 const tier = (n, of) => (n === of ? L('ذاكرة حديد ♥', 'A memory of steel ♥') : n >= of * 0.7 ? L('فاكرين كل حاجة تقريبًا', 'You remember nearly everything') : n >= of * 0.4 ? L('مش وحش… الحكاية محتاجة تتقري تاني', 'Not bad… time to reread the story') : L('يلا نفتح الألبوم سوا', 'Let’s open the album together'));
 
@@ -96,7 +155,7 @@ function bandHTML(s, items) {
 export default {
 	title: { ar: 'فاكر؟', en: 'Do you remember?' },
 	render(s) {
-		return `${pageHead(L('فاكر؟', 'Do you remember?'), L('لعبة من صورنا وحكايتنا: عشر أسئلة، ومين فاكر أكتر', 'A game made of our own photos and story: ten questions, and who remembers more'), [{ href: 'remember.html', ar: 'فاكر؟', en: 'Do you remember?' }], { band: `<div class="lp-band lp-band--remember" id="fk-band" aria-hidden="true">${bandHTML(s, [])}</div>` })}
+		return `${pageHead(L('فاكر؟', 'Do you remember?'), L('ألعاب من صورنا وحكايتنا: أسئلة، صح ولا غلط، رتّب الحكاية، ولعبة الكروت — ومين فاكر أكتر', 'Games made of our own photos and story: questions, true or false, putting it in order, and pairs — and who remembers more'), [{ href: 'remember.html', ar: 'فاكر؟', en: 'Do you remember?' }], { band: `<div class="lp-band lp-band--remember" id="fk-band" aria-hidden="true">${bandHTML(s, [])}</div>` })}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="fk-game" id="fk-game" aria-live="polite"></div>
 			<div class="fk-log" id="fk-log"></div>
@@ -106,7 +165,7 @@ export default {
 	async after(main, s) {
 		let data = await live.load('remember').catch(() => ({ items: [] }));
 		const game = $('#fk-game', main);
-		let player = live.me() || '', qs = [], i = 0, score = 0, marks = [];
+		let player = live.me() || '', qs = [], i = 0, score = 0, marks = [], mode = 'quiz', seq = [], flips = [], moves = 0;
 
 		const paintBand = () => { $('#fk-band', main).innerHTML = bandHTML(s, data.items || []); hydrate(main); };
 		const paintLog = () => {
@@ -117,14 +176,15 @@ export default {
 
 		const start = () => {
 			const pool = questions(s);
-			if (pool.length < 3) {
+			if (pool.length < 3 && toOrder(s).length < 5) {
 				game.innerHTML = `<div class="fk-card fk-card--start"><p class="empty">${L('لسه الحكاية محتاجة لحظات وصور أكتر عشان نلعب ♥', 'The story needs a few more moments and photos before we can play ♥')}</p></div>`;
 				return;
 			}
 			game.innerHTML = `<div class="fk-card fk-card--start">
 				<span class="fk-card__tab">${L('جولة جديدة', 'New round')}</span>
-				<p class="fk-start__h">${L(`${num(pool.length)} أسئلة من حكايتنا`, `${pool.length} questions from our story`)}</p>
-				<p class="fk-start__p">${L('صور، سنين، رسايل، وأماكن. مين بيلعب؟', 'Photos, years, notes and places. Who’s playing?')}</p>
+				<p class="fk-start__h">${L('نلعب إيه؟', 'What shall we play?')}</p>
+				<div class="fk-games" role="radiogroup" aria-label="${L('اللعبة', 'The game')}">${GAMES.map(([id, ic, ar, en, dar, den], k) => `<button class="fk-gm${mode === id ? ' is-on' : ''}" type="button" role="radio" aria-checked="${mode === id}" data-game="${id}" style="--k:${k}"><span class="fk-gm__ic">${doodle(ic, 26)}</span><b>${esc(L(ar, en))}</b><small>${esc(L(dar, den))}</small></button>`).join('')}</div>
+				<p class="fk-start__p">${L('مين بيلعب؟', 'Who’s playing?')}</p>
 				${who()}
 				<button class="btn" type="button" id="fk-go">${Y('يلا نلعب', 'يلا نلعب', 'Let’s play')} ${App.arrow}</button>
 			</div>`;
@@ -150,6 +210,60 @@ export default {
 			$('.fk-opt', game)?.focus({ preventScroll: true });
 		};
 
+		/* tap the moments in the order they happened; tap a numbered one to take it (and those after it) back */
+		const order = () => {
+			const mom = toOrder(s);
+			qs = mom; seq = []; score = 0; marks = [];
+			const paint = () => {
+				game.innerHTML = `<div class="fk-card fk-card--order">
+					<span class="fk-card__tab">${L('رتّب الحكاية', 'Put it in order')}</span>
+					<p class="fk-q">${L('دوس على اللحظات بالترتيب: الأقدم الأول', 'Tap the moments in order, oldest first')}</p>
+					<ol class="fk-order">${mom.map((x, k) => { const n = seq.indexOf(k); const ph = photosOf(x)[0]; return `<li><button class="fk-ord${n >= 0 ? ' is-on' : ''}" type="button" data-ord="${k}">${ph ? `<span class="fk-ord__pic">${img(ph, '', 'fk-ord__img')}</span>` : `<span class="fk-ord__pic fk-ord__pic--none">${doodle(x.icon || 'heart', 30)}</span>`}<b dir="auto">${T(x.title)}</b><i class="fk-ord__n">${n >= 0 ? num(n + 1) : ''}</i></button></li>`; }).join('')}</ol>
+					<div class="fk-foot"><span class="fk-score">${L(`${num(seq.length)} من ${num(mom.length)}`, `${seq.length} of ${mom.length}`)}</span><button class="btn btn--sm" type="button" id="fk-check"${seq.length === mom.length ? '' : ' disabled'}>${L('شوف الترتيب', 'Check the order')} ${App.arrow}</button></div>
+				</div>`;
+				hydrate(main);
+			};
+			order.paint = paint;
+			paint();
+		};
+		const checkOrder = () => {
+			const right = qs.map((x, k) => k).sort((a, b) => String(qs[a].date).localeCompare(String(qs[b].date)));
+			marks = seq.map((k, pos) => right[pos] === k);
+			score = marks.filter(Boolean).length;
+			$$('.fk-ord', game).forEach((b) => { const k = +b.dataset.ord, pos = seq.indexOf(k); b.classList.add(right[pos] === k ? 'is-ok' : 'is-bad'); b.disabled = true; b.querySelector('.fk-ord__n').innerHTML = `${num(pos + 1)}<small>${esc(fmtDate(qs[k].date))}</small>`; });
+			const btn = $('#fk-check', game); btn.textContent = L('النتيجة', 'See the score'); btn.id = 'fk-done'; btn.disabled = false;
+			$('.fk-score', game).textContent = `♥ ${num(score)}`;
+		};
+		/* six photos face down, twice each: turn two, keep them if they match */
+		const match = () => {
+			const pics = toMatch(s);
+			qs = pics; flips = []; moves = 0; score = 0; marks = [];
+			const deck = shuffle([...pics.keys(), ...pics.keys()]);
+			game.innerHTML = `<div class="fk-card fk-card--match">
+				<span class="fk-card__tab">${L('لعبة الكروت', 'Pairs')}</span>
+				<p class="fk-q">${L('اقلب كارتين، ولو نفس الصورة يفضلوا مفتوحين', 'Turn two cards; the same photo stays face up')}</p>
+				<div class="fk-match">${deck.map((p, k) => `<button class="fk-mc" type="button" data-mc="${k}" data-pair="${p}" aria-label="${L('كارت', 'A card')} ${num(k + 1)}"><span class="fk-mc__in"><span class="fk-mc__back">${doodle('heart', 26)}</span><span class="fk-mc__face">${img(pics[p], '', 'fk-mc__img')}</span></span></button>`).join('')}</div>
+				<div class="fk-foot"><span class="fk-score">${L('محاولات: ', 'Tries: ')}<b id="fk-moves">${num(0)}</b></span><span class="fk-score">${L('أزواج: ', 'Pairs: ')}<b id="fk-pairs">${num(0)}</b> / ${num(pics.length)}</span></div>
+			</div>`;
+			hydrate(main);
+		};
+		const flip = (b) => {
+			if (b.classList.contains('is-up') || flips.length === 2) return;
+			b.classList.add('is-up'); flips.push(b);
+			if (flips.length < 2) return;
+			moves++; $('#fk-moves', game).textContent = num(moves);
+			const [a, c] = flips;
+			if (a.dataset.pair === c.dataset.pair) {
+				a.classList.add('is-done'); c.classList.add('is-done'); flips = []; score++;
+				$('#fk-pairs', game).textContent = num(score);
+				if (score === qs.length) {
+					// six tries is perfect; every extra two tries costs a heart
+					const pairs = qs.length; score = Math.max(1, pairs - Math.floor(Math.max(0, moves - pairs) / 2)); marks = Array.from({ length: pairs }, (_, k) => k < score);
+					setTimeout(finish, 700);
+				}
+			} else setTimeout(() => { a.classList.remove('is-up'); c.classList.remove('is-up'); flips = []; }, 850);
+		};
+
 		const answer = (k) => {
 			const q = qs[i];
 			if (marks[i] !== undefined) return;
@@ -169,7 +283,7 @@ export default {
 			let saved = '';
 			if (player && live.canWrite()) {
 				try {
-					data = await live.save('remember', (d) => { d.items = [...(d.items || []), { id: live.newId(), by: player, score, of: qs.length, date: new Date().toISOString().slice(0, 10), at: new Date().toISOString() }]; });
+					data = await live.save('remember', (d) => { d.items = [...(d.items || []), { id: live.newId(), by: player, game: mode, score, of: qs.length, date: new Date().toISOString().slice(0, 10), at: new Date().toISOString() }]; });
 					saved = L('اتسجلت في اللوحة ♥', 'Saved to the scorecard ♥');
 				} catch (err) { saved = live.why ? live.why(err) : ''; }
 			} else if (!live.canWrite()) saved = L('النتيجة دي مش هتتحفظ: الموبايل ده لسه مش متظبط إنه يكتب', 'This score won’t be kept: this phone isn’t set up to write yet');
@@ -188,7 +302,20 @@ export default {
 		game.addEventListener('click', (e) => {
 			const w = e.target.closest('[data-who]');
 			if (w) { player = w.dataset.who; $$('[data-who]', game).forEach((b) => { b.classList.toggle('is-on', b === w); b.setAttribute('aria-pressed', String(b === w)); }); return; }
-			if (e.target.closest('#fk-go')) { i = 0; score = 0; marks = []; return ask(); }
+			const gm = e.target.closest('[data-game]');
+			if (gm) { mode = gm.dataset.game; $$('[data-game]', game).forEach((b) => { b.classList.toggle('is-on', b === gm); b.setAttribute('aria-checked', String(b === gm)); }); return; }
+			if (e.target.closest('#fk-go')) {
+				i = 0; score = 0; marks = [];
+				if (mode === 'order') return toOrder(s).length >= 3 ? order() : start();
+				if (mode === 'match') return toMatch(s).length >= 3 ? match() : start();
+				qs = mode === 'tf' ? trueFalse(s) : questions(s);
+				return qs.length ? ask() : start();
+			}
+			const od = e.target.closest('[data-ord]');
+			if (od && !od.disabled) { const k = +od.dataset.ord, at = seq.indexOf(k); if (at >= 0) seq = seq.slice(0, at); else seq.push(k); return order.paint(); }
+			if (e.target.closest('#fk-check')) return checkOrder();
+			if (e.target.closest('#fk-done')) return finish();
+			const mc = e.target.closest('[data-mc]'); if (mc) return flip(mc);
 			const o = e.target.closest('.fk-opt'); if (o) return answer(+o.dataset.k);
 			if (e.target.closest('#fk-next')) { i++; return i < qs.length ? ask() : finish(); }
 			if (e.target.closest('#fk-again')) return start();

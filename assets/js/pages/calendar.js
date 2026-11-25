@@ -45,7 +45,7 @@ function gather(s, fam, caps, debts = []) {
 		seen.add(`${iso(date)}|${title}`);
 		out.push({ orig: m.date, date, title, sub: n === 1 ? L('من سنة', 'A year ago') : n === 2 ? L('من سنتين', 'Two years ago') : L(`من ${num(n)} ${n <= 10 ? 'سنين' : 'سنة'}`, `${n} years ago`), icon: m.icon || 'heart', kind: 'days', href: `moment.html?id=${encodeURIComponent(m.id)}`, yearly: true, photo: firstPhoto(m) || onDay.get(m.date) || '' });
 	}
-	for (const f of fam) if (f.date) out.push({ orig: f.date, late: !!f.late, date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: (f.late && f.note) || f.rel || '', icon: f.late ? 'heart' : f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: '#cal-fam', yearly: true });
+	for (const f of fam) if (f.date) out.push({ fid: f.id, fby: f.by, orig: f.date, late: !!f.late, date: nextMD(f.date, from), title: f.type === 'wedding' ? L(`عيد جواز ${f.name}`, `${f.name}’s anniversary`) : f.type === 'birthday' ? L(`عيد ميلاد ${f.name}`, `${f.name}’s birthday`) : f.name, sub: (f.late && f.note) || f.rel || '', icon: f.late ? 'heart' : f.type === 'wedding' ? 'ring' : f.type === 'birthday' ? 'cake' : 'star', kind: 'family', href: '#cal-fam', yearly: true });
 	for (const h of holyDays(from)) out.push({ date: h.date, title: L(h.ar, h.en), sub: L('بالتقويم الهجري، ممكن يفرق يوم', 'By the Hijri calendar, may differ by a day'), icon: h.icon, kind: 'holy', href: 'ramadan.html' });
 	for (const e of egyptDays(from)) out.push({ date: e.date, title: L(e.ar, e.en), sub: '', icon: e.icon, kind: 'egypt', yearly: e.id !== 'nessim' });
 	for (const d of debts) if (d.due && !d.over && parse(d.due) >= from && daysTo(parse(d.due)) <= 366) out.push({ date: parse(d.due), title: d.dir === 'in' ? L(`ميعاد ${d.whom} يرجّع اللي عليه`, `${d.whom} is due to pay us back`) : d.form === 'thing' ? L(`نديله لـ${d.whom}`, `Give it to ${d.whom}`) : L(`آخر ميعاد لدين ${d.whom}`, `The debt to ${d.whom} is due`), sub: d.form === 'thing' && d.thing ? d.thing : L('من «ديوننا»', 'From «Our debts»'), icon: 'scale', kind: 'money', href: 'debts.html' });
@@ -82,18 +82,8 @@ export default {
 			band: `<div class="calb" id="cal-band" aria-live="polite"></div>`
 		})}
 		<section class="sec sec--top"><div class="wrap">
-			<h2 class="sec__title reveal">${L('جاي قريب', 'Coming up')}</h2>
-			<div class="cal-up" id="cal-next"></div>
-			<div class="chips cal-keys" id="cal-keys">${Object.entries(KIND).map(([k, v]) => `<span class="cal-key" style="--k:${v.c}"><i></i>${esc(L(v.ar, v.en))}</span>`).join('')}</div>
-			<h2 class="sec__title reveal">${L('السنة كلها', 'The whole year')}</h2>
-			<div class="cal-months" id="cal-months"></div>
-			<p class="center cal-ics"><button class="btn btn--coral" type="button" id="cal-ics">${doodle('calendar', 18)} ${Y('ضيفهم لتقويم الموبايل', 'ضيفيهم لتقويم الموبايل', 'Add them to my phone’s calendar')}</button></p>
-		</div></section>
-		<section class="sec" id="cal-fam"><div class="wrap">
-			<h2 class="sec__title reveal">${L('مناسبات العيلة', 'Family occasions')}</h2>
-			<p class="sec__sub reveal">${L('أعياد ميلاد وأعياد جواز العيلة كلها، عشان محدش يتنسي', 'The whole family’s birthdays and anniversaries, so nobody is forgotten')}</p>
 			${ok ? '' : `<div class="narrow" style="margin:0 auto 24px">${setupNote()}</div>`}
-			<details class="composer reveal narrow" style="margin:0 auto 30px"${ok ? '' : ' hidden'}>
+			<details class="composer reveal narrow cal-add" id="cal-fam" style="margin:0 auto 34px"${ok ? '' : ' hidden'}>
 				<summary><span>${doodle('family', 22)}</span> ${Y('ضيف مناسبة', 'ضيفي مناسبة', 'Add an occasion')}</summary>
 				<form id="fd-form" autocomplete="off">
 					<div class="f-row">
@@ -111,7 +101,12 @@ export default {
 					<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('افتكرها ♥', 'افتكريها ♥', 'Remember it ♥')}</button></div>
 				</form>
 			</details>
-			<div class="fd-list" id="fd-list"></div>
+			<h2 class="sec__title reveal">${L('جاي قريب', 'Coming up')}</h2>
+			<div class="cal-up" id="cal-next"></div>
+			<div class="chips cal-keys" id="cal-keys">${Object.entries(KIND).map(([k, v]) => `<span class="cal-key" style="--k:${v.c}"><i></i>${esc(L(v.ar, v.en))}</span>`).join('')}</div>
+			<h2 class="sec__title reveal">${L('السنة كلها', 'The whole year')}</h2>
+			<div class="cal-months" id="cal-months"></div>
+			<p class="center cal-ics"><button class="btn btn--coral" type="button" id="cal-ics">${doodle('calendar', 18)} ${Y('ضيفهم لتقويم الموبايل', 'ضيفيهم لتقويم الموبايل', 'Add them to my phone’s calendar')}</button></p>
 		</div></section>
 		${related(['birthday', 'family', 'ramadan'])}`;
 	},
@@ -216,6 +211,7 @@ export default {
 
 		/* coming up: the very next day pinned up big as a polaroid with its countdown stamped beside it, and the ones
 		   after it as ticket stubs — a torn-off calendar page, the words, a little photo, the days stamped on the end */
+		const delBtn = (e) => (e.fid && e.fby === live.me() && live.canWrite() ? `<button class="cal-del" type="button" data-del="${esc(e.fid)}" title="${L('مسح المناسبة', 'Delete this occasion')}" aria-label="${L('مسح المناسبة', 'Delete this occasion')}">${doodle('trash', 14)}</button>` : '');
 		const drawComing = () => {
 			const [first, ...rest] = ahead.slice(0, 9);
 			$('#cal-next', main).innerHTML = first ? `
@@ -228,14 +224,14 @@ export default {
 						<span class="cal-hero__when">${esc(dayName(first.date))} ${num(first.date.getDate())} ${esc(monthName(first.date.getMonth()))}</span>
 					</span>
 					<span class="cal-stamp" aria-label="${esc(when(first.date))}">${left(first)}</span>
-				${tagClose(first)}
+				${tagClose(first)}${delBtn(first)}
 				<ol class="cal-stubs">${rest.map((e, i) => `<li class="reveal is-in" style="--k:${KIND[e.kind].c}; --i:${i}">
 					${tagOpen(e, 'cal-stub')}>
 						<span class="cal-stub__pg"><small>${esc(monthName(e.date.getMonth()))}</small><b>${num(e.date.getDate())}</b></span>
 						<span class="cal-stub__tx"><b dir="auto">${esc(e.title)}</b>${e.sub ? `<small dir="auto">${esc(e.sub)}</small>` : ''}</span>
 						<span class="cal-snap cal-snap--sm${e.photo ? '' : ' is-ic'}">${snap(e, 22)}</span>
 						<em class="cal-stub__in">${esc(when(e.date))}</em>
-					${tagClose(e)}</li>`).join('')}</ol>` : `<p class="empty">${L('مفيش مناسبات لسه', 'No occasions yet')}</p>`;
+					${tagClose(e)}${delBtn(e)}</li>`).join('')}</ol>` : `<p class="empty">${L('مفيش مناسبات لسه', 'No occasions yet')}</p>`;
 			hydrate($('#cal-next', main));
 		};
 
@@ -264,26 +260,6 @@ export default {
 			$('#cal-months', main).innerHTML = html;
 		};
 
-		/* the family's occasions, a card each, soonest first */
-		const drawFam = () => {
-			const items = (fam.items || []).map((f) => ({ ...f, next: nextMD(f.date) })).sort((a, b) => a.next - b.next);
-			$('#fd-list', main).innerHTML = items.length ? items.map((f, i) => {
-				const t = ftype(f.type), dd = daysTo(f.next);
-				const yrs = f.noYear ? 0 : f.next.getFullYear() - +String(f.date).slice(0, 4);
-				return `<article class="fd-card reveal is-in${dd === 0 ? ' is-today' : ''}${f.late ? ' is-late' : ''}" style="--c:${FLAGS[i % FLAGS.length]}">
-					<span class="fd-card__ic" aria-hidden="true">${doodle(f.late ? 'heart' : t.icon, 30)}</span>
-					<div class="fd-card__tx">
-						<h3 dir="auto">${esc(ftitle(f))}</h3>
-						<p>${[f.rel, longDate(f.date).replace(f.noYear ? /\s*\S+$/ : /$^/, '')].filter(Boolean).map(esc).join(' · ')}</p>
-						${yrs > 0 ? `<p class="fd-card__yrs">${f.type === 'wedding' ? L(`${num(yrs)} سنة جواز`, `${yrs} years married`) : f.type === 'birthday' ? (f.late ? (isWoman(f) ? L(`كانت هتكمّل ${num(yrs)}`, `would have turned ${yrs}`) : L(`كان هيكمّل ${num(yrs)}`, `would have turned ${yrs}`)) : isWoman(f) ? L(`هتكمّل ${num(yrs)}`, `turning ${yrs}`) : L(`هيكمّل ${num(yrs)}`, `turning ${yrs}`)) : L(`${num(yrs)} سنة`, `${yrs} years`)}</p>` : ''}
-						${f.note ? `<p class="fd-card__note" dir="auto">${esc(f.note)}</p>` : ''}
-					</div>
-					<em class="fd-card__in">${esc(inDays(dd))}</em>
-					${f.by === live.me() && live.canWrite() ? `<button class="link link--danger fd-card__del" type="button" data-del="${esc(f.id)}">${L('مسح', 'Delete')}</button>` : ''}
-				</article>`;
-			}).join('') : `<p class="empty">${L('لسه مفيش مناسبات — ابدأوا بعيد ميلاد ماما ♥', 'No occasions yet — start with Mum’s birthday ♥')}</p>`;
-		};
-
 		/* everything again, from the lists as they are now */
 		const paint = () => {
 			events = gather(s, fam.items || [], capsules, debts);
@@ -295,7 +271,6 @@ export default {
 			drawBand();
 			drawComing();
 			drawMonths();
-			drawFam();
 		};
 		paint();
 
@@ -352,9 +327,11 @@ export default {
 		});
 
 		/* the family's list: delete one, or add one — and the whole calendar redraws with it */
-		$('#fd-list', main).addEventListener('click', async (e) => {
+		$('#cal-next', main).addEventListener('click', async (e) => {
 			const del = e.target.closest('[data-del]');
-			if (!del || !confirm(Y('تمسح المناسبة دي؟', 'تمسحي المناسبة دي؟', 'Delete this occasion?'))) return;
+			if (!del) return;
+			e.preventDefault(); e.stopPropagation();
+			if (!confirm(Y('تمسح المناسبة دي؟', 'تمسحي المناسبة دي؟', 'Delete this occasion?'))) return;
 			try { fam = await live.save('famdays', (d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.del); }); paint(); } catch (err) { alert(live.why(err)); }
 		});
 		const form = $('#fd-form', main);

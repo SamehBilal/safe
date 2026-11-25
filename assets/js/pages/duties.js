@@ -22,7 +22,8 @@ export default listPage({
 		{ n: 'date', t: 'date', l: ['إمتى؟', 'When?'] },
 		{ n: 'place', t: 'text', l: ['فين؟', 'Where?'], ph: ['قاعة…، البيت', 'The hall…, their home'] },
 		{ n: 'brought', t: 'text', l: ['جبنا / هنجيب إيه؟', 'What we brought / will bring'], grow: 1, ph: ['نقطة، هدية، بوكيه ورد…', 'Money gift, a present, flowers…'] },
-		{ n: 'note', t: 'area', l: ['ملاحظات', 'Notes'], rows: 2 }
+		{ n: 'note', t: 'area', l: ['ملاحظات', 'Notes'], rows: 2 },
+		{ n: 'photo', t: 'photo', l: ['صورة (كارت الدعوة، أو من اليوم نفسه — اختياري)', 'A photo (the invitation, or from the day — optional)'], full: 1 }
 	],
 	prepare: (x) => { x.dkind = x.dkind || 'other'; },
 	chips: { n: 'dkind', opts: KINDS.map(([v, , ar, en]) => [v, ar, en]) },
@@ -49,6 +50,7 @@ export default listPage({
 		const [, ic, ar, en, col] = kindOf(x.dkind), d = x.date ? daysTo(x.date) : null;
 		return `<article class="lp-card du-card${x.doneOn ? ' is-done' : ''}" id="du-${esc(x.id)}" style="--c:${col}">
 			<header class="du-card__hd">${doodle(ic, 18)} ${esc(L(ar, en))}${d !== null && !x.doneOn ? `<span class="${d < 0 ? 'is-late' : d <= 3 ? 'is-near' : ''}">${when(d)}</span>` : ''}</header>
+			${x.photo ? `<span class="du-card__ph">${c.photo(x)}</span>` : ''}
 			<h3 dir="auto">${esc(x.whom)}</h3>
 			<p class="du-card__meta">
 				${x.date ? `<span>${doodle('calendar', 14)} ${c.date(x.date)}</span>` : ''}
