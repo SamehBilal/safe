@@ -2556,3 +2556,16 @@
 @media (max-height: 560px) { .dp-mast__bar { display: none; } .dp-one p { -webkit-line-clamp: 2; } }
 @media (prefers-reduced-motion: reduce) { .dp, .dp-paper { transition: none; } }
 .dp-mast { padding-inline-end: 48px; }
+
+/* مصاريف الشهر: everything under the title on one sheet of ruled notebook paper (ink edge, ring holes along the top,
+   a soft blue shadow) and the parts on it, the installments, the cards and the whole year, on that same paper with
+   their own lines and colours instead of white cards of their own */
+.sec--top > .wrap:has(> .lp-list--expenses) { --sheet: #fffdf6; position: relative; padding: 38px clamp(14px, 3vw, 34px) clamp(20px, 3vw, 34px); background: var(--sheet) repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .12) 31px 32px) 0 30px / 100% calc(100% - 30px) no-repeat; border: 1.5px solid var(--ink, #37353f); border-radius: 6px 6px 16px 16px; box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 color-mix(in srgb, #0e6990 25%, transparent), 0 18px 30px -18px rgba(30, 20, 10, .35); }
+.sec--top > .wrap:has(> .lp-list--expenses)::before { content: ''; position: absolute; top: 10px; inset-inline: 22px; height: 14px; background: radial-gradient(circle, var(--bg, #f8f5ef) 4px, #37353f 4.5px 5.8px, transparent 6.3px) 0 0 / 28px 14px repeat-x; }
+.wrap:has(> .lp-list--expenses) .ex-inst, .wrap:has(> .lp-list--expenses) .ex-year, .wrap:has(> .lp-list--expenses) .ex-card, .wrap:has(> .lp-list--expenses) .ex-sum li { background: var(--sheet); }
+.wrap:has(> .lp-list--expenses) .ex-year { box-shadow: none; border-style: dashed; }
+.wrap:has(> .lp-list--expenses) .ex-inst { box-shadow: none; border-style: dashed; }
+.wrap:has(> .lp-list--expenses) .ex-year__stats li { background: color-mix(in srgb, var(--c) 6%, var(--sheet)); }
+:root[data-theme='dark'] .sec--top > .wrap:has(> .lp-list--expenses) { --sheet: var(--card); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .sec--top > .wrap:has(> .lp-list--expenses) { --sheet: var(--card); } }
+@media (max-width: 600px) { .sec--top > .wrap:has(> .lp-list--expenses) { margin-inline: 8px; } }
