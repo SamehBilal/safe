@@ -756,7 +756,7 @@ function familyFrame(s, here) {
    menu shows the widgets it always had. `idea` is the number of the idea on widgets.html it came from. ---------- */
 export const WG_SIZES = { s: [1, 1, 'صغيرة', 'Small'], w: [2, 1, 'عريضة', 'Wide'], t: [1, 2, 'طويلة', 'Tall'], b: [2, 2, 'كبيرة', 'Big'], strip: [4, 1, 'شريط', 'Strip'], board: [4, 2, 'لوحة', 'Board'] };
 export const WG_CELLS = 12;
-export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'guest', 'ourfirsts', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['house', 'needs'], people: ['cal', 'tags'] };
+export const WG_DEFAULT = { story: ['days', 'band'], memories: ['album', 'note', 'numbers', 'guest', 'ourfirsts', 'film'], nights: ['kinds', 'sky'], kids: ['figs', 'tape'], home: ['house', 'needs'], people: ['cal', 'occyear', 'tags'] };
 const WG_KEY = 'us.widgets';
 const cells = (w) => WG_SIZES[w.size][0] * WG_SIZES[w.size][1];
 export function wgLayout(g) {
@@ -998,8 +998,18 @@ export const WIDGETS = [
 	/* عيلتنا وناسنا */
 	{ id: 'frame', g: 'people', size: 'b', idea: 100, ar: 'برواز العيلة', en: 'The family frame', dar: 'إحنا الأربعة في برواز، وكام سنة عيلة', den: 'The four of us in a frame',
 		html: (s, here) => familyFrame(s, here) },
-	{ id: 'cal', g: 'people', size: 'board', idea: 43, ar: 'المناسبة الجاية', en: 'Next occasion', dar: 'نتيجة مقطوعة على المناسبة الجاية وفاضل قد إيه', den: 'A desk calendar torn to the next occasion',
+	{ id: 'cal', g: 'people', size: 'b', idea: 43, ar: 'المناسبة الجاية', en: 'Next occasion', dar: 'نتيجة مقطوعة على المناسبة الجاية وفاضل قد إيه', den: 'A desk calendar torn to the next occasion',
 		html: (s) => calendarHTML(s) },
+	/* the next twelve months, this one first: each family occasion as its little drawing in its month */
+	{ id: 'occyear', g: 'people', size: 'b', ar: 'سنة المناسبات', en: 'The year of occasions', dar: 'الاتناشر شهر الجايين، وكل مناسبة في شهرها', den: 'The next twelve months, each occasion in its month',
+		html: (s, here) => {
+			const os = occasions(s); if (!os.length) return '';
+			const now = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+			const months = Array.from({ length: 12 }, (_, k) => new Date(now.getFullYear(), now.getMonth() + k, 1));
+			const inMonth = (d) => os.filter((o) => { const w = new Date(now.getFullYear(), now.getMonth(), now.getDate() + o.days); return w.getMonth() === d.getMonth() && w.getFullYear() === d.getFullYear(); });
+			const next = os[0];
+			return `<a class="wg-occy" ${wgGo('calendar.html', here)}><span class="wg-occy__h">${L('السنة الجاية', 'The year ahead')}<b>${num(os.length)} ${L('مناسبة', 'occasions')}</b></span><span class="wg-occy__g">${months.map((d, k) => { const xs = inMonth(d); return `<span class="wg-occy__m${k ? '' : ' is-now'}${xs.includes(next) ? ' is-next' : ''}${xs.length ? ' has' : ''}" style="--k:${k}" title="${esc(xs.map((o) => o.title).join(' · '))}"><small>${esc(d.toLocaleDateString(loc, { month: 'short' }))}</small><i>${xs.slice(0, 3).map((o) => doodle(o.emoji || 'heart', 14)).join('')}</i></span>`; }).join('')}</span></a>`;
+		} },
 	{ id: 'tags', g: 'people', size: 'strip', ar: 'وبعدها', en: 'And after that', dar: 'المناسبتين اللي بعدها، جنب بعض', den: 'The two occasions after it',
 		html: (s) => nextTagsHTML(s) },
 	{ id: 'lantern', g: 'people', size: 't', idea: 44, ar: 'فانوس رمضان', en: 'The lantern', dar: 'فانوس منور بيعد الأيام لرمضان', den: 'A lantern counting down to Ramadan',
