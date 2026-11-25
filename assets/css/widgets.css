@@ -567,3 +567,42 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .wgp-tag { flex: none; padding: 0 7px; font-size: .64rem; font-weight: 800; color: var(--muted); border: 1.2px solid color-mix(in srgb, var(--ink) 35%, transparent); border-radius: 999px; }
 .wgx-cal > .mg-cal { display: grid; justify-items: stretch; align-self: stretch; }
 .wgx-cal .mg-cal-page { width: auto; max-width: none; justify-self: stretch; }
+
+/* ---------- widgets.html: the workbench at the top — dotted paper under washi tape, the title in handwriting under a
+   highlighter, what's on the bench in numbers, and the six menus as little boards, cell by cell, to pick from ---------- */
+.wgp-hero { position: relative; padding-block: 34px 30px; background: var(--card) radial-gradient(color-mix(in srgb, var(--ink) 13%, transparent) 1px, transparent 1.4px) 0 0 / 16px 16px; border-bottom: 1.5px solid var(--ink); box-shadow: 0 6px 0 0 var(--hl-yellow); }
+.wgp-hero__tape { position: absolute; top: -2px; inset-inline-start: 12%; width: 140px; height: 26px; rotate: -3deg; background: rgba(252, 139, 147, .75) repeating-linear-gradient(45deg, transparent 0 5px, rgba(255, 255, 255, .45) 5px 10px); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
+.wgp-hero__in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: center; gap: 28px 44px; }
+.wgp-hero__tx { display: grid; justify-items: start; gap: 8px; }
+.wgp-hero .crumbs { margin: 0; }
+.wgp-hero__k { display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 0; padding: 2px 12px; font-weight: 800; font-size: .82rem; color: #2b2b33; background: var(--hl-lime, rgba(205, 220, 57, .55)); border-radius: 999px; }
+.wgp-hero__t { margin: 0; padding-inline: .15em; font: 700 clamp(2.4rem, 5vw, 3.6rem)/1.2 'Aref Ruqaa', var(--f-hand); color: var(--text); background: linear-gradient(transparent 60%, var(--hl-yellow) 60% 92%, transparent 92%); }
+:lang(en) .wgp-hero__t { font-family: 'Lobster', var(--f-hand); font-weight: 400; }
+.wgp-hero__sub { max-width: 46ch; margin: 0; color: var(--muted); font-weight: 600; }
+.wgp-hero__facts { display: flex; flex-wrap: wrap; gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; }
+.wgp-hero__facts li { display: grid; justify-items: center; min-width: 74px; padding: 6px 12px 7px; font-weight: 800; font-size: .72rem; color: var(--muted); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch-sm, 10px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-pink, rgba(252, 139, 147, .5)); rotate: calc((var(--k) - 1.5) * 1.5deg); animation: wg-in .45s both; animation-delay: calc(var(--k) * 80ms + 150ms); }
+.wgp-hero__facts li:nth-child(2) { box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-lime); }
+.wgp-hero__facts li:nth-child(3) { box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--hl-yellow); }
+.wgp-hero__facts b { font: 400 1.7rem/1.05 var(--f-label); color: var(--text); }
+/* the six little boards */
+.wgp-boards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 14px; }
+.wgp-mb { display: grid; gap: 8px; padding: 10px 10px 8px; color: var(--text); text-align: start; background: var(--card); border: 1.5px solid var(--ink); border-top: 5px solid var(--tab); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--tab); cursor: pointer; rotate: calc((var(--n) % 2 * 2 - 1) * .6deg); transition: translate .18s, box-shadow .18s, rotate .2s; animation: wg-in .5s both; animation-delay: calc(var(--n) * 60ms); }
+.wgp-mb:hover { translate: calc(var(--bujo-x, 1) * -2px) -3px; rotate: 0deg; }
+.wgp-mb.is-on { rotate: 0deg; translate: calc(var(--bujo-x, 1) * -3px) -4px; background: color-mix(in srgb, var(--tab) 35%, var(--card)); box-shadow: calc(var(--bujo-x, 1) * 7px) 7px 0 0 var(--ink); }
+.wgp-mb:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; }
+.wgp-mb__g { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(3, 16px); grid-auto-flow: row dense; gap: 3px; padding: 5px; background: color-mix(in srgb, var(--ink) 6%, var(--card)) repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), color-mix(in srgb, var(--ink) 10%, transparent) calc(25% - 1px) 25%); border: 1.2px dashed color-mix(in srgb, var(--ink) 35%, transparent); border-radius: 6px; }
+.wgp-mb__g i { grid-column: span var(--c); grid-row: span var(--r); background: color-mix(in srgb, var(--gc) calc(85% - var(--k) * 12%), var(--card)); border: 1.2px solid var(--ink); border-radius: 3px; animation: wg-pop .35s var(--ease-pop, ease) both; animation-delay: calc(var(--n) * 60ms + var(--k) * 70ms + 200ms); }
+.wgp-mb__g i.is-sk { background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--gc) 40%, var(--card)) 0 3px, var(--card) 3px 6px); }
+.wgp-mb__t { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.wgp-mb__t i { display: grid; place-items: center; flex: none; width: 22px; height: 22px; font: 400 .75rem var(--f-label); font-style: normal; color: #fff; background: #37353f; border-radius: 50%; }
+.wgp-mb__t b { flex: 1; min-width: 0; font-weight: 800; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wgp-mb__t small { font-weight: 800; font-size: .7rem; color: var(--muted); }
+.wgp-main { padding-top: 34px; }
+@media (max-width: 900px) { .wgp-hero__in { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 520px) { .wgp-boards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .wgp-hero__facts li { min-width: 0; flex: 1 1 40%; } }
+@media (max-width: 979px) {
+	.wgp-cap { flex-wrap: wrap; row-gap: 4px; }
+	.wgp-cap > b { flex-basis: calc(100% - 40px); }
+	.wgp-add { margin-inline-start: auto; }
+	.wgp-grid { grid-auto-rows: minmax(150px, auto); }
+}

@@ -1,4 +1,4 @@
-import { App, L, Y, T, esc, num, pageHead, $, store, hydrate, GROUPS, WIDGETS, WG_SIZES, WG_CELLS, WG_DEFAULT, wgLayout, setWgLayout, wgCells, boardHTML, fillWidgets } from '../shell.js';
+import { App, L, Y, T, esc, num, $, store, hydrate, GROUPS, WIDGETS, WG_SIZES, WG_CELLS, WG_DEFAULT, wgLayout, setWgLayout, wgCells, boardHTML, fillWidgets } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { IDEAS } from '../widgetideas.js';
 
@@ -15,10 +15,30 @@ export default {
 	title: { ar: 'ويدجتس القوايم', en: 'Menu widgets' },
 
 	render() {
+		const live = WIDGETS.filter((w) => !w.sketch).length;
+		/* the top: a workbench page — the title in handwriting under a highlighter, what's on the bench in numbers,
+		   and the six menus as little boards drawn cell by cell (each one is how that menu is laid out right now);
+		   pick one to work on it */
 		return `
-		${pageHead(L('ويدجتس القوايم', 'Menu widgets'), Y('اختار إيه اللي يظهر جنب صفحات كل فصل في القايمة الكبيرة، بأي مقاس: صغيرة، عريضة، طويلة أو كبيرة', 'اختاري إيه اللي يظهر جنب صفحات كل فصل في القايمة الكبيرة، بأي مقاس: صغيرة، عريضة، طويلة أو كبيرة', 'Choose what sits beside each chapter’s pages in the big menu, in any size: small, wide, tall or big'))}
-		<section class="sec sec--top"><div class="wrap">
-			<div class="wgp-tabs" id="wgp-tabs" role="tablist" aria-label="${L('الفصول', 'Chapters')}">${GROUPS.map((g, i) => `<button class="wgp-tab" type="button" role="tab" data-g="${g.id}" style="--tab:${g.tab};--gc:${g.c}"><i>${num(0)}${num(i + 1)}</i>${esc(L(...g.nav))}</button>`).join('')}</div>
+		<header class="wgp-hero">
+			<span class="wgp-hero__tape" aria-hidden="true"></span>
+			<div class="wrap wgp-hero__in">
+				<div class="wgp-hero__tx">
+					<nav class="crumbs" aria-label="${L('أنت هنا', 'You are here')}"><a href="index.html">${L('الرئيسية', 'Home')}</a><span aria-hidden="true">/</span><a href="widgets.html">${L('ويدجتس القوايم', 'Menu widgets')}</a></nav>
+					<p class="wgp-hero__k">${doodle('pencil', 16)} ${L('ورشة القوايم', 'The menus’ workbench')}</p>
+					<h1 class="wgp-hero__t">${L('ويدجتس القوايم', 'Menu widgets')}</h1>
+					<p class="wgp-hero__sub">${Y('اختار إيه اللي يظهر جنب صفحات كل فصل في القايمة الكبيرة، بأي مقاس، وبأي ترتيب', 'اختاري إيه اللي يظهر جنب صفحات كل فصل في القايمة الكبيرة، بأي مقاس، وبأي ترتيب', 'Choose what sits beside each chapter’s pages in the big menu, in any size and any order')}</p>
+					<ul class="wgp-hero__facts">
+						<li style="--k:0"><b>${num(WIDGETS.length)}</b>${L('ويدجت', 'widgets')}</li>
+						<li style="--k:1"><b>${num(live)}</b>${L('حية', 'live')}</li>
+						<li style="--k:2"><b>${num(Object.keys(WG_SIZES).length)}</b>${L('مقاسات', 'sizes')}</li>
+						<li style="--k:3"><b>${num(WG_CELLS)}</b>${L('خانة في كل قايمة', 'cells a menu')}</li>
+					</ul>
+				</div>
+				<div class="wgp-boards" id="wgp-tabs" role="tablist" aria-label="${L('القوايم', 'The menus')}"></div>
+			</div>
+		</header>
+		<section class="sec sec--top wgp-main"><div class="wrap">
 
 			<div class="wgp-edit" id="wgp-edit"></div>
 
@@ -88,7 +108,14 @@ export default {
 		};
 
 		const paint = () => {
-			main.querySelectorAll('.wgp-tab').forEach((b) => { const on = b.dataset.g === g; b.setAttribute('aria-selected', String(on)); b.classList.toggle('is-on', on); });
+			/* the six little boards: each menu's widgets as blocks of their size, in the chapter's colour */
+			$('#wgp-tabs', main).innerHTML = GROUPS.map((G, i) => {
+				const ids = wgLayout(G.id), used = wgCells(ids);
+				return `<button class="wgp-mb${G.id === g ? ' is-on' : ''}" type="button" role="tab" aria-selected="${G.id === g}" data-g="${G.id}" style="--tab:${G.tab};--gc:${G.c};--n:${i}">
+					<span class="wgp-mb__g" aria-hidden="true">${ids.map((id, k) => { const w = WIDGETS.find((x) => x.id === id); if (!w) return ''; const [c, r] = SIZE_OF(w); return `<i class="${w.sketch ? 'is-sk' : ''}" style="--c:${c};--r:${r};--k:${k}"></i>`; }).join('')}</span>
+					<span class="wgp-mb__t"><i>${num(0)}${num(i + 1)}</i><b>${esc(L(...G.nav))}</b><small>${L(`${num(used)}/${num(WG_CELLS)}`, `${used}/${WG_CELLS}`)}</small></span>
+				</button>`;
+			}).join('');
 			paintEdit(); paintShelf();
 		};
 
