@@ -990,6 +990,33 @@ export const WIDGETS = [
 		html: (s, here) => { const [o] = occasions(s); if (!o) return ''; return `<a class="wg-big" ${wgGo('calendar.html', here)}><b>${o.days ? num(o.days) : doodle(o.emoji || 'cake', 34)}</b><small>${esc(o.title)}</small></a>`; } }
 ];
 
+/* Every one of the hundred ideas (widgetideas.js) can sit in a menu too. The ones not built as live widgets yet are
+   shown as their drawing, at their size, linking to their page: their chapter and size are here (so a board can be laid
+   out without loading the drawings), the drawing itself is loaded only when one is on show. */
+const IDEA_META = 'story:w,story:s,story:b,story:t,story:w,story:s,story:w,story:t,story:b,memories:s,memories:w,memories:t,memories:s,memories:w,memories:b,memories:w,memories:t,nights:s,nights:w,nights:s,nights:b,nights:t,nights:w,nights:s,nights:t,nights:w,kids:b,kids:s,kids:w,kids:t,kids:w,kids:s,kids:b,kids:w,home:t,home:s,home:w,home:w,home:s,home:b,home:t,home:w,people:s,people:w,people:t,people:b,people:s,people:w,people:t,people:s,story:w,story:b,story:w,story:t,story:s,story:w,story:s,story:b,story:t,memories:w,memories:s,memories:t,memories:w,memories:b,memories:s,memories:w,memories:t,nights:w,nights:s,nights:b,nights:w,nights:t,nights:s,nights:w,nights:w,nights:s,kids:b,kids:t,kids:w,kids:s,kids:w,kids:t,kids:b,kids:s,home:w,home:t,home:s,home:w,home:b,home:w,home:t,home:s,people:w,people:s,people:b,people:t,people:w,people:s,people:t,people:w';
+const BUILT = new Set(WIDGETS.map((w) => w.idea).filter(Boolean));
+let ideasP = null;
+const ideas = () => (ideasP ||= import('./widgetideas.js').then((m) => m.IDEAS));
+const sketchFit = typeof ResizeObserver === 'function' ? new ResizeObserver((es) => { for (const e of es) { const r = e.contentRect; e.target.style.setProperty('--k', Math.min(r.width / 270, r.height / 168, 1.4).toFixed(3)); } }) : null;
+IDEA_META.split(',').forEach((x, i) => {
+	const n = i + 1, [g, size] = x.split(':');
+	if (BUILT.has(n)) return;
+	WIDGETS.push({ id: `i${n}`, g, size, idea: n, sketch: true, ar: '', en: '',
+		html: () => `<a class="wg-sketch" href="widgets.html#${g}"><span class="wg-sketch__d"></span><b></b></a>`,
+		fill: async (el) => {
+			const x = (await ideas())[n - 1], a = el.querySelector('.wg-sketch');
+			if (!x || !a) return;
+			const p = PAGES.find((q) => q.ar === x.page);
+			if (p) a.href = p.href;
+			a.title = x.d;
+			a.querySelector('.wg-sketch__d').innerHTML = `<span class="wg-sketch__in">${x.html}</span>`;
+			a.querySelector('b').textContent = x.ar;
+			sketchFit?.observe(a.querySelector('.wg-sketch__d'));
+		} });
+});
+/** the name of a widget, an idea's from its drawing (for the widgets page) */
+export async function wgName(w) { return w.sketch ? ((await ideas())[w.idea - 1]?.ar || '') : L(w.ar, w.en); }
+
 /** a menu's board: its widgets on the four by three grid, each in its own cell */
 export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g)) {
 	return `<div class="wg-board">${ids.map((id, i) => {

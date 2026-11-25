@@ -12,6 +12,8 @@ const sizeName = (k) => esc(L(WG_SIZES[k][2], WG_SIZES[k][3]));
 const WANT = 'us.wideas';
 const wanted = () => { try { return new Set(JSON.parse(store.get(WANT) || '[]')); } catch { return new Set(); } };
 const readyFor = (n) => WIDGETS.find((w) => w.idea === n);
+/* a live widget's name, or an idea's (those not built yet sit in the menu as their drawing) */
+const nameOf = (w) => (w.sketch ? IDEAS[w.idea - 1]?.ar || '' : L(w.ar, w.en));
 
 export default {
 	title: { ar: 'ويدجتس القوايم', en: 'Menu widgets' },
@@ -31,8 +33,8 @@ export default {
 			</div>
 
 			<div class="wgp-sec">
-				<h2 class="wgp-h">${L('أفكار جاية', 'Ideas to come')}</h2>
-				<p class="muted">${Y('مية فكرة لويدجتس، كل واحدة متسجلة بمقاسها. علّم على اللي عايزها تتعمل بعد كده.', 'مية فكرة لويدجتس، كل واحدة متسجلة بمقاسها. علّمي على اللي عايزاها تتعمل بعد كده.', 'A hundred widget ideas, each in its size. Mark the ones you want made next.')}</p>
+				<h2 class="wgp-h">${L('المية فكرة', 'The hundred ideas')}</h2>
+				<p class="muted">${Y('كل فكرة تقدر تحطها في القايمة بمقاسها. «حية» يعني بتقرا من بياناتنا، و«رسمة» يعني لسه بتظهر برسمتها وبتوديك لصفحتها لحد ما تتعمل.', 'كل فكرة تقدري تحطيها في القايمة بمقاسها. «حية» يعني بتقرا من بياناتنا، و«رسمة» يعني لسه بتظهر برسمتها وبتوديك لصفحتها لحد ما تتعمل.', 'Every idea can go in a menu at its size. «Live» reads our data; «Drawing» shows its drawing and opens its page until it is built.')}</p>
 				<div class="wk" id="wk"></div>
 				<div class="wk-bar" id="wk-bar" hidden><span id="wk-n"></span><button class="btn btn--sm btn--coral" type="button" id="wk-copy">${doodle('letter', 16)} ${Y('انسخ اللي عايزه', 'انسخي اللي عايزاه', 'Copy my picks')}</button><span class="muted" id="wk-msg" role="status"></span></div>
 			</div>
@@ -64,7 +66,7 @@ export default {
 					<div class="wgp-stage mega-${g}" aria-hidden="true">${boardHTML(g, s)}</div>
 					<ol class="wgp-order">${ids.map((id, i) => {
 						const w = WIDGETS.find((x) => x.id === id);
-						return `<li style="--i:${i}"><span class="wgp-sz wgp-sz--${w.size}" title="${sizeName(w.size)}"><i style="--c:${SIZE_OF(w)[0]};--r:${SIZE_OF(w)[1]}"></i></span><b>${esc(L(w.ar, w.en))}</b><small>${sizeName(w.size)}</small>
+						return `<li style="--i:${i}"><span class="wgp-sz wgp-sz--${w.size}" title="${sizeName(w.size)}"><i style="--c:${SIZE_OF(w)[0]};--r:${SIZE_OF(w)[1]}"></i></span><b>${esc(nameOf(w))}</b><small>${sizeName(w.size)}</small>
 							<span class="wgp-btns"><button type="button" data-up="${i}"${i ? '' : ' disabled'} aria-label="${L('لقدام', 'Earlier')}">${doodle('back', 16)}</button><button type="button" data-down="${i}"${i < ids.length - 1 ? '' : ' disabled'} aria-label="${L('لورا', 'Later')}">${doodle('forward', 16)}</button><button type="button" data-out="${i}" aria-label="${L('شيلها', 'Remove')}">${doodle('trash', 16)}</button></span></li>`;
 					}).join('') || `<li class="wgp-none">${L('القايمة فاضية — ضيف من الجاهزة تحت', 'Empty — add from the ready ones below')}</li>`}</ol>
 				</div>`;
@@ -82,14 +84,14 @@ export default {
 
 		const paintShelf = () => {
 			const ids = wgLayout(g), free = WG_CELLS - wgCells(ids);
-			const list = WIDGETS.filter((w) => w.g === g);
+			const list = WIDGETS.filter((w) => w.g === g && !w.sketch);
 			$('#wgp-shelf', main).innerHTML = `<div class="wgp-grid mega-${g}" style="--tab:${grp().tab};--gc:${grp().c}">${list.map((w, i) => {
 				const [c, r] = SIZE_OF(w), on = ids.includes(w.id), fits = c * r <= free;
 				let h = ''; try { h = w.html(s, '') || ''; } catch { h = ''; }
 				return `<article class="wgp-card wg--${w.size}${on ? ' is-on' : ''}" style="--c:${c};--r:${r};--i:${i}" data-wg="${w.id}">
 					<div class="wgp-live wg wgx-${w.id}">${h || `<span class="wgp-nodata">${L('محتاجة بيانات لسه مش موجودة', 'Needs data we don’t have yet')}</span>`}</div>
-					<div class="wgp-alt"><b>${esc(L(w.ar, w.en))}</b><small>${esc(L(w.dar, w.den))}</small></div>
-					<div class="wgp-cap"><span class="wgp-sz wgp-sz--${w.size}"><i style="--c:${c};--r:${r}"></i></span><b>${esc(L(w.ar, w.en))}</b>
+					<div class="wgp-alt"><b>${esc(nameOf(w))}</b><small>${esc(L(w.dar, w.den))}</small></div>
+					<div class="wgp-cap"><span class="wgp-sz wgp-sz--${w.size}"><i style="--c:${c};--r:${r}"></i></span><b>${esc(nameOf(w))}</b>
 						<button class="wgp-add" type="button" data-add="${w.id}"${on || !fits ? ' disabled' : ''}>${on ? `${doodle('heart', 14)} ${L('موجودة', 'Added')}` : fits ? `+ ${Y('حطها', 'حطيها', 'Add')}` : L('مفيش مكان', 'No room')}</button></div>
 				</article>`;
 			}).join('')}</div>`;
@@ -107,7 +109,7 @@ export default {
 					<span class="wk-n">${num(x.n)}</span>
 					<div class="wk-draw" aria-hidden="true"><div class="wk-in">${x.html}</div></div>
 					<div class="wk-tx"><b>${esc(x.ar)}</b><small>${esc(x.d)}</small>
-						<span class="wk-tags"><span class="wk-tag">${esc(x.page)}</span><span class="wk-tag wk-tag--sz">${sizeName(x.size)}</span>${ready ? `<span class="wk-tag wk-tag--ok">${L('جاهزة', 'Ready')}</span>` : ''}</span>
+						<span class="wk-tags"><span class="wk-tag">${esc(x.page)}</span><span class="wk-tag wk-tag--sz">${sizeName(x.size)}</span>${ready ? (ready.sketch ? `<span class="wk-tag wk-tag--sz">${L('رسمة', 'Drawing')}</span>` : `<span class="wk-tag wk-tag--ok">${L('حية', 'Live')}</span>`) : ''}</span>
 						${ready ? `<button class="wk-act" type="button" data-add="${ready.id}">${wgLayout(g).includes(ready.id) ? L('في القايمة', 'In the menu') : `+ ${Y('حطها في القايمة', 'حطيها في القايمة', 'Add to the menu')}`}</button>` : `<button class="wk-act wk-want" type="button" data-want="${x.n}" aria-pressed="${want.has(x.n)}">${doodle('heart', 14)} ${Y('عايزها', 'عايزاها', 'Want it')}</button>`}
 					</div>
 				</article>`;
