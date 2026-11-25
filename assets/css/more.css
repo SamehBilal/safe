@@ -2569,3 +2569,8 @@
 :root[data-theme='dark'] .sec--top > .wrap:has(> .lp-list--expenses) { --sheet: var(--card); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .sec--top > .wrap:has(> .lp-list--expenses) { --sheet: var(--card); } }
 @media (max-width: 600px) { .sec--top > .wrap:has(> .lp-list--expenses) { margin-inline: 8px; } }
+
+/* تذاكرنا: a ticket keeps straight edges and small square-ish corners — not the hand-drawn wobble the other cards get,
+   which bent its edges and its coloured stripe (on every card whose turn in the wobble had a big curve) */
+.lp-list--tickets .tk-card, .lp-list--tickets .tk-card:nth-child(n) { border-radius: 4px 10px 10px 4px; }
+:root[dir='rtl'] .lp-list--tickets .tk-card, :root[dir='rtl'] .lp-list--tickets .tk-card:nth-child(n) { border-radius: 10px 4px 4px 10px; }
