@@ -858,3 +858,75 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 	.mega-nights .mg-kind b { font-size: .9rem; line-height: 1.3; }
 	.mega-nights .mg-kind small { display: none; }
 }
+
+/* ---------- the «+» beside the search (shell.js addHTML): everything we can add, by chapter in its own colour, each
+   opening its page with the form open ---------- */
+.add-menu { position: relative; }
+.add-btn { color: #fff; background: var(--coral); }
+.add-btn svg { transition: rotate .25s var(--ease-pop, ease); }
+.add-btn[aria-expanded='true'] svg { rotate: 45deg; }
+.add-panel { position: absolute; top: calc(100% + 12px); inset-inline-end: 0; z-index: 60; width: min(720px, calc(100vw - 24px)); max-height: min(72vh, 620px); overflow: auto; overscroll-behavior: contain; padding: 16px 16px 18px; color: var(--text); background: var(--card); border: 1.5px solid var(--ink); border-radius: var(--sketch, 16px); box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow), 0 24px 50px rgba(19, 52, 71, .22); animation: add-in .22s var(--ease-out, ease); }
+.add-panel[hidden] { display: none; }
+@keyframes add-in { from { opacity: 0; transform: translateY(-6px); } }
+.add-panel__h { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-weight: 800; font-size: 1.02rem; }
+.add-panel__groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 12px; }
+.add-group { display: grid; align-content: start; gap: 4px; padding: 10px 10px 8px; background: color-mix(in srgb, var(--tab) 22%, var(--card)); border: 1.5px solid color-mix(in srgb, var(--ink) 25%, transparent); border-top: 4px solid var(--tab); border-radius: 10px; }
+.add-group__h { margin: 0 0 2px; font-weight: 800; font-size: .8rem; color: var(--gc); }
+.add-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: .88rem; font-weight: 700; color: var(--text); text-decoration: none; border-radius: 8px; }
+.add-item .ic { flex: none; color: var(--gc); }
+.add-item:hover, .add-item:focus-visible { background: color-mix(in srgb, var(--tab) 55%, var(--card)); outline: none; }
+@media (max-width: 760px) { .add-panel__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) {
+	.add-panel { position: fixed; top: calc(var(--hd, 64px) + 6px); inset-inline: 10px; width: auto; max-height: calc(100svh - var(--hd, 64px) - 20px); }
+	.add-panel__groups { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- the mega menus all the same height, the pages and the chapter's cards in the middle of it ---------- */
+@media (min-width: 980px) {
+	.mega-in { min-height: var(--mega-h, 500px); align-items: center; }
+	.mx-side { position: static; align-self: center; padding-top: 0; }
+	.mx-main { align-self: center; }
+}
+
+/* ذكرياتنا: us in numbers, a card among the others */
+.mg-card--data .mg-numbers { position: relative; display: grid; place-content: center; justify-items: center; gap: 2px; height: 100%; overflow: hidden; padding: 6px; box-sizing: border-box; text-align: center; background: #fff7f0; border: 1px solid rgba(55, 53, 63, .25); }
+.mg-card--data .mg-bars { position: absolute; inset: auto 6px 6px; height: 62%; display: flex; align-items: flex-end; gap: 2px; opacity: .45; border-bottom: 1.5px solid #37353f; }
+.mg-card--data .mg-bars i { flex: 1; background: rgba(252, 139, 147, .9); border: 1px solid #37353f; border-bottom: 0; border-radius: 3px 3px 0 0; }
+.mg-card--data .mg-bars i:nth-child(3n + 2) { background: rgba(205, 220, 57, .9); }
+.mg-card--data .mg-bars i:nth-child(3n) { background: rgba(253, 200, 48, .9); }
+.mg-card--data .mg-numbers b { position: relative; padding: 0 4px; font: 400 1.2rem/1.1 var(--f-label); color: #d9534f; background: #fff7f0; border-radius: 4px; }
+.mg-card--data .mg-numbers small { position: relative; padding: 0 3px; font: 700 .58rem/1.25 var(--f-body); color: #4a4752; background: #fff7f0; border-radius: 3px; }
+
+/* عيلتنا: the four of us in a frame on the wall */
+.mg-frame-fam { position: relative; display: grid; justify-items: center; gap: 4px; padding: 16px 12px 14px; color: #2b2b33; text-align: center; text-decoration: none; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 4px; box-shadow: 0 0 0 6px #b98b5e, 0 0 0 7.5px #37353f, calc(var(--bujo-x, 1) * 8px) 10px 0 3px rgba(123, 79, 196, .25); rotate: -1deg; transition: rotate .25s, translate .25s; margin: 8px; }
+.mg-frame-fam:hover { rotate: 0deg; translate: 0 -3px; }
+.mg-frame-fam__in { display: grid; grid-template-columns: repeat(2, auto); gap: 8px 12px; justify-content: center; margin-bottom: 4px; }
+.mg-frame-fam__face { display: grid; justify-items: center; gap: 2px; }
+.mg-frame-fam__pic { display: grid; place-items: center; width: 52px; height: 52px; overflow: hidden; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); border: 2.5px solid var(--c); border-radius: 50%; }
+.mg-frame-fam__img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mg-frame-fam__face small { font: 800 .7rem/1.2 var(--f-body); color: #4a4752; }
+.mg-frame-fam > b { font: 700 1.35rem/1.2 'Aref Ruqaa', var(--f-hand); color: #7b4fc4; }
+.mg-frame-fam > small { font-weight: 700; font-size: .8rem; color: #6b6b75; }
+.mg-frame-fam .mg-go { font-weight: 800; font-size: .82rem; color: #0e6990; }
+
+/* بيتنا: today's calendar page, and three notes on the fridge door */
+.mg-home { display: grid; gap: 14px; }
+.mg-today { position: relative; display: grid; justify-items: center; gap: 2px; padding: 0 12px 12px; overflow: hidden; color: #2b2b33; text-align: center; text-decoration: none; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 10px; box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, #3f8a57 35%, transparent); rotate: -1deg; transition: rotate .25s, translate .25s; }
+.mg-today:hover { rotate: 0deg; translate: 0 -3px; }
+.mg-today__m { justify-self: stretch; margin: 0 -12px 4px; padding: 6px 0; font: 400 1.05rem var(--f-label); letter-spacing: .06em; color: #fff; background: #3f8a57; border-bottom: 1.5px solid #37353f; }
+:lang(ar) .mg-today__m { font: 800 .9rem var(--f-body); letter-spacing: 0; }
+.mg-today b { font: 400 3.2rem/1 var(--f-label); color: #2b2b33; }
+.mg-today__w { font-weight: 800; font-size: .88rem; }
+.mg-today small { font-size: .78rem; font-weight: 700; color: #6b6b75; }
+.mg-today .mg-go { margin-top: 4px; font-weight: 800; font-size: .82rem; color: #0e6990; }
+.mg-fridge { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px 10px 10px; background: linear-gradient(90deg, #e6ece9, #f6f8f7 45%, #dde4e0); border: 1.5px solid #37353f; border-radius: 12px; }
+.mg-fnote { position: relative; display: grid; justify-items: center; gap: 3px; padding: 14px 6px 8px; color: #2b2b33; text-align: center; text-decoration: none; background: #fff6b8; box-shadow: 0 5px 10px -5px rgba(30, 20, 10, .45); rotate: -2.5deg; transition: rotate .2s, translate .2s; }
+.mg-fnote.is-p { background: #ffd9e2; rotate: 2deg; }
+.mg-fnote.is-g { background: #d6efd9; rotate: -1deg; }
+.mg-fnote:hover { rotate: 0deg; translate: 0 -3px; }
+.mg-fnote svg { color: #3f8a57; }
+.mg-fnote b { font-weight: 800; font-size: .74rem; line-height: 1.3; }
+.mg-fnote small { font-size: .64rem; line-height: 1.35; color: #5e5a63; }
+.mg-fnote__mag { position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; translate: -50% 0; background: radial-gradient(circle at 35% 35%, #fff8, transparent 50%), #d9534f; border: 1.2px solid #37353f; border-radius: 50%; }
+.mg-fnote.is-p .mg-fnote__mag { background-color: #0e6990; }
+.mg-fnote.is-g .mg-fnote__mag { background-color: #fdc830; }

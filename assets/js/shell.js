@@ -762,10 +762,7 @@ function widgetsHTML(g, s) {
 				${img(gb.photo, '', 'mg-cover')}
 				<span class="mg-card-t"><b>${L('دفتر المعازيم', 'Guestbook')}</b><small>${num(gb.entries.length)} ${L('تهنئة', 'wishes')}</small></span>
 			</a>` : `<a class="mg-card mg-card--note" href="letters.html"><span class="mg-note"><q>${L('جوابات مستنية تتفتح', 'Letters waiting to be opened')}</q></span><span class="mg-card-t"><b>${L('جوابات', 'Letters')}</b><small>${num((s.letters || []).length)}</small></span></a>`}
-			<a class="mg-card mg-card--ticket" href="tickets.html">
-				<span class="mg-ticket" aria-hidden="true"><small>${L('تذكرة دخول', 'Admit one')}</small><b>♥</b><small>${L('سينما · قطر · كافيه', 'Cinema · train · café')}</small></span>
-				<span class="mg-card-t"><b>${L('تذاكر وفواتير', 'Tickets')}</b><small>${L('كشكول ذكرياتنا', 'Our scrapbook')}</small></span>
-			</a>
+			${numbersCard(s, here)}
 		</div>
 		<div class="mg-film"><p class="mg-film-h">${L('ذكريات من حكايتنا', 'Moments from our story')}</p><div class="mg-film-strip" id="mg-film">${filmHTML(s)}</div></div>`;
 	}
@@ -788,21 +785,79 @@ function widgetsHTML(g, s) {
 		${tapeHTML(members)}`;
 	}
 	if (g === 'people') {
-		const met = parseDate(s.met || '2009-06-10'), yrs = yearsBetween(met);
 		return `<div class="mx-wpair">
-			<a class="mg-data" href="numbers.html"${here === 'numbers.html' ? ' aria-current="page"' : ''}>
-				<span class="mg-new">${L('بالأرقام', 'In numbers')}</span>
-				<span class="mg-bars" aria-hidden="true">${Array.from({ length: Math.min(yrs + 1, 20) }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / Math.min(yrs + 1, 20))}%"></i>`).join('')}</span>
-				<b>${num(daysBetween(met))} ${L('يوم من أول سلام', 'days since hello')}</b>
-				<small>${L('وكل سنة الحب بيزيد', 'and every year it grows')}</small>
-				<span class="mg-go">${Y('شوف الأرقام', 'شوفي الأرقام', 'See the numbers')} ${App.arrow}</span>
-			</a>
+			${familyFrame(s, here)}
 			${calendarHTML(s)}
 		</div>
 		${nextTagsHTML(s)}`;
 	}
+	if (g === 'home') return homeWidgets(s, here);
 	return featureHTML(g, s);
 }
+
+/* ذكرياتنا: us in numbers, a card among the others — the years as bars, the days since hello */
+function numbersCard(s, here) {
+	const met = parseDate(s.met || '2009-06-10'), yrs = yearsBetween(met), n = Math.min(yrs + 1, 14);
+	return `<a class="mg-card mg-card--data" href="numbers.html"${here === 'numbers.html' ? ' aria-current="page"' : ''}>
+		<span class="mg-numbers" aria-hidden="true"><span class="mg-bars">${Array.from({ length: n }, (_, k) => `<i style="height:${18 + Math.round(82 * (k + 1) / n)}%"></i>`).join('')}</span><b>${num(daysBetween(met))}</b><small>${L('يوم من أول سلام', 'days since hello')}</small></span>
+		<span class="mg-card-t"><b>${L('بالأرقام', 'In numbers')}</b><small>${L(`${num(yrs)} سنة سوا`, `${yrs} years together`)}</small></span>
+	</a>`;
+}
+
+/* عيلتنا: the four of us in a frame on the wall, each face round, and how long we've been a family */
+function familyFrame(s, here) {
+	const members = (s.family?.members || []).slice(0, 4);
+	const wed = s.married ? parseDate(s.married) : null;
+	return `<a class="mg-frame-fam" href="family.html"${here === 'family.html' ? ' aria-current="page"' : ''}>
+		<span class="mg-frame-fam__in">${members.map((m) => `<span class="mg-frame-fam__face" style="--c:${esc(m.color || '#7b4fc4')}">${m.photo ? `<span class="mg-frame-fam__pic" data-media-box>${img(m.photo, '', 'mg-frame-fam__img')}</span>` : `<span class="mg-frame-fam__pic">${doodle(m.emoji || 'heart', 30)}</span>`}<small>${T(m.name)}</small></span>`).join('') || doodle('family', 54)}</span>
+		<b>${L('عيلتنا', 'Our family')}</b>
+		<small>${wed ? L(`عيلة من ${num(yearsBetween(wed))} سنين`, `a family for ${yearsBetween(wed)} years`) : L('شجرة العيلتين', 'The family tree')}</small>
+		<span class="mg-go">${Y('افتح الشجرة', 'افتحي الشجرة', 'Open the tree')} ${App.arrow}</span>
+	</a>`;
+}
+
+/* بيتنا: today's page torn from the wall calendar (the day, the Hijri date, the routine), and three notes stuck on
+   the fridge door: the shopping list, the week's menu and the month's money */
+function homeWidgets(s, here) {
+	const d = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
+	let hijri = '';
+	try { hijri = new Intl.DateTimeFormat(`${loc}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d); } catch { /* no Hijri here */ }
+	const note = (href, ic, b, small, cls) => `<a class="mg-fnote ${cls}" href="${href}"${here === href ? ' aria-current="page"' : ''}><i class="mg-fnote__mag" aria-hidden="true"></i>${doodle(ic, 26)}<b>${b}</b><small>${small}</small></a>`;
+	return `<div class="mg-home">
+		<a class="mg-today" href="routine.html"${here === 'routine.html' ? ' aria-current="page"' : ''}>
+			<span class="mg-today__m">${esc(new Intl.DateTimeFormat(loc, { month: 'long' }).format(d))}</span>
+			<b>${num(d.getDate())}</b>
+			<span class="mg-today__w">${esc(new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(d))}</span>
+			${hijri ? `<small>${esc(hijri)}</small>` : ''}
+			<span class="mg-go">${L('روتين النهارده', 'Today’s routine')} ${App.arrow}</span>
+		</a>
+		<div class="mg-fridge">
+			${note('shopping.html', 'scroll', L('الطلبات', 'Shopping'), L('ناقص إيه في البيت؟', 'What’s missing at home?'), 'is-y')}
+			${note('meals.html', 'dinner', L('منيو الأسبوع', 'This week’s menu'), L('هناكل إيه النهارده؟', 'What’s for dinner?'), 'is-p')}
+			${note('expenses.html', 'coins', L('مصاريف الشهر', 'This month’s money'), L('دفعنا إيه وفاضل إيه', 'What’s paid, what’s left'), 'is-g')}
+		</div>
+	</div>`;
+}
+/* Everything we can add, by chapter, for the «+» beside the search: each opens its page with the form open (#add). */
+const ADD = [
+	['journal', 'اكتب صفحة في الدفتر', 'Write a journal page'], ['ourfirsts', 'أول مرة لينا', 'A first of ours'], ['beforeus', 'محطة قبل ما نتقابل', 'A stop before us'], ['anniversaries', 'عيد جواز', 'An anniversary'], ['cities', 'مكان على خريطة مدننا', 'A spot on our city maps'],
+	['tickets', 'تذكرة أو فاتورة', 'A ticket or receipt'], ['chats', 'اسكرينشوت محادثة', 'A chat screenshot'], ['posts', 'بوست', 'A post'],
+	['movies', 'فيلم أو مسلسل', 'A film or series'], ['music', 'أغنية', 'A song'], ['books', 'كتاب', 'A book'], ['food', 'أكلة أو مطعم', 'A meal or restaurant'], ['games', 'لعبة', 'A game'], ['offline', 'سهرة من غير موبايل', 'An offline night'], ['adventures', 'حلم أو مغامرة', 'A dream or adventure'],
+	['firsts', 'أول مرة للولاد', 'A first for the kids'], ['growth', 'قياس طول ووزن', 'A height and weight'], ['sayings', 'كلمة للقاموس', 'A word for the dictionary'], ['favorites', 'بيحب إيه دلوقتي', 'What they love now'], ['drawings', 'رسمة على التلاجة', 'A drawing for the fridge'], ['school', 'مادة أو درجة', 'A subject or grade'], ['clubs', 'نشاط', 'An activity'], ['health', 'حاجة في دفتر الصحة', 'A health entry'], ['yearly', 'صورة السنة', 'This year’s photo'], ['capsule', 'حاجة للكبسولة', 'Something for the capsule'],
+	['routine', 'حاجة في الروتين', 'A routine step'], ['chores', 'شغلانة في البيت', 'A chore'], ['meals', 'أكلة في المنيو', 'A meal for the menu'], ['expenses', 'مصروف', 'An expense'], ['debts', 'دين', 'A debt'], ['fixes', 'تصليحة', 'A repair'], ['warranty', 'جهاز', 'An appliance'], ['papers', 'ورقة مهمة', 'An important paper'], ['goals', 'هدف', 'A goal'],
+	['people', 'حد من ناسنا', 'One of our people'], ['calendar', 'مناسبة', 'An occasion'], ['ramadan', 'حاجة لرمضان والعيد', 'Something for Ramadan & Eid'], ['gifts', 'هدية', 'A gift'], ['hosting', 'عزومة', 'A visit'], ['duties', 'واجب', 'A duty'], ['nokta', 'نقطة', 'A nokta']
+];
+function addHTML() {
+	const by = GROUPS.map((g) => ({ g, items: ADD.map(([id, ar, en]) => ({ p: PAGES.find((x) => x.id === id), ar, en })).filter((x) => x.p && x.p.group === g.id) })).filter((x) => x.items.length);
+	return `<div class="add-menu" id="add-menu">
+		<button class="icon-btn add-btn" type="button" aria-expanded="false" aria-controls="add-panel" aria-label="${Y('ضيف حاجة', 'ضيفي حاجة', 'Add something')}" title="${Y('ضيف حاجة', 'ضيفي حاجة', 'Add something')}"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+		<div class="add-panel" id="add-panel" hidden>
+			<p class="add-panel__h">${doodle('pen', 18)} ${Y('عايز تضيف إيه؟', 'عايزة تضيفي إيه؟', 'What would you like to add?')}</p>
+			<div class="add-panel__groups">${by.map(({ g, items }) => `<section class="add-group" style="--tab:${g.tab};--gc:${g.c}"><p class="add-group__h">${esc(L(g.ar, g.en))}</p>${items.map(({ p, ar, en }) => `<a class="add-item" href="${p.href}#add">${icon(p.ic, 18)}<span>${esc(L(ar, en))}</span></a>`).join('')}</section>`).join('')}</div>
+		</div>
+	</div>`;
+}
+
 /* The header: Home, the six chapters, and «اكتب النهارده». Each chapter opens a sheet: its number, name and what's in
    it, its ten pages as index cards (five to a row), and the chapter's card at the side. */
 function megaHTML(s) {
@@ -824,7 +879,6 @@ function megaHTML(s) {
 	return `<nav class="mnav" aria-label="${L('القائمة الرئيسية', 'Main')}">
 		<a class="mnav-link" href="index.html"${cur('index.html')}>${L('الرئيسية', 'Home')}</a>
 		${GROUPS.map(top).join('')}
-		<a class="mnav-link mnav-cta" href="journal.html"${cur('journal.html')}>${doodle('pen', 18)} ${Y('اكتب النهارده', 'اكتبي النهارده', 'Write today')}</a>
 		${GROUPS.map(panel).join('')}
 	</nav>`;
 }
@@ -1175,7 +1229,7 @@ function renderChrome() {
 			<a class="brand" href="index.html"><span class="brand-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span><span class="brand-sub">${L('حكاية حب', 'A love story')} · ${(s.met || '2009').slice(0, 4)}</span></a>
 			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">${pnavHTML(here, s)}</nav>
 			${megaHTML(s)}
-			<div class="tools"><a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
+			<div class="tools">${addHTML()}<a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
 	const setMenu = (on) => {
 		header.classList.toggle('menu-open', on);
@@ -1186,6 +1240,18 @@ function renderChrome() {
 	header._menu = setMenu;
 	$('.menu-btn', header).onclick = () => setMenu(!header.classList.contains('menu-open'));
 	$('.pnav', header).onclick = (ev) => { if (ev.target.closest('a')) setMenu(false); };
+	{
+		const btn = $('.add-btn', header), panel = $('#add-panel', header);
+		const setAdd = (on) => { panel.hidden = !on; btn.setAttribute('aria-expanded', String(on)); header.classList.toggle('add-open', on); if (on) { header._mega?.set(''); panel.querySelector('a')?.focus({ preventScroll: true }); } };
+		header._add = setAdd;
+		btn.onclick = (e) => { e.stopPropagation(); setAdd(panel.hidden); };
+		panel.addEventListener('click', (e) => { if (e.target.closest('a')) setAdd(false); });
+		if (!document._addWired) {
+			document._addWired = true;
+			document.addEventListener('click', (e) => { const h = document.getElementById('site-header'); if (h?._add && !e.target.closest('#add-menu')) h._add(false); });
+			document.addEventListener('keydown', (e) => { const h = document.getElementById('site-header'); if (e.key === 'Escape' && h?.classList.contains('add-open')) { h._add(false); h.querySelector('.add-btn')?.focus(); } });
+		}
+	}
 	$('.lang-toggle', header).onclick = () => setLang(App.lang === 'ar' ? 'en' : 'ar');
 	$('.theme-toggle', header).onclick = toggleTheme;
 	// the magnifier opens the morphing search over the page (on the search page itself it just goes to the box)
@@ -1429,9 +1495,9 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'home', 'hosting', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
-const OWN_CSS = { school: 'more', clubs: 'more', meals: 'more', warranty: 'more', papers: 'more', duties: 'more', adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', debts: 'more', drawings: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', secret: 'secret', shopping: 'more', tickets: 'more' };
+const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', clubs: 'more', debts: 'more', drawings: 'more', duties: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', meals: 'more', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', papers: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', school: 'more', secret: 'secret', shopping: 'more', tickets: 'more', warranty: 'more' };
 function ownCSS(id) {
 	const name = OWN_CSS[id];
 	if (!name || $(`link[href$="css/${name}.css"]`)) return Promise.resolve();
@@ -1511,6 +1577,15 @@ async function renderPage() {
 	lightbox(main);
 	composers(main);
 	page.after?.(main, s);
+	if (location.hash === '#add') {
+		const t0 = Date.now();
+		const tryOpen = () => {
+			const d = main.querySelector('details.composer:not([hidden])');
+			if (d) { d.open = true; history.replaceState(history.state, '', location.pathname + location.search); return; }
+			if (Date.now() - t0 < 4000) setTimeout(tryOpen, 150);
+		};
+		setTimeout(tryOpen, 60);
+	}
 	// a page about one thing (a moment, a big day, one of us, a trip) is named after it in the tab
 	const own = DETAIL_OF[pageId()] && $('h1', main)?.textContent.trim();
 	if (own) document.title = `${own} — ${t(s.him)} ♥ ${t(s.her)}`;
