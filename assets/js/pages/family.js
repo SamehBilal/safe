@@ -42,43 +42,229 @@ const pickOf = (arr, salt = 0) => (arr.length ? arr[(DAY * 31 + salt * 17) % arr
 const mdOf = (iso) => String(iso || '').slice(5, 10);
 const todayMD = () => { const d = new Date(); return `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(0, 0, 0, 0); const n = new Date(now.getFullYear(), d.getMonth(), d.getDate()); if (n < now) n.setFullYear(n.getFullYear() + 1); return Math.round((n - now) / 864e5); }
-/* The page is a book lying on the table, after Codrops' «Book Preview» (tympanus.net/codrops): its cover is our family
-   tree (tree.js), whole and alive — tap anyone on it. «افتح الجريدة» swings the cover open on its spine while the book
-   grows, and «جريدة بيتنا» opens across the whole page, its pages turned with the arrows or the page numbers:
-   ١ the front page, ٢ family news (the four of us), ٣ odds and ends (the quote of the day and the classifieds).
-   ✕ or Esc close it, and the page is where it was. */
-const PAGES = [['الصفحة الأولى', 'Front page'], ['أخبار العيلة', 'Family news'], ['منوعات', 'Odds & ends']];
-function paperHTML(s, f, members) {
-	const today = new Date();
-	return `<div class="fbo" id="fbo" role="dialog" aria-modal="true" aria-label="${esc(T(f.paper) || L('جريدة بيتنا', 'The Daily Us'))}" hidden>
-		<button class="fbo__x" type="button" id="fbo-x" aria-label="${Y('اقفل الجريدة', 'اقفلي الجريدة', 'Close the paper')}">✕</button>
-		<div class="fbo__in"><article class="np2" id="np" style="--n:${PAGES.length}">
-		<header class="np2-mast">
-			<p class="np2-mast__ear"><span>${L('أول جريدة عائلية', 'A family newspaper')}</span><span>${L('بتصدر كل يوم', 'Out every day')}</span></p>
-			<h2 class="np2-name">${T(f.paper) || L('جريدة بيتنا', 'The Daily Us')}</h2>
-			<div class="np2-bar"><span>${L('العدد', 'Issue')} ${num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)))}</span><span>${today.toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></div>
-		</header>
-		<div class="np2-sheet" id="np-sheet">
-			<section class="np2-page is-on" data-p="0"><div id="np-front"><p class="np__wait">${L('المطبعة شغالة…', 'The presses are rolling…')}</p></div></section>
-			<section class="np2-page" data-p="1"><h3 class="np2-sec">${L(...PAGES[1])}</h3>
-				<div class="np2-news">${members.map((m) => `<article class="np2-story">
-					${m.photo ? `<div class="np2-story__pic" data-media-box>${img(m.photo, App.t(m.name), 'zoom')}</div>` : `<span class="np2-story__ic">${doodle(m.emoji, 44)}</span>`}
-					<h4>${T(m.name)}</h4>
-					<em>${T(m.role)}${m.born ? ` · ${m.kid ? esc(age(m.born)) : `${L('مواليد', 'born')} ${esc(longDate(m.born))}`}` : ''}</em>
-					${m.text ? `<p dir="auto">${T(m.text)}</p>` : ''}
-					<a class="np2-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
-				</article>`).join('')}</div>
-			</section>
-			<section class="np2-page" data-p="2"><h3 class="np2-sec">${L(...PAGES[2])}</h3><div id="np-misc"></div></section>
-		</div>
-		<nav class="np2-pager" aria-label="${L('صفحات الجريدة', 'The paper’s pages')}">
-			<button class="np2-turn" type="button" data-go="-1" aria-label="${L('الصفحة اللي قبلها', 'Previous page')}">${doodle(L('forward', 'back'), 18)}</button>
-			<span class="np2-tabs">${PAGES.map((p, i) => `<button type="button" class="np2-tab${i ? '' : ' is-on'}" data-p="${i}"><b>${num(i + 1)}</b><small>${esc(L(...p))}</small></button>`).join('')}</span>
-			<button class="np2-turn" type="button" data-go="1" aria-label="${L('الصفحة اللي بعدها', 'Next page')}">${doodle(L('back', 'forward'), 18)}</button>
-		</nav>
-	</article></div>
-	</div>`;
+/* The page is a book lying on the table: its cover is our family tree (tree.js), whole and alive — tap anyone on it.
+   «افتح الجريدة» swings the cover open and «جريدة بيتنا» opens over the whole window, on a dark table, with nothing
+   to scroll: every page is cut to fit the screen. On a wide screen it lies open two pages at a time like a real paper,
+   on a phone one page at a time; the pages turn on their spine with the arrows, the page numbers, the arrow keys or a
+   swipe, and ✕ or Esc folds it away again. The pages: the front page (the big news, and «النهارده من سنين» with its
+   photo), the numbers and what's coming, a page for each of us, the quote of the day and the weather, the classifieds. */
+
+/* everything the paper prints today, picked by the date so it stays the same all day */
+async function paperData(s, f) {
+	const members = f.members || [];
+	const [firsts, sayings, goals] = await Promise.all(['firsts', 'sayings', 'goals'].map((k) => live.load(k).catch(() => ({ items: [] }))));
+	const nameOf = (id) => App.t(members.find((m) => m.id === id)?.name || id);
+	const md = todayMD();
+	let head = T(f.headline), lead = T(f.lead), stamp = '';
+	const bday = members.find((m) => m.born && mdOf(m.born) === md);
+	const recent = (firsts.items || []).filter((x) => x.date && (Date.now() - parseDate(x.date)) / 864e5 <= 21).sort((a, b) => String(b.date).localeCompare(String(a.date)))[0];
+	if (bday) { head = L(`كل سنة و${App.t(bday.name)} ${bday.female ? 'طيبة' : 'طيب'}!`, `Happy birthday, ${App.t(bday.name)}!`); lead = L(`النهارده ${App.t(bday.name)} ${bday.female ? 'بتكمّل' : 'بيكمّل'} ${age(bday.born)} — والعيلة كلها بتحتفل`, `${App.t(bday.name)} turns ${age(bday.born)} today — the whole family is celebrating`); stamp = L('عيد ميلاد', 'Birthday'); }
+	else if (s.married && mdOf(s.married) === md) { head = L(`${num(yearsBetween(parseDate(s.married)))} سنين جواز — ولسه في البداية`, `${yearsBetween(parseDate(s.married))} years married — and still just beginning`); lead = L('عيد جواز سعيد للعريس والعروسة ♥', 'Happy anniversary to the bride and groom ♥'); stamp = L('عيد جواز', 'Anniversary'); }
+	else if (recent) { head = L(`عاجل: ${nameOf(recent.kid)} — ${recent.what}`, `Breaking: ${nameOf(recent.kid)} — ${recent.what}`); lead = recent.note || lead; stamp = L('عاجل', 'Breaking'); }
+	const story = (s.timeline || []).filter((t) => /^\d{4}-\d{2}-\d{2}$/.test(t.date || ''));
+	const same = story.filter((t) => mdOf(t.date) === md);
+	const old = pickOf(same.length ? same : story, 1);
+	const kids = members.filter((m) => m.kid && m.born);
+	const nums = [
+		s.met && [num(Math.floor((Date.now() - parseDate(s.met)) / 864e5)), L('يوم من أول سلام', 'days since the first hello')],
+		s.married && [num(Math.floor((Date.now() - parseDate(s.married)) / 864e5)), L('يوم جواز', 'days married')],
+		...kids.map((k) => [age(k.born), L(`عمر ${App.t(k.name)}`, `${App.t(k.name)}’s age`)])
+	].filter(Boolean);
+	const coming = [
+		...members.filter((m) => m.born).map((m) => ({ t: L(`عيد ميلاد ${App.t(m.name)}`, `${App.t(m.name)}’s birthday`), d: nextOf(m.born) })),
+		s.married && { t: L('عيد جوازنا', 'Our anniversary'), d: nextOf(s.married) },
+		s.met && { t: L('ذكرى أول سلام', 'The day we met'), d: nextOf(s.met) }
+	].filter(Boolean).sort((a, b) => a.d - b.d).slice(0, 4);
+	const wants = (goals.items || []).filter((g) => !g.done);
+	return {
+		members, head, lead, stamp, old, same: same.length > 0, nums, coming, nameOf,
+		yrs: old ? new Date().getFullYear() - +old.date.slice(0, 4) : 0,
+		say: pickOf(sayings.items || [], 2),
+		ads: [0, 1, 2, 3].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i)
+	};
 }
+
+/* the pages, each one a whole page that fits the screen */
+function paperPages(s, f, d) {
+	const when = (n) => (n === 0 ? L('النهارده!', 'today!') : n === 1 ? L('بكرة', 'tomorrow') : L(`بعد ${num(n)} يوم`, `in ${n} days`));
+	const oldPhoto = d.old && (d.old.photo || d.old.photos?.[0]);
+	const pages = [];
+	pages.push({ name: L('الصفحة الأولى', 'Front page'), html: `
+		<div class="dp-front">
+			${d.stamp ? `<span class="dp-stamp">${esc(d.stamp)}</span>` : ''}
+			<h3 class="dp-head" dir="auto">${esc(d.head || L('يوم جديد في بيتنا', 'A new day at home'))}</h3>
+			${d.lead ? `<p class="dp-lead" dir="auto">${esc(d.lead)}</p>` : ''}
+			${d.old ? `<a class="dp-story" href="moment.html?id=${encodeURIComponent(d.old.id)}">
+				<p class="dp-kick">${d.same ? L(`النهارده من ${num(d.yrs)} ${d.yrs === 1 ? 'سنة' : d.yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${d.yrs} year${d.yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
+				${oldPhoto ? `<span class="dp-pic" data-media-box>${img(oldPhoto, App.t(d.old.title))}</span>` : ''}
+				<b dir="auto">${T(d.old.title)}</b><em>${esc(longDate(d.old.date))}</em>
+				${d.old.text ? `<p dir="auto">${T(d.old.text)}</p>` : ''}
+			</a>` : ''}
+		</div>` });
+	pages.push({ name: L('أرقام وأخبار', 'Numbers & news'), html: `
+		<div class="dp-cols">
+			<section><p class="dp-kick">${L('أرقام النهارده', 'Today’s numbers')}</p>
+				<ul class="dp-nums">${d.nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
+			<section><p class="dp-kick">${L('قريب', 'Coming up')}</p>
+				<ul class="dp-soon">${d.coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
+			<section class="dp-index"><p class="dp-kick">${L('في العدد ده', 'In this issue')}</p><ol id="dp-index"></ol></section>
+		</div>` });
+	for (const m of d.members) pages.push({ name: T(m.name), html: `
+		<article class="dp-one" style="--c:${esc(m.color || '#0e6990')}">
+			<p class="dp-kick">${L('أخبار العيلة', 'Family news')}</p>
+			${m.photo ? `<span class="dp-pic" data-media-box>${img(m.photo, App.t(m.name))}</span>` : `<span class="dp-pic dp-pic--ic">${doodle(m.emoji || 'heart', 70)}</span>`}
+			<h3 class="dp-name">${T(m.name)}</h3>
+			<em>${T(m.role)}${m.born ? ` · ${m.kid ? esc(age(m.born)) : `${L('مواليد', 'born')} ${esc(longDate(m.born))}`}` : ''}</em>
+			${m.text ? `<p dir="auto">${T(m.text)}</p>` : ''}
+			<a class="dp-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
+		</article>` });
+	pages.push({ name: L('منوعات', 'Odds & ends'), html: `
+		<div class="dp-misc">
+			${d.say ? `<a class="dp-quote" href="sayings.html"><p class="dp-kick">${L('كلمة اليوم', 'Quote of the day')}</p>
+				<blockquote dir="auto">«${esc(d.say.said)}»</blockquote><cite>— ${esc(d.nameOf(d.say.kid))}${d.say.means ? ` · ${L('يقصد', 'meaning')} «${esc(d.say.means)}»` : ''}</cite></a>` : ''}
+			<div class="dp-weather"><p class="dp-kick">${L('حالة الجو في البيت', 'Weather at home')}</p><span>${doodle('sun', 54)}</span><b>${L('دافي ومليان حب', 'Warm, with plenty of love')}</b><small>${L('فرصة حضن: ١٠٠٪', 'Chance of hugs: 100%')}</small></div>
+		</div>` });
+	pages.push({ name: L('إعلانات مبوبة', 'Classifieds'), html: `
+		<div class="dp-ads">
+			<p class="dp-kick">${L('إعلانات مبوبة', 'Classifieds')}</p>
+			${d.ads.length ? `<a href="goals.html" class="dp-ads__list">${d.ads.map((g) => `<p class="dp-ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : `<p class="dp-none">${L('مفيش إعلانات النهارده — كل اللي عايزينه عندنا ♥', 'No ads today — we have all we want ♥')}</p>`}
+			<p class="dp-foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>
+		</div>` });
+	return pages;
+}
+
+/* the paper over the whole window: built when it opens, taken away when it closes */
+function wirePaper(main, s, f) {
+	const fb = main.querySelector('#fb');
+	if (!fb) return () => {};
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const wide = matchMedia('(min-width: 900px) and (min-aspect-ratio: 1/1)');
+	let box = null, pages = [], at = 0, busy = false, y0 = 0, lastFocus = null, data = null;
+	const per = () => (wide.matches ? 2 : 1);
+	const title = esc(T(f.paper) || L('جريدة بيتنا', 'The Daily Us'));
+	const issue = num(s.married ? Math.floor((Date.now() - parseDate(s.married)) / 864e5) : yearsBetween(parseDate(s.met)));
+	const dateLine = new Date().toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+	const pageHTML = (k) => {
+		const p = pages[k];
+		return p ? `<section class="dp-page" data-k="${k}"><div class="dp-page__in">${p.html}</div><span class="dp-folio">${num(k + 1)}</span></section>` : `<section class="dp-page dp-page--blank"></section>`;
+	};
+	const paint = () => {
+		const n = per(), spread = box.querySelector('.dp-spread');
+		spread.style.setProperty('--per', n);
+		spread.innerHTML = Array.from({ length: n }, (_, i) => pageHTML(at + i)).join('');
+		const idx = spread.querySelector('#dp-index');
+		if (idx) idx.innerHTML = pages.map((p, k) => (k < 2 ? '' : `<li><button type="button" data-to="${k}"><span>${esc(p.name)}</span><b>${L('ص', 'p.')} ${num(k + 1)}</b></button></li>`)).join('');
+		hydrate(spread); live.hydrateSketches(spread);
+		box.querySelectorAll('.dp-tab').forEach((t) => { const k = +t.dataset.to, on = k >= at && k < at + n; t.classList.toggle('is-on', on); t.setAttribute('aria-current', on ? 'page' : 'false'); });
+		box.querySelector('[data-step="-1"]').disabled = at === 0;
+		box.querySelector('[data-step="1"]').disabled = at + n >= pages.length;
+		box.querySelector('.dp-count').textContent = n === 2 && pages[at + 1] ? `${num(at + 1)}–${num(at + 2)} / ${num(pages.length)}` : `${num(at + 1)} / ${num(pages.length)}`;
+	};
+	/* turn: the spread folds away on its spine and the next one unfolds — never two turns at once */
+	// a click that comes while a page is turning waits for it; each half of a turn ends on time even if the browser
+	// holds the animation back (a hidden tab), so a turn can never get stuck
+	let queued = null, dest = 0;
+	const play = (el, frames, ms, ease) => { const a = el.animate(frames, { duration: ms, easing: ease }); return Promise.race([a.finished, new Promise((r) => setTimeout(r, ms + 80))]).then(() => a.cancel(), () => {}); };
+	const go = async (k) => {
+		if (!box) return;
+		const n = per();
+		k = Math.max(0, Math.min(pages.length - 1, k));
+		k -= k % n;
+		dest = k;
+		if (busy) { queued = k; return; }
+		if (k === at) return;
+		const fwd = k > at, rtl = document.documentElement.dir === 'rtl';
+		const sign = (fwd ? -1 : 1) * (rtl ? -1 : 1);
+		const spread = box.querySelector('.dp-spread');
+		if (reduce) { at = k; return paint(); }
+		busy = true;
+		await play(spread, [{ transform: 'rotateY(0deg)', opacity: 1 }, { transform: `rotateY(${sign * 80}deg)`, opacity: 0.2 }], 240, 'cubic-bezier(.5, 0, .9, .5)');
+		if (!box) { busy = false; return; }
+		at = k; paint();
+		await play(spread, [{ transform: `rotateY(${-sign * 80}deg)`, opacity: 0.2 }, { transform: 'rotateY(0deg)', opacity: 1 }], 300, 'cubic-bezier(.1, .5, .5, 1)');
+		busy = false;
+		if (queued !== null) { const q = queued; queued = null; go(q); }
+	};
+
+	const open = async () => {
+		if (box) return;
+		lastFocus = document.activeElement; y0 = scrollY;
+		fb.classList.add('is-open');
+		data = data || await paperData(s, f);
+		pages = paperPages(s, f, data); at = 0; dest = 0;
+		box = document.createElement('div');
+		box.className = 'dp';
+		box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', T(f.paper) || L('جريدة بيتنا', 'The Daily Us'));
+		box.innerHTML = `<div class="dp-paper">
+			<header class="dp-mast">
+				<span class="dp-mast__ear">${L('أول جريدة عائلية', 'A family newspaper')}</span>
+				<h2 class="dp-mast__name">${title}</h2>
+				<span class="dp-mast__ear">${L('بتصدر كل يوم', 'Out every day')}</span>
+				<p class="dp-mast__bar"><span>${L('العدد', 'Issue')} ${issue}</span><span>${esc(dateLine)}</span><span>${L('التمن: حضن', 'Price: one hug')}</span></p>
+			</header>
+			<div class="dp-stage"><div class="dp-spread"></div></div>
+			<nav class="dp-pager" aria-label="${L('صفحات الجريدة', 'The paper’s pages')}">
+				<button class="dp-turn" type="button" data-step="-1" aria-label="${L('الصفحة اللي قبلها', 'Previous page')}">${doodle(L('forward', 'back'), 20)}</button>
+				<span class="dp-tabs">${pages.map((p, k) => `<button class="dp-tab" type="button" data-to="${k}" title="${esc(p.name)}">${num(k + 1)}</button>`).join('')}</span>
+				<span class="dp-count"></span>
+				<button class="dp-turn" type="button" data-step="1" aria-label="${L('الصفحة اللي بعدها', 'Next page')}">${doodle(L('back', 'forward'), 20)}</button>
+			</nav>
+		</div>
+		<button class="dp-x" type="button" aria-label="${Y('اقفل الجريدة', 'اقفلي الجريدة', 'Close the paper')}">✕</button>`;
+		document.body.append(box);
+		document.documentElement.classList.add('dp-lock');
+		paint();
+		requestAnimationFrame(() => box?.classList.add('is-on'));
+		box.querySelector('.dp-x').focus({ preventScroll: true });
+		box.addEventListener('click', (e) => {
+			if (e.target.closest('.dp-x')) return close();
+			const to = e.target.closest('[data-to]'); if (to) return go(+to.dataset.to);
+			const st = e.target.closest('[data-step]'); if (st && !st.disabled) return go(dest + +st.dataset.step * per());
+		});
+		/* a swipe across the page turns it */
+		let sx = 0, sy = 0;
+		box.querySelector('.dp-stage').addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; });
+		box.querySelector('.dp-stage').addEventListener('pointerup', (e) => {
+			const dx = e.clientX - sx, dy = e.clientY - sy;
+			if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+			const rtl = document.documentElement.dir === 'rtl';
+			go(dest + ((dx < 0) !== rtl ? 1 : -1) * per());
+		});
+	};
+	const close = () => {
+		if (!box) return;
+		const b = box; box = null; busy = false; queued = null;
+		b.classList.remove('is-on');
+		document.documentElement.classList.remove('dp-lock');
+		scrollTo({ top: y0, behavior: 'instant' });
+		setTimeout(() => b.remove(), reduce ? 0 : 300);
+		fb.classList.remove('is-open');
+		(lastFocus?.isConnected ? lastFocus : main.querySelector('#np-open'))?.focus({ preventScroll: true });
+	};
+	const onKey = (e) => {
+		if (!box) return;
+		if (e.key === 'Escape') { e.preventDefault(); return close(); }
+		const rtl = document.documentElement.dir === 'rtl';
+		if (e.key === 'ArrowLeft') { e.preventDefault(); go(dest + (rtl ? 1 : -1) * per()); }
+		if (e.key === 'ArrowRight') { e.preventDefault(); go(dest + (rtl ? -1 : 1) * per()); }
+		// keep the keyboard inside the paper
+		if (e.key === 'Tab') {
+			const f2 = [...box.querySelectorAll('a[href], button:not(:disabled)')];
+			if (!f2.length) return;
+			if (e.shiftKey && document.activeElement === f2[0]) { e.preventDefault(); f2.at(-1).focus(); }
+			else if (!e.shiftKey && document.activeElement === f2.at(-1)) { e.preventDefault(); f2[0].focus(); }
+		}
+	};
+	// one page or two when the window changes, keeping the page that was showing
+	const onWide = () => { if (box) { at -= at % per(); dest = at; paint(); } };
+	fb.addEventListener('click', (e) => { if (e.target.closest('#np-open')) open(); });
+	addEventListener('keydown', onKey);
+	wide.addEventListener('change', onWide);
+	if (location.hash === '#tree') setTimeout(() => fb.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }), 300);
+	return () => { removeEventListener('keydown', onKey); wide.removeEventListener('change', onWide); box?.remove(); box = null; document.documentElement.classList.remove('dp-lock'); };
+}
+
 /* the book: the tree on its cover, the paper's masthead on the first page under it */
 function bookHTML(s, f) {
 	return `<div class="fb" id="fb">
@@ -96,152 +282,6 @@ function bookHTML(s, f) {
 	</div>`;
 }
 
-/* open, turn and close */
-function wirePaper(main) {
-	const np = main.querySelector('#np'), fb = main.querySelector('#fb'), fbo = main.querySelector('#fbo');
-	if (!np || !fb || !fbo) return () => {};
-	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-	let at = 0, y0 = 0, isOpen = false, timer = 0;
-	const pages = [...np.querySelectorAll('.np2-page')];
-	const go = (i) => {
-		i = Math.max(0, Math.min(pages.length - 1, i));
-		if (i !== at) {
-			const dir = i > at ? 'next' : 'prev';
-			pages.forEach((p, k) => { p.classList.toggle('is-on', k === i); p.classList.remove('turn-next', 'turn-prev'); });
-			void pages[i].offsetWidth;
-			pages[i].classList.add(`turn-${dir}`);
-			at = i;
-		}
-		np.querySelectorAll('.np2-tab').forEach((t) => t.classList.toggle('is-on', +t.dataset.p === at));
-		np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = (+b.dataset.go < 0 && at === 0) || (+b.dataset.go > 0 && at === pages.length - 1); });
-		fbo.querySelector('.fbo__in').scrollTop = 0;
-	};
-	/* the cover swings open and the book grows, then the paper fills the page; closing plays it back */
-	const open = (i = 0) => {
-		if (isOpen) return go(i);
-		isOpen = true;
-		y0 = scrollY;
-		// the paper opens over the whole window: out from under the page (whose moves and fades would hold a fixed layer
-		// inside them) to the top of the document
-		if (fbo.parentElement !== document.body) document.body.append(fbo);
-		clearTimeout(timer);
-		fb.classList.remove('is-closing');
-		fb.classList.add('is-open');
-		go(i);
-		timer = setTimeout(() => {
-			fbo.hidden = false;
-			void fbo.offsetWidth;
-			fbo.classList.add('is-on');
-			document.documentElement.classList.add('fbo-lock');
-			fbo.querySelector('#fbo-x').focus({ preventScroll: true });
-		}, reduce ? 0 : 520);
-	};
-	const close = () => {
-		if (!isOpen) return;
-		isOpen = false;
-		clearTimeout(timer);
-		fbo.classList.remove('is-on');
-		document.documentElement.classList.remove('fbo-lock');
-		scrollTo({ top: y0, behavior: 'instant' });
-		timer = setTimeout(() => { fbo.hidden = true; }, reduce ? 0 : 420);
-		fb.classList.remove('is-open');
-		fb.classList.add('is-closing');
-		setTimeout(() => fb.classList.remove('is-closing'), reduce ? 0 : 600);
-		main.querySelector('#np-open')?.focus({ preventScroll: true });
-	};
-	fb.addEventListener('click', (e) => { if (e.target.closest('#np-open')) open(0); });
-	fbo.addEventListener('click', (e) => {
-		if (e.target.closest('#fbo-x')) return close();
-		const t = e.target.closest('.np2-tab, [data-goto]'), b = e.target.closest('[data-go]');
-		if (t) go(+(t.dataset.p ?? t.dataset.goto));
-		if (b) go(at + +b.dataset.go);
-	});
-	const onKey = (e) => {
-		if (!isOpen) return;
-		if (e.key === 'Escape') { e.preventDefault(); close(); }
-		const rtl = document.documentElement.dir === 'rtl';
-		if (e.key === 'ArrowLeft') go(at + (rtl ? 1 : -1));
-		if (e.key === 'ArrowRight') go(at + (rtl ? -1 : 1));
-	};
-	addEventListener('keydown', onKey);
-	np.querySelectorAll('[data-go]').forEach((b) => { b.disabled = +b.dataset.go < 0; });
-	// a link to the tree (family.html#tree, or the old familytree.html) lands on the book's cover
-	if (location.hash === '#tree') setTimeout(() => fb.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }), 300);
-	return () => { removeEventListener('keydown', onKey); clearTimeout(timer); document.documentElement.classList.remove('fbo-lock'); fbo.remove(); };
-}
-async function fillPaper(main, s, f) {
-	const box = main.querySelector('#np-front'), misc = main.querySelector('#np-misc');
-	if (!box) return;
-	const members = f.members || [];
-	const [firsts, sayings, goals] = await Promise.all(['firsts', 'sayings', 'goals'].map((k) => live.load(k).catch(() => ({ items: [] }))));
-	const nameOf = (id) => App.t(members.find((m) => m.id === id)?.name || id);
-	const md = todayMD();
-
-	/* the big news */
-	let head = T(f.headline), lead = T(f.lead), stamp = '';
-	const bday = members.find((m) => m.born && mdOf(m.born) === md);
-	const recent = (firsts.items || []).filter((x) => x.date && (Date.now() - parseDate(x.date)) / 864e5 <= 21).sort((a, b) => String(b.date).localeCompare(String(a.date)))[0];
-	if (bday) { head = L(`كل سنة و${App.t(bday.name)} ${bday.female ? 'طيبة' : 'طيب'}!`, `Happy birthday, ${App.t(bday.name)}!`); lead = L(`النهارده ${App.t(bday.name)} ${bday.female ? 'بتكمّل' : 'بيكمّل'} ${age(bday.born)} — والعيلة كلها بتحتفل`, `${App.t(bday.name)} turns ${age(bday.born)} today — the whole family is celebrating`); stamp = L('عيد ميلاد', 'Birthday'); }
-	else if (s.married && mdOf(s.married) === md) { head = L(`${num(yearsBetween(parseDate(s.married)))} سنين جواز — ولسه في البداية`, `${yearsBetween(parseDate(s.married))} years married — and still just beginning`); lead = L('عيد جواز سعيد للعريس والعروسة ♥', 'Happy anniversary to the bride and groom ♥'); stamp = L('عيد جواز', 'Anniversary'); }
-	else if (recent) { head = L(`عاجل: ${nameOf(recent.kid)} — ${recent.what}`, `Breaking: ${nameOf(recent.kid)} — ${recent.what}`); lead = recent.note || lead; stamp = L('عاجل', 'Breaking'); }
-
-	/* on this day, years ago — or a page from the archive */
-	const story = (s.timeline || []).filter((t) => /^\d{4}-\d{2}-\d{2}$/.test(t.date || ''));
-	const same = story.filter((t) => mdOf(t.date) === md);
-	const old = pickOf(same.length ? same : story, 1);
-	const oldPhoto = old && (old.photo || old.photos?.[0]);
-	const yrs = old ? new Date().getFullYear() - +old.date.slice(0, 4) : 0;
-
-	/* a saying of the boys, the numbers of the day, what's coming, the ads */
-	const say = pickOf(sayings.items || [], 2);
-	const kids = members.filter((m) => m.kid && m.born);
-	const nums = [
-		s.met && [num(Math.floor((Date.now() - parseDate(s.met)) / 864e5)), L('يوم من أول سلام', 'days since the first hello')],
-		s.married && [num(Math.floor((Date.now() - parseDate(s.married)) / 864e5)), L('يوم جواز', 'days married')],
-		...kids.map((k) => [age(k.born), L(`عمر ${App.t(k.name)}`, `${App.t(k.name)}’s age`)])
-	].filter(Boolean);
-	const coming = [
-		...members.filter((m) => m.born).map((m) => ({ t: L(`عيد ميلاد ${App.t(m.name)}`, `${App.t(m.name)}’s birthday`), d: nextOf(m.born) })),
-		s.married && { t: L('عيد جوازنا', 'Our anniversary'), d: nextOf(s.married) },
-		s.met && { t: L('ذكرى أول سلام', 'The day we met'), d: nextOf(s.met) }
-	].filter(Boolean).sort((a, b) => a.d - b.d).slice(0, 3);
-	const wants = (goals.items || []).filter((g) => !g.done);
-	const ads = [0, 1, 2, 3].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i);
-	const when = (d) => (d === 0 ? L('النهارده!', 'today!') : d === 1 ? L('بكرة', 'tomorrow') : L(`بعد ${num(d)} يوم`, `in ${d} days`));
-
-	box.innerHTML = `
-		${stamp ? `<span class="np__stamp">${esc(stamp)}</span>` : ''}
-		<h3 class="np2-head" dir="auto">${esc(head || '')}</h3>
-		${lead ? `<p class="np2-lead" dir="auto">${esc(lead)}</p>` : ''}
-		<div class="np2-front">
-			${old ? `<a class="np2-main" href="moment.html?id=${encodeURIComponent(old.id)}">
-				<p class="np2-kick">${same.length ? L(`النهارده من ${num(yrs)} ${yrs === 1 ? 'سنة' : yrs === 2 ? 'سنتين' : 'سنين'}`, `On this day, ${yrs} year${yrs === 1 ? '' : 's'} ago`) : L('من أرشيف الجريدة', 'From the archive')}</p>
-				${oldPhoto ? `<span class="np2-pic">${img(oldPhoto, App.t(old.title))}</span>` : ''}
-				<h4 dir="auto">${T(old.title)}</h4>
-				<em>${esc(longDate(old.date))}</em>
-				${old.text ? `<p dir="auto">${T(old.text)}</p>` : ''}
-			</a>` : ''}
-			<aside class="np2-side">
-				<section><p class="np2-kick">${L('أرقام النهارده', 'Today’s numbers')}</p>
-					<ul class="np2-nums">${nums.map(([b, t]) => `<li><b>${esc(b)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>
-				<section><p class="np2-kick">${L('قريب', 'Coming up')}</p>
-					<ul class="np2-soon">${coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
-				<section class="np2-index"><p class="np2-kick">${L('في العدد ده', 'In this issue')}</p>
-					<ul>${PAGES.map((p, i) => (i === 0 ? '' : `<li><button type="button" data-goto="${i}"><span>${esc(L(...p))}</span><b>${L('ص', 'p.')} ${num(i + 1)}</b></button></li>`)).join('')}</ul></section>
-			</aside>
-		</div>`;
-	if (misc) misc.innerHTML = `<div class="np2-misc">
-		${say ? `<a class="np2-quote" href="sayings.html"><p class="np2-kick">${L('كلمة اليوم', 'Quote of the day')}</p>
-			<blockquote dir="auto">«${esc(say.said)}»</blockquote><cite>— ${esc(nameOf(say.kid))}${say.means ? ` · ${L('يقصد', 'meaning')} «${esc(say.means)}»` : ''}</cite></a>` : ''}
-		${ads.length ? `<a class="np2-ads" href="goals.html"><p class="np2-kick">${L('إعلانات مبوبة', 'Classifieds')}</p>
-			${ads.map((g) => `<p class="np2-ad">${g.photo ? `<img data-sketch="${esc(g.photo)}" alt="">` : ''}<span><b>${L('مطلوب:', 'Wanted:')}</b> <span dir="auto">${esc(L(g.title, g.en || g.title))}</span><small>${L('للتواصل: البيت', 'Contact: home')}</small></span></p>`).join('')}</a>` : ''}
-		<div class="np2-weather"><p class="np2-kick">${L('حالة الجو في البيت', 'Weather at home')}</p><p>${doodle('sun', 30)} <b>${L('دافي ومليان حب', 'Warm, with plenty of love')}</b></p><small>${L('فرصة حضن: ١٠٠٪', 'Chance of hugs: 100%')}</small></div>
-	</div>
-	<p class="np__foot">${L('اتطبعت بحب في بيتنا — العدد الجاي بكرة الصبح', 'Printed with love at home — next issue tomorrow morning')}</p>`;
-	hydrate(box); hydrate(misc || box);
-	live.hydrateSketches(main.querySelector('#np'));
-}
-
 export default {
 	title: { ar: 'عيلتنا', en: 'Our family' },
 	render(s) {
@@ -253,14 +293,12 @@ export default {
 		<section class="sec sec--top"><div class="wrap">
 			${bookHTML(s, f)}
 		</div></section>
-		${paperHTML(s, f, members)}
 		${related(['people', 'routine', 'expenses', 'debts'])}`;
 	},
 	leave() { this.bye?.(); this.bye = null; },
 	after(main, s) {
 		this.bye?.();
-		const unwire = wirePaper(main);
-		fillPaper(main, s, s.family || {});
+		const unwire = wirePaper(main, s, s.family || {});
 		/* the tree shows whole on the cover: on a narrow screen it is scaled down to the cover's width instead of scrolling */
 		const ft = main.querySelector('.fb__front #ft'), box = ft?.parentElement;
 		const fitTree = () => {
