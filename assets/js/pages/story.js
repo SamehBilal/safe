@@ -1,23 +1,25 @@
 import { L, Y, T, esc, img, fmtDate, yearsAgo, isToday, pageHead, related, App, firstPhoto, num, daysBetween, parseDate } from '../shell.js';
 
-/* The top: a wall of our moments in the same polaroid frames as the album and every page's top — the first one, the
-   latest, and others spread over the years between, each with its year and title in handwriting (tap one to open it)
-   — beside how many moments, the years they cover, the days since we met, and buttons to the first, the latest and a
-   moment at random. */
-const SPOTS = [[20, 25], [50, 19], [80, 27], [25, 63], [55, 60], [83, 66]];
-const PHONE = [[28, 27], [72, 25], [29, 72], [72, 74]];
+/* The top: our years hung on a string like the drawings on the fridge — one polaroid for each year we have, its photo,
+   the year big under it and how many moments it holds, held by a clothespin; the year we met and the year we married
+   carry a heart. Above the string: the title, how many moments and years, the days since we met and since we married,
+   and buttons to the first, the latest and a moment at random. The string scrolls sideways when the years don't fit. */
 const yr = (y) => num(+y).replace(/[٬,]/g, '');
-function wall(list) {
-	const withPh = list.filter((x) => firstPhoto(x));
-	if (!withPh.length) return '';
-	const n = Math.min(SPOTS.length, withPh.length);
-	// the first, the latest, and the rest spread evenly between them
-	const pick = Array.from({ length: n }, (_, k) => withPh[Math.round((k * (withPh.length - 1)) / Math.max(1, n - 1))]);
-	return pick.map((x, i) => {
-		const [sx, sy] = SPOTS[i], [px, py] = PHONE[i] || SPOTS[i];
-		const r = (Math.random() * 16 - 8).toFixed(1);
-		return `<a class="pol gh-pol${i >= 4 ? ' pol--wide' : ''}" href="moment.html?id=${esc(x.id)}" data-media-box style="--w:30cqw;--x:${sx};--y:${sy};--px:${px};--py:${py};--r:${r}deg;--s:${(0.3 + Math.random() * 0.5).toFixed(2)};--i:${i}" aria-label="${esc(App.t(x.title))}">
-			<div class="pol__ph">${img(firstPhoto(x), '', 'pol__img')}</div><figcaption>${yr(x.date.slice(0, 4))} · ${esc(App.t(x.title))}</figcaption></a>`;
+function line(list, s) {
+	const by = new Map();
+	for (const x of list) { const y = x.date.slice(0, 4); if (!by.has(y)) by.set(y, []); by.get(y).push(x); }
+	const met = String(s.met || '').slice(0, 4), wed = String(s.married || '').slice(0, 4);
+	return [...by].map(([y, xs], i) => {
+		const ph = xs.find((x) => firstPhoto(x) && !x.journal) || xs.find((x) => firstPhoto(x));
+		const big = y === met ? L('عرفنا بعض', 'We met') : y === wed ? L('اتجوزنا', 'We married') : '';
+		return `<li class="sy-yr${big ? ' is-big' : ''}" style="--i:${i};--r:${[-4, 3, -2, 4, -3, 2][i % 6]}deg">
+			<a href="#y-${y}" aria-label="${y}: ${xs.length}">
+				<span class="sy-yr__peg" aria-hidden="true"></span>
+				<span class="sy-yr__pol">${ph ? `<span class="sy-yr__ph" data-media-box>${img(firstPhoto(ph), '', 'sy-yr__img')}</span>` : `<span class="sy-yr__none">${doodle(xs[0].icon || 'heart', 34)}</span>`}</span>
+				<b class="sy-yr__y">${yr(y)}</b>
+				<small>${L(`${num(xs.length)} ${xs.length === 1 ? 'لحظة' : xs.length <= 10 ? 'لحظات' : 'لحظة'}`, `${xs.length} moment${xs.length === 1 ? '' : 's'}`)}</small>
+				${big ? `<i class="sy-yr__big">${doodle('heart', 12)} ${big}</i>` : ''}
+			</a></li>`;
 	}).join('');
 }
 import { doodle } from '../doodles.js';
@@ -34,19 +36,25 @@ export default {
 		const tl = [...(s.timeline || []), ...(this.extra || [])].sort((a, b) => a.date.localeCompare(b.date));
 		const years = [...new Set(tl.map((x) => x.date.slice(0, 4)))];
 		return `
-		<section class="sec sec--top"><div class="wrap"><div class="gh sh">
-			<div class="gh-wall">${wall(tl)}</div>
-			<div class="gh-body">
-				<p class="gh-k">${doodle('book', 16)} ${L('حكايتنا', 'Our story')}${years.length ? ` · ${yr(years[0])}–${yr(years.at(-1))}` : ''}</p>
-				<p class="gh-count"><b>${num(tl.length)}</b> <span>${L('تاريخ عملنا إحنا', tl.length === 1 ? 'date that made us' : 'dates that made us')}</span></p>
-				${s.met ? `<p class="gh-sub">${L(`${num(daysBetween(parseDate(s.met)))} يوم من أول ما عرفنا بعض`, `${daysBetween(parseDate(s.met)).toLocaleString('en')} days since we met`)}</p>` : ''}
+		<section class="sec sec--top sy"><div class="wrap">
+			<div class="sy__head">
+				<p class="gh-k">${doodle('book', 16)} ${L('دفتر حكايتنا', 'The book of us')}${years.length ? ` · ${yr(years[0])}–${yr(years.at(-1))}` : ''}</p>
+				<h1 class="sy__t">${L('حكايتنا', 'Our story')}</h1>
+				<svg class="sy__line" viewBox="0 0 300 16" preserveAspectRatio="none" aria-hidden="true"><path d="M4 10 C 50 2, 90 15, 140 8 S 240 3, 296 9"/></svg>
+				<ul class="sy__facts">
+					<li style="--k:0"><b>${num(tl.length)}</b>${L('لحظة', tl.length === 1 ? 'moment' : 'moments')}</li>
+					<li style="--k:1"><b>${num(years.length)}</b>${L('سنة فيها حكاية', 'years in it')}</li>
+					${s.met ? `<li style="--k:2"><b>${num(daysBetween(parseDate(s.met)))}</b>${L('يوم من أول ما عرفنا بعض', 'days since we met')}</li>` : ''}
+					${s.married ? `<li style="--k:3"><b>${num(daysBetween(parseDate(s.married)))}</b>${L('يوم متجوزين', 'days married')}</li>` : ''}
+				</ul>
 				<div class="gh-btns">
 					${tl.length ? `<a class="btn btn--sm" href="#y-${years[0]}">${doodle('heart', 18)} ${L('من الأول', 'From the start')}</a>` : ''}
 					${tl.length ? `<a class="btn btn--sm btn--ghost" href="#t-${esc(tl.at(-1).id)}">${doodle('calendar', 18)} ${L('آخر حاجة', 'The latest')}</a>` : ''}
 					${tl.length ? `<a class="btn btn--sm btn--ghost" href="moment.html?id=${esc((tl.filter((x) => !x.journal)[Math.floor(Math.random() * tl.filter((x) => !x.journal).length)] || tl[0]).id)}">${doodle('dice', 18)} ${L('ذكرى عشوائية', 'A random moment')}</a>` : ''}
 				</div>
 			</div>
-		</div></div></section>
+			${tl.length ? `<div class="sy__string"><ol class="sy__years">${line(tl, s)}</ol></div>` : ''}
+		</div></section>
 		${pageHead(L('حكايتنا', 'Our story'), L('كل تاريخ عملنا إحنا', 'Every date that made us, us'), [{ href: 'story.html', ar: 'حكايتنا', en: 'Our story' }], { band: '' })}
 		<nav class="years wrap" aria-label="${L('السنين', 'Years')}">${years.map((y) => `<a href="#y-${y}">${y}</a>`).join('')}</nav>
 		<section class="sec sec--top">
