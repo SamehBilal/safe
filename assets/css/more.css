@@ -2565,26 +2565,8 @@
 .fk-clock i { display: block; width: calc(var(--left, 1) * 100%); height: 100%; background: linear-gradient(90deg, #e8505b, #fdc830); transition: width .2s linear; }
 @media (prefers-reduced-motion: reduce) { .fk-pic--zoom .fk-pic__img { transition: none; } }
 
-/* النقطة's band as a page torn out of the notebook: no inked frame, the paper's own soft shadow, a ragged top edge,
-   three punched holes down the side, a red margin line, two bits of tape holding it on, the lines running across */
-.nk-book { width: min(580px, 100%); padding-top: 14px; color: #3a3420; background: none; border: 0; border-radius: 0; box-shadow: none; filter: drop-shadow(0 10px 14px rgba(40, 30, 10, .18)) drop-shadow(0 1px 1px rgba(40, 30, 10, .2)); isolation: isolate; }
-.nk-book::before { content: ''; position: absolute; inset: 0; z-index: -1; background:
-	radial-gradient(circle 7px at 18px 34%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	radial-gradient(circle 7px at 18px 58%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	radial-gradient(circle 7px at 18px 82%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	linear-gradient(90deg, transparent 38px, rgba(217, 83, 79, .55) 38px 39.5px, transparent 39.5px),
-	radial-gradient(120% 90% at 30% 10%, #fffdf6, #f6eedb);
-	-webkit-mask: conic-gradient(from -45deg at 50% 7px, #000 90deg, transparent 0) 0 0 / 12px 100% repeat-x, linear-gradient(#000 0 0) 0 7px / 100% calc(100% - 7px) no-repeat;
-	mask: conic-gradient(from -45deg at 50% 7px, #000 90deg, transparent 0) 0 0 / 12px 100% repeat-x, linear-gradient(#000 0 0) 0 7px / 100% calc(100% - 7px) no-repeat; }
-:root[dir='rtl'] .nk-book::before { background:
-	radial-gradient(circle 7px at calc(100% - 18px) 34%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	radial-gradient(circle 7px at calc(100% - 18px) 58%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	radial-gradient(circle 7px at calc(100% - 18px) 82%, var(--bg, #f8f5ef) 6px, rgba(55, 53, 63, .25) 6.5px 7px, transparent 7.5px),
-	linear-gradient(270deg, transparent 38px, rgba(217, 83, 79, .55) 38px 39.5px, transparent 39.5px),
-	radial-gradient(120% 90% at 70% 10%, #fffdf6, #f6eedb); }
-.nk-book::after { opacity: .3; }
-.nk-page--a { padding-inline-start: 50px; }
-.nk-band { position: relative; }
-.nk-band::before, .nk-band::after { content: ''; position: absolute; z-index: 2; top: 0; width: 86px; height: 24px; background: rgba(253, 200, 48, .7) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
-.nk-band::before { left: calc(50% - min(290px, 50%) - 14px); rotate: -28deg; translate: 0 8px; }
-.nk-band::after { right: calc(50% - min(290px, 50%) - 14px); rotate: 24deg; translate: 0 8px; background-color: rgba(252, 139, 147, .6); }
+/* النقطة's band as the notepad of «ناقص إيه؟»: an inked page with a row of ring holes along its top, ruled lines all
+   the way across, and the yellow block shadow under it */
+.nk-book { padding-top: 16px; color: #2b2b33; background: #fffdf8 repeating-linear-gradient(transparent 0 27px, rgba(14, 105, 144, .18) 27px 28px) 0 22px / 100% calc(100% - 22px) no-repeat; border: 1.5px solid var(--ink, #37353f); border-radius: 4px 4px 12px 12px; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--hl-yellow, #fdc830); }
+.nk-book::before { content: ''; position: absolute; z-index: 2; top: 6px; inset-inline: 16px; height: 12px; background: radial-gradient(circle, #fff 3.5px, #37353f 4px 5.2px, transparent 5.7px) 0 0 / 26px 12px repeat-x; }
+.nk-page--a { background: none; padding-top: 10px; }
