@@ -541,3 +541,9 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .wg-mini__t { align-self: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font: 700 1rem/1.35 'Aref Ruqaa', var(--f-hand); }
 .wg-mini__k svg { color: var(--coral); }
 .wg > a.wg-mini:hover { rotate: 0deg; }
+
+/* the board never grows: three rows of 140px whatever a widget holds — a long wish or note is clamped inside its card */
+.wg-board { grid-template-rows: repeat(3, 140px); height: auto; min-height: 0; }
+.wg { min-height: 0; overflow: visible; }
+.wg-mini q { -webkit-line-clamp: 3; font-size: .84rem; }
+.wg-mini--guest q { -webkit-line-clamp: 3; }
