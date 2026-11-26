@@ -1077,6 +1077,8 @@ IDEA_META.split(',').forEach((x, i) => {
 export async function wgName(w) { return w.sketch ? ((await ideas())[w.idea - 1]?.ar || '') : L(w.ar, w.en); }
 
 /** a menu's board: its widgets on the four by three grid, each in its own cell */
+/** the widgets that show something picked at random, picked again each time their menu opens */
+const RESHUFFLE = new Set(['album', 'note', 'guest', 'ourfirsts', 'collage', 'stack', 'pinned', 'cassette']);
 export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g)) {
 	return `<div class="wg-board">${ids.map((id, i) => {
 		const w = WIDGETS.find((x) => x.id === id && x.g === g);
@@ -1292,6 +1294,20 @@ function wireMega(header) {
 			const fm = $('#mg-film', nav); if (fm) fm.innerHTML = filmHTML(App.story);
 		}
 		if (id === 'nights' && openId !== id) { const sk = $('#mg-sky', nav); if (sk) sk.innerHTML = skyHTML(sk); }
+		// the widgets that pick something at random (a photo, a note, a wish, one of our firsts…) pick again each time
+		// their menu opens, like the strip of moments
+		if (id && openId !== id) {
+			const here = currentFile();
+			for (const cell of $$(`#mega-${id} .wg[data-wg]`, nav)) {
+				const w = WIDGETS.find((x) => x.id === cell.dataset.wg);
+				if (!w || !RESHUFFLE.has(w.id)) continue;
+				let h = '';
+				try { h = w.html(App.story, here) || ''; } catch { h = ''; }
+				if (!h) continue;
+				cell.innerHTML = h;
+				if (w.fill) import('./live.js').then((lv) => w.fill(cell, lv)).catch(() => {});
+			}
+		}
 		if (id) hydrate(nav);
 		openId = id;
 		for (const b of btns) {
