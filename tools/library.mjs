@@ -29,10 +29,10 @@ const NAMES = {
 	birthdays: ['أعياد الميلاد', 'Birthdays'], 'anniversary-trips': ['رحلات عيد الجواز', 'Anniversary trips'], trips: ['رحلات', 'Trips'],
 	ramadan: ['رمضان', 'Ramadan'], eid: ['العيد', 'Eid'], 'before-us': ['قبل ما نتقابل', 'Before us'], letters: ['جوابات', 'Letters'],
 	'from-sameh': ['من سامح', 'From Sameh'], 'from-esraa': ['من إسراء', 'From Esraa'], places: ['أماكننا', 'Our places'],
-	cairo: ['القاهرة', 'Cairo'], giza: ['الجيزة', 'Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel']
+	cairo: ['القاهرة', 'Cairo'], giza: ['الجيزة', 'Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'], zifta: ['زفتى', 'Zifta'], 'mit-ghamr': ['ميت غمر', 'Mit Ghamr']
 };
 /* the area on the places map each city folder belongs to */
-const AREA = { cairo: ['القاهرة والجيزة', 'Cairo & Giza'], giza: ['القاهرة والجيزة', 'Cairo & Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'] };
+const AREA = { cairo: ['القاهرة والجيزة', 'Cairo & Giza'], giza: ['القاهرة والجيزة', 'Cairo & Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'], zifta: ['زفتى', 'Zifta'], 'mit-ghamr': ['ميت غمر', 'Mit Ghamr'] };
 
 const nice = (s) => s.replace(/[-_]+/g, ' ').trim();
 const name = (seg) => {
