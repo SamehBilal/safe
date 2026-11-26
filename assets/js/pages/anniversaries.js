@@ -15,6 +15,30 @@ import { loadTrips, coverOf, coverHTML, mapSVG, paintMap, govName, anniversary, 
 const wedding = (s) => (s.timeline || []).find((x) => x.id === 'wedding')?.date || s.married || '2020-09-10';
 const yearsMarried = (s) => { const w = new Date(wedding(s)), now = new Date(); let n = now.getFullYear() - w.getFullYear(); if (now < new Date(now.getFullYear(), w.getMonth(), w.getDate())) n--; return Math.max(0, n); };
 
+/* the band: the two rings and the years married; beside them the countdown to the next anniversary, a bar filling up
+   from the last one to the next, and the days married; under them every anniversary on a thread — a heart for each
+   year with the governorate it took us to (filled in once the trips load), the next one beating with a «?» */
+function bandHTML(s, nx) {
+	const w = new Date(wedding(s)), now = new Date();
+	const last = new Date(nx.year - 1, w.getMonth(), w.getDate());
+	const pct = Math.max(2, Math.min(100, Math.round(((365 - nx.days) / 365) * 100)));
+	const married = Math.max(0, Math.floor((now - w) / 864e5));
+	const yr = (y) => num(y).replace(/[٬,]/g, '');
+	const years = [];
+	for (let y = marriedYear(s) + 1; y <= nx.year; y++) years.push(y);
+	const tripOf = (y) => (s.trips || []).find((t) => +t.year === y);
+	return `<div class="lp-band lp-band--anniversaries"><div class="an2">
+		<div class="an-band"><span class="an-ring an-ring--1" aria-hidden="true"></span><span class="an-ring an-ring--2" aria-hidden="true"></span>
+			<p class="an-n"><b>${num(yearsMarried(s))}</b><small>${L('سنين جواز', 'years married')}</small></p></div>
+		<div class="an2-next">
+			<p class="an2-next__h">${nx.days === 0 ? L('النهارده عيد جوازنا! ♥', 'It’s our anniversary today! ♥') : L(`فاضل <b>${num(nx.days)}</b> يوم على ${esc(anniversary(s, nx.year))}`, `<b>${nx.days}</b> days to ${esc(anniversary(s, nx.year))}`)}</p>
+			<span class="an2-bar" style="--p:${pct}%" role="img" aria-label="${esc(L(`${pct}٪ من السنة عدّت`, `${pct}% of the year gone`))}"><i></i><span class="an2-bar__heart">${doodle('heart', 16)}</span></span>
+			<p class="an2-next__s"><span>${yr(last.getFullYear())}</span><small>${L(`${num(married)} يوم جواز`, `${married.toLocaleString('en')} days married`)}</small><span>${yr(nx.year)}</span></p>
+		</div>
+		<ol class="an2-years">${years.map((y, i) => { const t = tripOf(y), isNext = y === nx.year; return `<li class="${isNext ? 'is-next' : t ? 'is-been' : ''}" style="--i:${i}" data-year="${y}"><span class="an2-years__h">${isNext ? '?' : doodle('heart', 18)}</span><b>${yr(y)}</b><small>${isNext ? L('الجاية', 'next') : t ? esc(govName(t.gov)) : '—'}</small></li>`; }).join('')}</ol>
+	</div></div>`;
+}
+
 export default {
 	title: { ar: 'عيد جوازنا', en: 'Our anniversaries' },
 	render(s) {
@@ -25,8 +49,7 @@ export default {
 		const govs = [...GOVERNORATES].sort((a, b) => L(a.ar, a.en).localeCompare(L(b.ar, b.en), App.lang));
 		return `
 		${pageHead(L('عيد جوازنا', 'Our anniversaries'), L('كل سنة من جوازنا: بنسافر فيها محافظة جديدة لحد ما نلف مصر كلها، وبنكتب عملنا فيها إيه', 'Every year of our marriage: a new governorate each time until we’ve seen all of Egypt, and how we celebrated it'), [{ href: 'anniversaries.html', ar: 'عيد جوازنا', en: 'Our anniversaries' }], {
-			band: `<div class="lp-band lp-band--anniversaries" aria-hidden="true"><div class="an-band"><span class="an-ring an-ring--1"></span><span class="an-ring an-ring--2"></span>
-				<p class="an-n"><b>${num(yearsMarried(s))}</b><small>${L('سنين جواز', 'years married')}</small></p></div></div>`
+			band: bandHTML(s, nx)
 		})}
 		<section class="sec sec--top"><div class="wrap">
 			<div class="counters trip-stats">
@@ -137,6 +160,8 @@ export default {
 		}
 
 		const paintTrips = () => {
+			// each anniversary on the band's thread says where it took us, now the trips from the phones are in too
+			for (const li of $$('.an2-years li[data-year]:not(.is-next)', main)) { const t = trips.find((x) => +x.year === +li.dataset.year); li.classList.toggle('is-been', !!t); li.querySelector('small').textContent = t ? govName(t.gov) : '—'; }
 			const been = new Set(trips.map((x) => x.gov));
 			$('#tr-been', main).textContent = num(been.size);
 			$('#tr-left', main).textContent = num(27 - been.size);
