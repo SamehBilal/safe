@@ -82,5 +82,31 @@ export default {
 			</div>
 		</section>
 		${related(['journal', 'chapters', 'gallery'])}`;
+	},
+	/* the years on their cord drift by on their own, back and forth, resting a moment at each end; pointing at them,
+	   touching them or tabbing into them stops it (and a swipe still scrolls them), and it carries on a little after */
+	after(main) {
+		this.leave?.();
+		const el = main.querySelector('.sy__string');
+		if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		const rtl = getComputedStyle(el).direction === 'rtl';
+		let p = Math.abs(el.scrollLeft), dir = 1, held = false, rest = 0, raf = 0, wait = 0, last = 0;
+		const tick = (t) => {
+			raf = requestAnimationFrame(tick);
+			const dt = Math.min(64, t - (last || t)); last = t;
+			const max = el.scrollWidth - el.clientWidth;
+			if (max <= 2 || held || t < rest) return;
+			p += dir * dt * 0.03;
+			if (p >= max) { p = max; dir = -1; rest = t + 1800; }
+			if (p <= 0) { p = 0; dir = 1; rest = t + 1800; }
+			el.scrollLeft = rtl ? -p : p;
+		};
+		const hold = () => { held = true; clearTimeout(wait); };
+		const free = () => { clearTimeout(wait); wait = setTimeout(() => { p = Math.abs(el.scrollLeft); held = false; }, 2500); };
+		el.addEventListener('pointerenter', hold); el.addEventListener('pointerleave', free);
+		el.addEventListener('touchstart', hold, { passive: true }); el.addEventListener('touchend', free, { passive: true });
+		el.addEventListener('focusin', hold); el.addEventListener('focusout', free);
+		raf = requestAnimationFrame(tick);
+		this.leave = () => { cancelAnimationFrame(raf); clearTimeout(wait); this.leave = null; };
 	}
 };

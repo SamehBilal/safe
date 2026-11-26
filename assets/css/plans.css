@@ -1573,3 +1573,7 @@
 .cx-ph:nth-child(6n + 1) img { height: 100%; aspect-ratio: auto; min-height: 0; }
 @media (max-width: 520px) { .cx-ph:nth-child(6n + 1) { grid-row: auto; } .cx-ph:nth-child(6n + 1) img { aspect-ratio: 4 / 3; } }
 @media (max-width: 520px) { .cx-cover { width: min(100%, 290px); } }
+
+/* حكايتنا: the cord of years scrolls without a scrollbar (it drifts by on its own) */
+.sy__string { scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: none; }
+.sy__string::-webkit-scrollbar { display: none; }

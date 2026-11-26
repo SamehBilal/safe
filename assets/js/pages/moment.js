@@ -39,7 +39,7 @@ function stripHTML(tl, x, prev, next) {
 		<div class="mo-strip__rail" dir="ltr">
 			<div class="mo-strip__film" aria-hidden="true"></div>
 			${years.map((y, i) => `<span class="mo-strip__y${i % 2 ? ' is-odd' : ''}" style="left:${(((Date.UTC(y, 0, 1) - a) / (b - a)) * 100).toFixed(2)}%">${y}</span>`).join('')}
-			${dated.map((m) => `<a class="mo-strip__t${m.id === x.id ? ' is-here' : ''}" style="left:${at(m.date)}%" href="moment.html?id=${encodeURIComponent(m.id)}" title="${esc(`${App.t(m.title)} · ${fmtDate(m.date)}`)}" aria-label="${esc(App.t(m.title))}"></a>`).join('')}
+			${dated.map((m) => `<a class="mo-strip__t${m.id === x.id ? ' is-here' : ''}" style="left:${at(m.date)}%;--k:${at(m.date)}" href="moment.html?id=${encodeURIComponent(m.id)}" title="${esc(`${App.t(m.title)} · ${fmtDate(m.date)}`)}" aria-label="${esc(App.t(m.title))}"></a>`).join('')}
 			${/^\d{4}-\d{2}/.test(String(x.date || '')) ? `<span class="mo-strip__pin" style="left:${at(x.date)}%" aria-hidden="true"><i>♥</i><small>${fmtDate(x.date)}</small></span>` : ''}
 		</div>
 		<div class="mo-strip__steps">${step(prev, 'prev')}${step(next, 'next')}</div>

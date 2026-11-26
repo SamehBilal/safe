@@ -2660,3 +2660,24 @@
 	.od3 .od-hero__years .chip small { display: block; }
 }
 @media (prefers-reduced-motion: reduce) { .od3-line path { animation: none; stroke-dashoffset: 0; } }
+
+/* a moment's film strip, alive: the film rolls by slowly, the ticks pop up one after another from the first year to the
+   last, the pin drops in on its date with a bounce and then bobs, a ring pulsing round it, and the steps slide in */
+.mo-strip__film { animation: mo-roll 6s linear infinite; }
+.mo-strip__film::after { animation: mo-roll 6s linear infinite; }
+@keyframes mo-roll { to { background-position-x: 90px; } }
+.mo-strip__t { animation: mo-tick .45s cubic-bezier(.34, 1.6, .5, 1) both; animation-delay: calc(.15s + var(--k, 0) * 12ms); }
+@keyframes mo-tick { from { transform: scaleY(0); opacity: 0; } }
+.mo-strip__y { animation: mo-fade .5s both; animation-delay: .2s; }
+@keyframes mo-fade { from { opacity: 0; translate: -50% 4px; } }
+.mo-strip__pin { animation: mo-drop .7s 1s cubic-bezier(.34, 1.5, .5, 1) both; }
+@keyframes mo-drop { from { opacity: 0; translate: -50% -40px; } }
+.mo-strip__pin i { position: relative; animation: mo-bob 2.6s 1.8s ease-in-out infinite; }
+@keyframes mo-bob { 50% { translate: 0 -4px; } }
+.mo-strip__pin i::after { content: ''; position: absolute; inset: -5px; border: 2px solid #d9534f; border-radius: 50%; animation: mo-ring 2.2s 1.8s ease-out infinite; opacity: 0; }
+@keyframes mo-ring { 0% { opacity: .8; scale: .7; } 100% { opacity: 0; scale: 1.8; } }
+.mo-strip__step { animation: mo-step .5s 1.3s both; }
+.mo-strip__step--prev { --dx: -16px; } .mo-strip__step--next { --dx: 16px; }
+[dir='rtl'] .mo-strip__step--prev { --dx: 16px; } [dir='rtl'] .mo-strip__step--next { --dx: -16px; }
+@keyframes mo-step { from { opacity: 0; translate: var(--dx) 0; } }
+@media (prefers-reduced-motion: reduce) { .mo-strip__film, .mo-strip__film::after, .mo-strip__t, .mo-strip__y, .mo-strip__pin, .mo-strip__pin i, .mo-strip__pin i::after, .mo-strip__step { animation: none; } }
