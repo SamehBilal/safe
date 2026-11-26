@@ -1499,3 +1499,77 @@
 .sy-yr.is-big a { box-shadow: 0 8px 16px rgba(30, 20, 10, .16), 0 0 0 4px var(--hl-pink, #fcc5c9); }
 @media (max-width: 640px) { .sy-yr a { width: 108px; } .sy-yr__y { font-size: 1.7rem; } .sy__facts li { min-width: 0; flex: 1 1 40%; } }
 @media (prefers-reduced-motion: reduce) { .sy-yr { animation: none; opacity: 1; translate: none; } .sy__line path { animation: none; stroke-dashoffset: 0; } }
+
+/* ---------- يوم فارق (chapter.html): one big day as a keepsake — the cover photo in a deckled frame beside a card with
+   a postmark, the name big over a coral line and how long ago; the road of all our big days under it; the story as a
+   letter pinned on the page; the photos as a scrapbook ---------- */
+.cx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(26px, 5vw, 64px); align-items: center; max-width: 1060px; margin: 0 auto; padding-top: 8px; }
+.cx-cover { position: relative; margin: 0; padding: 12px 12px 46px; background: #fffdf8; border: 1.5px solid #37353f; box-shadow: 0 18px 34px -16px rgba(30, 20, 10, .5); rotate: -2deg; }
+.cx-cover img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.cx-cover__none { display: grid; place-items: center; aspect-ratio: 4 / 5; color: var(--coral, #f2726f); background: color-mix(in srgb, var(--coral, #f2726f) 10%, #fffdf8); }
+.cx-cover__tape { position: absolute; top: -13px; left: 50%; width: 120px; height: 26px; translate: -50% 0; rotate: 4deg; background: rgba(252, 139, 147, .7) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); }
+.cx-card { position: relative; display: grid; gap: 10px; justify-items: start; }
+.cx-card__k { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 2px 12px; font-weight: 800; font-size: .82rem; color: #2b2b33; background: var(--hl-yellow, #fdc830); border: 1.5px solid #37353f; border-radius: 999px; }
+.cx-card__ic { display: grid; place-items: center; width: 52px; height: 52px; color: #fff; background: var(--coral, #f2726f); border: 2px solid #37353f; border-radius: 50%; box-shadow: 3px 3px 0 #37353f; }
+.cx-card__t { margin: 0; font: 400 clamp(3rem, 8vw, 5rem)/1.05 var(--f-script); color: var(--blue); }
+.cx-card__sub { margin: 0; font-size: 1.1rem; line-height: 1.7; color: var(--muted); }
+.cx-card__line { width: min(300px, 80%); height: 14px; margin-top: -4px; overflow: visible; }
+.cx-card__line path { fill: none; stroke: var(--coral, #f2726f); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 340; stroke-dashoffset: 340; animation: cx-draw 1.1s .2s ease forwards; }
+@keyframes cx-draw { to { stroke-dashoffset: 0; } }
+.cx-card__ago { margin: 0; font-weight: 700; color: var(--muted); }
+.cx-card__ago b { font: 400 1.7rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
+/* the postmark: a round stamp with the day big, the month and year round it */
+.cx-post { position: absolute; top: -6px; inset-inline-end: 0; display: grid; place-content: center; justify-items: center; width: 104px; height: 104px; color: #b03030; border: 3px double currentColor; border-radius: 50%; rotate: 12deg; opacity: .85; }
+.cx-post b { font: 400 2.4rem/1 var(--f-label); }
+.cx-post small { font: 800 .7rem/1.2 var(--f-body); letter-spacing: .08em; text-transform: uppercase; }
+/* the road of our big days */
+.cx-road { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: clamp(28px, 5vw, 46px) auto 0; }
+.cx-road__list { position: relative; display: flex; flex: 1; justify-content: space-between; margin: 0; padding: 0; list-style: none; }
+.cx-road__list::before { content: ''; position: absolute; top: 20px; inset-inline: 30px; border-top: 3px dashed color-mix(in srgb, var(--coral, #f2726f) 60%, transparent); }
+.cx-road__list li { position: relative; flex: 1; min-width: 0; text-align: center; }
+.cx-road__list a { display: grid; justify-items: center; gap: 2px; padding: 0 4px; color: var(--text); text-decoration: none; }
+.cx-road__dot { display: grid; place-items: center; width: 42px; height: 42px; color: var(--coral-deep, #d9534f); background: var(--card); border: 2px solid #37353f; border-radius: 50%; transition: scale .2s; }
+.cx-road__list a:hover .cx-road__dot { scale: 1.12; }
+.cx-road__list li.is-past .cx-road__dot { color: #fff; background: color-mix(in srgb, var(--coral, #f2726f) 70%, #fff); }
+.cx-road__list li.is-on .cx-road__dot { width: 52px; height: 52px; margin-top: -5px; color: #fff; background: var(--coral-deep, #d9534f); box-shadow: 0 0 0 5px color-mix(in srgb, var(--coral, #f2726f) 25%, transparent); }
+.cx-road__list b { overflow: hidden; max-width: 100%; font-size: .84rem; white-space: nowrap; text-overflow: ellipsis; }
+.cx-road__list li.is-on b { color: var(--coral-deep, #d9534f); }
+.cx-road__list small { font: 400 .95rem/1 var(--f-label); color: var(--muted); }
+.cx-road__arrow { display: grid; flex: none; place-items: center; width: 40px; height: 40px; color: #2b2b33; background: var(--hl-yellow, #fdc830); border: 1.5px solid #37353f; border-radius: 50%; box-shadow: 2px 2px 0 #37353f; }
+.cx-road__arrow.is-off { visibility: hidden; }
+/* the story as a letter pinned on the page */
+.cx-letter { position: relative; max-width: 760px; margin: 0 auto 34px; padding: clamp(26px, 4vw, 40px) clamp(20px, 4vw, 44px) 24px; color: #2b2b33; background: #fffdf8 repeating-linear-gradient(transparent 0 33px, rgba(14, 105, 144, .13) 33px 34px) 0 22px; border: 1.5px solid #37353f; rotate: -.4deg; box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 color-mix(in srgb, var(--coral, #f2726f) 35%, transparent); }
+.cx-letter__pin { position: absolute; top: -10px; left: 50%; width: 20px; height: 20px; translate: -50% 0; background: radial-gradient(circle at 35% 30%, #ff9a9a, #d9534f 60%); border: 1.5px solid #37353f; border-radius: 50%; }
+.cx-letter p { margin: 0 0 14px; font-size: 1.08rem; line-height: 2; }
+.cx-letter__lede { font: 600 clamp(1.3rem, 2.6vw, 1.6rem)/1.7 var(--f-hand) !important; color: #133447; }
+:lang(ar) .cx-letter__lede { font: 700 clamp(1.15rem, 2.3vw, 1.4rem)/1.9 var(--f-body) !important; }
+.cx-letter__lede::first-letter { float: inline-start; margin-inline-end: 8px; font: 400 3.4em/.9 var(--f-script); color: var(--coral-deep, #d9534f); }
+.cx-letter__sign { text-align: end; font: 700 1.25rem var(--f-hand) !important; color: var(--muted); }
+/* the photos as a scrapbook */
+.cx-album__h { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 18px; font-weight: 800; color: var(--muted); }
+.cx-album__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 22px 18px; }
+.cx-ph { margin: 0; padding: 8px 8px 12px; background: #fffdf8; border: 1.5px solid #37353f; box-shadow: 0 10px 18px -10px rgba(30, 20, 10, .45); rotate: var(--r); transition: rotate .3s, translate .3s; animation: cx-in .45s both; animation-delay: calc(var(--k) * 40ms); }
+.cx-ph:hover { rotate: 0deg; translate: 0 -4px; }
+.cx-ph:nth-child(6n + 1) { grid-column: span 2; }
+.cx-ph img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.cx-ph figcaption { margin-top: 6px; text-align: center; font: 700 1.1rem var(--f-hand); color: #133447; }
+@keyframes cx-in { from { opacity: 0; translate: 0 10px; } }
+@media (max-width: 820px) {
+	.cx { grid-template-columns: minmax(0, 1fr); }
+	.cx-cover { width: min(100%, 360px); justify-self: center; }
+	.cx-card { justify-items: center; text-align: center; }
+	.cx-post { inset-inline-end: 4px; width: 84px; height: 84px; }
+	.cx-road__list b { display: none; }
+}
+@media (max-width: 520px) { .cx-ph:nth-child(6n + 1) { grid-column: auto; } .cx-album__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; } }
+@media (prefers-reduced-motion: reduce) { .cx-card__line path { animation: none; stroke-dashoffset: 0; } .cx-ph { animation: none; } }
+.cx-cover__ph { display: block; aspect-ratio: 4 / 5; background: color-mix(in srgb, var(--coral, #f2726f) 10%, #fffdf8); }
+.cx-cover__ph img { height: 100%; }
+/* the day's drawing sits in the frame under the photo, so the frame keeps its shape if the photo is missing */
+.cx-cover__ph { position: absolute; inset: 12px 12px 46px; aspect-ratio: auto; }
+/* the scrapbook: every sixth photo big — two across and two down — and the small ones keep their own height */
+.cx-album__grid { grid-auto-flow: dense; align-items: start; }
+.cx-ph:nth-child(6n + 1) { grid-row: span 2; align-self: stretch; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.cx-ph:nth-child(6n + 1) img { height: 100%; aspect-ratio: auto; min-height: 0; }
+@media (max-width: 520px) { .cx-ph:nth-child(6n + 1) { grid-row: auto; } .cx-ph:nth-child(6n + 1) img { aspect-ratio: 4 / 3; } }
+@media (max-width: 520px) { .cx-cover { width: min(100%, 290px); } }
