@@ -2625,3 +2625,7 @@
 .dp-arch__list b { display: block; font-size: .95rem; }
 .dp-arch__list small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .8rem; line-height: 1.45; color: #5a5548; }
 @media (max-height: 640px) { .dp-arch__list li:nth-child(n + 5), .dp-says li:nth-child(n + 3) { display: none; } }
+/* a ticket stretched to the tallest one in its row: its two halves fill it top to bottom, so the stub's tint and its
+   dashed tear line run the whole height and the notches sit on the edges */
+.lp-list--tickets .tk-card { grid-template-rows: minmax(0, 1fr); align-content: stretch; align-items: stretch; }
+.lp-list--tickets .tk-side { align-self: stretch; }
