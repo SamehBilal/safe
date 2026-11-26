@@ -44,19 +44,24 @@ export default {
 	title: { ar: 'سنة من الذكريات', en: 'A year of memories' },
 	render() {
 		return `<section class="sec sec--top od-top"><div class="wrap">
-			<!-- the day being read, first on the page, above its title -->
-			<div class="od-hero od2">
-				<span class="od2-tape" aria-hidden="true"></span>
-				<div class="od2-stage">
-					<button class="od-arrow od2-arrow" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">${doodle(L('forward', 'back'), 22)}</button>
+			<!-- the day being read, first on the page, above its title: straight on the page, no card of its own — the desk
+			     calendar with its arrows under it on one side; the day in big handwriting, what it holds, and its years as
+			     stops along a thread on the other -->
+			<div class="od-hero od3">
+				<div class="od3-cal">
 					<div class="od-hero__cal" id="od-band" aria-hidden="true"></div>
-					<button class="od-arrow od2-arrow" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">${doodle(L('back', 'forward'), 22)}</button>
+					<div class="od3-nav">
+						<button class="od-arrow od2-arrow" type="button" id="od-prev" aria-label="${L('اليوم اللي قبله', 'Previous day')}">${doodle(L('forward', 'back'), 22)}</button>
+						<span class="od3-nav__h">${L('قلّب الأيام', 'Turn the days')}</span>
+						<button class="od-arrow od2-arrow" type="button" id="od-next" aria-label="${L('اليوم اللي بعده', 'Next day')}">${doodle(L('back', 'forward'), 22)}</button>
+					</div>
 				</div>
 				<div class="od-hero__body">
 					<small class="od-hero__k" id="od-when"></small>
 					<div class="od-hero__day">
 						<h2 id="od-day" aria-live="polite"></h2>
 					</div>
+					<svg class="od3-line" viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path d="M4 9 C 60 2, 110 14, 160 7 S 250 3, 296 8"/></svg>
 					<p class="od-hero__sum" id="od-sum"></p>
 					<div class="od-hero__years" id="od-years"></div>
 					<div class="od-hero__btns">

@@ -2629,3 +2629,34 @@
    dashed tear line run the whole height and the notches sit on the edges */
 .lp-list--tickets .tk-card { grid-template-rows: minmax(0, 1fr); align-content: stretch; align-items: stretch; }
 .lp-list--tickets .tk-side { align-self: stretch; }
+
+/* سنة من الذكريات: the top straight on the page — no card, no tape — the desk calendar with the arrows under it on one
+   side; on the other the day in big handwriting over a coral line drawing itself, what it holds, and its years as
+   stops on a thread (each a dot with the year under it), then the buttons */
+.od-hero.od3 { grid-template-columns: auto minmax(0, 1fr); gap: clamp(26px, 6vw, 80px); align-items: center; max-width: 1000px; margin: 0 auto 10px; padding: 10px 0 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.od3-cal { display: grid; justify-items: center; gap: 18px; }
+.od3 .od-hero__cal { scale: 1.2; transform-origin: 50% 40%; margin: 20px 0 22px; }
+.od3-nav { display: flex; align-items: center; gap: 12px; }
+.od3-nav__h { font: 700 1.25rem/1 var(--f-hand); color: var(--muted); }
+:lang(ar) .od3-nav__h { font: 700 .85rem/1.4 var(--f-body); }
+.od3 .od-hero__body { justify-items: start; gap: 12px; }
+.od3 .od-hero__day h2 { padding: 0; font: 700 clamp(2.8rem, 7vw, 4.6rem)/1.1 'Aref Ruqaa', var(--f-hand); color: var(--blue); background: none; }
+:lang(en) .od3 .od-hero__day h2 { font-family: 'Lobster', var(--f-hand); font-weight: 400; }
+.od3-line { width: min(300px, 70%); height: 14px; margin-top: -10px; overflow: visible; }
+.od3-line path { fill: none; stroke: var(--coral, #f2726f); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 340; stroke-dashoffset: 340; animation: od3-draw 1.1s .2s ease forwards; }
+@keyframes od3-draw { to { stroke-dashoffset: 0; } }
+.od3 .od-hero__sum { font-size: 1.1rem; }
+/* the years on a thread */
+.od3 .od-hero__years { position: relative; gap: 0; padding: 4px 0 0; }
+.od3 .od-hero__years::before { content: ''; position: absolute; top: 14px; inset-inline: 12px; border-top: 2.5px dashed color-mix(in srgb, var(--coral, #f2726f) 70%, transparent); }
+.od3 .od-hero__years .chip { position: relative; display: grid; justify-items: center; gap: 2px; min-height: 0; padding: 0 12px; font: 400 1.15rem/1.1 var(--f-label); letter-spacing: .04em; color: var(--text); background: none; border: 0; box-shadow: none; }
+.od3 .od-hero__years .chip::before { content: ''; order: -1; width: 18px; height: 18px; margin-bottom: 4px; background: var(--card); border: 2.5px solid var(--coral-deep, #d9534f); border-radius: 50%; box-shadow: 0 0 0 3px var(--bg, #f8f5ef); transition: background .2s, scale .2s; }
+.od3 .od-hero__years .chip:hover::before, .od3 .od-hero__years .chip:focus-visible::before { background: var(--coral, #f2726f); scale: 1.2; }
+.od3 .od-hero__years .chip small { font: 700 .66rem/1.2 var(--f-body); letter-spacing: 0; color: var(--muted); }
+@media (max-width: 760px) {
+	.od-hero.od3 { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
+	.od3 .od-hero__body { justify-items: center; }
+	.od3 .od-hero__years, .od3 .od-hero__btns { justify-content: center; }
+	.od3 .od-hero__years .chip small { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .od3-line path { animation: none; stroke-dashoffset: 0; } }
