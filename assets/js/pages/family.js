@@ -52,7 +52,7 @@ function nextOf(iso) { const d = parseDate(iso), now = new Date(); now.setHours(
 /* everything the paper prints today, picked by the date so it stays the same all day */
 async function paperData(s, f) {
 	const members = f.members || [];
-	const [firsts, sayings, goals] = await Promise.all(['firsts', 'sayings', 'goals'].map((k) => live.load(k).catch(() => ({ items: [] }))));
+	const [firsts, sayings, goals, growth, favorites, journal, posts, gifts, movies, adventures, yearly] = await Promise.all(['firsts', 'sayings', 'goals', 'growth', 'favorites', 'journal', 'posts', 'gifts', 'movies', 'adventures', 'yearly'].map((k) => live.load(k).catch(() => ({ items: [] }))));
 	const nameOf = (id) => App.t(members.find((m) => m.id === id)?.name || id);
 	const md = todayMD();
 	let head = T(f.headline), lead = T(f.lead), stamp = '';
@@ -76,11 +76,62 @@ async function paperData(s, f) {
 		s.met && { t: L('ذكرى أول سلام', 'The day we met'), d: nextOf(s.met) }
 	].filter(Boolean).sort((a, b) => a.d - b.d).slice(0, 4);
 	const wants = (goals.items || []).filter((g) => !g.done);
+	/* news about each of us, newest first: the boys' firsts, sayings, height and favourite toy; our diary pages, posts,
+	   notes and gifts */
+	const newest = (a) => [...a].sort((x, y) => String(y.date || y.at || '').localeCompare(String(x.date || x.at || '')));
+	const dateOf = (x) => (x.date ? longDate(x.date) : x.at ? longDate(new Date(+x.at).toISOString().slice(0, 10)) : '');
+	const cut = (t, n = 90) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
+	const about = {};
+	for (const m of members) {
+		const who = m.id === 'sameh' ? 'him' : m.id === 'esraa' ? 'her' : '';
+		const name = App.t(m.name);
+		const list = [];
+		if (m.kid) {
+			for (const x of newest((firsts.items || []).filter((x) => x.kid === m.id)).slice(0, 2)) list.push({ ic: 'star', k: L('أول مرة', 'A first'), t: x.what, d: dateOf(x), href: 'firsts.html' });
+			const say = newest((sayings.items || []).filter((x) => x.kid === m.id))[0];
+			if (say) list.push({ ic: 'chat', k: L('قال', 'Said'), t: `«${say.said}»${say.means ? L(` — يقصد «${say.means}»`, ` — meaning “${say.means}”`) : ''}`, d: dateOf(say), href: 'sayings.html' });
+			const g = newest((growth.items || []).filter((x) => x.kid === m.id && x.cm))[0];
+			if (g) list.push({ ic: 'ruler', k: L('طوله', 'Height'), t: L(`${num(g.cm)} سم`, `${g.cm} cm`), d: dateOf(g), href: 'growth.html' });
+			const fav = newest((favorites.items || []).filter((x) => x.kid === m.id))[0];
+			if (fav) list.push({ ic: 'teddy', k: L('بيحب دلوقتي', 'Loves now'), t: fav.toy || fav.what || '', d: dateOf(fav), href: 'favorites.html' });
+		} else if (who) {
+			const page = newest((journal.items || []).filter((x) => x.by === who))[0];
+			if (page) list.push({ ic: 'book', k: L('من دفتره', 'From the diary'), t: page.title || cut(page.text, 60), d: dateOf(page), href: `journal.html#${page.id}` });
+			const post = newest((posts.items || []).filter((x) => x.by === who))[0];
+			if (post) list.push({ ic: 'chat', k: L('كتب', 'Posted'), t: cut(post.text, 80), d: dateOf(post), href: 'posts.html' });
+			const note = newest((s.notes || []).filter((x) => x.by === who && T(x.text)))[0];
+			if (note) list.push({ ic: 'letter', k: L('رسالة حب', 'A love note'), t: cut(App.t(note.text), 80), d: dateOf(note), href: 'notes.html' });
+			const gift = newest((gifts.items || []).filter((x) => x.by === who))[0];
+			if (gift) list.push({ ic: 'gift', k: L('هدية', 'A gift'), t: gift.what, d: dateOf(gift), href: 'gifts.html' });
+		}
+		if (m.born) { const n = nextOf(m.born); list.push({ ic: 'cake', k: L('عيد ميلاده', 'Birthday'), t: n === 0 ? L('النهارده! ♥', 'today! ♥') : L(`بعد ${num(n)} يوم`, `in ${n} days`), d: '', href: 'birthday.html' }); }
+		about[m.id] = list.filter((x) => x.t).slice(0, 4);
+	}
+	/* around the house: what we watched last and what's next, the newest gift, the goals, a dream, the last trip, this
+	   year's photo */
+	const mv = newest(movies.items || [])[0], next = pickOf(movies.towatch || [], 5);
+	const done = (goals.items || []).filter((g) => g.done).length, allG = (goals.items || []).length;
+	const dream = pickOf((adventures.items || []).filter((x) => !x.done), 6);
+	const trip = newest((s.journeys || []).map((j) => ({ ...j, date: j.date })))[0];
+	const gift = newest(gifts.items || [])[0];
+	const yr = newest(yearly.items || [])[0];
+	const house = [
+		mv && { ic: 'popcorn', k: L('آخر حاجة اتفرجنا عليها', 'Last thing we watched'), t: mv.title, d: mv.year ? num(mv.year).replace(/[٬,]/g, '') : '', href: 'movies.html' },
+		next && { ic: 'clapper', k: L('اللي عليه الدور', 'Up next, maybe'), t: next.title, d: L(`${num((movies.towatch || []).length)} في القايمة`, `${(movies.towatch || []).length} on the list`), href: 'movies.html' },
+		trip && { ic: 'suitcase', k: L('آخر رحلة', 'The last trip'), t: T(trip.title), d: longDate(trip.date), href: `journey.html?id=${encodeURIComponent(trip.id)}` },
+		gift && { ic: 'gift', k: L('آخر هدية', 'The newest gift'), t: gift.what, d: dateOf(gift), href: 'gifts.html' },
+		allG && { ic: 'trophy', k: L('أهدافنا', 'Our goals'), t: done ? L(`${num(done)} من ${num(allG)} اتحققوا`, `${done} of ${allG} done`) : L(`${num(allG)} حاجة نفسنا فيها`, `${allG} things we’d love to have`), d: '', href: 'goals.html' },
+		dream && { ic: 'plane', k: L('حلم مستني', 'A dream waiting'), t: App.t(dream.what), d: dream.where ? App.t(dream.where) : '', href: 'adventures.html' },
+		yr && { ic: 'camera', k: L(`صورة سنة ${num(yr.year).replace(/[٬,]/g, '')}`, `The ${yr.year} photo`), t: yr.note || '', d: '', href: 'yearly.html' }
+	].filter((x) => x && x.t);
 	return {
-		members, head, lead, stamp, old, same: same.length > 0, nums, coming, nameOf,
+		about, house, members, head, lead, stamp, old, same: same.length > 0, nums, coming, nameOf,
 		yrs: old ? new Date().getFullYear() - +old.date.slice(0, 4) : 0,
 		say: pickOf(sayings.items || [], 2),
-		ads: [0, 1, 2, 3].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i)
+		says: (sayings.items || []).filter((x) => x !== pickOf(sayings.items || [], 2)).slice(0, 3),
+		// the archive: moments from this month in the years before, oldest first (or any moments, if the month has none)
+		archive: (() => { const mm = md.slice(0, 2), y = String(new Date().getFullYear()); const inMonth = story.filter((t) => t.date.slice(5, 7) === mm && !t.date.startsWith(y)); return (inMonth.length >= 3 ? inMonth : story.filter((t, k) => k % Math.max(1, Math.floor(story.length / 6)) === 0)).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6); })(),
+		ads: [0, 1, 2, 3, 4, 5, 6, 7].map((i) => pickOf(wants, 3 + i * 7)).filter((g, i, a) => g && a.indexOf(g) === i)
 	};
 }
 
@@ -109,20 +160,38 @@ function paperPages(s, f, d) {
 				<ul class="dp-soon">${d.coming.map((c) => `<li><span>${esc(c.t)}</span><b>${esc(when(c.d))}</b></li>`).join('')}</ul></section>
 			<section class="dp-index"><p class="dp-kick">${L('في العدد ده', 'In this issue')}</p><ol id="dp-index"></ol></section>
 		</div>` });
+	const brief = (x) => `<li><a href="${x.href}"><span class="dp-brief__ic">${doodle(x.ic, 16)}</span><span><small>${esc(x.k)}${x.d ? ` · ${esc(x.d)}` : ''}</small><b dir="auto">${esc(x.t)}</b></span></a></li>`;
 	for (const m of d.members) pages.push({ name: T(m.name), html: `
 		<article class="dp-one" style="--c:${esc(m.color || '#0e6990')}">
 			<p class="dp-kick">${L('أخبار العيلة', 'Family news')}</p>
-			${m.photo ? `<span class="dp-pic" data-media-box>${img(m.photo, App.t(m.name))}</span>` : `<span class="dp-pic dp-pic--ic">${doodle(m.emoji || 'heart', 70)}</span>`}
-			<h3 class="dp-name">${T(m.name)}</h3>
-			<em>${T(m.role)}${m.born ? ` · ${m.kid ? esc(age(m.born)) : `${L('مواليد', 'born')} ${esc(longDate(m.born))}`}` : ''}</em>
-			${m.text ? `<p dir="auto">${T(m.text)}</p>` : ''}
-			<a class="dp-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
+			<div class="dp-one__top">
+				${m.photo ? `<span class="dp-pic" data-media-box>${img(m.photo, App.t(m.name))}</span>` : `<span class="dp-pic dp-pic--ic">${doodle(m.emoji || 'heart', 54)}</span>`}
+				<div class="dp-one__who">
+					<h3 class="dp-name">${T(m.name)}</h3>
+					<em>${T(m.role)}${m.born ? ` · ${m.kid ? esc(age(m.born)) : `${L('مواليد', 'born')} ${esc(longDate(m.born))}`}` : ''}</em>
+					${m.text ? `<p dir="auto">${T(m.text)}</p>` : ''}
+					<a class="dp-more" href="member.html?id=${esc(m.id)}">${L('التفاصيل في صفحته', 'More on the inside page')} ${App.arrow || '←'}</a>
+				</div>
+			</div>
+			${(d.about[m.id] || []).length ? `<p class="dp-kick dp-kick--rule">${L('آخر أخباره', 'The latest')}</p><ul class="dp-briefs">${d.about[m.id].map(brief).join('')}</ul>` : ''}
 		</article>` });
+	/* around the house: news from the rest of the site, in boxes like a paper's briefs column */
+	if (d.house.length) pages.push({ name: L('أخبار البيت', 'Around the house'), html: `
+		<div class="dp-house">
+			<p class="dp-kick">${L('أخبار البيت', 'Around the house')}</p>
+			<ul class="dp-house__grid">${d.house.map((x, k) => `<li style="--k:${k}"><a href="${x.href}"><span class="dp-brief__ic">${doodle(x.ic, 18)}</span><small>${esc(x.k)}</small><b dir="auto">${esc(x.t)}</b>${x.d ? `<em>${esc(x.d)}</em>` : ''}</a></li>`).join('')}</ul>
+		</div>` });
 	pages.push({ name: L('منوعات', 'Odds & ends'), html: `
 		<div class="dp-misc">
 			${d.say ? `<a class="dp-quote" href="sayings.html"><p class="dp-kick">${L('كلمة اليوم', 'Quote of the day')}</p>
 				<blockquote dir="auto">«${esc(d.say.said)}»</blockquote><cite>— ${esc(d.nameOf(d.say.kid))}${d.say.means ? ` · ${L('يقصد', 'meaning')} «${esc(d.say.means)}»` : ''}</cite></a>` : ''}
+			${d.says.length ? `<ul class="dp-says">${d.says.map((x) => `<li><b dir="auto">«${esc(x.said)}»</b><small>— ${esc(d.nameOf(x.kid))}${x.means ? ` · ${esc(x.means)}` : ''}</small></li>`).join('')}</ul>` : ''}
 			<div class="dp-weather"><p class="dp-kick">${L('حالة الجو في البيت', 'Weather at home')}</p><span>${doodle('sun', 54)}</span><b>${L('دافي ومليان حب', 'Warm, with plenty of love')}</b><small>${L('فرصة حضن: ١٠٠٪', 'Chance of hugs: 100%')}</small></div>
+		</div>` });
+	if (d.archive.length) pages.push({ name: L('من الأرشيف', 'From the archive'), html: `
+		<div class="dp-arch">
+			<p class="dp-kick">${d.archive.every((t) => t.date.slice(5, 7) === todayMD().slice(0, 2)) ? L('من الأرشيف — الشهر ده زمان', 'From the archive — this month, years ago') : L('من الأرشيف', 'From the archive')}</p>
+			<ol class="dp-arch__list">${d.archive.map((t) => `<li><a href="moment.html?id=${encodeURIComponent(t.id)}"><span class="dp-arch__y">${num(+t.date.slice(0, 4)).replace(/[٬,]/g, '')}</span><span><b dir="auto">${T(t.title)}</b>${t.text ? `<small dir="auto">${esc(String(App.t(t.text)).slice(0, 110))}</small>` : ''}</span></a></li>`).join('')}</ol>
 		</div>` });
 	pages.push({ name: L('إعلانات مبوبة', 'Classifieds'), html: `
 		<div class="dp-ads">
