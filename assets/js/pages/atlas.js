@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOV, govName, loadTrips, mapSVG } from './trips.js';
 import { fit, where, nearestGov, CAPITALS, km } from '../tilemap.js';
+import { placesSection } from './places.js';
 
 /* «أطلسنا» — an example of «أماكننا» and «خرايط مدننا» on one page (both pages stay as they are).
    The top: Egypt with every governorate we've been to coloured in — point at one for its name and how many places,
@@ -35,7 +36,7 @@ function citiesOf(s, trips, spots) {
 		if (!at) continue;
 		const gov = govOf(at), cap = CAPITALS[gov];
 		const own = m.area && cap && km(at, { lat: cap[0], lng: cap[1] }) > FAR;
-		get(own ? `${gov}~${App.t(m.area)}` : gov, gov, own ? m.area : null).places.push({ title: App.t(m.title), at, date: m.date, where: App.t(m.where), text: App.t(m.text) || App.t(m.place), photos: photosOf(m) });
+		get(own ? `${gov}~${App.t(m.area)}` : gov, gov, own ? m.area : null).places.push({ id: m.id, title: App.t(m.title), at, date: m.date, where: App.t(m.where), text: App.t(m.text) || App.t(m.place), photos: photosOf(m) });
 	}
 	for (const x of spots) {
 		const at = where(x);
@@ -50,7 +51,7 @@ const centreOf = (c) => (CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITAL
 
 export default {
 	title: { ar: 'أطلسنا', en: 'Our atlas' },
-	render() {
+	render(s) {
 		return `<section class="sec sec--top at-top"><div class="wrap"><div class="at-hero">
 			<div class="at-egypt">${mapSVG('eg--atlas')}<div class="at-egypt__tip" id="at-tip" hidden></div></div>
 			<div class="at-hero__body">
@@ -66,6 +67,11 @@ export default {
 		</div></section>
 		${pageHead(L('أطلسنا', 'Our atlas'), L('كل مدينة رحناها، وكل مكان فيها بصوره', 'Every city we’ve been to, and every place in it with its photos'), [{ href: 'atlas.html', ar: 'أطلسنا', en: 'Our atlas' }], { band: '' })}
 		<section class="sec"><div class="wrap">
+			<div class="at-tabs" role="tablist" aria-label="${L('أطلسنا', 'Our atlas')}">
+				<button class="at-tab is-on" type="button" role="tab" aria-selected="true" aria-controls="at-pane-cities" data-tab="cities">${doodle('house', 18)} ${L('المدن', 'Cities')}</button>
+				<button class="at-tab" type="button" role="tab" aria-selected="false" aria-controls="at-pane-places" data-tab="places">${doodle('pin', 18)} ${L('الأماكن', 'Places')}</button>
+			</div>
+			<div class="at-pane" id="at-pane-cities" role="tabpanel">
 			<div class="at-strip" id="at-row" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
 			<div class="at-city" id="at-city">
 				<div class="at-map" id="at-map" style="direction:ltr">
@@ -78,6 +84,8 @@ export default {
 				</div>
 				<ol class="at-list" id="at-list"></ol>
 			</div>
+			</div>
+			<div class="at-pane" id="at-pane-places" role="tabpanel" hidden>${placesSection(s)}</div>
 			<p class="center at-links"><a class="btn btn--sm btn--ghost" href="places.html">${doodle('pin', 16)} ${L('أماكننا', 'Our places')}</a> <a class="btn btn--sm btn--ghost" href="cities.html">${doodle('house', 16)} ${L('خرايط مدننا', 'Our city maps')}</a></p>
 		</div></section>
 		${related(['places', 'cities', 'journeys'])}`;
@@ -196,6 +204,25 @@ export default {
 		lst.addEventListener('pointerleave', () => peek(-1));
 		lst.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { openPlace(+b.dataset.i); mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'nearest' }); } });
 
+		const tab = (name) => {
+			$$('.at-tab', main).forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+			$('#at-pane-cities', main).hidden = name !== 'cities';
+			$('#at-pane-places', main).hidden = name !== 'places';
+			if (name === 'places') for (const el of $$('#at-pane-places .reveal', main)) el.classList.add('is-in');
+		};
+		$('.at-tabs', main).addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) tab(b.dataset.tab); });
+		hydrate($('#at-pane-places', main));
+		$('#at-pane-places', main).addEventListener('click', (e) => {
+			const go = e.target.closest('[data-go-pin]');
+			if (!go) return;
+			e.preventDefault();
+			const c = list.find((x) => x.places.some((p) => p.id && p.id === go.dataset.pid));
+			if (!c) return;
+			tab('cities');
+			show(c.id);
+			mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
+			setTimeout(() => openPlace(c.places.findIndex((p) => p.id === go.dataset.pid)), REDUCE ? 0 : 500);
+		});
 		const fromHash = decodeURIComponent(location.hash.slice(1));
 		show(list.some((c) => c.id === fromHash) ? fromHash : list[0]?.id);
 		let w = mapEl.clientWidth;

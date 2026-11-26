@@ -133,6 +133,15 @@ function hero(list, pinned, names) {
 
 /* the places, area by area: a pin heading with the area's name and count, then each place with its photo in a pin-shaped
    frame, its date, name, address, what it was, and «على الخريطة» when it has a pin */
+/** the places, area by area, for another page (the atlas's «الأماكن» tab): the same cards as here */
+export function placesSection(s) {
+	const list = s.places || [];
+	const pinned = list.flatMap((m) => { const at = where(m); return at ? areasOf(m).map((ar) => ({ m, at, ar })) : []; });
+	const names = [...new Set(pinned.map((x) => T(x.ar)))].sort((a, b) => pinned.filter((x) => T(x.ar) === b).length - pinned.filter((x) => T(x.ar) === a).length);
+	pinned.forEach((x) => { x.a = names.indexOf(T(x.ar)); });
+	return groups(list, pinned, names);
+}
+
 function groups(list, pinned, names) {
 	const order = [...names, ''];
 	const by = new Map(order.map((n) => [n, []]));
@@ -147,7 +156,7 @@ function groups(list, pinned, names) {
 				${T(m.where) ? `<p class="pz-card__where" dir="auto">${doodle('pin', 14)} ${T(m.where)}</p>` : ''}
 				${m.place ? `<p class="pz-card__line" dir="auto">${T(m.place)}</p>` : ''}
 				${m.text ? `<p class="pz-card__line" dir="auto">${T(m.text)}</p>` : ''}
-				${k >= 0 ? `<a class="pz-card__go" href="#ip-map" data-go-pin="${k}">${L('على الخريطة', 'On the map')} ${App.arrow}</a>` : ''}
+				${k >= 0 ? `<a class="pz-card__go" href="#ip-map" data-go-pin="${k}" data-pid="${esc(m.id || '')}">${L('على الخريطة', 'On the map')} ${App.arrow}</a>` : ''}
 			</div>
 		</article>`; }).join('')}</div>
 	</section>`).join('');

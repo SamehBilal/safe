@@ -1832,3 +1832,10 @@
 	:root:not([data-theme='light']) .cm::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
 	:root:not([data-theme='light']) .cm::before { border-color: rgba(255, 255, 255, .85); }
 }
+
+/* أطلسنا's two tabs under its title: «المدن» (the maps) and «الأماكن» (every place, area by area) */
+.at-tabs { display: flex; justify-content: center; gap: 10px; margin: 0 0 26px; }
+.at-tab { display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; font: 800 1rem var(--f-body); color: var(--text); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--ink, #37353f); cursor: pointer; transition: translate .15s, box-shadow .15s; }
+.at-tab:hover { translate: 0 -2px; }
+.at-tab.is-on { color: #fff; background: var(--coral-deep, #d9534f); }
+.at-pane[hidden] { display: none; }
