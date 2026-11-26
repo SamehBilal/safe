@@ -10,6 +10,8 @@ import { doodle } from '../doodles.js';
 const yr = (y) => num(+y).replace(/[٬,]/g, '');
 const GIZA = { ar: 'الجيزة', en: 'Giza' }, CAIRO = { ar: 'القاهرة', en: 'Cairo' };
 /** the area a place sits in on the map — «Cairo & Giza» split by its address */
+/** a place on the border of two towns (the Zifta–Mit Ghamr bridge) names the other in "alsoIn": it is in both */
+const areasOf = (m) => [areaOf(m), ...[].concat(m.alsoIn || [])].filter(Boolean);
 const areaOf = (m) => (m.area && /Cairo/i.test(m.area.en || '') ? (/الجيزة|Giza/i.test(`${m.where?.ar || ''} ${m.where?.en || ''}`) ? GIZA : CAIRO) : m.area);
 
 /* Our places on a map, after Codrops' «Interactive Points»: a faded street map with a pin for every place we've been.
@@ -45,10 +47,10 @@ export default {
 	title: { ar: 'أماكننا', en: 'Our places' },
 	render(s) {
 		const list = s.places || [];
-		const pinned = list.map((m) => ({ m, at: where(m) })).filter((p) => p.at);
+		const pinned = list.flatMap((m) => { const at = where(m); return at ? areasOf(m).map((ar) => ({ m, at, ar })) : []; });
 		// "area": { ar, en } groups places on one map (Cairo & Giza, Tanta, …); the buttons switch between them
-		const names = [...new Set(pinned.map(({ m }) => T(areaOf(m))))].sort((a, b) => pinned.filter((p) => T(areaOf(p.m)) === b).length - pinned.filter((p) => T(areaOf(p.m)) === a).length);
-		pinned.forEach((p) => { p.a = names.indexOf(T(areaOf(p.m))); });
+		const names = [...new Set(pinned.map((p) => T(p.ar)))].sort((a, b) => pinned.filter((p) => T(p.ar) === b).length - pinned.filter((p) => T(p.ar) === a).length);
+		pinned.forEach((p) => { p.a = names.indexOf(T(p.ar)); });
 		return `
 		${hero(list, pinned, names)}
 		${pageHead(L('أماكننا', 'Our places'), L('أماكن فيها حتة مننا', 'Places that hold a piece of us'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }], { band: '' })}
@@ -88,9 +90,9 @@ export default {
 	},
 	after(main, s) {
 		const box = $('.ip', main);
-		const pinned = (s.places || []).filter(where);
-		const names = [...new Set(pinned.map((m) => T(areaOf(m))))].sort((a, b) => pinned.filter((m) => T(areaOf(m)) === b).length - pinned.filter((m) => T(areaOf(m)) === a).length);
-		if (box) points(box, pinned.map(where), pinned.map((m) => names.indexOf(T(areaOf(m)))));
+		const pinned = (s.places || []).flatMap((m) => (where(m) ? areasOf(m).map((ar) => ({ m, ar })) : []));
+		const names = [...new Set(pinned.map((p) => T(p.ar)))].sort((a, b) => pinned.filter((p) => T(p.ar) === b).length - pinned.filter((p) => T(p.ar) === a).length);
+		if (box) points(box, pinned.map((p) => where(p.m)), pinned.map((p) => names.indexOf(T(p.ar))));
 		const toMap = (area, k) => {
 			$('.ip', main)?.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
 			setTimeout(() => {
@@ -134,10 +136,10 @@ function hero(list, pinned, names) {
 function groups(list, pinned, names) {
 	const order = [...names, ''];
 	const by = new Map(order.map((n) => [n, []]));
-	for (const m of list) { const n = pinned.some((p) => p.m === m) ? T(areaOf(m)) : ''; (by.get(n) || by.set(n, []).get(n)).push(m); }
+	for (const m of list) { const mine = pinned.filter((p) => p.m === m); for (const n of mine.length ? mine.map((p) => T(p.ar)) : ['']) (by.get(n) || by.set(n, []).get(n)).push(m); }
 	return [...by.entries()].filter(([, ms]) => ms.length).map(([n, ms]) => `<section class="pz-area">
 		<h2 class="pz-area__h"><span class="pz-area__pin" aria-hidden="true">${doodle('pin', 18)}</span>${(n || L('أماكن تانية', 'Elsewhere'))}<small>${L(`${num(ms.length)} ${ms.length === 1 ? 'مكان' : ms.length <= 10 ? 'أماكن' : 'مكان'}`, `${ms.length} place${ms.length === 1 ? '' : 's'}`)}</small></h2>
-		<div class="pz-grid">${ms.map((m, i) => { const k = pinned.findIndex((p) => p.m === m); return `<article class="pz-card reveal" style="--i:${i}">
+		<div class="pz-grid">${ms.map((m, i) => { const k = pinned.findIndex((p) => p.m === m && T(p.ar) === n); return `<article class="pz-card reveal" style="--i:${i}">
 			<span class="pz-card__pin"><span class="pz-card__ph">${doodle('pin', 40)}${m.photo ? `<span class="pz-card__img" data-media-box>${img(m.photo, App.t(m.title), 'zoom')}</span>` : ''}</span></span>
 			<div class="pz-card__body">
 				${m.date ? `<p class="pz-card__date">${fmtDate(m.date)}</p>` : ''}

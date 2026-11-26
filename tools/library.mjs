@@ -32,7 +32,7 @@ const NAMES = {
 	cairo: ['القاهرة', 'Cairo'], giza: ['الجيزة', 'Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'], zifta: ['زفتى', 'Zifta'], 'mit-ghamr': ['ميت غمر', 'Mit Ghamr']
 };
 /* the area on the places map each city folder belongs to */
-const AREA = { cairo: ['القاهرة والجيزة', 'Cairo & Giza'], giza: ['القاهرة والجيزة', 'Cairo & Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['إسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'], zifta: ['زفتى', 'Zifta'], 'mit-ghamr': ['ميت غمر', 'Mit Ghamr'] };
+const AREA = { cairo: ['القاهرة والجيزة', 'Cairo & Giza'], giza: ['القاهرة والجيزة', 'Cairo & Giza'], tanta: ['طنطا', 'Tanta'], zagazig: ['الزقازيق', 'Zagazig'], alexandria: ['الإسكندرية', 'Alexandria'], dahab: ['دهب', 'Dahab'], sahel: ['الساحل', 'Sahel'], zifta: ['زفتى', 'Zifta'], 'mit-ghamr': ['ميت غمر', 'Mit Ghamr'] };
 
 const nice = (s) => s.replace(/[-_]+/g, ' ').trim();
 const name = (seg) => {
@@ -129,7 +129,7 @@ export async function library(mediaDir) {
 				out.count += files.length;
 				if (meta.at && !out.newPlaces.some((p) => p.id === id)) {
 					const a = AREA[city.toLowerCase()];
-					out.newPlaces.push({ id, title: meta.title || name(id), where: meta.where || name(city), at: meta.at, area: meta.area || (a ? { ar: a[0], en: a[1] } : name(city)), ...(meta.place || meta.note ? { place: meta.place || meta.note } : {}), ...(meta.date ? { date: meta.date } : {}), ...(meta.album ? { album: meta.album } : {}), ...(meta.maps ? { maps: meta.maps } : {}) });
+					out.newPlaces.push({ id, title: meta.title || name(id), where: meta.where || name(city), at: meta.at, area: meta.area || (a ? { ar: a[0], en: a[1] } : name(city)), ...(meta.place || meta.note ? { place: meta.place || meta.note } : {}), ...(meta.date ? { date: meta.date } : {}), ...(meta.album ? { album: meta.album } : {}), ...(meta.maps ? { maps: meta.maps } : {}), ...(meta.alsoIn ? { alsoIn: meta.alsoIn } : {}) });
 				}
 			}
 		}
