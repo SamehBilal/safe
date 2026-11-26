@@ -87,22 +87,28 @@ export default {
 			const own = String(pick.text || '').split(SPLIT)[0];
 			const pct = Math.round((him / all.length) * 100);
 			const y0 = years.length ? num(+years[0]).replace(/[٬,]/g, '') : '', y1 = years.length ? num(+years.at(-1)).replace(/[٬,]/g, '') : '';
-			box.innerHTML = `<div class="jh-book">
-				<div class="jh-page jh-page--pick">
-					<p class="jh-tag">${doodle('dice', 15)} ${L('صفحة من الدفتر', 'A page from the journal')}</p>
-					<div class="jh-pick__hd"><span class="jp-mood">${doodle(pick.mood, 30)}</span><time class="jp-date">${longDate(pick.date)}</time></div>
-					<h3 dir="auto">${esc(pick.title || longDate(pick.date))}</h3>
-					<p class="jh-pick__tx" dir="auto">${esc(own)}</p>
-					<p class="jh-pick__by">— ${name(pick.by)}</p>
-					<div class="jh-btns"><a class="btn btn--sm" href="#${esc(pick.id)}" data-go>${doodle('book', 16)} ${Y('اقرا الصفحة', 'اقري الصفحة', 'Read the page')}</a><button class="btn btn--sm btn--ghost" type="button" id="jh-next">${doodle('shuffle', 16)} ${L('صفحة تانية', 'Another page')}</button></div>
+			/* the top, straight on the page: a page torn out of the journal and taped down, two more sheets fanned under it;
+			   beside it the count in handwriting, the years, a pencil for each of us as long as our share of the pages, the
+			   moods as round stickers, and the buttons */
+			const pen = (who, n) => `<li class="jh2-pen is-${who}" style="--w:${Math.max(14, Math.round((n / all.length) * 92))}%"><span class="jh2-pen__who">${name(who)}</span><span class="jh2-pen__body"><i class="jh2-pen__tip" aria-hidden="true"></i><b>${num(n)}</b></span></li>`;
+			box.innerHTML = `<div class="jh2">
+				<div class="jh2-stack">
+					<span class="jh2-under jh2-under--1" aria-hidden="true"></span><span class="jh2-under jh2-under--2" aria-hidden="true"></span>
+					<article class="jh2-sheet">
+						<span class="jh2-tape" aria-hidden="true"></span>
+						<p class="jh-tag">${doodle('dice', 15)} ${L('صفحة من الدفتر', 'A page from the journal')}</p>
+						<div class="jh-pick__hd"><span class="jp-mood">${doodle(pick.mood, 30)}</span><time class="jp-date">${longDate(pick.date)}</time></div>
+						<h3 dir="auto">${esc(pick.title || longDate(pick.date))}</h3>
+						<p class="jh-pick__tx" dir="auto">${esc(own)}</p>
+						<p class="jh-pick__by">— ${name(pick.by)}</p>
+					</article>
 				</div>
-				<span class="jh-spiral" aria-hidden="true"></span>
-				<div class="jh-page jh-page--facts">
-					<p class="jh-count"><b>${num(all.length)}</b> <span>${L('صفحة كتبناها', all.length === 1 ? 'page we wrote' : 'pages we wrote')}</span></p>
+				<div class="jh2-facts">
+					<p class="jh2-count"><b>${num(all.length)}</b><span>${L('صفحة كتبناها سوا', all.length === 1 ? 'page we wrote together' : 'pages we wrote together')}</span></p>
 					${years.length ? `<p class="jh-years">${doodle('calendar', 15)} ${L(`من ${y0} لـ ${y1}`, `from ${years[0]} to ${years.at(-1)}`)}</p>` : ''}
-					<div class="jh-split" role="img" aria-label="${esc(`${name('him')} ${him}، ${name('her')} ${her}`)}"><span class="jh-split__bar"><i class="is-him" style="width:${pct}%"></i><i class="is-her" style="width:${100 - pct}%"></i></span><span class="jh-split__who"><span class="is-him">${name('him')} <b>${num(him)}</b></span><span class="is-her">${name('her')} <b>${num(her)}</b></span></span></div>
-					${top.length ? `<p class="jh-moods-h">${L('كتبنا وإحنا…', 'We wrote while…')}</p><ul class="jh-moods">${top.map(([k, n]) => `<li>${doodle(k, 26)}<span>${esc(L(...(MOOD_NAME[k] || [k, k])))}</span><b>${num(n)}</b></li>`).join('')}</ul>` : ''}
-					${live.canWrite() ? `<button class="btn btn--coral btn--sm" type="button" id="jh-write">${doodle('pen', 16)} ${Y('اكتب صفحة جديدة', 'اكتبي صفحة جديدة', 'Write a new page')}</button>` : ''}
+					<ul class="jh2-pens" aria-label="${esc(`${name('him')} ${him}، ${name('her')} ${her}`)}">${pen('him', him)}${pen('her', her)}</ul>
+					${top.length ? `<p class="jh-moods-h">${L('كتبنا وإحنا…', 'We wrote while…')}</p><ul class="jh2-moods">${top.map(([k, n], i) => `<li style="--k:${i}">${doodle(k, 26)}<span>${esc(L(...(MOOD_NAME[k] || [k, k])))}</span><b>${num(n)}</b></li>`).join('')}</ul>` : ''}
+					<div class="jh-btns"><a class="btn btn--sm" href="#${esc(pick.id)}" data-go>${doodle('book', 16)} ${Y('اقرا الصفحة', 'اقري الصفحة', 'Read the page')}</a><button class="btn btn--sm btn--ghost" type="button" id="jh-next">${doodle('shuffle', 16)} ${L('صفحة تانية', 'Another page')}</button>${live.canWrite() ? `<button class="btn btn--coral btn--sm" type="button" id="jh-write">${doodle('pen', 16)} ${Y('اكتب صفحة جديدة', 'اكتبي صفحة جديدة', 'Write a new page')}</button>` : ''}</div>
 				</div>
 			</div>`;
 			$('#jh-next', box).onclick = hero;

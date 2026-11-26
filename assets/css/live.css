@@ -2033,3 +2033,41 @@ button.cal-d.is-late { color: #6d4bb3; background: #fffdf8; border-style: dashed
 	.cal-hero__tx { grid-column: 1; grid-row: 2; }
 	.cal-hero > .cal-stamp { grid-column: 2; grid-row: 2; align-self: center; }
 }
+
+/* دفترنا: the top straight on the page, no notebook frame — a page torn out of the journal and taped down, two more
+   sheets fanned under it (it drops in again when another page is picked); beside it the count in handwriting, a pencil
+   for each of us as long as our share of the pages, the moods as round stickers, and the buttons */
+.jh2 { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 72px); align-items: center; max-width: 1060px; margin: 0 auto; padding-top: 10px; }
+.jh2-stack { position: relative; padding: 14px 10px 18px; }
+.jh2-under { position: absolute; inset: 22px 18px 10px; background: #fffdf8 repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .12) 31px 32px); border: 1.5px solid rgba(55, 53, 63, .5); box-shadow: 0 8px 16px -8px rgba(30, 20, 10, .3); }
+.jh2-under--1 { rotate: -5deg; translate: -10px 6px; }
+.jh2-under--2 { rotate: 4deg; translate: 12px 2px; background-color: #fbf6ea; }
+.jh2-sheet { position: relative; display: grid; gap: 10px; padding: 28px clamp(18px, 3vw, 30px) 22px clamp(36px, 4.4vw, 50px); color: #2b2b33; background: #fffdf8 repeating-linear-gradient(transparent 0 31px, rgba(14, 105, 144, .14) 31px 32px) 0 18px; border: 1.5px solid #37353f; rotate: -1deg; box-shadow: 0 14px 26px -14px rgba(30, 20, 10, .45); animation: jh2-in .5s cubic-bezier(.3, .7, .3, 1); }
+/* the torn top edge, and the red margin line */
+.jh2-sheet::before { content: ''; position: absolute; top: -1.5px; inset-inline: -1.5px; height: 8px; background: conic-gradient(from 135deg at 50% 0, var(--bg, #f8f5ef) 90deg, transparent 0) 0 0 / 12px 8px repeat-x; }
+.jh2-sheet::after { content: ''; position: absolute; top: 10px; bottom: 0; inset-inline-start: clamp(24px, 3vw, 34px); border-inline-start: 1.5px solid rgba(217, 83, 79, .5); }
+@keyframes jh2-in { from { opacity: 0; rotate: -6deg; translate: 0 -10px; } }
+.jh2-tape { position: absolute; z-index: 2; top: -12px; left: 50%; width: 110px; height: 24px; translate: -50% 0; rotate: 3deg; background: rgba(253, 200, 48, .75) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); }
+.jh2-sheet .jh-tag { position: relative; z-index: 1; }
+.jh2-sheet h3 { margin: 0; font: 700 1.7rem/1.2 var(--f-hand); color: #133447; }
+.jh2-facts { display: grid; gap: 14px; justify-items: start; }
+.jh2-count { display: grid; margin: 0; }
+.jh2-count b { font: 400 clamp(4rem, 10vw, 6.4rem)/.9 var(--f-label); color: #c2185b; }
+.jh2-count span { font: 700 clamp(1.4rem, 2.8vw, 1.9rem)/1.2 var(--f-hand); color: var(--text); }
+/* a pencil each: the name, then a pencil as long as the share, the count written on it */
+.jh2-pens { display: grid; gap: 12px; width: 100%; margin: 0; padding: 0; list-style: none; }
+.jh2-pen { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); align-items: center; gap: 10px; }
+.jh2-pen__who { font-weight: 800; font-size: .9rem; color: var(--text); }
+.jh2-pen__body { position: relative; display: flex; align-items: center; justify-content: flex-end; width: var(--w); height: 22px; box-sizing: border-box; background: linear-gradient(transparent 30%, rgba(255, 255, 255, .25) 30% 45%, transparent 45%), var(--pc); border: 1.5px solid #37353f; border-start-start-radius: 4px; border-end-start-radius: 4px; animation: jh2-grow 1s .2s cubic-bezier(.3, .7, .3, 1) both; }
+.jh2-pen.is-him { --pc: #0e6990; }
+.jh2-pen.is-her { --pc: #e0507f; }
+.jh2-pen__body b { position: relative; z-index: 1; padding-inline: 8px; font: 400 1rem/1 var(--f-label); color: #fff; }
+.jh2-pen__tip { position: absolute; inset-inline-end: -17px; top: -1.5px; width: 16px; height: 22px; background: linear-gradient(90deg, #e9c98f 0 70%, #37353f 70%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+:root[dir='rtl'] .jh2-pen__tip { background: linear-gradient(270deg, #e9c98f 0 70%, #37353f 70%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+@keyframes jh2-grow { from { width: 14%; } }
+.jh2-moods { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.jh2-moods li { position: relative; display: grid; align-content: center; justify-items: center; width: 76px; aspect-ratio: 1; padding: 6px 4px; color: #d9534f; text-align: center; background: var(--card); border: 1.5px solid #37353f; border-radius: 50%; rotate: calc((var(--k) * 2 - 3) * 3deg); box-shadow: 2px 2px 0 color-mix(in srgb, #c2185b 30%, transparent); }
+.jh2-moods li span { font-weight: 700; font-size: .66rem; color: #2b2b33; }
+.jh2-moods li b { position: absolute; top: -6px; inset-inline-end: -4px; min-width: 22px; padding: 1px 5px; font: 400 .85rem/1.2 var(--f-label); color: #fff; background: #c2185b; border-radius: 999px; }
+@media (max-width: 820px) { .jh2 { grid-template-columns: minmax(0, 1fr); } .jh2-facts { justify-items: center; text-align: center; } .jh2-facts .jh-btns, .jh2-moods { justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .jh2-sheet, .jh2-pen__body { animation: none; } }
