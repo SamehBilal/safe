@@ -59,10 +59,13 @@ export default {
 				<ul class="at-facts" id="at-facts"><li><b>…</b></li></ul>
 				<p class="at-hint">${doodle('pin', 14)} ${L('دوس على أي محافظة ملونة تفتح مدينتها', 'Tap a coloured governorate to open its city')}</p>
 			</div>
-		</div></div></section>
+		</div>
+		<!-- the top of «أماكننا» and the top of «خرايط مدننا» in one: every city a map pin (a place's photo in its head, how many
+		     places on it) hanging its street poster on a string, the way the cities hang on their wall — tap one to open it -->
+		<ol class="at-hang" id="at-strip" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></ol>
+		</div></section>
 		${pageHead(L('أطلسنا', 'Our atlas'), L('كل مدينة رحناها، وكل مكان فيها بصوره', 'Every city we’ve been to, and every place in it with its photos'), [{ href: 'atlas.html', ar: 'أطلسنا', en: 'Our atlas' }], { band: '' })}
 		<section class="sec"><div class="wrap">
-			<div class="at-strip" id="at-strip" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
 			<div class="at-city" id="at-city">
 				<div class="at-map" id="at-map" style="direction:ltr">
 					<div class="at-map__tiles" aria-hidden="true"></div>
@@ -121,16 +124,18 @@ export default {
 
 		/* the cities as a row of posters */
 		const strip = $('#at-strip', main);
-		strip.innerHTML = list.map((c, k) => `<button class="at-card" type="button" role="tab" data-c="${esc(c.id)}" style="--k:${k}">
+		strip.innerHTML = list.map((c, k) => { const ph = c.places.find((p) => p.photos.length)?.photos[0]; return `<li style="--k:${k}"><button class="at-card" type="button" role="tab" data-c="${esc(c.id)}">
+			<span class="at-card__pin pz-pin__head">${doodle('pin', 26)}${ph ? `<span class="pz-pin__ph" data-media-box>${img(ph, '')}</span>` : ''}<i class="pz-pin__n">${num(c.places.length)}</i></span>
+			<span class="at-card__string" aria-hidden="true"></span>
 			<span class="at-card__map" style="direction:ltr"><span class="at-card__tiles"></span><span class="at-card__dots"></span></span>
 			<b>${esc(L(c.ar, c.en))}</b><small>${L(`${num(c.places.length)} ${c.places.length === 1 ? 'مكان' : c.places.length <= 10 ? 'أماكن' : 'مكان'}`, `${c.places.length} place${c.places.length === 1 ? '' : 's'}`)}</small>
-		</button>`).join('');
+		</button></li>`; }).join('');
 		for (const card of $$('[data-c]', strip)) {
 			const c = list.find((x) => x.id === card.dataset.c), t = $('.at-card__tiles', card);
 			const v = fit(t, [...c.places.map((p) => p.at), centreOf(c)], { pad: 18, zoom: 12, maxZ: 13, minZ: 7, center: centreOf(c), poster: true, detail: 2 });
 			$('.at-card__dots', card).innerHTML = c.places.map((p) => { const xy = v.at(p.at); return `<i style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px"></i>`; }).join('');
 		}
-		strip.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) show(b.dataset.c); });
+		strip.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (!b) return; show(b.dataset.c); $('#at-city', main).scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); });
 
 		/* the open city: its poster with a gold pin for every place, and the list of its places */
 		const peek = (i) => {
