@@ -1832,3 +1832,18 @@
 	:root:not([data-theme='light']) .cm::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
 	:root:not([data-theme='light']) .cm::before { border-color: rgba(255, 255, 255, .85); }
 }
+/* أطلسنا keeps its night maps in both themes: the open city and the hanging posters stay white streets on black with
+   gold pins (only «خرايط مدننا» follows the light and the dark) */
+:root .at-card__tiles, :root .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8); mix-blend-mode: normal; opacity: 1; }
+:root .at-card__map, :root .at-hang .at-card__map, :root .at-map { background: #16181d; }
+:root .at-card__dots i { background: #fdc830; box-shadow: 0 0 6px #fdc830; }
+:root .at-map__name { color: #f3efe4; text-shadow: 0 2px 8px #000; }
+:root .at-map__credit { color: #888; }
+:root .at-card { color: #f3efe4; background: #16181d; }
+:root .at-hang .at-card { color: var(--text); background: none; }
+:root .at-card small { color: #c9c2b2; }
+:root .at-hang .at-card small { color: var(--muted); }
+:root .at-pin path { fill: #fdc830; stroke: #16181d; filter: drop-shadow(0 0 6px rgba(253, 200, 48, .6)); }
+:root .at-pin circle { fill: #16181d; }
+:root .at-pin.has-ph path { fill: #ffd95a; }
+:root .at-map__photo { mix-blend-mode: screen; }
