@@ -54,7 +54,8 @@ export default {
 		${pageHead(L('أماكننا', 'Our places'), L('أماكن فيها حتة مننا', 'Places that hold a piece of us'), [{ href: 'places.html', ar: 'أماكننا', en: 'Our places' }], { band: '' })}
 		${pinned.length ? `<section class="sec sec--top"><div class="wrap">
 			<p class="ip-hint" data-touch="${L('دوسي على أي دبوس على الخريطة', 'Tap any pin on the map')}">${L('قرّبي من أي دبوس على الخريطة… واضغطي عليه', 'Bring the mouse near a pin on the map… then click it')}</p>
-			${names.length > 1 ? `<div class="chips ip-areas pz-tabs" role="toolbar" aria-label="${L('المنطقة', 'Area')}">${names.map((n, k) => `<button class="chip${k ? '' : ' is-on'}" type="button" data-area="${k}" aria-pressed="${!k}"><i class="pz-tab__pin" aria-hidden="true"></i>${esc(n || L('أماكن تانية', 'Elsewhere'))} <small>${num(pinned.filter((p) => p.a === k).length)}</small></button>`).join('')}</div>` : ''}
+			<div class="pz-mapwrap">
+			${names.length > 1 ? `<div class="chips ip-areas pz-tabs" role="toolbar" aria-label="${L('المنطقة', 'Area')}">${names.map((n, k) => `<button class="chip${k ? '' : ' is-on'}" type="button" data-area="${k}" aria-pressed="${!k}"><i class="pz-tab__pin" aria-hidden="true"></i>${(n || L('أماكن تانية', 'Elsewhere'))} <small>${num(pinned.filter((p) => p.a === k).length)}</small></button>`).join('')}</div>` : ''}
 			<div class="ip" id="ip-map" tabindex="-1" aria-label="${L('خريطة أماكننا', 'Map of our places')}">
 				<div class="ip__map" aria-hidden="true"></div>
 				<div class="ip__bgs" aria-hidden="true">${pinned.map(({ m }) => `<div class="ip__bg">${photosOf(m).map((p, j) => (j ? img(p, '', 'ip__photo').replace('data-m=', 'data-later=') : img(p, '', 'ip__photo is-on'))).join('')}</div>`).join('')}</div>
@@ -77,6 +78,7 @@ export default {
 					<button class="ip__close" type="button" aria-label="${L('اقفلي', 'Close')}">✕</button>
 				</div>
 				<p class="ip__credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p>
+			</div>
 			</div>
 		</div></section>` : ''}
 		<section class="sec${pinned.length ? '' : ' sec--top'}"><div class="wrap">
@@ -120,7 +122,7 @@ function hero(list, pinned, names) {
 			<svg class="pz-route__line" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><path d="M10 44 C 120 6, 220 58, 330 30 S 540 4, 660 34 S 880 56, 990 18"/></svg>
 			<ol class="pz-pins">${areas.map((a, i) => `<li style="--i:${i}"><a href="#ip-map" class="pz-pin" data-go-area="${a.k}">
 				<span class="pz-pin__head">${doodle('pin', 30)}${a.photo ? `<span class="pz-pin__ph" data-media-box>${img(a.photo, '', 'pz-pin__img')}</span>` : ''}<i class="pz-pin__n">${num(a.count)}</i></span>
-				<b>${esc(a.n || L('أماكن تانية', 'Elsewhere'))}</b>
+				<b>${(a.n || L('أماكن تانية', 'Elsewhere'))}</b>
 			</a></li>`).join('')}</ol>
 		</div>
 		${pinned.length ? `<p class="pz-hint">${doodle('pin', 14)} ${L('دوس على أي دبوس عشان تفتح المنطقة على الخريطة', 'Tap a pin to open its area on the map')}</p>` : ''}
@@ -134,7 +136,7 @@ function groups(list, pinned, names) {
 	const by = new Map(order.map((n) => [n, []]));
 	for (const m of list) { const n = pinned.some((p) => p.m === m) ? T(areaOf(m)) : ''; (by.get(n) || by.set(n, []).get(n)).push(m); }
 	return [...by.entries()].filter(([, ms]) => ms.length).map(([n, ms]) => `<section class="pz-area">
-		<h2 class="pz-area__h"><span class="pz-area__pin" aria-hidden="true">${doodle('pin', 18)}</span>${esc(n || L('أماكن تانية', 'Elsewhere'))}<small>${L(`${num(ms.length)} ${ms.length === 1 ? 'مكان' : ms.length <= 10 ? 'أماكن' : 'مكان'}`, `${ms.length} place${ms.length === 1 ? '' : 's'}`)}</small></h2>
+		<h2 class="pz-area__h"><span class="pz-area__pin" aria-hidden="true">${doodle('pin', 18)}</span>${(n || L('أماكن تانية', 'Elsewhere'))}<small>${L(`${num(ms.length)} ${ms.length === 1 ? 'مكان' : ms.length <= 10 ? 'أماكن' : 'مكان'}`, `${ms.length} place${ms.length === 1 ? '' : 's'}`)}</small></h2>
 		<div class="pz-grid">${ms.map((m, i) => { const k = pinned.findIndex((p) => p.m === m); return `<article class="pz-card reveal" style="--i:${i}">
 			<span class="pz-card__pin"><span class="pz-card__ph">${doodle('pin', 40)}${m.photo ? `<span class="pz-card__img" data-media-box>${img(m.photo, App.t(m.title), 'zoom')}</span>` : ''}</span></span>
 			<div class="pz-card__body">

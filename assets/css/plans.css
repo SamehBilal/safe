@@ -1644,3 +1644,16 @@
 	.pz-pin__head { width: clamp(60px, 7.4vw, 90px); height: clamp(60px, 7.4vw, 90px); }
 	.pz-pin b { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: clamp(.74rem, 1.1vw, .92rem); }
 }
+/* أماكننا: the area buttons in a column beside the map, as tall as the map, scrolling without a scrollbar when there
+   are more than fit; on a phone they go back above it in a row that scrolls sideways */
+.pz-mapwrap { display: grid; grid-template-columns: minmax(160px, 210px) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.pz-mapwrap > .ip-areas { display: flex; flex-direction: column; flex-wrap: nowrap; justify-content: flex-start; gap: 8px; max-height: clamp(420px, 68vh, 720px); margin: 0; padding: 4px 6px 8px 4px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.pz-mapwrap > .ip-areas::-webkit-scrollbar { display: none; }
+.pz-mapwrap > .ip-areas .chip { flex: none; justify-content: flex-start; width: 100%; text-align: start; }
+.pz-mapwrap > .ip-areas .chip small { margin-inline-start: auto; }
+.pz-mapwrap > .ip { min-width: 0; }
+@media (max-width: 760px) {
+	.pz-mapwrap { grid-template-columns: minmax(0, 1fr); }
+	.pz-mapwrap > .ip-areas { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: visible; padding-bottom: 8px; }
+	.pz-mapwrap > .ip-areas .chip { width: auto; }
+}
