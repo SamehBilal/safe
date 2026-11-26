@@ -1577,3 +1577,70 @@
 /* حكايتنا: the cord of years scrolls without a scrollbar (it drifts by on its own) */
 .sy__string { scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: none; }
 .sy__string::-webkit-scrollbar { display: none; }
+
+/* ---------- أماكننا (places.html): everything shaped like a map pin — the areas as big pins dropped on a dotted route,
+   the map's area buttons as little pins, and every place's photo in a pin-shaped frame ---------- */
+.pz-head { display: grid; justify-items: center; gap: 8px; text-align: center; }
+.pz-t { margin: 0; font: 400 clamp(3rem, 8vw, 4.8rem)/1.05 var(--f-script); color: var(--coral-deep, #d9534f); }
+.pz-sub { margin: 0; font-size: 1.05rem; color: var(--muted); }
+.pz-sub b { font: 400 1.8rem/1 var(--f-label); color: var(--text); }
+.pz-route { position: relative; max-width: 1080px; margin: clamp(18px, 3vw, 30px) auto 0; padding: 18px 0 6px; }
+.pz-route__line { position: absolute; inset-inline: 0; top: 70px; width: 100%; height: 60px; overflow: visible; }
+.pz-route__line path { fill: none; stroke: color-mix(in srgb, var(--coral, #f2726f) 65%, transparent); stroke-width: 3; stroke-dasharray: 2 10; stroke-linecap: round; }
+.pz-pins { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px clamp(14px, 3vw, 34px); margin: 0; padding: 0; list-style: none; }
+.pz-pins li { animation: pz-drop .7s cubic-bezier(.34, 1.5, .5, 1) both; animation-delay: calc(.2s + var(--i) * 110ms); }
+.pz-pins li:nth-child(even) { margin-top: 26px; }
+@keyframes pz-drop { from { opacity: 0; translate: 0 -40px; } }
+.pz-pin { display: grid; justify-items: center; gap: 10px; color: var(--text); text-decoration: none; }
+/* the pin: a teardrop turned point-down, a photo in its head, a soft shadow under the point */
+.pz-pin__head { position: relative; display: grid; place-items: center; width: 92px; height: 92px; overflow: visible; color: #fff; background: var(--coral-deep, #d9534f); border: 3px solid var(--ink, #37353f); border-radius: 50% 50% 50% 0; rotate: -45deg; box-shadow: -4px 4px 0 color-mix(in srgb, var(--ink, #37353f) 25%, transparent); transition: translate .25s, rotate .25s; }
+.pz-pin__head::after { content: ''; position: absolute; bottom: -22px; left: -22px; width: 26px; height: 8px; rotate: 45deg; background: radial-gradient(closest-side, rgba(30, 20, 10, .3), transparent); }
+.pz-pin__head > img, .pz-pin__head > [data-media-box], .pz-pin__head > .pz-pin__img { position: absolute; inset: 7px; width: calc(100% - 14px); height: calc(100% - 14px); object-fit: cover; border-radius: 50%; rotate: 45deg; border: 2px solid #fffdf6; }
+.pz-pin__head > svg { rotate: 45deg; }
+.pz-pin__n { position: absolute; top: -8px; right: -8px; display: grid; place-items: center; min-width: 30px; height: 30px; padding: 0 6px; font: 400 1.05rem/1 var(--f-label); font-style: normal; color: #2b2b33; background: var(--hl-yellow, #fdc830); border: 2px solid var(--ink, #37353f); border-radius: 999px; rotate: 45deg; }
+.pz-pin b { font-weight: 800; font-size: .92rem; }
+.pz-pin:hover .pz-pin__head, .pz-pin:focus-visible .pz-pin__head { translate: 0 -8px; }
+.pz-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 16px 0 0; font: 700 1.1rem var(--f-hand); color: var(--muted); }
+:lang(ar) .pz-hint { font: 700 .85rem var(--f-body); }
+
+/* the map's area buttons as little pins */
+.pz-tabs { justify-content: center; }
+.pz-tabs .chip { display: inline-flex; align-items: center; gap: 6px; }
+.pz-tab__pin { width: 12px; height: 12px; background: color-mix(in srgb, var(--coral, #f2726f) 45%, var(--card)); border: 1.5px solid var(--ink, #37353f); border-radius: 50% 50% 50% 0; rotate: -45deg; }
+.pz-tabs .chip.is-on .pz-tab__pin { background: #fff; }
+
+/* the places, area by area */
+.pz-area + .pz-area { margin-top: clamp(36px, 6vw, 60px); }
+.pz-area__h { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; padding-bottom: 10px; font: 400 clamp(1.8rem, 4vw, 2.4rem)/1.1 var(--f-script); color: var(--blue); border-bottom: 2px dashed color-mix(in srgb, var(--coral, #f2726f) 50%, transparent); }
+.pz-area__h small { margin-inline-start: auto; font: 800 .82rem var(--f-body); color: var(--muted); }
+.pz-area__pin { display: grid; place-items: center; width: 34px; height: 34px; color: #fff; background: var(--coral-deep, #d9534f); border: 2px solid var(--ink, #37353f); border-radius: 50% 50% 50% 0; rotate: -45deg; }
+.pz-area__pin svg { rotate: 45deg; }
+.pz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 40px 22px; align-items: start; }
+.pz-card { position: relative; display: grid; justify-items: center; padding: 0 16px 18px; text-align: center; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 14px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--coral, #f2726f) 30%, transparent); margin-top: 52px; }
+/* the photo in a pin-shaped frame sticking out of the card's top, its point on the card */
+.pz-card__pin { display: grid; place-items: center; width: 126px; height: 126px; margin-top: -58px; background: var(--coral-deep, #d9534f); border: 3px solid var(--ink, #37353f); border-radius: 50% 50% 50% 0; rotate: -45deg; box-shadow: -4px 4px 0 color-mix(in srgb, var(--ink, #37353f) 22%, transparent); transition: rotate .3s; }
+.pz-card:hover .pz-card__pin { rotate: -38deg; }
+.pz-card__ph { display: grid; place-items: center; width: calc(100% - 14px); height: calc(100% - 14px); overflow: hidden; color: #fff; border: 2px solid #fffdf6; border-radius: 50%; rotate: 45deg; }
+.pz-card__ph img { width: 100%; height: 100%; object-fit: cover; }
+.pz-card__body { display: grid; justify-items: center; gap: 6px; margin-top: 14px; }
+.pz-card__date { margin: 0; padding: 1px 10px; font: 400 .95rem/1.4 var(--f-label); letter-spacing: .04em; background: var(--hl-yellow, #fdc830); border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
+.pz-card h3 { margin: 0; font-size: 1.15rem; line-height: 1.35; }
+.pz-card__where { display: inline-flex; align-items: center; gap: 4px; margin: 0; font-size: .85rem; font-weight: 700; color: var(--coral-deep, #d9534f); }
+.pz-card__line { margin: 0; font-size: .9rem; line-height: 1.65; color: var(--muted); }
+.pz-card__go { margin-top: 4px; font-weight: 800; font-size: .85rem; color: var(--blue); text-decoration: none; }
+.pz-card__go:hover { text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 4px; }
+@media (max-width: 640px) { .pz-pin__head { width: 70px; height: 70px; } .pz-pins li:nth-child(even) { margin-top: 0; } .pz-route__line { display: none; } }
+@media (prefers-reduced-motion: reduce) { .pz-pins li { animation: none; } }
+/* the photo sits over the pin's own drawing, so a pin keeps its shape if a photo is missing */
+.pz-pin__ph { position: absolute; inset: 7px; overflow: hidden; border: 2px solid #fffdf6; border-radius: 50%; rotate: 45deg; }
+.pz-pin__ph img { width: 100%; height: 100%; object-fit: cover; }
+.pz-card__ph { position: relative; }
+.pz-card__img { position: absolute; inset: 0; }
+.pz-card__img img { width: 100%; height: 100%; object-fit: cover; }
+/* all the areas' pins along one row on a wide screen, each sharing the width */
+@media (min-width: 641px) {
+	.pz-pins { flex-wrap: nowrap; justify-content: space-between; gap: 8px; }
+	.pz-pins li { display: grid; flex: 1 1 0; min-width: 0; justify-items: center; }
+	.pz-pin__head { width: clamp(60px, 7.4vw, 90px); height: clamp(60px, 7.4vw, 90px); }
+	.pz-pin b { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: clamp(.74rem, 1.1vw, .92rem); }
+}
