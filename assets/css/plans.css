@@ -1766,3 +1766,69 @@
 @media (max-width: 640px) { .at-hang li:nth-child(even) { margin-top: 0; } .at-hang .at-card { width: 104px; } .at-hang .at-card__map { width: 96px; height: 96px; } }
 @media (prefers-reduced-motion: reduce) { .at-hang li { animation: none; } }
 .at-card__string { width: 2.5px; background: #5e5242; }
+
+/* ---------- the city maps follow the theme: in the light, black streets on cream paper with our spots in coral and the
+   names in ink; in the dark, white streets on black with gold spots, as before (خرايط مدننا, and the atlas's posters) ---------- */
+.cm { background: #f4efe3; border-color: #fffdf6; outline-color: #37353f; }
+.cm__map, .cm-card--noir .cm-card__tiles, .at-card__tiles, .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8) invert(1); mix-blend-mode: multiply; opacity: .85; }
+.cm__title { color: #1c1f33; }
+.cm__credit, .at-map__credit { color: rgba(28, 31, 51, .55); }
+.cm__pin { background: radial-gradient(circle, #fff 0 24%, #d9534f 32%, rgba(217, 83, 79, .35) 58%, transparent 72%); }
+.cm__pin::after { border-color: rgba(217, 83, 79, .5); }
+.cm__pin.is-on, .cm__pin:hover { background: radial-gradient(circle, #fff 0 28%, #c2185b 38%, rgba(194, 24, 91, .3) 60%, transparent 74%); }
+.cm-card--noir .cm-poster { color: #1c1f33; background: #f6f1e4; border-color: #fffdf6; box-shadow: inset 0 0 0 1px rgba(28, 31, 51, .15), 0 14px 28px rgba(0, 0, 0, .18); }
+.cm-card--noir .cm-card__map, .at-card__map, .at-hang .at-card__map { background: #f4efe3; }
+.cm-card--noir .cm-card__dots i, .at-card__dots i { background: #d9534f; box-shadow: 0 0 0 2px rgba(217, 83, 79, .3); }
+.at-map { background: #f4efe3; }
+.at-map__name { color: #1c1f33; text-shadow: 0 1px 0 #fffdf6, 0 0 12px #fffdf6; }
+.at-card { color: #1c1f33; background: #f6f1e4; }
+.at-card small { color: #5a5548; }
+.at-pin path { fill: #d9534f; stroke: #fffdf6; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .3)); }
+.at-pin circle { fill: #fffdf6; }
+.at-pin.has-ph path { fill: #c2185b; }
+.at-map__photo { mix-blend-mode: multiply; }
+
+/* the dark: the night posters, as they were */
+:root[data-theme='dark'] .cm { background: #050505; border-color: #111; }
+:root[data-theme='dark'] .cm__map, :root[data-theme='dark'] .cm-card--noir .cm-card__tiles, :root[data-theme='dark'] .at-card__tiles, :root[data-theme='dark'] .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8); mix-blend-mode: normal; opacity: 1; }
+:root[data-theme='dark'] .cm__title, :root[data-theme='dark'] .at-map__name { color: #f3efe4; text-shadow: 0 2px 8px #000; }
+:root[data-theme='dark'] .cm__credit, :root[data-theme='dark'] .at-map__credit { color: rgba(255, 255, 255, .6); }
+:root[data-theme='dark'] .cm__pin { background: radial-gradient(circle, #fffbe6 0 26%, rgba(253, 200, 48, .9) 34%, rgba(253, 200, 48, .25) 58%, transparent 72%); }
+:root[data-theme='dark'] .cm__pin::after { border-color: rgba(253, 200, 48, .55); }
+:root[data-theme='dark'] .cm__pin.is-on, :root[data-theme='dark'] .cm__pin:hover { background: radial-gradient(circle, #fff 0 30%, #fdc830 40%, rgba(253, 200, 48, .35) 62%, transparent 74%); }
+:root[data-theme='dark'] .cm-card--noir .cm-poster { color: #fff; background: #0a0a0a; border-color: #161616; box-shadow: none; }
+:root[data-theme='dark'] .cm-card--noir .cm-card__map, :root[data-theme='dark'] .at-card__map, :root[data-theme='dark'] .at-hang .at-card__map, :root[data-theme='dark'] .at-map { background: #16181d; }
+:root[data-theme='dark'] .cm-card--noir .cm-card__dots i, :root[data-theme='dark'] .at-card__dots i { background: #fdc830; box-shadow: 0 0 6px #fdc830; }
+:root[data-theme='dark'] .at-card { color: #f3efe4; background: #16181d; }
+:root[data-theme='dark'] .at-card small { color: #c9c2b2; }
+:root[data-theme='dark'] .at-pin path { fill: #fdc830; stroke: #16181d; filter: drop-shadow(0 0 6px rgba(253, 200, 48, .6)); }
+:root[data-theme='dark'] .at-pin circle { fill: #16181d; }
+:root[data-theme='dark'] .at-pin.has-ph path { fill: #ffd95a; }
+:root[data-theme='dark'] .at-map__photo { mix-blend-mode: screen; }
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) .cm { background: #050505; border-color: #111; }
+	:root:not([data-theme='light']) .cm__map, :root:not([data-theme='light']) .cm-card--noir .cm-card__tiles, :root:not([data-theme='light']) .at-card__tiles, :root:not([data-theme='light']) .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8); mix-blend-mode: normal; opacity: 1; }
+	:root:not([data-theme='light']) .cm__title, :root:not([data-theme='light']) .at-map__name { color: #f3efe4; text-shadow: 0 2px 8px #000; }
+	:root:not([data-theme='light']) .cm__credit, :root:not([data-theme='light']) .at-map__credit { color: rgba(255, 255, 255, .6); }
+	:root:not([data-theme='light']) .cm__pin { background: radial-gradient(circle, #fffbe6 0 26%, rgba(253, 200, 48, .9) 34%, rgba(253, 200, 48, .25) 58%, transparent 72%); }
+	:root:not([data-theme='light']) .cm__pin::after { border-color: rgba(253, 200, 48, .55); }
+	:root:not([data-theme='light']) .cm__pin.is-on, :root:not([data-theme='light']) .cm__pin:hover { background: radial-gradient(circle, #fff 0 30%, #fdc830 40%, rgba(253, 200, 48, .35) 62%, transparent 74%); }
+	:root:not([data-theme='light']) .cm-card--noir .cm-poster { color: #fff; background: #0a0a0a; border-color: #161616; box-shadow: none; }
+	:root:not([data-theme='light']) .cm-card--noir .cm-card__map, :root:not([data-theme='light']) .at-card__map, :root:not([data-theme='light']) .at-hang .at-card__map, :root:not([data-theme='light']) .at-map { background: #16181d; }
+	:root:not([data-theme='light']) .cm-card--noir .cm-card__dots i, :root:not([data-theme='light']) .at-card__dots i { background: #fdc830; box-shadow: 0 0 6px #fdc830; }
+	:root:not([data-theme='light']) .at-card { color: #f3efe4; background: #16181d; }
+	:root:not([data-theme='light']) .at-card small { color: #c9c2b2; }
+	:root:not([data-theme='light']) .at-pin path { fill: #fdc830; stroke: #16181d; filter: drop-shadow(0 0 6px rgba(253, 200, 48, .6)); }
+	:root:not([data-theme='light']) .at-pin circle { fill: #16181d; }
+	:root:not([data-theme='light']) .at-pin.has-ph path { fill: #ffd95a; }
+	:root:not([data-theme='light']) .at-map__photo { mix-blend-mode: screen; }
+}
+/* the city map's fade behind its name and its inner frame line, in cream and ink in the light */
+.cm::after { background: linear-gradient(transparent 58%, rgba(244, 239, 227, .92) 82%, #f4efe3); }
+.cm::before { border-color: rgba(28, 31, 51, .55); }
+:root[data-theme='dark'] .cm::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
+:root[data-theme='dark'] .cm::before { border-color: rgba(255, 255, 255, .85); }
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) .cm::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
+	:root:not([data-theme='light']) .cm::before { border-color: rgba(255, 255, 255, .85); }
+}
