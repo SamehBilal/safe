@@ -89,6 +89,11 @@ export function paintMap(svg, trips, { focus } = {}) {
 		taken.push({ x: p.x + p.dx - p.w / 2, y: p.y + p.dy - H / 2, w: p.w, h: H });
 	}
 	const pins = $('.eg__pins', svg);
+	// the pins and their year tags are drawn again only when the trips change — a draw or a tap on a governorate only
+	// moves the highlight, so they don't drop in again and jump about with every step
+	const key = spots.map((p) => `${p.x},${p.y},${p.label}`).join('|');
+	if (pins.dataset.key === key) return;
+	pins.dataset.key = key;
 	pins.innerHTML = spots.map((p) => `<g class="eg__pin" transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)})"><path d="M0 0c-6-10-16-14-16-26a16 16 0 0 1 32 0c0 12-10 16-16 26Z" fill="#f2726f" stroke="#fff" stroke-width="3"/><circle cy="-26" r="6" fill="#fff"/></g>`).join('')
 		+ spots.map((p) => `<g class="eg__pin" transform="translate(${p.x.toFixed(0)} ${p.y.toFixed(0)})">${p.dx || p.dy !== -61 ? `<path d="M0 -26L${p.dx} ${p.dy}" stroke="#133447" stroke-width="2.5" stroke-linecap="round"/>` : ''}
 			<g transform="translate(${p.dx} ${p.dy})"><rect x="${-p.w / 2}" y="-15" width="${p.w}" height="${H}" rx="15" fill="#133447"/><text text-anchor="middle" dy="7" fill="#fff" font-size="20" font-weight="800">${esc(p.label)}</text></g></g>`).join('');

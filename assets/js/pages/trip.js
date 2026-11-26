@@ -4,10 +4,13 @@ import * as live from '../live.js';
 import { openSketch } from '../sketch.js';
 import { hangWall } from '../hang.js';
 import { setupNote } from './journal.js';
-import { loadTrips, govName, anniversary, mapSVG, paintMap, shrinkPhoto } from './trips.js';
+import { loadTrips, govName, anniversary, mapSVG, paintMap, shrinkPhoto, coverOf, coverHTML } from './trips.js';
 
 /* One anniversary trip: where, when, and every memory either of us added — photos hang on the light strings,
-   notes and sketches sit below. */
+   notes and sketches sit below. The top is a postcard from the trip: its first photo taped on one half; on the other
+   «greetings from» the governorate in big script, which anniversary it was, the date and the place, what we wrote about
+   it on the card's lines, a stamp in the corner with Egypt and that governorate coloured, and a postmark with the year.
+   Under it the trips either side and which one this is. */
 export default {
 	title: { ar: 'رحلة', en: 'A trip' },
 	async load(s) { this.trips = await loadTrips(s); },
@@ -24,19 +27,40 @@ export default {
 		const photos = [...(x.photos || []).map((p) => ({ html: img(typeof p === 'string' ? p : p.photo, '', 'zoom'), caption: typeof p === 'string' ? '' : App.t(p.caption) })),
 			...x.memories.filter((m) => m.img).map((m) => ({ html: `<img class="zoom" data-sketch="${esc(m.img)}" alt="">`, caption: m.text || '', sub: m.by ? App.t(m.by === 'him' ? s.him : s.her) : '' }))];
 		const notes = x.memories.filter((m) => !m.img || m.sketch);
+		const cover = coverOf(x);
+		const ann = anniversary(s, x.year);
+		const yr = App.lang === 'ar' ? String(x.year).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]) : String(x.year);
 		return `
-		${pageHead(`${govName(x.gov)} ${x.year}`, [anniversary(s, x.year), x.place].filter(Boolean).join(' · '), [{ href: 'anniversaries.html', ar: 'عيد جوازنا', en: 'Our anniversaries' }, { href: '#', label: govName(x.gov) }])}
-		<section class="sec sec--top"><div class="wrap">
-			<div class="trip-hero panel reveal">
-				<div class="trip-hero__facts">
-					${x.title ? `<h2 dir="auto">${esc(x.title)}</h2>` : ''}
-					${x.date ? `<p>${doodle('calendar', 18)} ${longDate(x.date)}</p>` : ''}
-					${x.note ? `<p class="lede" style="text-align:start" dir="auto">${esc(x.note)}</p>` : ''}
-					${x.by ? `<p class="muted">${L('سجّلها', 'Logged by')} ${name(x.by)}</p>` : ''}
+		<section class="sec sec--top tp2-top"><div class="wrap">
+			<div class="tp2">
+				<figure class="tp2-ph">
+					<span class="tp2-ph__none">${doodle('suitcase', 80)}</span>
+					${cover ? `<span class="tp2-ph__img" data-media-box>${coverHTML(cover, govName(x.gov))}</span>` : ''}
+					<span class="tp2-tape" aria-hidden="true"></span>
+				</figure>
+				<div class="tp2-back">
+					<span class="tp2-stamp" aria-hidden="true">${mapSVG('eg--mini')}<small>${esc(govName(x.gov))}</small></span>
+					<span class="tp2-post" aria-hidden="true"><small>${L('عيد جوازنا', 'Anniversary')}</small><b>${yr}</b></span>
+					${ann ? `<p class="tp2-k">${doodle('ring', 15)} ${esc(ann)}</p>` : ''}
+					<h2 class="tp2-t"><small>${L('تحيات من', 'Greetings from')}</small>${esc(govName(x.gov))}</h2>
+					<ul class="tp2-lines">
+						${x.date ? `<li>${doodle('calendar', 16)} ${longDate(x.date)}</li>` : ''}
+						${x.place ? `<li dir="auto">${doodle('pin', 16)} ${esc(x.place)}</li>` : ''}
+						${x.title && x.title.trim() !== ann ? `<li class="is-big" dir="auto">${esc(x.title)}</li>` : ''}
+						${x.note ? `<li class="is-note" dir="auto">${esc(x.note)}</li>` : ''}
+						${photos.length ? `<li>${doodle('camera', 16)} ${L(`${photos.length} صورة من الرحلة`, `${photos.length} photo${photos.length === 1 ? '' : 's'} from the trip`)}</li>` : ''}
+					</ul>
+					${x.by ? `<p class="tp2-sign">— ${L('سجّلها', 'logged by')} ${name(x.by)}</p>` : '<p class="tp2-sign">♥</p>'}
 				</div>
-				${mapSVG('eg--mini')}
 			</div>
-
+			<nav class="tp2-nav" aria-label="${L('رحلات تانية', 'Other trips')}">
+				${prev ? `<a href="trip.html?id=${esc(prev.id)}">${doodle(L('forward', 'back'), 16)} <span><small>${L('اللي قبلها', 'Before')}</small><b>${prev.year} · ${esc(govName(prev.gov))}</b></span></a>` : '<span></span>'}
+				<span class="tp2-nav__n">${L(`رحلة ${k + 1} من ${trips.length}`, `Trip ${k + 1} of ${trips.length}`).replace(/\d/g, (d) => (App.lang === 'ar' ? '٠١٢٣٤٥٦٧٨٩'[d] : d))}</span>
+				${next ? `<a href="trip.html?id=${esc(next.id)}"><span><small>${L('اللي بعدها', 'After')}</small><b>${next.year} · ${esc(govName(next.gov))}</b></span> ${doodle(L('back', 'forward'), 16)}</a>` : '<span></span>'}
+			</nav>
+		</div></section>
+		${pageHead(`${govName(x.gov)} ${x.year}`, [ann, x.place].filter(Boolean).join(' · '), [{ href: 'anniversaries.html', ar: 'عيد جوازنا', en: 'Our anniversaries' }, { href: '#', label: govName(x.gov) }], { band: '' })}
+		<section class="sec sec--top"><div class="wrap">
 			${photos.length ? `<div class="hang-night"><h2 class="sec__title">${L('صور الرحلة', 'Trip photos')}</h2>${hangWall(photos)}</div>` : ''}
 
 			${ok ? `<details class="composer reveal" id="mem-composer" style="margin-top:28px"${photos.length || notes.length ? '' : ' open'}>

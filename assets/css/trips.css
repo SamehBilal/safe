@@ -102,3 +102,54 @@
 /* the map's sea and the watch board, a little dimmer at night */
 :root[data-theme='dark'] .trip-map__map { background: radial-gradient(120% 90% at 30% 20%, #1d3640, #152a33 60%, #0f2129); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .trip-map__map { background: radial-gradient(120% 90% at 30% 20%, #1d3640, #152a33 60%, #0f2129); } }
+
+/* ---------- رحلة (trip.html): the top as a postcard from the trip — the photo taped on one half, and on the other
+   «greetings from», the lines we wrote, a stamp with Egypt and the governorate coloured, and a postmark ---------- */
+.tp2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); max-width: 1040px; margin: 0 auto; color: #2b2b33; background: #fffdf6; border: 1.5px solid #37353f; border-radius: 6px; box-shadow: 0 22px 40px -20px rgba(30, 20, 10, .5), calc(var(--bujo-x, 1) * 7px) 7px 0 0 color-mix(in srgb, #0e6990 25%, transparent); rotate: -.6deg; animation: tp2-in .7s cubic-bezier(.3, .7, .3, 1) both; }
+@keyframes tp2-in { from { opacity: 0; rotate: -4deg; translate: 0 18px; } }
+.tp2-ph { position: relative; margin: 14px; min-height: 340px; overflow: visible; background: color-mix(in srgb, #0e6990 10%, #fffdf6); border: 1.5px solid #37353f; }
+.tp2-ph__none { position: absolute; inset: 0; display: grid; place-items: center; color: #0e6990; }
+.tp2-ph__img { position: absolute; inset: 0; }
+.tp2-ph__img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tp2-tape { position: absolute; z-index: 2; top: -12px; inset-inline-start: 20px; width: 96px; height: 24px; rotate: -8deg; background: rgba(253, 200, 48, .78) repeating-linear-gradient(90deg, transparent 0 6px, rgba(255, 255, 255, .35) 6px 9px); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); }
+.tp2-back { position: relative; display: grid; align-content: start; gap: 10px; padding: clamp(22px, 3vw, 34px) clamp(20px, 3vw, 34px) 24px; border-inline-start: 2px dashed rgba(55, 53, 63, .35); }
+/* the stamp: a perforated edge round the map of Egypt with the governorate coloured */
+.tp2-stamp { position: absolute; top: 16px; inset-inline-end: 16px; display: grid; justify-items: center; width: 104px; padding: 8px 8px 4px; background: #fffdf6; border: 1.5px solid #37353f; rotate: 4deg; -webkit-mask: radial-gradient(circle 4px, transparent 96%, #000) -5px -5px / 10px 10px, linear-gradient(#000 0 0) 4px 4px / calc(100% - 8px) calc(100% - 8px) no-repeat; mask: radial-gradient(circle 4px, transparent 96%, #000) -5px -5px / 10px 10px, linear-gradient(#000 0 0) 4px 4px / calc(100% - 8px) calc(100% - 8px) no-repeat; }
+.tp2-stamp .eg { width: 100%; height: auto; }
+.tp2-stamp .eg__gov { fill: #e9e4d8; stroke: #fffdf6; stroke-width: 3; }
+.tp2-stamp .eg__gov.is-focus, .tp2-stamp .eg__dot.is-focus { fill: #f2726f; }
+.tp2-stamp .eg__pins { display: none; }
+.tp2-stamp small { overflow: hidden; max-width: 100%; font: 800 .62rem/1.3 var(--f-body); white-space: nowrap; text-overflow: ellipsis; color: #0e6990; }
+/* the postmark, half over the stamp */
+.tp2-post { position: absolute; top: 96px; inset-inline-end: 92px; display: grid; place-content: center; justify-items: center; width: 92px; height: 92px; color: #b03030; border: 3px double currentColor; border-radius: 50%; rotate: -14deg; opacity: .8; }
+.tp2-post b { font: 400 1.6rem/1 var(--f-label); }
+.tp2-post small { font: 800 .6rem/1.3 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
+.tp2-k { display: inline-flex; align-items: center; gap: 6px; justify-self: start; margin: 0; padding: 2px 12px; font-weight: 800; font-size: .82rem; background: var(--hl-yellow, #fdc830); border: 1.5px solid #37353f; border-radius: 999px; }
+.tp2-t { display: grid; max-width: calc(100% - 120px); margin: 0; font: 400 clamp(2.6rem, 6vw, 4rem)/1.05 var(--f-script); color: #0e6990; }
+.tp2-t small { font: 700 clamp(1.2rem, 2.4vw, 1.5rem)/1.3 var(--f-hand); color: #6b6872; }
+.tp2-lines { display: grid; gap: 0; margin: 14px 0 0; padding: 0; list-style: none; }
+.tp2-lines li { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 0; font: 700 1.05rem/1.5 var(--f-hand); color: #133447; border-bottom: 1.5px solid rgba(14, 105, 144, .2); }
+:lang(ar) .tp2-lines li { font: 700 .95rem/1.7 var(--f-body); }
+.tp2-lines li.is-big { font-size: 1.35rem; color: #c2185b; }
+.tp2-lines li.is-note { display: block; font-weight: 600; color: #3a3a44; }
+.tp2-lines svg { flex: none; color: #f2726f; }
+.tp2-sign { margin: 4px 0 0; text-align: end; font: 700 1.25rem var(--f-hand); color: #6b6872; }
+.tp2-nav { display: flex; align-items: center; justify-content: space-between; gap: 14px; max-width: 1040px; margin: 22px auto 0; }
+.tp2-nav a { display: inline-flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; }
+.tp2-nav a svg { flex: none; width: 34px; height: 34px; padding: 8px; color: #2b2b33; background: var(--hl-yellow, #fdc830); border: 1.5px solid #37353f; border-radius: 50%; box-sizing: border-box; }
+.tp2-nav a span { display: grid; }
+.tp2-nav small { font-size: .72rem; font-weight: 800; color: var(--coral-deep, #d9534f); }
+.tp2-nav b { font-size: .9rem; }
+.tp2-nav a:hover b { text-decoration: underline wavy var(--coral) 1px; text-underline-offset: 4px; }
+.tp2-nav__n { font: 700 1.2rem var(--f-hand); color: var(--muted); }
+:lang(ar) .tp2-nav__n { font: 700 .85rem var(--f-body); }
+@media (max-width: 760px) {
+	.tp2 { grid-template-columns: minmax(0, 1fr); rotate: 0deg; }
+	.tp2-ph { min-height: 240px; }
+	.tp2-back { border-inline-start: 0; border-top: 2px dashed rgba(55, 53, 63, .35); }
+	.tp2-stamp { width: 84px; }
+	.tp2-post { top: 80px; inset-inline-end: 70px; width: 76px; height: 76px; }
+	.tp2-t { max-width: calc(100% - 96px); }
+	.tp2-nav__n { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .tp2 { animation: none; } }

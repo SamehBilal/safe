@@ -621,7 +621,7 @@ export const DRAW_KINDS = [
 	{ id: 'kids', emoji: 'family', color: '#5a9e6f', ar: 'نشاط مع الولاد', en: 'With the boys', dar: 'نعمل إيه مع فهد وعبد الرحمن؟', den: 'What shall we do with Fahd and Abdulrahman?', sketch: { ar: 'رسمة النشاط', en: 'Sketch it' } }
 ];
 /* pages that are one page per item, and which menu they belong to */
-const DETAIL_OF = { moment: 'story', chapter: 'chapters', member: 'family', trip: 'story', journey: 'journeys' };
+const DETAIL_OF = { moment: 'story', chapter: 'chapters', member: 'family', trip: 'anniversaries', journey: 'journeys' };
 
 const ICONS = {
 	home: '<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/>',
