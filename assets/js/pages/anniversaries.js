@@ -103,8 +103,7 @@ export default {
 			<div class="hang-night" style="margin-top:48px"><h2 class="sec__title">${L('حيطة الذكريات', 'Our memory wall')}</h2><div id="tr-list"></div></div>
 
 			<h2 class="sec__title reveal" style="margin-top:56px">${L('كل سنة جواز', 'Every year married')}</h2>
-			<div id="an-top"></div>
-			<div class="lp-list lp-list--anniversaries" id="an-list"></div>
+			<div class="an-years" id="an-list"></div>
 		</div></section>
 		${related(['gifts', 'calendar', 'journeys'])}`;
 	},
@@ -190,33 +189,38 @@ export default {
 			} catch (err) { msg.textContent = live.why(err); }
 		};
 
-		/* every year married: a card each, newest first, and the years still waiting to be written */
+		/* every year married, oldest first, one card each: its number, the year and where the trip took us, the anniversary
+		   photo (or the trip's cover), and what we wrote — what we did, the gifts, the note; a year not written yet is a
+		   dashed card with a button that opens the form on that year. (The next anniversary is counted down in the band.) */
 		let years = await live.load('anniversaries').catch(() => ({ items: [] }));
-		const w = wedding(s);
+		const w = wedding(s), y0 = new Date(w).getFullYear();
+		const ORD = ['', 'الأولى', 'التانية', 'التالتة', 'الرابعة', 'الخامسة', 'السادسة', 'السابعة', 'التامنة', 'التاسعة', 'العاشرة'];
 		const paintYears = () => {
-			const items = [...(years.items || [])].sort((a, b) => b.n - a.n);
+			const items = years.items || [];
 			const n = yearsMarried(s);
-			const missing = Array.from({ length: n }, (_, i) => i + 1).filter((k) => !items.some((x) => x.n === k));
-			const next = new Date(w); next.setFullYear(next.getFullYear() + n + 1);
-			$('#an-top', main).innerHTML = `${missing.length ? `<p class="lp-note an-miss">${L('سنين لسه مستنية تتكتب:', 'Years still waiting to be written:')} ${missing.map((k) => `<b>${num(k)}</b>`).join(' ')}</p>` : ''}
-				<p class="lp-note an-next">${L('عيد الجواز الجاي:', 'Next anniversary:')} ${num(n + 1)} — ${esc(next.toLocaleDateString(L('ar-EG', 'en-GB'), { day: 'numeric', month: 'long', year: 'numeric' }))}</p>`;
-			$('#an-list', main).innerHTML = items.map((x) => {
-				const trip = trips.find((t) => t.year === new Date(w).getFullYear() + x.n);
-				return `<article class="lp-card an-card">
-					<span class="an-badge">${num(x.n)}</span>
-					${x.photo ? `<img class="zoom" data-sketch="${esc(x.photo)}" alt="" loading="lazy">` : ''}
-					<p class="lp-k">${num(new Date(w).getFullYear() + x.n)}${x.where ? ` · ${esc(x.where)}` : ''}</p>
-					${x.did ? `<h3 dir="auto">${esc(x.did)}</h3>` : ''}
-					${x.gifts ? `<p dir="auto">🎁 ${esc(x.gifts)}</p>` : ''}
-					${x.note ? `<p dir="auto">${esc(x.note)}</p>` : ''}
-					${trip ? `<a class="link" href="trip.html?id=${esc(trip.id)}">${doodle('suitcase', 16)} ${L('رحلة السنة دي', 'This year’s trip')} · ${esc(govName(trip.gov))}</a>` : ''}
-					${live.canWrite() && x.by === live.me() ? `<button class="link link--danger" type="button" data-an-del="${esc(x.id)}">${L('مسح', 'Delete')}</button>` : ''}
+			$('#an-list', main).innerHTML = Array.from({ length: n }, (_, i) => i + 1).map((k) => {
+				const x = items.find((y) => y.n === k), trip = trips.find((t) => t.year === y0 + k);
+				const pic = x?.photo ? `<img data-sketch="${esc(x.photo)}" alt="" loading="lazy">` : trip ? coverHTML(coverOf(trip), govName(trip.gov)) : '';
+				return `<article class="an-y${x ? '' : ' is-empty'}" style="--i:${k}">
+					<span class="an-y__n">${num(k)}</span>
+					<span class="an-y__pic">${pic || doodle('ring', 44)}</span>
+					<p class="an-y__k">${L(`السنة ${ORD[k] || num(k)}`, `Year ${k}`)} · ${num(y0 + k).replace(/[٬,]/g, '')}${trip ? ` · <a href="trip.html?id=${esc(trip.id)}">${doodle('suitcase', 14)} ${esc(govName(trip.gov))}</a>` : ''}</p>
+					${x ? `${x.did ? `<h3 dir="auto">${esc(x.did)}</h3>` : ''}
+						${x.where ? `<p class="an-y__w" dir="auto">${doodle('pin', 14)} ${esc(x.where)}</p>` : ''}
+						${x.gifts ? `<p class="an-y__w" dir="auto">${doodle('gift', 14)} ${esc(x.gifts)}</p>` : ''}
+						${x.note ? `<p class="an-y__note" dir="auto">${esc(x.note)}</p>` : ''}
+						${live.canWrite() && x.by === live.me() ? `<button class="link link--danger" type="button" data-an-del="${esc(x.id)}">${L('مسح', 'Delete')}</button>` : ''}`
+					: `<p class="an-y__wait">${L('لسه مكتبناش السنة دي', 'We haven’t written this year yet')}</p>
+						${live.canWrite() ? `<button class="btn btn--sm btn--ghost" type="button" data-an-write="${k}">${doodle('pen', 16)} ${Y('اكتبها', 'اكتبيها', 'Write it')}</button>` : ''}`}
 				</article>`;
-			}).join('') || `<p class="empty">${L('اكتبوا أول سنة جواز ♥', 'Write our first year ♥')}</p>`;
+			}).join('') || `<p class="empty">${L('أول سنة جواز لسه جاية ♥', 'Our first year is still to come ♥')}</p>`;
 			live.hydrateSketches($('#an-list', main));
+			hydrate($('#an-list', main));
 		};
 		paintYears();
 		$('#an-list', main).addEventListener('click', async (e) => {
+			const wr = e.target.closest('[data-an-write]');
+			if (wr) { const comp = $('#an-composer', main); comp.open = true; $('#an-form', main).n.value = wr.dataset.anWrite; comp.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' }); $('#an-form', main).did.focus({ preventScroll: true }); return; }
 			const del = e.target.closest('[data-an-del]');
 			if (!del || !confirm(Y('تمسحها؟', 'تمسحيها؟', 'Delete it?'))) return;
 			try { years = await live.save('anniversaries', (d) => { d.items = (d.items || []).filter((x) => x.id !== del.dataset.anDel); }); paintYears(); } catch (err) { alert(live.why(err)); }
