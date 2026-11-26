@@ -66,6 +66,7 @@ export default {
 		</div></section>
 		${pageHead(L('أطلسنا', 'Our atlas'), L('كل مدينة رحناها، وكل مكان فيها بصوره', 'Every city we’ve been to, and every place in it with its photos'), [{ href: 'atlas.html', ar: 'أطلسنا', en: 'Our atlas' }], { band: '' })}
 		<section class="sec"><div class="wrap">
+			<div class="at-strip" id="at-row" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
 			<div class="at-city" id="at-city">
 				<div class="at-map" id="at-map" style="direction:ltr">
 					<div class="at-map__tiles" aria-hidden="true"></div>
@@ -130,7 +131,13 @@ export default {
 			<span class="at-card__map" style="direction:ltr"><span class="at-card__tiles"></span><span class="at-card__dots"></span></span>
 			<b>${esc(L(c.ar, c.en))}</b><small>${L(`${num(c.places.length)} ${c.places.length === 1 ? 'مكان' : c.places.length <= 10 ? 'أماكن' : 'مكان'}`, `${c.places.length} place${c.places.length === 1 ? '' : 's'}`)}</small>
 		</button></li>`; }).join('');
-		for (const card of $$('[data-c]', strip)) {
+		const row = $('#at-row', main);
+		row.innerHTML = list.map((c, k) => `<button class="at-card" type="button" role="tab" data-c="${esc(c.id)}" style="--k:${k}">
+			<span class="at-card__map" style="direction:ltr"><span class="at-card__tiles"></span><span class="at-card__dots"></span></span>
+			<b>${esc(L(c.ar, c.en))}</b><small>${L(`${num(c.places.length)} ${c.places.length === 1 ? 'مكان' : c.places.length <= 10 ? 'أماكن' : 'مكان'}`, `${c.places.length} place${c.places.length === 1 ? '' : 's'}`)}</small>
+		</button>`).join('');
+		row.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) show(b.dataset.c); });
+		for (const card of [...$$('[data-c]', strip), ...$$('[data-c]', row)]) {
 			const c = list.find((x) => x.id === card.dataset.c), t = $('.at-card__tiles', card);
 			const v = fit(t, [...c.places.map((p) => p.at), centreOf(c)], { pad: 18, zoom: 12, maxZ: 13, minZ: 7, center: centreOf(c), poster: true, detail: 2 });
 			$('.at-card__dots', card).innerHTML = c.places.map((p) => { const xy = v.at(p.at); return `<i style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px"></i>`; }).join('');
@@ -177,7 +184,7 @@ export default {
 				<span class="at-list__tx"><b dir="auto">${esc(p.title)}</b>${p.date || p.where ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.where].filter(Boolean).join(' · '))}</small>` : ''}</span>
 			</button></li>`).join('');
 			hydrate($('#at-list', main));
-			$$('.at-card', strip).forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+			[...$$('.at-card', strip), ...$$('.at-card', row)].forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
 			$$('[data-gov]', svg).forEach((el) => el.classList.toggle('is-focus', el.dataset.gov === c.gov));
 			history.replaceState(history.state, '', `#${encodeURIComponent(c.id)}`);
 		}
