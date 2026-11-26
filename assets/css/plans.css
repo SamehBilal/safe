@@ -1657,3 +1657,91 @@
 	.pz-mapwrap > .ip-areas { flex-direction: row; max-height: none; overflow-x: auto; overflow-y: visible; padding-bottom: 8px; }
 	.pz-mapwrap > .ip-areas .chip { width: auto; }
 }
+
+/* ---------- أطلسنا (atlas.html), an example of places and cities on one page: Egypt with our governorates coloured,
+   the cities as a row of dark street posters, and the open city's poster with a gold pin for every place, its photo
+   rising through the streets when a pin or a name is pointed at ---------- */
+.at-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); align-items: center; max-width: 1060px; margin: 0 auto; }
+.at-egypt { position: relative; max-width: 460px; justify-self: center; width: 100%; }
+.eg--atlas .eg__gov { cursor: default; transition: fill .2s; }
+.eg--atlas .eg__gov.is-been { cursor: pointer; }
+.eg--atlas .eg__gov.is-been:hover { fill: #d9534f; }
+.eg--atlas .eg__pins { display: none; }
+.at-egypt__tip { position: absolute; z-index: 3; display: grid; justify-items: center; padding: 4px 12px; translate: -50% calc(-100% - 8px); color: #fff; background: #133447; border-radius: 10px; pointer-events: none; white-space: nowrap; box-shadow: 0 6px 14px rgba(0, 0, 0, .25); }
+.at-egypt__tip b { font-size: .9rem; }
+.at-egypt__tip small { font-size: .72rem; opacity: .85; }
+.at-hero__body { display: grid; gap: 12px; justify-items: start; }
+.at-t { margin: 0; font: 400 clamp(3rem, 8vw, 4.8rem)/1.05 var(--f-script); color: var(--blue); }
+.at-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 380px; margin: 0; padding: 0; list-style: none; }
+.at-facts li { display: grid; gap: 2px; padding: 10px 14px; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 color-mix(in srgb, var(--coral, #f2726f) 35%, transparent); animation: an2-pop .45s both; animation-delay: calc(var(--i) * 80ms); }
+.at-facts b { font: 400 2rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
+.at-facts span { font-size: .8rem; font-weight: 700; color: var(--muted); }
+.at-hint { display: flex; align-items: center; gap: 6px; margin: 0; font: 700 1.1rem var(--f-hand); color: var(--muted); }
+:lang(ar) .at-hint { font: 700 .85rem var(--f-body); }
+
+/* the cities: a row of small dark street posters, scrolling sideways without a scrollbar */
+.at-strip { display: flex; gap: 14px; margin: 0 0 22px; padding: 6px 4px 12px; overflow-x: auto; scrollbar-width: none; }
+.at-strip::-webkit-scrollbar { display: none; }
+.at-card { display: grid; flex: 0 0 150px; justify-items: center; gap: 4px; padding: 8px 8px 10px; color: #f3efe4; background: #16181d; border: 1.5px solid #37353f; border-radius: 4px; box-shadow: 0 8px 16px -8px rgba(0, 0, 0, .5); cursor: pointer; transition: translate .2s, outline-color .2s; outline: 3px solid transparent; outline-offset: 3px; }
+.at-card:hover { translate: 0 -3px; }
+.at-card.is-on { outline-color: #fdc830; }
+.at-card__map { position: relative; display: block; width: 100%; aspect-ratio: 1; overflow: hidden; }
+.at-card__tiles { position: absolute; inset: 0; filter: invert(1) grayscale(1) brightness(1.4) contrast(1.6); }
+.at-card__tiles img, .at-map__tiles img { position: absolute; max-width: none; }
+.at-card__dots i { position: absolute; width: 6px; height: 6px; translate: -50% -50%; background: #fdc830; border-radius: 50%; box-shadow: 0 0 6px #fdc830; }
+.at-card b { font: 400 1.15rem/1.1 var(--f-label); letter-spacing: .06em; }
+:lang(ar) .at-card b { font: 800 .9rem/1.3 var(--f-body); letter-spacing: 0; }
+.at-card small { font-size: .7rem; color: #c9c2b2; }
+
+/* the open city: its poster beside the list of its places */
+.at-city { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 16px; align-items: stretch; }
+.at-map { position: relative; height: clamp(420px, 66vh, 680px); overflow: hidden; background: #16181d; border: 1.5px solid #37353f; border-radius: 6px; }
+.at-map__tiles { position: absolute; inset: 0; filter: invert(1) grayscale(1) brightness(1.4) contrast(1.6); }
+.at-map__photo { position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .45s; pointer-events: none; mix-blend-mode: screen; }
+.at-map__photo.is-on { opacity: .6; }
+.at-map__photo img, .at-map__photo [data-media-box] { width: 100%; height: 100%; object-fit: cover; filter: sepia(.25); }
+.at-map__pins { position: absolute; inset: 0; z-index: 2; }
+.at-pin { position: absolute; width: 26px; height: 36px; padding: 0; translate: -50% -100%; background: none; border: 0; cursor: pointer; animation: pz-drop .5s cubic-bezier(.34, 1.5, .5, 1) both; animation-delay: var(--d); transition: scale .2s; }
+.at-pin svg { width: 100%; height: 100%; overflow: visible; }
+.at-pin path { fill: #fdc830; stroke: #16181d; stroke-width: 2; filter: drop-shadow(0 0 6px rgba(253, 200, 48, .6)); }
+.at-pin circle { fill: #16181d; }
+.at-pin.has-ph path { fill: #ffd95a; }
+.at-pin.is-on, .at-pin:hover { scale: 1.35; z-index: 3; }
+.at-map__name { position: absolute; z-index: 2; inset-inline: 0; bottom: 18px; display: grid; justify-items: center; color: #f3efe4; text-align: center; pointer-events: none; text-shadow: 0 2px 8px #000; }
+.at-map__name b { font: 400 clamp(2rem, 5vw, 3.2rem)/1 var(--f-label); letter-spacing: .3em; }
+.at-map__name i { font: 700 1.2rem/1.3 'Aref Ruqaa', var(--f-body); font-style: normal; }
+.at-map__name small { font: 700 .72rem/1.4 var(--f-body); letter-spacing: .08em; opacity: .8; }
+.at-map__credit { position: absolute; z-index: 2; bottom: 2px; inset-inline-end: 6px; margin: 0; font-size: .6rem; color: #888; }
+.at-map__credit a { color: inherit; }
+/* a place opened on the map: its photo and its story on a card */
+.at-map__open { position: absolute; z-index: 4; inset: 16px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); overflow: hidden; color: #2b2b33; background: #fffdf6; border: 1.5px solid #37353f; border-radius: 6px; box-shadow: 0 20px 40px rgba(0, 0, 0, .45); animation: an2-pop .35s both; }
+.at-map__open[hidden] { display: none; }
+.at-open__ph { min-height: 0; }
+.at-open__ph img { width: 100%; height: 100%; object-fit: cover; }
+.at-open__tx { display: grid; align-content: center; gap: 8px; padding: 24px; }
+.at-open__tx b { font: 400 clamp(1.6rem, 3.4vw, 2.2rem)/1.15 var(--f-script); color: var(--blue); }
+.at-open__tx small { font-weight: 800; font-size: .8rem; color: var(--coral-deep, #d9534f); }
+.at-open__tx p { margin: 0; line-height: 1.7; }
+.at-open__n { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; font-weight: 700; color: var(--muted); }
+.at-open__x { position: absolute; z-index: 2; top: 10px; inset-inline-end: 10px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; color: #2b2b33; background: #fff; border: 1.5px solid #37353f; border-radius: 50%; cursor: pointer; }
+/* the list of the city's places, beside the poster */
+.at-list { display: grid; align-content: start; gap: 8px; max-height: clamp(420px, 66vh, 680px); margin: 0; padding: 2px 4px 2px 2px; overflow-y: auto; list-style: none; scrollbar-width: none; }
+.at-list::-webkit-scrollbar { display: none; }
+.at-list button { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 10px; width: 100%; padding: 6px; color: var(--text); text-align: start; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 10px; cursor: pointer; transition: translate .15s, background .15s; }
+.at-list button:hover, .at-list button.is-on { translate: calc(var(--bujo-x, 1) * -3px) 0; background: color-mix(in srgb, #fdc830 22%, var(--card)); }
+.at-list__ph { position: relative; display: grid; place-items: center; width: 52px; height: 52px; overflow: hidden; color: var(--coral-deep, #d9534f); background: color-mix(in srgb, var(--coral, #f2726f) 10%, var(--card)); border-radius: 50% 50% 50% 0; }
+.at-list__ph > [data-media-box] { position: absolute; inset: 0; }
+.at-list__ph img { width: 100%; height: 100%; object-fit: cover; }
+.at-list__tx { display: grid; min-width: 0; }
+.at-list__tx b { overflow: hidden; font-size: .9rem; white-space: nowrap; text-overflow: ellipsis; }
+.at-list__tx small { overflow: hidden; font-size: .72rem; color: var(--muted); white-space: nowrap; text-overflow: ellipsis; }
+.at-links { margin-top: 22px; }
+@media (max-width: 820px) {
+	.at-hero { grid-template-columns: minmax(0, 1fr); }
+	.at-hero__body { justify-items: center; text-align: center; }
+	.at-city { grid-template-columns: minmax(0, 1fr); }
+	.at-list { max-height: none; overflow: visible; }
+	.at-map__open { grid-template-columns: minmax(0, 1fr); grid-template-rows: 55% auto; }
+}
+/* the atlas's posters: the same white streets on black as «خرايط مدننا» */
+.at-card__tiles, .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8); }
