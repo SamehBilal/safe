@@ -1699,6 +1699,7 @@ function footerHTML(s) {
 			<div class="ft-tools">
 				<button class="btn btn--coral btn--sm" type="button" id="install-btn" hidden>${Y('حطها على الشاشة الرئيسية', 'حطيها على الشاشة الرئيسية', 'Add to home screen')}</button>
 				<button class="btn btn--ghost btn--sm" type="button" id="save-btn" hidden>${Y('احفظها من غير نت', 'احفظيها من غير نت', 'Save for offline')}</button>
+				<a class="btn btn--ghost btn--sm" href="index.html?intro" id="intro-btn">${doodle('heart', 16)} ${Y('شوف المقدمة تاني', 'شوفي المقدمة تاني', 'Replay intro')}</a>
 				<button class="btn btn--ghost btn--sm" type="button" id="lock-btn">${doodle('lock', 16)} ${Y('اقفل', 'اقفلي', 'Lock')}</button>
 			</div>
 		</div>
@@ -1711,7 +1712,6 @@ function footerHTML(s) {
 			<nav class="ft-quick" aria-label="${L('روابط سريعة', 'Quick links')}">
 				<a href="index.html">${icon('home', 16)} ${L('الرئيسية', 'Home')}</a>
 				${PAGES.filter((p) => p.group === 'app').map((p) => `<a href="${p.href}">${icon(p.ic, 16)} ${esc(L(p.ar, p.en))}</a>`).join('')}
-				<a href="index.html?intro">${icon('heart', 16)} ${Y('شوف المقدمة تاني', 'شوفي المقدمة تاني', 'Replay intro')}</a>
 			</nav>
 			${App.lang === 'ar'
 				? `<p class="ft-copy" dir="rtl">${petHTML()}<span class="ft-copy__c">حقوق النشر @${new Date().getFullYear()}، كل الحب محفوظ.</span> <span>صُنع بـ <span class="ft-heart">${doodle('heart', 16)}</span> سامح بلال</span></p>`
