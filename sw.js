@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-f6171fffd5';
+var VERSION = 'us-a7b06d0db4';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -43,6 +43,7 @@ var SHELL = [
 	'growth.html',
 	'guestbook.html',
 	'health.html',
+	'homes.html',
 	'hosting.html',
 	'index.html',
 	'journal.html',
@@ -55,6 +56,7 @@ var SHELL = [
 	'moment.html',
 	'movies.html',
 	'music.html',
+	'nexttrip.html',
 	'nokta.html',
 	'notes.html',
 	'numbers.html',
@@ -62,6 +64,7 @@ var SHELL = [
 	'onthisday.html',
 	'ourfirsts.html',
 	'papers.html',
+	'passport.html',
 	'people.html',
 	'posts.html',
 	'questions.html',
@@ -84,6 +87,7 @@ var SHELL = [
 	'widgets.html',
 	'wishes.html',
 	'yearly.html',
+	'years.html',
 	'manifest.webmanifest',
 	'assets/css/app.css',
 	'assets/css/bujo.css',
@@ -158,6 +162,7 @@ var SHELL = [
 	'assets/js/pages/guestbook.js',
 	'assets/js/pages/health.js',
 	'assets/js/pages/home.js',
+	'assets/js/pages/homes.js',
 	'assets/js/pages/hosting.js',
 	'assets/js/pages/journal.js',
 	'assets/js/pages/journey.js',
@@ -169,6 +174,7 @@ var SHELL = [
 	'assets/js/pages/moment.js',
 	'assets/js/pages/movies.js',
 	'assets/js/pages/music.js',
+	'assets/js/pages/nexttrip.js',
 	'assets/js/pages/nokta.js',
 	'assets/js/pages/notes.js',
 	'assets/js/pages/numbers.js',
@@ -176,6 +182,7 @@ var SHELL = [
 	'assets/js/pages/onthisday.js',
 	'assets/js/pages/ourfirsts.js',
 	'assets/js/pages/papers.js',
+	'assets/js/pages/passport.js',
 	'assets/js/pages/people.js',
 	'assets/js/pages/places.js',
 	'assets/js/pages/posts.js',
@@ -197,6 +204,7 @@ var SHELL = [
 	'assets/js/pages/widgets.js',
 	'assets/js/pages/wishes.js',
 	'assets/js/pages/yearly.js',
+	'assets/js/pages/years.js',
 	'assets/icons/apple-touch-icon.png',
 	'assets/icons/icon-192.png',
 	'assets/icons/icon-512.png',

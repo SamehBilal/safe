@@ -26,7 +26,7 @@ function govOf(at) {
 }
 
 /** every city with its places: { id, gov, ar, en, places: [{ title, at, date, where, text, photos }], trips: [years] } */
-function citiesOf(s, trips, spots) {
+export function citiesOf(s, trips, spots) {
 	const map = new Map();
 	const get = (id, gov, name) => {
 		if (!map.has(id)) map.set(id, { id, gov, ar: name?.ar || GOV[gov]?.ar || '', en: name?.en || GOV[gov]?.en || gov, places: [], trips: [] });

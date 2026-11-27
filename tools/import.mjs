@@ -13,7 +13,7 @@ import { initOf } from '../assets/js/defaults.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const LIVE = path.join(ROOT, 'private/live');
 // every list the phones keep (assets/js/live.js KINDS) — a list missing here would be skipped on import
-const KINDS = ['journal', 'music', 'draw', 'trips', 'movies', 'wishes', 'goals', 'where', 'spots', 'books', 'posts', 'tree', 'food', 'famdays', 'yearly', 'ramadan', 'firsts', 'gifts', 'capsule', 'games', 'chores', 'questions', 'secret', 'ourfirsts', 'beforeus', 'soundtrack', 'chats', 'growth', 'sayings', 'health', 'recipes', 'bucket', 'adventures', 'offline', 'giftideas', 'anniversaries', 'hosting', 'favorites', 'drawings', 'tickets', 'remember', 'nokta', 'shopping', 'routine', 'fixes', 'debts', 'expenses', 'people', 'school', 'clubs', 'meals', 'warranty', 'papers', 'duties'];
+const KINDS = ['journal', 'music', 'draw', 'trips', 'movies', 'wishes', 'goals', 'where', 'spots', 'books', 'posts', 'tree', 'food', 'famdays', 'yearly', 'ramadan', 'firsts', 'gifts', 'capsule', 'games', 'chores', 'questions', 'secret', 'ourfirsts', 'beforeus', 'soundtrack', 'chats', 'growth', 'sayings', 'health', 'recipes', 'bucket', 'adventures', 'offline', 'giftideas', 'anniversaries', 'hosting', 'favorites', 'drawings', 'tickets', 'remember', 'nokta', 'shopping', 'routine', 'fixes', 'debts', 'expenses', 'people', 'school', 'clubs', 'meals', 'warranty', 'papers', 'duties', 'homes', 'nexttrip'];
 const files = process.argv.slice(2);
 if (!files.length) { console.error('Give the file(s) the phones sent: node tools/import.mjs us-esraa-….json'); process.exit(1); }
 
