@@ -1861,3 +1861,25 @@
 .at-areas { margin: 0 0 22px; }
 .at-areas .pz-pin.is-on .pz-pin__head { scale: 1.12; }
 .at-areas .pz-pin.is-on b { color: var(--coral-deep, #d9534f); }
+
+/* أطلسنا, «المدن»: the cities hang as the posters of «خرايط مدننا» — on a wire, tilted, straightening when touched — and the
+   big map has the poster's frame: a thick border, a thin line inside it and a fade behind the name (cream in the light, black in the dark) */
+#at-row { gap: 26px; padding: 40px 12px 22px; align-items: flex-start; }
+#at-row .at-poster { flex: 0 0 168px; display: grid; justify-items: center; gap: 10px; }
+#at-row .at-poster small { color: var(--muted); font-weight: 700; font-size: .8rem; }
+#at-row .at-poster .cm-poster { aspect-ratio: 3 / 4.2; }
+#at-row .at-poster.is-on .cm-poster { outline: 3px solid #fdc830; outline-offset: 3px; }
+@media (max-width: 640px) { #at-row .at-poster { flex-basis: 138px; } }
+.at-map--frame { border: 10px solid #fffdf6; border-radius: 2px; outline: 1.5px solid #37353f; box-shadow: 0 18px 40px rgba(0, 0, 0, .2); }
+.at-map--frame::before { content: ''; position: absolute; inset: 10px; z-index: 2; border: 1.5px solid rgba(28, 31, 51, .55); pointer-events: none; }
+.at-map--frame::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(transparent 58%, rgba(244, 239, 227, .92) 82%, #f4efe3); pointer-events: none; }
+.at-map--frame .at-map__name { z-index: 3; bottom: 30px; }
+.at-map--frame .at-map__open, .at-map--frame .at-map__credit { z-index: 4; }
+:root[data-theme='dark'] .at-map--frame { border-color: #111; }
+:root[data-theme='dark'] .at-map--frame::before { border-color: rgba(255, 255, 255, .85); }
+:root[data-theme='dark'] .at-map--frame::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) .at-map--frame { border-color: #111; }
+	:root:not([data-theme='light']) .at-map--frame::before { border-color: rgba(255, 255, 255, .85); }
+	:root:not([data-theme='light']) .at-map--frame::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
+}

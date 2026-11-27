@@ -52,7 +52,7 @@ const centreOf = (c) => (CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITAL
 /* the big map with the list of its places beside it: under «المدن» the city as a poster with a light for every place,
    under «الأماكن» the real map with a pin for every place */
 const mapBlock = (id, real) => `<div class="at-city" id="${id}">
-	<div class="at-map${real ? ' at-map--real' : ''}" style="direction:ltr">
+	<div class="at-map${real ? ' at-map--real' : ' at-map--frame'}" style="direction:ltr">
 		<div class="at-map__tiles" aria-hidden="true"></div>
 		<div class="at-map__photo" aria-hidden="true"></div>
 		<div class="at-map__pins"></div>
@@ -209,9 +209,15 @@ export default {
 			<b>${esc(L(c.ar, c.en))}</b><small>${L(`${num(c.places.length)} ${c.places.length === 1 ? 'مكان' : c.places.length <= 10 ? 'أماكن' : 'مكان'}`, `${c.places.length} place${c.places.length === 1 ? '' : 's'}`)}</small>
 		</button></li>`; }).join('');
 		const row = $('#at-row', main);
-		row.innerHTML = list.map((c, k) => `<button class="at-card" type="button" role="tab" data-c="${esc(c.id)}" style="--k:${k}">
-			<span class="at-card__map" style="direction:ltr"><span class="at-card__tiles"></span><span class="at-card__dots"></span></span>
-			<b>${esc(L(c.ar, c.en))}</b><small>${L(`${num(c.places.length)} ${c.places.length === 1 ? 'مكان' : c.places.length <= 10 ? 'أماكن' : 'مكان'}`, `${c.places.length} place${c.places.length === 1 ? '' : 's'}`)}</small>
+		row.innerHTML = list.map((c, k) => `<button class="cm-card cm-card--noir cmh-frame at-poster" type="button" role="tab" data-c="${esc(c.id)}" style="--k:${k};--r:${k % 2 ? 1.6 : -1.4}deg;--dy:${k % 2 ? 14 : 0}px" aria-label="${esc(L(c.ar, c.en))}">
+			<span class="cmh-wire" aria-hidden="true"></span>
+			<span class="cm-poster" aria-hidden="true">
+				<span class="cm-card__map" style="direction:ltr"><span class="at-card__tiles cm-card__tiles"></span><span class="at-card__dots cm-card__dots"></span></span>
+				<span class="cm-poster__en">${esc(c.en)}</span>
+				<span class="cm-poster__ar" dir="rtl">${esc(c.ar)}</span>
+				<span class="cm-poster__sub">${esc([GOV[c.gov]?.en, 'Egypt'].filter(Boolean).join(' · '))}</span>
+			</span>
+			<small>${count(c.places.length)}</small>
 		</button>`).join('');
 		row.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) show(b.dataset.c); });
 		for (const card of [...$$('[data-c]', strip), ...$$('[data-c]', row)]) {
@@ -226,7 +232,7 @@ export default {
 			const c = list.find((x) => x.id === id) || list[0];
 			if (!c) return;
 			cities.show(c);
-			[...$$('.at-card', strip), ...$$('.at-card', row)].forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+			[...$$('.at-card', strip), ...$$('[data-c]', row)].forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
 			$$('[data-gov]', svg).forEach((el) => el.classList.toggle('is-focus', el.dataset.gov === c.gov));
 			history.replaceState(history.state, '', `#${encodeURIComponent(c.id)}`);
 		}
