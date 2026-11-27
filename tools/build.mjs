@@ -30,6 +30,7 @@ import { SONGS_URL, AUDIO, songsOut, songBytes } from './songs.mjs';
 import { sealSecret } from './secret.mjs';
 // every page's <head>, and the songs player's list of pages in shell.js, first — so a new page keeps the music going
 await import('./heads.mjs');
+await import('./wgphone.mjs'); // the menus' widgets dressed for the phone menu too
 import { ITERATIONS, deriveKek, importMaster, seal, open, randomBytes, toB64, fromB64 } from '../assets/js/core.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');

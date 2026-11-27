@@ -983,3 +983,21 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 
 /* رسايل حب: the top sits on the page itself — no card of its own around the envelope, the mailboxes and the count */
 .nh.nh2 { padding-inline: clamp(14px, 3vw, 34px); background: none; border: 0; border-radius: 0; box-shadow: none; }
+
+/* the «+» panel on a phone: one chapter to a row — its tab across the top, its things two by two under it, each a
+   finger's height, on lines spaced to match — instead of two chapters squeezed side by side */
+@media (max-width: 560px) {
+	.add-panel { padding: 14px 14px calc(20px + env(safe-area-inset-bottom, 0px)); }
+	.add-panel__groups { grid-template-columns: minmax(0, 1fr); row-gap: 18px; }
+	.add-group { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 10px; padding: 0 2px 2px; border-inline-start: 0; background: repeating-linear-gradient(transparent 0 39px, color-mix(in srgb, #0e6990 16%, transparent) 39px 40px) 0 40px / 100% calc(100% - 40px) no-repeat; }
+	.add-group__h { grid-column: 1 / -1; justify-self: start; height: 32px; margin-bottom: 6px; padding: 0 14px; rotate: 0deg !important; }
+	.add-item { min-height: 40px; font-size: .9rem; }
+	.add-item span { overflow-wrap: anywhere; }
+}
+@media (max-width: 560px) {
+	/* a long one wraps to two lines rather than ending in «…»: each thing underlined on its own instead of ruled lines */
+	.add-group { background: none; }
+	.add-item { align-items: flex-start; padding-block: 9px; border-bottom: 1px solid color-mix(in srgb, #0e6990 14%, transparent); }
+	.add-item::before { margin-top: 1px; }
+	.add-item span { white-space: normal; overflow: visible; text-overflow: clip; }
+}

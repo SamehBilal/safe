@@ -1359,7 +1359,7 @@ function pnavHTML(here, s) {
 			const ps = PAGES.filter((p) => p.group === g.id);
 			return `<details class="pn-ch" name="pn" style="--n:${n};--tab:${g.tab};--gc:${g.c}"${g.id === mine ? ' open' : ''}>
 				<summary><i aria-hidden="true">${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${num(ps.length)} ${L('صفحات', 'pages')}</small></summary>
-				<div class="pn-list">${ps.map(link).join('')}<div class="pn-card pn-wg" data-feature="${g.id}">${boardHTML(g.id, s, here, wgLayoutM(g.id), true)}</div></div>
+				<div class="pn-list">${ps.map(link).join('')}<div class="pn-card pn-wg mega-${g.id}" data-feature="${g.id}">${boardHTML(g.id, s, here, wgLayoutM(g.id), true)}</div></div>
 			</details>`;
 		}).join('')}
 		<div class="pn-app">${PAGES.filter((p) => p.group === 'app').map(link).join('')}</div>`;
