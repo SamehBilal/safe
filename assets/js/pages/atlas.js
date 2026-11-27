@@ -49,6 +49,82 @@ function citiesOf(s, trips, spots) {
 }
 const centreOf = (c) => (CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITALS[c.id][1] } : { lat: c.places.reduce((a, p) => a + p.at.lat, 0) / c.places.length, lng: c.places.reduce((a, p) => a + p.at.lng, 0) / c.places.length });
 
+/* the big map with the list of its places beside it: under «المدن» the city as a poster with a light for every place,
+   under «الأماكن» the real map with a pin for every place */
+const mapBlock = (id, real) => `<div class="at-city" id="${id}">
+	<div class="at-map${real ? ' at-map--real' : ''}" style="direction:ltr">
+		<div class="at-map__tiles" aria-hidden="true"></div>
+		<div class="at-map__photo" aria-hidden="true"></div>
+		<div class="at-map__pins"></div>
+		<div class="at-map__name"><b class="at-en"></b><i class="at-ar" dir="rtl"></i><small class="at-sub"></small></div>
+		<div class="at-map__open" hidden></div>
+		<p class="at-map__credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · © <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a></p>
+	</div>
+	<ol class="at-list"></ol>
+</div>`;
+const PIN = '<svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg>';
+const count = (n) => L(`${num(n)} ${n === 1 ? 'مكان' : n <= 10 ? 'أماكن' : 'مكان'}`, `${n} place${n === 1 ? '' : 's'}`);
+
+/** one big map: show(city) draws it, open(i) pops a place open on it */
+function bigMap(box, real) {
+	const mapEl = $('.at-map', box), tiles = $('.at-map__tiles', mapEl), pinsEl = $('.at-map__pins', mapEl), photo = $('.at-map__photo', mapEl), openEl = $('.at-map__open', mapEl), lst = $('.at-list', box);
+	const m = { cur: null, mapEl };
+	const peek = (i) => {
+		const p = m.cur?.places[i];
+		$$('[data-i]', pinsEl).forEach((x) => x.classList.toggle('is-on', +x.dataset.i === i));
+		$$('[data-i]', lst).forEach((x) => x.classList.toggle('is-on', +x.dataset.i === i));
+		if (!p || !p.photos.length) { photo.classList.remove('is-on'); return; }
+		photo.innerHTML = img(p.photos[0], '');
+		hydrate(photo);
+		photo.classList.add('is-on');
+	};
+	m.open = (i) => {
+		const p = m.cur?.places[i];
+		if (!p) return;
+		peek(i);
+		openEl.innerHTML = `<button class="at-open__x" type="button" aria-label="${L('اقفل', 'Close')}">✕</button>
+			${p.photos.length ? `<div class="at-open__ph" data-media-box>${img(p.photos[0], esc(p.title), 'zoom')}</div>` : ''}
+			<div class="at-open__tx"><b dir="auto">${esc(p.title)}</b>${p.date || p.where ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.where].filter(Boolean).join(' · '))}</small>` : ''}${p.text ? `<p dir="auto">${esc(p.text)}</p>` : ''}${p.photos.length > 1 ? `<span class="at-open__n">${doodle('camera', 14)} ${L(`${num(p.photos.length)} صورة`, `${p.photos.length} photos`)}</span>` : ''}</div>`;
+		hydrate(openEl);
+		openEl.hidden = false;
+		$('.at-open__x', openEl).focus({ preventScroll: true });
+	};
+	m.show = (c) => {
+		if (!c) return;
+		m.cur = c;
+		openEl.hidden = true;
+		photo.classList.remove('is-on');
+		const narrow = mapEl.clientWidth < 600;
+		const view = fit(tiles, [...c.places.map((p) => p.at), centreOf(c)], { pad: narrow ? 60 : 90, padTop: 40, zoom: 15, maxZ: 16, minZ: 7, center: centreOf(c), poster: !real });
+		pinsEl.innerHTML = c.places.map((p, i) => {
+			const xy = view.at(p.at), at = `left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px;--d:${(i % 9) * 60}ms`;
+			return real
+				? `<button class="at-pin${p.photos.length ? ' has-ph' : ''}" type="button" data-i="${i}" style="${at}" aria-label="${esc(p.title)}">${PIN}</button>`
+				: `<button class="cm__pin at-light" type="button" data-i="${i}" style="${at}" aria-label="${esc(p.title)}"></button>`;
+		}).join('');
+		$('.at-en', box).textContent = c.en;
+		$('.at-ar', box).textContent = c.ar;
+		$('.at-sub', box).textContent = [[GOV[c.gov]?.en, 'Egypt'].filter(Boolean).join(', '), coords(centreOf(c)), c.trips.length ? L(`رحلة ${c.trips.map((y) => num(y).replace(/[٬,]/g, '')).join(' و')}`, `trip ${c.trips.join(' & ')}`) : ''].filter(Boolean).join(' · ');
+		lst.innerHTML = c.places.map((p, i) => `<li><button type="button" data-i="${i}">
+			<span class="at-list__ph">${doodle('pin', 18)}${p.photos.length ? `<span data-media-box>${img(p.photos[0], '')}</span>` : ''}</span>
+			<span class="at-list__tx"><b dir="auto">${esc(p.title)}</b>${p.date || p.where ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.where].filter(Boolean).join(' · '))}</small>` : ''}</span>
+		</button></li>`).join('');
+		hydrate(lst);
+	};
+	openEl.addEventListener('click', (e) => { if (e.target.closest('.at-open__x')) openEl.hidden = true; });
+	mapEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') openEl.hidden = true; });
+	pinsEl.addEventListener('pointerover', (e) => { const b = e.target.closest('[data-i]'); if (b && e.pointerType === 'mouse') peek(+b.dataset.i); });
+	pinsEl.addEventListener('pointerleave', () => peek(-1));
+	pinsEl.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) m.open(+b.dataset.i); });
+	lst.addEventListener('pointerover', (e) => { const b = e.target.closest('[data-i]'); if (b) peek(+b.dataset.i); });
+	lst.addEventListener('pointerleave', () => peek(-1));
+	lst.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { m.open(+b.dataset.i); mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'nearest' }); } });
+	// redraw on a real change of width, and only while it can be seen (a hidden tab has no size)
+	let w = mapEl.clientWidth;
+	new ResizeObserver(() => { const nw = mapEl.clientWidth; if (nw && m.cur && Math.abs(nw - w) > 30) { w = nw; m.show(m.cur); } }).observe(mapEl);
+	return m;
+}
+
 export default {
 	title: { ar: 'أطلسنا', en: 'Our atlas' },
 	render(s) {
@@ -73,19 +149,13 @@ export default {
 			</div>
 			<div class="at-pane" id="at-pane-cities" role="tabpanel">
 			<div class="at-strip" id="at-row" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
-			<div class="at-city" id="at-city">
-				<div class="at-map" id="at-map" style="direction:ltr">
-					<div class="at-map__tiles" aria-hidden="true"></div>
-					<div class="at-map__photo" aria-hidden="true"></div>
-					<div class="at-map__pins"></div>
-					<div class="at-map__name"><b id="at-en"></b><i id="at-ar" dir="rtl"></i><small id="at-sub"></small></div>
-					<div class="at-map__open" id="at-open" hidden></div>
-					<p class="at-map__credit">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · © <a href="https://www.esri.com" target="_blank" rel="noopener">Esri</a></p>
-				</div>
-				<ol class="at-list" id="at-list"></ol>
+			${mapBlock('at-city', false)}
 			</div>
+			<div class="at-pane" id="at-pane-places" role="tabpanel" hidden>
+				<div class="at-chips" id="at-chips" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
+				${mapBlock('at-pcity', true)}
+				${placesSection(s)}
 			</div>
-			<div class="at-pane" id="at-pane-places" role="tabpanel" hidden>${placesSection(s)}</div>
 			<p class="center at-links"><a class="btn btn--sm btn--ghost" href="places.html">${doodle('pin', 16)} ${L('أماكننا', 'Our places')}</a> <a class="btn btn--sm btn--ghost" href="cities.html">${doodle('house', 16)} ${L('خرايط مدننا', 'Our city maps')}</a></p>
 		</div></section>
 		${related(['places', 'cities', 'journeys'])}`;
@@ -95,8 +165,7 @@ export default {
 		const [trips, spots] = await Promise.all([loadTrips(s).catch(() => []), live.load('spots').catch(() => ({ items: [] }))]);
 		const list = citiesOf(s, trips, spots.items || []);
 		const svg = $('.eg--atlas', main), tip = $('#at-tip', main);
-		const mapEl = $('#at-map', main), tiles = $('.at-map__tiles', mapEl), pinsEl = $('.at-map__pins', mapEl), photo = $('.at-map__photo', mapEl), openEl = $('#at-open', main);
-		let cur = null, view = null;
+		const cities = bigMap($('#at-city', main), false), places = bigMap($('#at-pcity', main), true);
 
 		/* the numbers beside Egypt */
 		const placesN = list.reduce((a, c) => a + c.places.length, 0);
@@ -152,63 +221,34 @@ export default {
 		}
 		strip.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (!b) return; show(b.dataset.c); $('#at-city', main).scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); });
 
-		/* the open city: its poster with a gold pin for every place, and the list of its places */
-		const peek = (i) => {
-			const p = cur?.places[i];
-			$$('.at-pin', pinsEl).forEach((x) => x.classList.toggle('is-on', +x.dataset.i === i));
-			$$('#at-list [data-i]', main).forEach((x) => x.classList.toggle('is-on', +x.dataset.i === i));
-			if (!p || !p.photos.length) { photo.classList.remove('is-on'); return; }
-			photo.innerHTML = img(p.photos[0], '');
-			hydrate(photo);
-			photo.classList.add('is-on');
-		};
-		const openPlace = (i) => {
-			const p = cur?.places[i];
-			if (!p) return;
-			openEl.innerHTML = `<button class="at-open__x" type="button" aria-label="${L('اقفل', 'Close')}">✕</button>
-				${p.photos.length ? `<div class="at-open__ph" data-media-box>${img(p.photos[0], esc(p.title), 'zoom')}</div>` : ''}
-				<div class="at-open__tx"><b dir="auto">${esc(p.title)}</b>${p.date || p.where ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.where].filter(Boolean).join(' · '))}</small>` : ''}${p.text ? `<p dir="auto">${esc(p.text)}</p>` : ''}${p.photos.length > 1 ? `<span class="at-open__n">${doodle('camera', 14)} ${L(`${num(p.photos.length)} صورة`, `${p.photos.length} photos`)}</span>` : ''}</div>`;
-			hydrate(openEl);
-			openEl.hidden = false;
-			$('.at-open__x', openEl).focus({ preventScroll: true });
-		};
-		openEl.addEventListener('click', (e) => { if (e.target.closest('.at-open__x')) openEl.hidden = true; });
-		mapEl.addEventListener('keydown', (e) => { if (e.key === 'Escape') openEl.hidden = true; });
-
+		/* «المدن»: the open city with a light for every place; the Egypt map, the hanging pins and the row follow it */
 		function show(id) {
 			const c = list.find((x) => x.id === id) || list[0];
 			if (!c) return;
-			cur = c;
-			openEl.hidden = true;
-			photo.classList.remove('is-on');
-			const narrow = mapEl.clientWidth < 600;
-			view = fit(tiles, [...c.places.map((p) => p.at), centreOf(c)], { pad: narrow ? 60 : 90, padTop: 40, zoom: 15, maxZ: 16, minZ: 7, center: centreOf(c), poster: true });
-			pinsEl.innerHTML = c.places.map((p, i) => { const xy = view.at(p.at); return `<button class="at-pin${p.photos.length ? ' has-ph' : ''}" type="button" data-i="${i}" style="left:${xy.x.toFixed(1)}px;top:${xy.y.toFixed(1)}px;--d:${(i % 9) * 60}ms" aria-label="${esc(p.title)}"><svg viewBox="0 0 32 44" aria-hidden="true"><path d="M16 43C13 34 2 27 2 16a14 14 0 0 1 28 0c0 11-11 18-14 27Z"/><circle cx="16" cy="16" r="5.5"/></svg></button>`; }).join('');
-			$('#at-en', main).textContent = c.en;
-			$('#at-ar', main).textContent = c.ar;
-			$('#at-sub', main).textContent = [[GOV[c.gov]?.en, 'Egypt'].filter(Boolean).join(', '), coords(centreOf(c)), c.trips.length ? L(`رحلة ${c.trips.map((y) => num(y).replace(/[٬,]/g, '')).join(' و')}`, `trip ${c.trips.join(' & ')}`) : ''].filter(Boolean).join(' · ');
-			$('#at-list', main).innerHTML = c.places.map((p, i) => `<li><button type="button" data-i="${i}">
-				<span class="at-list__ph">${doodle('pin', 18)}${p.photos.length ? `<span data-media-box>${img(p.photos[0], '')}</span>` : ''}</span>
-				<span class="at-list__tx"><b dir="auto">${esc(p.title)}</b>${p.date || p.where ? `<small dir="auto">${esc([p.date ? fmtDate(p.date) : '', p.where].filter(Boolean).join(' · '))}</small>` : ''}</span>
-			</button></li>`).join('');
-			hydrate($('#at-list', main));
+			cities.show(c);
 			[...$$('.at-card', strip), ...$$('.at-card', row)].forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
 			$$('[data-gov]', svg).forEach((el) => el.classList.toggle('is-focus', el.dataset.gov === c.gov));
 			history.replaceState(history.state, '', `#${encodeURIComponent(c.id)}`);
 		}
-		pinsEl.addEventListener('pointerover', (e) => { const b = e.target.closest('[data-i]'); if (b && e.pointerType === 'mouse') peek(+b.dataset.i); });
-		pinsEl.addEventListener('pointerleave', () => peek(-1));
-		pinsEl.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) openPlace(+b.dataset.i); });
-		const lst = $('#at-list', main);
-		lst.addEventListener('pointerover', (e) => { const b = e.target.closest('[data-i]'); if (b) peek(+b.dataset.i); });
-		lst.addEventListener('pointerleave', () => peek(-1));
-		lst.addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { openPlace(+b.dataset.i); mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'nearest' }); } });
+		/* «الأماكن»: the same, on the real map with pins; its own row of cities */
+		const chips = $('#at-chips', main);
+		chips.innerHTML = list.map((c) => `<button class="chip" type="button" role="tab" data-c="${esc(c.id)}">${esc(L(c.ar, c.en))} <small>${num(c.places.length)}</small></button>`).join('');
+		function showPlaces(id) {
+			const c = list.find((x) => x.id === id) || list[0];
+			if (!c) return;
+			places.show(c);
+			$$('[data-c]', chips).forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+		}
+		chips.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) showPlaces(b.dataset.c); });
 
 		const tab = (name) => {
 			$$('.at-tab', main).forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
 			$('#at-pane-cities', main).hidden = name !== 'cities';
 			$('#at-pane-places', main).hidden = name !== 'places';
-			if (name === 'places') for (const el of $$('#at-pane-places .reveal', main)) el.classList.add('is-in');
+			if (name === 'places') {
+				for (const el of $$('#at-pane-places .reveal', main)) el.classList.add('is-in');
+				if (!places.cur) showPlaces(cities.cur?.id);
+			}
 		};
 		$('.at-tabs', main).addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) tab(b.dataset.tab); });
 		hydrate($('#at-pane-places', main));
@@ -218,14 +258,11 @@ export default {
 			e.preventDefault();
 			const c = list.find((x) => x.places.some((p) => p.id && p.id === go.dataset.pid));
 			if (!c) return;
-			tab('cities');
-			show(c.id);
-			mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
-			setTimeout(() => openPlace(c.places.findIndex((p) => p.id === go.dataset.pid)), REDUCE ? 0 : 500);
+			showPlaces(c.id);
+			places.mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
+			setTimeout(() => places.open(c.places.findIndex((p) => p.id === go.dataset.pid)), REDUCE ? 0 : 500);
 		});
 		const fromHash = decodeURIComponent(location.hash.slice(1));
 		show(list.some((c) => c.id === fromHash) ? fromHash : list[0]?.id);
-		let w = mapEl.clientWidth;
-		new ResizeObserver(() => { if (mapEl.isConnected && Math.abs(mapEl.clientWidth - w) > 30) { w = mapEl.clientWidth; show(cur?.id); } }).observe(mapEl);
 	}
 };

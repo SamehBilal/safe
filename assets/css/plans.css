@@ -1839,3 +1839,20 @@
 .at-tab:hover { translate: 0 -2px; }
 .at-tab.is-on { color: #fff; background: var(--coral-deep, #d9534f); }
 .at-pane[hidden] { display: none; }
+
+/* أطلسنا's two big maps. «المدن»: a light for every place, as on «خرايط مدننا» (coral in the light, gold in the dark) */
+.at-light { z-index: 2; animation: none; }
+.at-light.is-on { scale: 1.5; z-index: 3; }
+/* «الأماكن»: the real map, in its own colours in both themes, with a coral pin for every place */
+.at-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 18px; }
+.at-chips .chip small { opacity: .7; }
+.at-chips .chip.is-on { color: #fff; background: var(--coral-deep, #d9534f); border-color: var(--coral-deep, #d9534f); }
+#at-pcity { margin-bottom: clamp(30px, 5vw, 50px); }
+.at-map--real { background: #e8e4da !important; }
+.at-map--real .at-map__tiles { filter: none !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+.at-map--real .at-map__photo { mix-blend-mode: normal !important; }
+.at-map--real .at-map__name { color: #1c1f33 !important; text-shadow: 0 0 3px #fff, 0 0 10px #fff, 0 0 18px #fff !important; }
+.at-map--real .at-map__credit { color: #333 !important; }
+.at-map--real .at-pin path { fill: #d9534f !important; stroke: #fff !important; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)) !important; }
+.at-map--real .at-pin circle { fill: #fff !important; }
+.at-map--real .at-pin.has-ph path { fill: #c2185b !important; }
