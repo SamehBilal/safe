@@ -609,3 +609,22 @@ svg.k-dr { fill: none; stroke: #37353f; stroke-width: 1.8; stroke-linecap: round
 .wg-dial__mid { inset: 27%; }
 .wg-dial__mid b { font-size: 2rem; }
 .wg-dial__m { font-size: .56rem; opacity: .85; }
+
+/* the phone menu: each chapter's card is its board of widgets, two cells across (chosen on widgets.html) */
+.pn-wg { padding: 14px 4px 6px; }
+.wg-board--m { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: 132px; gap: 12px; height: auto; min-height: 0; }
+.wg-board--m .wg { min-width: 0; }
+
+/* widgets.html: which menu — the big one or the phone's — above the chapters' boards */
+.wgp-side { display: grid; gap: 14px; }
+.wgp-mode { display: flex; gap: 8px; justify-content: center; }
+.wgp-mode button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font: 800 .9rem var(--f-body); color: var(--text); background: var(--card); border: 1.5px solid var(--ink); border-radius: 999px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink); cursor: pointer; }
+.wgp-mode button.is-on { color: #fff; background: var(--coral-deep, #d9534f); }
+.wgp-mb--m .wgp-mb__g { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: 12px; width: 52%; margin-inline: auto; }
+/* the phone menu's board, in a phone */
+.wgp-stage--m { display: block; padding: 14px; background: color-mix(in srgb, var(--tab) 18%, var(--card)); border: 1.5px dashed color-mix(in srgb, var(--ink) 40%, transparent); border-radius: 12px; margin-bottom: 16px; }
+.wgp-phone { width: min(100%, 360px); margin: 0 auto; padding: 10px 10px 14px; background: #fffdf8; border: 2px solid var(--ink); border-radius: 30px; box-shadow: 0 16px 30px -14px rgba(0, 0, 0, .35); }
+.wgp-phone__bar { display: block; width: 90px; height: 6px; margin: 2px auto 10px; background: var(--ink); border-radius: 6px; opacity: .7; }
+.wgp-phone__ch { margin: 0 4px; padding: 6px 12px; font-weight: 800; color: #2b2a33; background: var(--tab); border-radius: 10px; }
+@media (min-width: 980px) { .wgp-panel--m .wgp-stage--m { margin-bottom: 0; } }
+@media (min-width: 980px) { .wgp-panel.wgp-panel--m { grid-template-columns: minmax(0, 1fr) 400px; } }

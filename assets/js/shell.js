@@ -681,55 +681,6 @@ export const GROUPS = [
 	{ id: 'people', ar: 'عيلتنا وناسنا', en: 'Family & people', nav: ['عيلتنا', 'Family'], ic: 'family', tab: '#e2d3f5', c: '#7b4fc4', say: ['العيلة والقرايب والصحاب، ومناسباتنا كلها', 'Family, relatives, friends, and every occasion'] }
 ];
 
-/* the card at the side of each menu (and at the foot of each chapter in the phone menu): one live thing from that
-   chapter, in one frame — a taped card with a picture, a line, and where it goes */
-function featureHTML(g, s) {
-	const card = (cls, href, pic, k, b, small) => `<a class="mf mf--${g} ${cls}" href="${href}">
-		<span class="mf-tape" aria-hidden="true"></span>
-		<span class="mf-pic">${pic}</span>
-		<span class="mf-tx"><span class="mf-k">${k}</span><b>${b}</b><small>${small} ${App.arrow}</small></span>
-	</a>`;
-	if (g === 'story') {
-		const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date));
-		const today = todays.find((x) => firstPhoto(x)) || todays[0];
-		const ch = (s.chapters || [])[0];
-		const ph = (today && firstPhoto(today)) || (ch && firstPhoto(ch));
-		return card('', today ? `moment.html?id=${esc(today.id)}` : 'story.html', ph ? `<span class="mf-photo" data-media-box>${img(ph, '', 'mf-img')}</span>` : `<span class="mf-doodle">${doodle('heart', 54)}</span>`,
-			today ? L('النهارده في حكايتنا', 'Today in our story') : L('حكايتنا', 'Our story'),
-			today ? T(today.title) : `${num(daysBetween(parseDate(s.met || '2009-06-10')))} ${L('يوم من أول سلام', 'days since hello')}`,
-			today ? yearsAgo(today.date) : `${fmtDate(s.met)} — ${L('ولسه مكملين', 'and still going')}`);
-	}
-	if (g === 'memories') {
-		const photos = (s.gallery || []).map(firstPhoto).filter((p) => p && !isVideo(p));
-		const p = photos.length ? pick(photos) : s.poster;
-		const notes = (s.notes || []).filter((n) => t(n.text).length <= 90);
-		const n = notes.length ? pick(notes) : null;
-		return card('', 'gallery.html', p ? `<span class="mf-photo mf-photo--polaroid" data-media-box>${img(p, '', 'mf-img')}</span>` : `<span class="mf-doodle">${doodle('camera', 54)}</span>`,
-			L('من ألبومنا', 'From our album'), n ? `<q>${T(n.text)}</q>` : L('إحنا بالصور، سنة بسنة', 'Us in pictures, year by year'), n ? `— ${T(n.by === 'him' ? s.him : s.her)}` : L('افتح الألبوم', 'Open the album'));
-	}
-	if (g === 'nights') {
-		const moon = moonTonight(), k = pick(DRAW_KINDS);
-		return card('mf--dark', `draw.html?k=${k.id}`, `<span class="mf-sky" aria-hidden="true">${Array.from({ length: 14 }, () => `<i style="--x:${rand(4, 96)}%;--y:${rand(6, 94)}%;--d:${rand(1.8, 4.5)}s"></i>`).join('')}${moon.svg}</span>`,
-			`${L('قمر الليلة', 'Tonight’s moon')} · ${esc(moon.name)}`, `${L('نسهر على', 'Tonight:')} ${esc(L(k.ar, k.en))}`, esc(moon.how));
-	}
-	if (g === 'kids') {
-		const kids = (s.family?.members || []).filter((m) => m.kid);
-		return card('', 'growth.html', `<span class="mf-kids">${kids.slice(0, 3).map((m) => `<span class="mf-kid" style="--c:${esc(m.color || '#0e6990')}">${m.photo ? `<span data-media-box>${img(m.photo, '', 'mf-kid-img')}</span>` : doodle(m.emoji || 'baby', 34)}<small>${T(m.name)}</small></span>`).join('') || doodle('baby', 54)}</span>`,
-			L('مين كبر قد إيه', 'How they’ve grown'), kids.map((m) => `${T(m.name)} ${age(m.born)}`).join(' · ') || L('ولادنا', 'Our kids'), L('الطول والوزن', 'Height and weight'));
-	}
-	if (g === 'home') {
-		const d = new Date(), loc = App.lang === 'ar' ? 'ar-EG' : 'en-GB';
-		const hijri = new Intl.DateTimeFormat(`${loc}-u-ca-islamic-umalqura`, { day: 'numeric', month: 'long' }).format(d);
-		return card('', 'shopping.html', `<span class="mf-day"><small>${esc(new Intl.DateTimeFormat(loc, { month: 'long' }).format(d))}</small><b>${num(d.getDate())}</b><small>${esc(new Intl.DateTimeFormat(loc, { weekday: 'long' }).format(d))}</small></span>`,
-			esc(hijri), L('ناقص إيه في البيت النهارده؟', 'What’s missing at home today?'), L('طلبات البيت', 'The shopping list'));
-	}
-	const next = occasions(s).slice(0, 3);
-	if (!next.length) return card('', 'calendar.html', `<span class="mf-doodle">${doodle('cake', 54)}</span>`, L('مناسباتنا', 'Occasions'), L('كل مناسباتنا في سنة', 'All our occasions in a year'), L('النتيجة', 'The calendar'));
-	const [o] = next, when = new Date(); when.setDate(when.getDate() + o.days);
-	const left = o.days === 0 ? L('النهارده ♥', 'Today ♥') : o.days === 1 ? L('بكرة', 'Tomorrow') : L(`بعد ${num(o.days)} يوم`, `in ${o.days} days`);
-	return card('', o.kind === 'birthday' ? `birthday.html?id=${esc(o.id)}` : 'calendar.html', `<span class="mf-day"><small>${esc(new Intl.DateTimeFormat(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: 'long' }).format(when))}</small><b>${num(when.getDate())}</b><small>${left}</small></span>`,
-		L('المناسبة الجاية', 'Next occasion'), esc(o.title), next.slice(1).map((x) => esc(x.title)).join(' · ') || esc(o.sub || ''));
-}
 
 /* عيلتنا: the family wall — bunting in our colours across the top, the two of us as big polaroids with a heart between,
    the boys as small ones under us, each with his name on a paper tag, and how long we've been a family */
@@ -776,6 +727,32 @@ export function setWgLayout(g, ids) {
 	store.set(WG_KEY, JSON.stringify(all));
 }
 export const wgCells = (ids) => ids.reduce((n, id) => n + cells(WIDGETS.find((w) => w.id === id) || { size: 's' }), 0);
+
+/* the same widgets in the phone's menu: each chapter's card is a board two cells across and up to four down, a strip
+   folding to a wide one and a board to a big one; chosen on widgets.html too, kept apart from the big menu's (us.widgets.m),
+   and until then each chapter shows the first of its big menu's widgets that fit */
+export const WG_MSIZE = { s: [1, 1], w: [2, 1], t: [1, 2], b: [2, 2], strip: [2, 1], board: [2, 2] };
+export const WG_MCELLS = 8;
+const WG_MKEY = 'us.widgets.m';
+const mcells = (w) => WG_MSIZE[w.size][0] * WG_MSIZE[w.size][1];
+export const wgCellsM = (ids) => ids.reduce((n, id) => n + mcells(WIDGETS.find((w) => w.id === id) || { size: 's' }), 0);
+export function wgLayoutM(g) {
+	try {
+		const v = JSON.parse(store.get(WG_MKEY) || '{}')[g];
+		if (Array.isArray(v)) return v.filter((id, i) => WIDGETS.some((w) => w.id === id && w.g === g) && v.indexOf(id) === i);
+	} catch { /* the first ones that fit */ }
+	const out = [];
+	for (const id of wgLayout(g)) { const w = WIDGETS.find((x) => x.id === id); if (w && wgCellsM(out) + mcells(w) <= WG_MCELLS) out.push(id); }
+	return out;
+}
+export function setWgLayoutM(g, ids) {
+	let all = {};
+	try { all = JSON.parse(store.get(WG_MKEY) || '{}') || {}; } catch { /* start over */ }
+	if (ids) all[g] = ids; else delete all[g];
+	store.set(WG_MKEY, JSON.stringify(all));
+}
+/** is this chapter's phone board still the one it gets on its own? */
+export const wgIsDefaultM = (g) => { try { return !Array.isArray(JSON.parse(store.get(WG_MKEY) || '{}')[g]); } catch { return true; } };
 
 const loc = () => (App.lang === 'ar' ? 'ar-EG' : 'en-GB');
 const dateIn = (days) => { const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + days); return d; };
@@ -1081,13 +1058,13 @@ export async function wgName(w) { return w.sketch ? ((await ideas())[w.idea - 1]
 /** a menu's board: its widgets on the four by three grid, each in its own cell */
 /** the widgets that show something picked at random, picked again each time their menu opens */
 const RESHUFFLE = new Set(['days', 'album', 'note', 'guest', 'ourfirsts', 'collage', 'stack', 'pinned', 'cassette']);
-export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g)) {
-	return `<div class="wg-board">${ids.map((id, i) => {
+export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g), phone = false) {
+	return `<div class="wg-board${phone ? ' wg-board--m' : ''}">${ids.map((id, i) => {
 		const w = WIDGETS.find((x) => x.id === id && x.g === g);
 		if (!w) return '';
 		let h = '';
 		try { h = w.html(s, here) || ''; } catch { h = ''; }
-		const [c, r] = WG_SIZES[w.size];
+		const [c, r] = phone ? WG_MSIZE[w.size] : WG_SIZES[w.size];
 		return `<div class="wg wg--${w.size} wgx-${w.id}" style="--c:${c};--r:${r};--i:${i}" data-wg="${w.id}">${h || `<a class="wg-empty" href="widgets.html#${g}">${esc(L(w.ar, w.en))}<small>${L('لسه مفيش حاجة هنا', 'Nothing here yet')}</small></a>`}</div>`;
 	}).join('')}</div>`;
 }
@@ -1382,7 +1359,7 @@ function pnavHTML(here, s) {
 			const ps = PAGES.filter((p) => p.group === g.id);
 			return `<details class="pn-ch" name="pn" style="--n:${n};--tab:${g.tab};--gc:${g.c}"${g.id === mine ? ' open' : ''}>
 				<summary><i aria-hidden="true">${num(n + 1)}</i><b>${esc(L(g.ar, g.en))}</b><small>${num(ps.length)} ${L('صفحات', 'pages')}</small></summary>
-				<div class="pn-list">${ps.map(link).join('')}<div class="pn-card" data-feature="${g.id}">${featureHTML(g.id, s)}</div></div>
+				<div class="pn-list">${ps.map(link).join('')}<div class="pn-card pn-wg" data-feature="${g.id}">${boardHTML(g.id, s, here, wgLayoutM(g.id), true)}</div></div>
 			</details>`;
 		}).join('')}
 		<div class="pn-app">${PAGES.filter((p) => p.group === 'app').map(link).join('')}</div>`;
@@ -1511,12 +1488,27 @@ function renderChrome() {
 		header.classList.toggle('menu-open', on);
 		$('.menu-btn', header).setAttribute('aria-expanded', String(on));
 		document.body.classList.toggle('menu-lock', on);
-		if (on) hydrate($('.pnav', header));
+		if (on) { hydrate($('.pnav', header)); fillWidgets($('.pnav', header)); }
 	};
 	header._menu = setMenu;
 	fillWidgets($('.mnav', header));
 	$('.menu-btn', header).onclick = () => setMenu(!header.classList.contains('menu-open'));
 	$('.pnav', header).onclick = (ev) => { if (ev.target.closest('a')) setMenu(false); };
+	// a chapter opened in the phone's menu: its widgets that pick at random pick again, and the live ones fill in
+	$('.pnav', header).addEventListener('toggle', (ev) => {
+		const d = ev.target;
+		if (!d.open || !d.matches?.('.pn-ch')) return;
+		const here = currentFile();
+		for (const cell of $$('.pn-wg .wg[data-wg]', d)) {
+			const w = WIDGETS.find((x) => x.id === cell.dataset.wg);
+			if (!w || !RESHUFFLE.has(w.id)) continue;
+			let h = '';
+			try { h = w.html(App.story, here) || ''; } catch { h = ''; }
+			if (h) cell.innerHTML = h;
+		}
+		hydrate(d);
+		fillWidgets(d);
+	}, true);
 	{
 		const btn = $('.add-btn', header), panel = $('#add-panel', header);
 		const setAdd = (on) => { panel.hidden = !on; btn.setAttribute('aria-expanded', String(on)); header.classList.toggle('add-open', on); if (on) { header._mega?.set(''); panel.querySelector('a')?.focus({ preventScroll: true }); } };
