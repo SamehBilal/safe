@@ -2129,3 +2129,8 @@ button.nt-tix__one:hover { translate: 0 -2px; }
 @media (prefers-reduced-motion: reduce) { .nt-pass, .nt-pass__pin { animation: none; } }
 .nt-chip { white-space: nowrap; }
 .nt-chip input { flex: none; width: 16px; height: 16px; margin: 0; }
+
+/* «رحلاتنا»'s two tabs under its heading: the trips, and the next trip */
+.jx-tabs { margin-top: 6px; }
+.jx-pane[hidden] { display: none; }
+#jx-pane-next .nt-sec { padding-top: 0; }

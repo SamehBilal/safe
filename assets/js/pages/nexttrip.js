@@ -230,5 +230,6 @@ export default {
 			};
 		}
 		paint();
+		return { repaint: paint };
 	}
 };

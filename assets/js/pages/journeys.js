@@ -45,7 +45,11 @@ export default {
 			</div>
 		</div></div></section>
 		${pageHead(L('رحلاتنا', 'Our trips'), L('كل رحلة طريق على الخريطة: محطة ورا محطة، بالصور', 'Every trip a road on the map: stop after stop, with the photos'), [{ href: 'journeys.html', ar: 'رحلاتنا', en: 'Our trips' }], { band: '' })}
-		<div class="nt-in" id="nt">${nexttrip.section(s)}</div>
+		<div class="wrap"><div class="at-tabs jx-tabs" role="tablist" aria-label="${L('رحلاتنا', 'Our trips')}">
+			<button class="at-tab is-on" type="button" role="tab" aria-selected="true" aria-controls="jx-pane-trips" data-tab="trips">${doodle('suitcase', 18)} ${L('رحلاتنا', 'Our trips')}</button>
+			<button class="at-tab" type="button" role="tab" aria-selected="false" aria-controls="jx-pane-next" data-tab="next">${doodle('plane', 18)} ${L('رحلتنا الجاية', 'Our next trip')}</button>
+		</div></div>
+		<div class="jx-pane" id="jx-pane-trips" role="tabpanel">
 		<section class="sec"><div class="wrap"><div class="jx-list">${js.map((j, i) => {
 			const photos = [...new Set(j.stops.flatMap((st) => st.photos || []))];
 			const pick = photos.length <= 3 ? photos : [photos[0], photos[Math.floor(photos.length / 2)], photos.at(-1)];
@@ -66,12 +70,23 @@ export default {
 				</div>
 			</article>`;
 		}).join('')}</div></div></section>
+		</div>
+		<div class="jx-pane" id="jx-pane-next" role="tabpanel" hidden><div class="nt-in" id="nt">${nexttrip.section(s)}</div></div>
 		${related(['atlas', 'anniversaries'])}`;
 	},
 
 	after(main, s) {
-		// our next trip, its own shared list inside its section
-		nexttrip.after(main, s, $('#nt', main));
+		// our next trip, its own shared list inside its tab
+		const next = nexttrip.after(main, s, $('#nt', main));
+		const tab = (name) => {
+			$$('.jx-tabs .at-tab', main).forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+			$('#jx-pane-trips', main).hidden = name !== 'trips';
+			$('#jx-pane-next', main).hidden = name !== 'next';
+			if (name === 'next') { for (const el of $$('#jx-pane-next .reveal', main)) el.classList.add('is-in'); next.then((x) => x?.repaint()); }
+			history.replaceState(history.state, '', name === 'next' ? '#next' : location.pathname + location.search);
+		};
+		$('.jx-tabs', main).addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) tab(b.dataset.tab); });
+		if (location.hash === '#next' || location.hash === '#add') tab('next');
 		// an old link to a trip on this page (journeys.html#j-…) opens the trip's own page
 		const m = /^#j-([\w-]+)$/.exec(location.hash);
 		if (m) { location.replace(`journey.html?id=${encodeURIComponent(m[1])}`); return; }
