@@ -1856,3 +1856,8 @@
 .at-map--real .at-pin path { fill: #d9534f !important; stroke: #fff !important; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .35)) !important; }
 .at-map--real .at-pin circle { fill: #fff !important; }
 .at-map--real .at-pin.has-ph path { fill: #c2185b !important; }
+
+/* «الأماكن» in أطلسنا: the pins row of «أماكننا» above the real map; the open area's pin is lifted */
+.at-areas { margin: 0 0 22px; }
+.at-areas .pz-pin.is-on .pz-pin__head { scale: 1.12; }
+.at-areas .pz-pin.is-on b { color: var(--coral-deep, #d9534f); }

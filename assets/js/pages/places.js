@@ -110,17 +110,10 @@ export default {
 	}
 };
 
-function hero(list, pinned, names) {
-	if (!list.length) return '';
-	const years = list.map((m) => String(m.date || '').slice(0, 4)).filter((y) => /^\d{4}$/.test(y)).sort();
-	const areas = names.map((n, k) => { const here = pinned.filter((p) => p.a === k); const ph = here.find((p) => p.m.photo); return { n, k, count: here.length, photo: ph?.m.photo }; });
-	return `<section class="sec sec--top pz-top"><div class="wrap">
-		<div class="pz-head">
-			<p class="gh-k">${doodle('pin', 16)} ${L('دفتر أماكننا', 'Our places, pinned')}${years.length ? ` · ${yr(years[0])}–${yr(years.at(-1))}` : ''}</p>
-			<h1 class="pz-t">${L('أماكننا', 'Our places')}</h1>
-			<p class="pz-sub"><b>${num(list.length)}</b> ${L(`مكان فيه حتة مننا، في ${num(names.length)} ${names.length <= 10 ? 'مناطق' : 'منطقة'}`, `places that hold a piece of us, in ${names.length} areas`)}</p>
-		</div>
-		<div class="pz-route">
+/* the row of area pins on a dotted path, each with a place's photo and how many places — tap one to open its area */
+function route(pinned, names) {
+	const areas = names.map((n, k) => { const here = pinned.filter((x) => x.a === k); const ph = here.find((x) => x.m.photo); return { n, k, count: here.length, photo: ph?.m.photo }; });
+	return `		<div class="pz-route">
 			<svg class="pz-route__line" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><path d="M10 44 C 120 6, 220 58, 330 30 S 540 4, 660 34 S 880 56, 990 18"/></svg>
 			<ol class="pz-pins">${areas.map((a, i) => `<li style="--i:${i}"><a href="#ip-map" class="pz-pin" data-go-area="${a.k}">
 				<span class="pz-pin__head">${doodle('pin', 30)}${a.photo ? `<span class="pz-pin__ph" data-media-box>${img(a.photo, '', 'pz-pin__img')}</span>` : ''}<i class="pz-pin__n">${num(a.count)}</i></span>
@@ -128,6 +121,33 @@ function hero(list, pinned, names) {
 			</a></li>`).join('')}</ol>
 		</div>
 		${pinned.length ? `<p class="pz-hint">${doodle('pin', 14)} ${L('دوس على أي دبوس عشان تفتح المنطقة على الخريطة', 'Tap a pin to open its area on the map')}</p>` : ''}
+`;
+}
+
+const grouped = (s) => {
+	const pinned = (s.places || []).flatMap((m) => { const at = where(m); return at ? areasOf(m).map((ar) => ({ m, at, ar })) : []; });
+	const names = [...new Set(pinned.map((x) => T(x.ar)))].sort((a, b) => pinned.filter((x) => T(x.ar) === b).length - pinned.filter((x) => T(x.ar) === a).length);
+	pinned.forEach((x) => { x.a = names.indexOf(T(x.ar)); });
+	return { pinned, names };
+};
+/** the pins row for another page (the atlas's «الأماكن» tab) */
+export function placesPins(s) { const { pinned, names } = grouped(s); return pinned.length ? route(pinned, names) : ''; }
+/** the areas, biggest first: { k, ar, en, ids } — the place ids in each */
+export function placeAreas(s) {
+	const { pinned, names } = grouped(s);
+	return names.map((n, k) => { const here = pinned.filter((x) => x.a === k); const ar = here[0]?.ar || {}; return { k, ar: (typeof ar === 'string' ? ar : ar.ar) || n, en: (typeof ar === 'string' ? ar : ar.en) || n, ids: here.map((x) => x.m.id).filter(Boolean) }; });
+}
+
+function hero(list, pinned, names) {
+	if (!list.length) return '';
+	const years = list.map((m) => String(m.date || '').slice(0, 4)).filter((y) => /^\d{4}$/.test(y)).sort();
+	return `<section class="sec sec--top pz-top"><div class="wrap">
+		<div class="pz-head">
+			<p class="gh-k">${doodle('pin', 16)} ${L('دفتر أماكننا', 'Our places, pinned')}${years.length ? ` · ${yr(years[0])}–${yr(years.at(-1))}` : ''}</p>
+			<h1 class="pz-t">${L('أماكننا', 'Our places')}</h1>
+			<p class="pz-sub"><b>${num(list.length)}</b> ${L(`مكان فيه حتة مننا، في ${num(names.length)} ${names.length <= 10 ? 'مناطق' : 'منطقة'}`, `places that hold a piece of us, in ${names.length} areas`)}</p>
+		</div>
+${route(pinned, names)}
 	</div></section>`;
 }
 

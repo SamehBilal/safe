@@ -3,7 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOV, govName, loadTrips, mapSVG } from './trips.js';
 import { fit, where, nearestGov, CAPITALS, km } from '../tilemap.js';
-import { placesSection } from './places.js';
+import { placesSection, placesPins, placeAreas } from './places.js';
 
 /* «أطلسنا» — an example of «أماكننا» and «خرايط مدننا» on one page (both pages stay as they are).
    The top: Egypt with every governorate we've been to coloured in — point at one for its name and how many places,
@@ -152,7 +152,7 @@ export default {
 			${mapBlock('at-city', false)}
 			</div>
 			<div class="at-pane" id="at-pane-places" role="tabpanel" hidden>
-				<div class="at-chips" id="at-chips" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
+				<div class="at-areas" id="at-chips">${placesPins(s)}</div>
 				${mapBlock('at-pcity', true)}
 				${placesSection(s)}
 			</div>
@@ -232,14 +232,16 @@ export default {
 		}
 		/* «الأماكن»: the same, on the real map with pins; its own row of cities */
 		const chips = $('#at-chips', main);
-		chips.innerHTML = list.map((c) => `<button class="chip" type="button" role="tab" data-c="${esc(c.id)}">${esc(L(c.ar, c.en))} <small>${num(c.places.length)}</small></button>`).join('');
-		function showPlaces(id) {
-			const c = list.find((x) => x.id === id) || list[0];
+		// every area of «أماكننا» as its own map: its places from the cities above, by id
+		const byId = new Map(list.flatMap((c) => c.places.filter((x) => x.id).map((x) => [x.id, { p: x, gov: c.gov }])));
+		const areas = placeAreas(s).map((r) => { const got = r.ids.map((id) => byId.get(id)).filter(Boolean); return { id: `area-${r.k}`, k: r.k, ar: r.ar, en: r.en, gov: got[0]?.gov, trips: [], places: got.map((g) => g.p) }; }).filter((r) => r.places.length);
+		function showPlaces(k) {
+			const c = areas.find((x) => x.k === +k) || areas[0];
 			if (!c) return;
 			places.show(c);
-			$$('[data-c]', chips).forEach((b) => { const on = b.dataset.c === c.id; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+			$$('[data-go-area]', chips).forEach((b) => b.classList.toggle('is-on', +b.dataset.goArea === c.k));
 		}
-		chips.addEventListener('click', (e) => { const b = e.target.closest('[data-c]'); if (b) showPlaces(b.dataset.c); });
+		chips.addEventListener('click', (e) => { const b = e.target.closest('[data-go-area]'); if (!b) return; e.preventDefault(); showPlaces(b.dataset.goArea); places.mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' }); });
 
 		const tab = (name) => {
 			$$('.at-tab', main).forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
@@ -247,7 +249,7 @@ export default {
 			$('#at-pane-places', main).hidden = name !== 'places';
 			if (name === 'places') {
 				for (const el of $$('#at-pane-places .reveal', main)) el.classList.add('is-in');
-				if (!places.cur) showPlaces(cities.cur?.id);
+				if (!places.cur) showPlaces(areas[0]?.k);
 			}
 		};
 		$('.at-tabs', main).addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) tab(b.dataset.tab); });
@@ -256,9 +258,10 @@ export default {
 			const go = e.target.closest('[data-go-pin]');
 			if (!go) return;
 			e.preventDefault();
-			const c = list.find((x) => x.places.some((p) => p.id && p.id === go.dataset.pid));
+			const inCard = go.closest('[data-area]')?.dataset.area;
+			const c = areas.find((x) => String(x.k) === inCard && x.places.some((p) => p.id === go.dataset.pid)) || areas.find((x) => x.places.some((p) => p.id === go.dataset.pid));
 			if (!c) return;
-			showPlaces(c.id);
+			showPlaces(c.k);
 			places.mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
 			setTimeout(() => places.open(c.places.findIndex((p) => p.id === go.dataset.pid)), REDUCE ? 0 : 500);
 		});
