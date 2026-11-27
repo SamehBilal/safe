@@ -93,21 +93,20 @@ const GROUPS = [
 
 /* the house itself, filling the row beside the last card: a drawn house with a window for every room
    (each opens that room's first page), a door that opens a page at random, and the newest corners pinned beside it */
-const NEWEST = ['school', 'meals', 'papers'];
+// the newest corners, pinned beside the house: the atlas, the years, and the next trip (a tab of «رحلاتنا»)
+const NEWEST = ['atlas', 'years', { href: 'journeys.html#next', ic: 'route', ar: 'رحلتنا الجاية', en: 'Our next trip', dar: 'كارت صعود وعد تنازلي لرحلتنا الجاية', den: 'A boarding pass counting down to our next trip' }];
 const house = (page) => {
 	const rooms = GROUPS.map((g) => ({ g, p: page(g.top[0]) })).filter((r) => r.p);
 	const door = PAGES[Math.floor(Math.random() * PAGES.length)];
 	const win = ({ g, p }, k) => `<a class="hm-house__win" href="${p.href}" style="--k:${k}"><span class="hm-house__glass">${icon(g.ic, 20)}</span><small>${esc(L(g.ar, g.en))}</small></a>`;
-	const fresh = NEWEST.map(page).filter(Boolean);
+	const fresh = NEWEST.map((n) => (typeof n === 'string' ? page(n) : n)).filter(Boolean);
 	return `<div class="hm-house reveal">
 		<div class="hm-house__home">
 			<span class="hm-house__smoke" aria-hidden="true">${icon('heart', 15)}${icon('heart', 12)}${icon('heart', 9)}</span>
 			<svg class="hm-house__roof" viewBox="0 0 300 96" preserveAspectRatio="none" aria-hidden="true"><path class="hm-house__chim" d="M214 47 V12 h24 v49" /><path d="M4 94 L150 6 L296 94" /><path class="hm-house__tiles" d="M64 68 h172 M104 44 h92 M134 26 h32" /></svg>
 			<div class="hm-house__body">
-				${rooms.slice(0, 3).map(win).join('')}
-				${rooms[3] ? win(rooms[3], 3) : '<i></i>'}
+				${rooms.map(win).join('')}
 				<a class="hm-house__door" href="${door.href}" title="${esc(L(door.ar, door.en))}"><span>${L('افتح الباب', 'Open the door')}</span><small>${L('صفحة مفاجأة', 'a surprise page')}</small></a>
-				${rooms[4] ? win(rooms[4], 4) : '<i></i>'}
 			</div>
 			<p class="hm-house__mat">${L(`${num(GROUPS.length)} أوض · ${num(PAGES.length)} ركن`, `${GROUPS.length} rooms · ${PAGES.length} corners`)}</p>
 		</div>
