@@ -58,7 +58,8 @@ export default {
 		const by = new Map();
 		const at = (y) => { if (!by.has(y)) by.set(y, { moments: [], places: [], firsts: [], trips: [], journeys: [], journal: [], letters: [], chapters: [], photos: [], tripPhotos: 0, chosen: null }); return by.get(y); };
 		const addPhotos = (y, list, trip) => { const ps = list.map(photoOf).filter(Boolean); at(y).photos.push(...ps); if (trip) at(y).tripPhotos += ps.length; };
-		for (const m of s.timeline || []) { const y = yearOf(m.date); if (y) at(y).moments.push(m); }
+		// a moment's own photos count in its year too
+		for (const m of s.timeline || []) { const y = yearOf(m.date); if (y) { at(y).moments.push(m); addPhotos(y, [m.photo, ...(m.photos || [])].filter(Boolean)); } }
 		for (const c of cities) for (const p of c.places) { const y = yearOf(p.date); if (y) { at(y).places.push({ ...p, city: c }); addPhotos(y, p.photos); } }
 		for (const t of s.trips || []) { const y = t.year || yearOf(t.date); if (y) { at(y).trips.push(t); addPhotos(y, t.photos || [], true); } }
 		for (const j of s.journeys || []) { const y = yearOf(j.date); if (y) { at(y).journeys.push(j); addPhotos(y, j.stops.flatMap((st) => st.photos || []), true); } }
