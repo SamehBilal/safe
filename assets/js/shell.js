@@ -191,6 +191,8 @@ export function hydrate(root = document, lazy = false) {
 }
 
 /** Every photo the story refers to (for the "first photo of …" covers). */
+/** one of a thing's photos, at random (its cover among them): for the widgets that change each time their menu opens */
+export const anyPhoto = (o) => { const all = [...new Set([o?.cover, o?.photo, ...(o?.photos || []).map((p) => (typeof p === 'string' ? p : p?.photo))].filter(Boolean))]; return all.length ? all[Math.floor(Math.random() * all.length)] : ''; };
 export const firstPhoto = (o) => o?.cover || o?.photo || (o?.photos || []).map((p) => (typeof p === 'string' ? p : p.photo))[0] || '';
 
 /* ------------------------------------------------------------------ language */
@@ -877,7 +879,7 @@ function houseHTML(here) {
 export const WIDGETS = [
 	/* حكايتنا */
 	{ id: 'days', g: 'story', size: 'board', ar: 'الأيام الفارقة', en: 'Our big days', dar: 'تلات صور من أيامنا الكبيرة، كل واحدة بتاريخها', den: 'Three of our big days, in photos',
-		html: (s) => { const ch = (s.chapters || []).slice(0, 3); return ch.length ? `<div class="mg-cards">${ch.map((c) => `<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>${img(firstPhoto(c), '', 'mg-cover')}<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span></a>`).join('')}</div>` : ''; } },
+		html: (s) => { const ch = (s.chapters || []).slice(0, 3); return ch.length ? `<div class="mg-cards">${ch.map((c) => `<a class="mg-card" href="chapter.html?id=${esc(c.id)}" data-media-box>${img(anyPhoto(c), '', 'mg-cover')}<span class="mg-card-t"><b>${T(c.title)}</b><small>${fmtDate(c.date)}</small></span></a>`).join('')}</div>` : ''; } },
 	{ id: 'band', g: 'story', size: 'strip', ar: 'النهارده في حكايتنا', en: 'Today in our story', dar: 'لو النهارده فيه ذكرى بتظهر هنا بصورتها', den: 'Today’s moment, if there is one',
 		html: (s) => {
 			const todays = (s.timeline || []).filter((x) => !x.when && isToday(x.date)), today = todays.find((x) => firstPhoto(x)) || todays[0], ph = today && firstPhoto(today);
@@ -1078,7 +1080,7 @@ export async function wgName(w) { return w.sketch ? ((await ideas())[w.idea - 1]
 
 /** a menu's board: its widgets on the four by three grid, each in its own cell */
 /** the widgets that show something picked at random, picked again each time their menu opens */
-const RESHUFFLE = new Set(['album', 'note', 'guest', 'ourfirsts', 'collage', 'stack', 'pinned', 'cassette']);
+const RESHUFFLE = new Set(['days', 'album', 'note', 'guest', 'ourfirsts', 'collage', 'stack', 'pinned', 'cassette']);
 export function boardHTML(g, s, here = currentFile(), ids = wgLayout(g)) {
 	return `<div class="wg-board">${ids.map((id, i) => {
 		const w = WIDGETS.find((x) => x.id === id && x.g === g);
