@@ -45,7 +45,7 @@ export default {
 			</div>
 		</div></div></section>
 		${pageHead(L('رحلاتنا', 'Our trips'), L('كل رحلة طريق على الخريطة: محطة ورا محطة، بالصور', 'Every trip a road on the map: stop after stop, with the photos'), [{ href: 'journeys.html', ar: 'رحلاتنا', en: 'Our trips' }], { band: '' })}
-		<div class="nt-in" id="nt">${nexttrip.section(s, `<div class="nt-head"><div class="lp-band lp-band--nexttrip" id="lp-band" aria-hidden="true"></div><div><p class="gh-k">${doodle('suitcase', 16)} ${L('اللي جاي', 'What’s next')}</p><h2 class="nt-h">${L('رحلتنا الجاية', 'Our next trip')}</h2><p class="muted">${L('رايحين فين، فاضل كام يوم، وناخد إيه معانا', 'Where we’re going, how many days left, and what to pack')}</p></div></div>`)}</div>
+		<div class="nt-in" id="nt">${nexttrip.section(s)}</div>
 		<section class="sec"><div class="wrap"><div class="jx-list">${js.map((j, i) => {
 			const photos = [...new Set(j.stops.flatMap((st) => st.photos || []))];
 			const pick = photos.length <= 3 ? photos : [photos[0], photos[Math.floor(photos.length / 2)], photos.at(-1)];
