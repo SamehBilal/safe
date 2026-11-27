@@ -10,7 +10,7 @@ import { doodle } from '../doodles.js';
 
 const HIDDEN = new Set(['secret', 'giftideas', 'capsule']);
 // which page shows each list (when it isn't the page of the same name)
-const PAGE_OF = { where: 'distances', spots: 'atlas', tree: 'family', trips: 'anniversaries', bucket: 'adventures', recipes: 'food', soundtrack: 'music' };
+const PAGE_OF = { where: 'distances', spots: 'atlas', nexttrip: 'journeys', tree: 'family', trips: 'anniversaries', bucket: 'adventures', recipes: 'food', soundtrack: 'music' };
 const RECENT = 'us.search.recent';
 const MIN = 2;
 
@@ -63,7 +63,7 @@ async function build(s) {
 	// the story
 	for (const x of s.timeline || []) add('story', x, t(x.title), t(x.text), `moment.html?id=${encodeURIComponent(x.id)}`);
 	for (const x of s.chapters || []) add('chapters', x, t(x.title), t(x.sub), `chapter.html?id=${encodeURIComponent(x.id)}`);
-	for (const x of s.places || []) add('places', x, t(x.title), t(x.where), 'atlas.html#places');
+	for (const x of s.places || []) add('atlas', x, t(x.title), t(x.where), 'atlas.html#places');
 	for (const x of s.notes || []) add('notes', x, t(x.text), t(x.by === 'him' ? s.him : s.her), 'notes.html');
 	// letters wait to be opened: only who wrote them and their titles are searched, never what's inside
 	for (const x of s.letters || []) add('letters', { title: x.title, from: x.from, to: x.to }, t(x.title), '', 'letters.html');
@@ -82,7 +82,7 @@ async function build(s) {
 		const pageId = PAGE_OF[k] || k;
 		const p = pageOf(pageId);
 		if (!p || !lists[n]) return;
-		for (const x of records(lists[n])) add(pageId, x, titleOf(x), '', p.href);
+		for (const x of records(lists[n])) add(pageId, x, titleOf(x), '', k === 'nexttrip' ? 'journeys.html#next' : k === 'spots' && x.gov ? `atlas.html#${encodeURIComponent(x.gov)}` : p.href);
 	});
 	return out;
 }
@@ -283,7 +283,7 @@ function listHTML(hits, query, countLine) {
 
 function startHTML() {
 	const r = recent();
-	const ideas = [L('عيد ميلاد', 'birthday'), L('رحلة', 'trip'), L('أغنية', 'song'), L('أول مرة', 'first'), L('فيلم', 'film'), L('بحبك', 'love')];
+	const ideas = [L('عيد ميلاد', 'birthday'), L('رحلة', 'trip'), L('إسكندرية', 'Alexandria'), L('أغنية', 'song'), L('أول مرة', 'first'), L('فيلم', 'film'), L('بحبك', 'love')];
 	// a date with something on it, a month, and today's day in every year
 	const now = new Date();
 	const dates = ['12-10-2017', L('أكتوبر 2017', 'October 2017'), `${now.getDate()}-${now.getMonth() + 1}`];

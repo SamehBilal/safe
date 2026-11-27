@@ -214,7 +214,7 @@ export default {
 			form.onsubmit = async (e) => {
 				e.preventDefault();
 				if (form.until.value && form.until.value < form.date.value) { msg.textContent = L('يوم الرجوع لازم يبقى بعد يوم السفر', 'Back on must be after leaving'); return; }
-				const x = { id: live.newId(), where: form.where.value.trim(), gov: form.gov.value || undefined, date: form.date.value, until: form.until.value || undefined, who: $$('[name="who"]:checked', form).map((c) => c.value), pack: form.pack.value.trim() || undefined, ideas: form.ideas.value.trim() || undefined, note: form.note.value.trim() || undefined, by: live.me() };
+				const x = { id: live.newId(), where: form.where.value.trim(), gov: form.gov.value || undefined, date: form.date.value, until: form.until.value || undefined, who: $$('[name="who"]:checked', form).map((c) => c.value), pack: form.pack.value.trim() || undefined, ideas: form.ideas.value.trim() || undefined, note: form.note.value.trim() || undefined, by: live.me(), at: Date.now() };
 				if (!x.where || !x.date) return;
 				try {
 					await save((d) => { (d.items = d.items || []).push(x); });

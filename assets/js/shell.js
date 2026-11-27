@@ -108,7 +108,7 @@ export function occasions(s, from = new Date()) {
 	if (s.married) {
 		const n = turning(s.married);
 		list.push({ kind: 'anniversary', emoji: 'ring', date: s.married, days: daysUntil(s.married, from), years: n,
-			title: L('عيد جوازنا', 'Our anniversary'), sub: L(`${num(n)} سنين جواز ♥`, `${n} years married ♥`) });
+			title: L('عيد جوازنا', 'Our anniversary'), sub: L(`${n === 1 ? 'سنة' : n === 2 ? 'سنتين' : `${num(n)} ${n <= 10 ? 'سنين' : 'سنة'}`} جواز ♥`, `${n} year${n === 1 ? '' : 's'} married ♥`) });
 	}
 	if (s.met) {
 		const n = turning(s.met);

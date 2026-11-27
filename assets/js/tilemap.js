@@ -57,7 +57,7 @@ export function fit(el, spots, { pad = 60, padTop = pad, zoom = 13, maxZ = 16, m
 	for (let ty = Math.max(0, y0); ty <= Math.min(n - 1, y1); ty++) {
 		for (let tx = x0; tx <= x1; tx++) {
 			const wx = ((tx % n) + n) % n;
-			html += `<img src="${TILES_(zt, wx, ty)}" alt="" width="${T}" height="${T}" draggable="false" referrerpolicy="origin" style="left:${(tx * T - ox).toFixed(1)}px;top:${(ty * T - oy).toFixed(1)}px;width:${T}px;height:${T}px" onerror="this.remove()">`;
+			html += `<img src="${TILES_(zt, wx, ty)}" alt="" width="${T}" height="${T}" loading="lazy" decoding="async" draggable="false" referrerpolicy="origin" style="left:${(tx * T - ox).toFixed(1)}px;top:${(ty * T - oy).toFixed(1)}px;width:${T}px;height:${T}px" onerror="this.remove()">`;
 		}
 	}
 	el.innerHTML = html;

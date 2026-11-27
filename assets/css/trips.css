@@ -45,11 +45,7 @@
 .polaroid--empty { padding-bottom: 0; }
 
 /* ---------- One trip ---------- */
-.trip-hero { display: grid; gap: 20px; align-items: center; }
 @media (min-width: 820px) { .trip-hero { grid-template-columns: 1fr 260px; } }
-.trip-hero .eg { max-width: 260px; margin: 0 auto; }
-.trip-hero__facts { display: grid; gap: 8px; }
-.trip-hero__facts p { margin: 0; }
 .memories { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); margin-top: 18px; }
 .memory { background: var(--card-2); border-radius: 18px; padding: 16px 18px; box-shadow: var(--shadow); border-inline-start: 5px solid var(--c, var(--coral)); }
 .memory--him { --c: var(--blue); }

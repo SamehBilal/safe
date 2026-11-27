@@ -9,7 +9,8 @@ Questions only she can answer → loader → intro → the site. Installable as 
 | `index.html` | Home: what's new with us (the latest things either of us added), what's coming up (birthdays, anniversary), quick buttons to add to today, us in numbers |
 | `story.html` → `moment.html?id=…` | The timeline, by year; each date has its own page |
 | `chapters.html` → `chapter.html?id=…` | Big days: proposal, wedding, Fahd, Abdulrahman — long text + photos |
-| `places.html` | Our places (photo cards that tilt with the mouse) |
+| `atlas.html` | **Our atlas** — Egypt with our governorates coloured, every city hanging as a pin with its poster; three tabs: «المدن» (city posters and the city as a night/cream print with a light for every place), «الأماكن» (the real map with a pin for every place, area by area) and «جواز سفرنا» (a passport of entry stamps) |
+| `years.html` | **Year by year** — a bar for every year as tall as it was full, and each year's life stage, numbers, months, photos, cities, trips, firsts and moments |
 | `gallery.html` | Photo album, filterable by album |
 | `notes.html` · `letters.html` | Handwritten love notes · letters in envelopes she opens |
 | `family.html` → `member.html?id=…` | The family newspaper; one page per person with age and next birthday |

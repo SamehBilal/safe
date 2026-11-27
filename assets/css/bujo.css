@@ -123,8 +123,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .menu-btn { --pen-bg: var(--blue); --pen-fg: #fff; }
 .install-app { --pen-bg: #cddc39; --pen-fg: #37353f; }
 .app-back { --pen-bg: var(--card); --pen-fg: var(--blue); }
-.mnav-cta, .mnav-cta:hover { --pen-bg: var(--coral); --pen-fg: #fff; background: var(--pen-bg); color: var(--pen-fg); }
-.mnav-cta[aria-current='page']::after { display: none; }
 .ns-action { --pen-bg: var(--coral); --pen-fg: #fff; }
 .ns-action + .ns-action { --pen-bg: var(--blue); background: var(--pen-bg); }
 .ns-action.ns-later { --pen-bg: var(--card); --pen-fg: var(--muted); background: var(--pen-bg); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--hl-lime); }
@@ -195,17 +193,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .related__card:active { transform: translate(calc(var(--bujo-x) * 4px), 4px); box-shadow: none; }
 
 /* ---------- «أيام فارقة» (Big days) and the «حكايتنا» timeline: journal cards ---------- */
-.chapter-card { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-pink); transition: transform 0.15s, box-shadow 0.15s; }
-.chapter-card:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-lime); }
-.chapter-card:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--hl-yellow); }
-.chapter-card:hover { transform: translate(calc(var(--bujo-x) * -2px), -2px) rotate(-0.4deg); box-shadow: calc(var(--bujo-x) * 8px) 8px 0 0 var(--coral); }
-.chapter-card:active { transform: translate(calc(var(--bujo-x) * 4px), 4px); box-shadow: none; }
-.chapter-card__media { border-bottom: 1.5px solid var(--ink); }
-.chapter-card__ic { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #fdc830; color: #133447; border: 1.5px solid #37353f; box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 #37353f; filter: none; }
-.chapter-card__media img ~ .chapter-card__ic, [data-media-box] + .chapter-card__ic { width: 48px; height: 48px; font-size: 1.4rem; }
-.chapter-card__body time { width: fit-content; padding: 0 8px; font: 1.05rem var(--f-label); letter-spacing: 0.04em; color: var(--blue-ink); background: var(--hl-yellow); border-radius: var(--sketch-sm); }
-.chapter-card__body b { font-size: 1.25rem; }
-.chapter-card__body em { font: 1.2rem var(--f-hand); color: var(--coral-deep); }
 
 .tl__card { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); transition: transform 0.15s, box-shadow 0.15s; }
 .tl__item:nth-child(3n + 2) .tl__card { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
@@ -224,21 +211,13 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .feed li:nth-child(3n) a, .coming li:nth-child(3n) a, .mini:nth-child(3n) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
 .feed a:hover, .coming a:hover, .mini:hover { transform: translate(calc(var(--bujo-x) * -2px), -2px); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral); }
 .feed a:active, .coming a:active, .mini:active { transform: translate(calc(var(--bujo-x) * 4px), 4px); box-shadow: none; }
-.feed__e { border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; background: color-mix(in srgb, var(--hl-pink) 55%, var(--card)); color: var(--coral-deep); }
-.feed li:nth-child(3n + 2) .feed__e, .coming li:nth-child(3n + 2) .feed__e { background: color-mix(in srgb, var(--hl-lime) 55%, var(--card)); color: var(--text); }
-.feed li:nth-child(3n) .feed__e, .coming li:nth-child(3n) .feed__e { background: color-mix(in srgb, var(--hl-yellow) 55%, var(--card)); color: var(--text); }
 .coming em { padding: 0 8px; background: var(--hl-yellow); color: var(--blue-ink); border-radius: var(--sketch-sm); }
-.mini__ic { width: 46px; height: 46px; margin-bottom: 4px; border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; background: color-mix(in srgb, var(--hl-pink) 55%, var(--card)); }
-.mini:nth-child(3n + 2) .mini__ic { background: color-mix(in srgb, var(--hl-lime) 55%, var(--card)); color: var(--text); }
-.mini:nth-child(3n) .mini__ic { background: color-mix(in srgb, var(--hl-yellow) 55%, var(--card)); color: var(--text); }
 .mini time { width: fit-content; padding: 0 8px; font-size: 1.15rem; color: var(--blue-ink); background: var(--hl-yellow); border-radius: var(--sketch-sm); }
 .otd { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--ink); }
 .otd__ic { display: grid; place-items: center; width: 46px; height: 46px; background: #fff; color: var(--coral-deep); border: 1.5px solid #37353f; border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; }
 
 /* ---------- the app's notifications (install, saved offline, update): a journal note with a strip of tape ---------- */
 .ns { border: 1.5px solid var(--ink); border-inline-start: 6px solid var(--blue); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
-.ns--ok { border-inline-start-color: #2e9e6a; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
-.ns--warn { border-inline-start-color: var(--coral); box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); }
 .ns::before { content: ''; position: absolute; top: -10px; left: 50%; width: 76px; height: 20px; translate: -50% 0; rotate: -3deg; opacity: 0.9; background: repeating-linear-gradient(45deg, var(--hl-pink) 0 6px, transparent 6px 12px), color-mix(in srgb, var(--hl-yellow) 70%, #fff); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
 .ns-title { width: fit-content; padding-inline: 0.2em; background: linear-gradient(to left, color-mix(in srgb, var(--hl-yellow) 55%, transparent), var(--hl-yellow)) no-repeat 0 85% / 100% 42%; }
 .ns-close { border: 1.5px solid transparent; }
@@ -252,20 +231,12 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .mg-band { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--ink); }
 .mg-data { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-yellow); }
 :is(.mg-card, .mg-band, .mg-photo, .mg-data):hover { transform: translate(calc(var(--bujo-x) * -2px), -2px); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--coral); }
-.mg-item, .mg-row { border: 1.5px solid transparent; border-radius: var(--sketch-sm); transition: background 0.2s, border-color 0.2s, box-shadow 0.12s; }
-.mg-item:hover, .mg-item[aria-current='page'], .mg-row:hover { background: var(--hl-yellow); border-color: var(--ink); box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); }
-.mg-item .ic { border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; background: color-mix(in srgb, var(--hl-pink) 55%, var(--card)); }
-.mg-h { width: fit-content; padding-inline: 0.2em; background: linear-gradient(to left, color-mix(in srgb, var(--hl-yellow) 55%, transparent), var(--hl-yellow)) no-repeat 0 85% / 100% 45%; color: var(--text); }
-.mg-fig { border: 1.5px solid transparent; border-radius: var(--sketch); }
-.mg-fig:hover { background: color-mix(in srgb, var(--c) 12%, var(--card)); border-color: var(--ink); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--c); }
-.mg-fig-box { border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--c); }
 
 /* ---------- the family: cards in each person's colour ---------- */
 .fam { border: 1.5px solid var(--ink); border-radius: var(--sketch); box-shadow: calc(var(--bujo-x) * 5px) 5px 0 0 var(--c, var(--hl-pink)); transition: transform 0.15s, box-shadow 0.15s; }
 .fam:hover { transform: translate(calc(var(--bujo-x) * -2px), -3px) rotate(-1.5deg); box-shadow: calc(var(--bujo-x) * 8px) 8px 0 0 var(--c, var(--coral)); }
 .fam:active { transform: translate(calc(var(--bujo-x) * 4px), 4px); box-shadow: none; }
 .fam__pic { border: 1.5px solid var(--ink); border-radius: 48% 52% 50% 46% / 52% 46% 54% 48%; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--c); }
-.member__facts p { border: 1.5px solid var(--ink); border-top: 5px solid var(--c, var(--coral)); border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 3px) 3px 0 0 var(--ink); }
 .paper { border: 1.5px solid #37353f; border-radius: var(--sketch-sm); box-shadow: calc(var(--bujo-x) * 6px) 6px 0 0 var(--hl-yellow), 0 18px 40px rgba(30, 20, 10, 0.18); }
 .shot { border: 1.5px solid var(--ink); border-radius: 4px; box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-pink); }
 .shot:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x) * 4px) 4px 0 0 var(--hl-lime); }
@@ -287,7 +258,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .places .moment:hover { transform: translate(calc(var(--bujo-x) * -2px), -2px); box-shadow: calc(var(--bujo-x) * 7px) 7px 0 0 var(--coral); }
 .places .moment:hover img, .places .moment:hover video { scale: 1.06; transition-duration: 0.12s, 0.45s, 0.3s; filter: saturate(1.35) brightness(0.95); }
 .places .moment:hover h3 { transition-duration: 0.12s; }
-.places .moment__blur { inset: 40% 0 0; mask: linear-gradient(transparent, #000 70%); -webkit-mask: linear-gradient(transparent, #000 70%); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
 /* the timeline's photo: a small polaroid beside the words, not a big picture under them */
 .tl__card:has(figure) { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; align-items: start; }
@@ -320,19 +290,6 @@ section:nth-of-type(3n) .sec__title { background-image: linear-gradient(to left,
 .ftree { margin: 36px 0 56px; }
 .ft__scroll { padding: 6px 0 18px; }
 .ft, :root[data-theme] .ft { background: none; border: 0; box-shadow: none; border-radius: 0; padding: 18px 8px 24px; }
-.ft__rows { gap: 64px; }
-.ft__row--top { justify-content: space-evenly; }
-.ft__row--mid { gap: 28px; }
-.ft__couple { gap: 18px; }
-.ft__sibs { gap: 12px; }
-.ft__node { width: 116px; border: 1.5px solid var(--ink, #37353f); background: var(--card); box-shadow: calc(var(--bujo-x, 1) * 4px) 4px 0 0 var(--c); }
-.ft__node:hover, .ft__node:focus-visible { box-shadow: calc(var(--bujo-x, 1) * 6px) 6px 0 0 var(--c); }
-.ft__node--us { width: 136px; }
-.ft__node--sm { width: 100px; }
-.ft__node--sm .ft__pic { width: 76px; height: 86px; }
-.ft__node.is-empty { border: 1.5px dashed color-mix(in srgb, var(--ink, #37353f) 45%, transparent); background: transparent; box-shadow: none; }
-.ft__lines path { stroke-width: 1.6; opacity: 0.6; }
-.ft__row--kids { justify-content: center; gap: 56px; }
 
 
 
@@ -473,9 +430,7 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 
 /* the page you're on, in every menu panel (the grid items and the rows alike): a solid highlighter, dark ink on it,
    the same in the light and the dark theme (the dark theme's see-through yellow turned it a muddy olive) */
-.mg-item[aria-current='page'], .mg-row[aria-current='page'] { background: #fdc830; color: #2b2b33; border-color: var(--ink); box-shadow: calc(var(--bujo-x) * 2px) 2px 0 0 var(--ink); }
 .mg-item[aria-current='page'] :is(b, small), .mg-row[aria-current='page'] :is(b, small, .mg-arr) { color: #2b2b33; }
-.mg-item[aria-current='page'] small, .mg-row[aria-current='page'] small { opacity: .8; }
 .mnav-btn[aria-expanded='true'] { background: #fdc830; color: #2b2b33; }
 
 /* ليالينا in the menu: the eight kinds of night four by two as short cards (the icon and the name), and tonight's
@@ -500,8 +455,6 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 	.mg-tape-pin.is-end { flex-direction: row-reverse; translate: calc(var(--dir-x, 1) * (-100% + 14px)) 0; }
 	.mg-tape-pin.is-end::after { inset-inline-start: auto; inset-inline-end: 13px; }
 }
-.mg-fig[aria-current='page'] { outline: 3px solid var(--hl-yellow, #fdc830); outline-offset: 3px; }
-.mg-fig[aria-current='page'] .mg-fig-t b { color: var(--coral-deep, #d9534f); }
 
 /* ---------- the menus, six chapters of ten (shell.js megaHTML / pnavHTML / featureHTML): each chapter a sheet of the
    diary in its own tab colour — its number in a circle, its name, what's in it — its ten pages as index cards five to
@@ -868,25 +821,8 @@ body[data-page="search"] .ph__title { font-size: clamp(2.4rem, 9vw, 4.2rem); }
 }
 
 /* ذكرياتنا: us in numbers, a card among the others */
-.mg-card--data .mg-numbers { position: relative; display: grid; place-content: center; justify-items: center; gap: 2px; height: 100%; overflow: hidden; padding: 6px; box-sizing: border-box; text-align: center; background: #fff7f0; border: 1px solid rgba(55, 53, 63, .25); }
-.mg-card--data .mg-bars { position: absolute; inset: auto 6px 6px; height: 62%; display: flex; align-items: flex-end; gap: 2px; opacity: .45; border-bottom: 1.5px solid #37353f; }
-.mg-card--data .mg-bars i { flex: 1; background: rgba(252, 139, 147, .9); border: 1px solid #37353f; border-bottom: 0; border-radius: 3px 3px 0 0; }
-.mg-card--data .mg-bars i:nth-child(3n + 2) { background: rgba(205, 220, 57, .9); }
-.mg-card--data .mg-bars i:nth-child(3n) { background: rgba(253, 200, 48, .9); }
-.mg-card--data .mg-numbers b { position: relative; padding: 0 4px; font: 400 1.2rem/1.1 var(--f-label); color: #d9534f; background: #fff7f0; border-radius: 4px; }
-.mg-card--data .mg-numbers small { position: relative; padding: 0 3px; font: 700 .58rem/1.25 var(--f-body); color: #4a4752; background: #fff7f0; border-radius: 3px; }
 
 /* عيلتنا: the four of us in a frame on the wall */
-.mg-frame-fam { position: relative; display: grid; justify-items: center; gap: 4px; padding: 16px 12px 14px; color: #2b2b33; text-align: center; text-decoration: none; background: #fffdf8; border: 1.5px solid #37353f; border-radius: 4px; box-shadow: 0 0 0 6px #b98b5e, 0 0 0 7.5px #37353f, calc(var(--bujo-x, 1) * 8px) 10px 0 3px rgba(123, 79, 196, .25); rotate: -1deg; transition: rotate .25s, translate .25s; margin: 8px; }
-.mg-frame-fam:hover { rotate: 0deg; translate: 0 -3px; }
-.mg-frame-fam__in { display: grid; grid-template-columns: repeat(2, auto); gap: 8px 12px; justify-content: center; margin-bottom: 4px; }
-.mg-frame-fam__face { display: grid; justify-items: center; gap: 2px; }
-.mg-frame-fam__pic { display: grid; place-items: center; width: 52px; height: 52px; overflow: hidden; color: var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); border: 2.5px solid var(--c); border-radius: 50%; }
-.mg-frame-fam__img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.mg-frame-fam__face small { font: 800 .7rem/1.2 var(--f-body); color: #4a4752; }
-.mg-frame-fam > b { font: 700 1.35rem/1.2 'Aref Ruqaa', var(--f-hand); color: #7b4fc4; }
-.mg-frame-fam > small { font-weight: 700; font-size: .8rem; color: #6b6b75; }
-.mg-frame-fam .mg-go { font-weight: 800; font-size: .82rem; color: #0e6990; }
 
 /* بيتنا: today's calendar page, and three notes on the fridge door */
 .mg-home { display: grid; gap: 14px; }

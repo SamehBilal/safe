@@ -69,10 +69,23 @@
 			]
 		},
 		{
-			"name": "صورنا",
-			"short_name": "صورنا",
-			"description": "Our photos",
-			"url": "./gallery.html?source=pwa",
+			"name": "أطلسنا",
+			"short_name": "أطلسنا",
+			"description": "Our atlas: our cities, places and passport",
+			"url": "./atlas.html?source=pwa",
+			"icons": [
+				{
+					"src": "assets/icons/icon-192.png",
+					"sizes": "192x192",
+					"type": "image/png"
+				}
+			]
+		},
+		{
+			"name": "رحلتنا الجاية",
+			"short_name": "الرحلة الجاية",
+			"description": "Our next trip",
+			"url": "./journeys.html?source=pwa#next",
 			"icons": [
 				{
 					"src": "assets/icons/icon-192.png",
@@ -95,10 +108,10 @@
 			]
 		},
 		{
-			"name": "قرعة الليلة",
-			"short_name": "القرعة",
-			"description": "Tonight’s draw",
-			"url": "./draw.html?source=pwa",
+			"name": "سنة بسنة",
+			"short_name": "سنة بسنة",
+			"description": "Year by year",
+			"url": "./years.html?source=pwa",
 			"icons": [
 				{
 					"src": "assets/icons/icon-192.png",
@@ -123,11 +136,25 @@
 	],
 	"screenshots": [
 		{
-			"src": "assets/screens/home.png",
+			"src": "assets/screens/atlas.png",
 			"sizes": "824x1830",
 			"type": "image/png",
 			"form_factor": "narrow",
-			"label": "حكايتنا من أول يوم"
+			"label": "أطلسنا: كل محافظة رحناها على خريطة مصر"
+		},
+		{
+			"src": "assets/screens/years.png",
+			"sizes": "824x1830",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "سنة بسنة: كل سنة من حكايتنا"
+		},
+		{
+			"src": "assets/screens/next.png",
+			"sizes": "824x1830",
+			"type": "image/png",
+			"form_factor": "narrow",
+			"label": "رحلتنا الجاية: كارت صعود وعد تنازلي"
 		},
 		{
 			"src": "assets/screens/songs.png",
@@ -137,32 +164,18 @@
 			"label": "أغانينا على الجرامافون"
 		},
 		{
-			"src": "assets/screens/trips.png",
-			"sizes": "824x1830",
-			"type": "image/png",
-			"form_factor": "narrow",
-			"label": "رحلات عيد جوازنا على خريطة مصر"
-		},
-		{
-			"src": "assets/screens/draw.png",
-			"sizes": "824x1830",
-			"type": "image/png",
-			"form_factor": "narrow",
-			"label": "قرعة الليلة"
-		},
-		{
-			"src": "assets/screens/songs-wide.png",
+			"src": "assets/screens/atlas-wide.png",
 			"sizes": "1920x1200",
 			"type": "image/png",
 			"form_factor": "wide",
-			"label": "أغانينا على الجرامافون"
+			"label": "أطلسنا: مدننا وأماكننا وجواز سفرنا"
 		},
 		{
-			"src": "assets/screens/trips-wide.png",
+			"src": "assets/screens/years-wide.png",
 			"sizes": "1920x1200",
 			"type": "image/png",
 			"form_factor": "wide",
-			"label": "رحلات عيد جوازنا على خريطة مصر"
+			"label": "سنة بسنة: نهر السنين"
 		}
 	]
 }

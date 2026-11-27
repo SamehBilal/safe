@@ -304,7 +304,7 @@ export default {
 				e.preventDefault();
 				const at = where(form.at.value);
 				if (!at) { msg.textContent = L('المكان لازم يبقى رقمين زي 31.2140, 29.8856', 'The spot should be two numbers like 31.2140, 29.8856'); return; }
-				const x = { id: live.newId(), title: form.title.value.trim(), gov: form.gov.value, at: `${at.lat}, ${at.lng}`, date: form.date.value || undefined, note: form.note.value.trim() || undefined, by: live.me() };
+				const x = { id: live.newId(), title: form.title.value.trim(), gov: form.gov.value, at: `${at.lat}, ${at.lng}`, date: form.date.value || undefined, note: form.note.value.trim() || undefined, by: live.me(), at: Date.now() };
 				if (!x.title) return;
 				try {
 					await live.save('spots', (d) => { (d.items = d.items || []).push(x); });

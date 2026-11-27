@@ -6,43 +6,10 @@
 .dm__map, .cm__map, .cm-card__tiles { position: absolute; inset: 0; pointer-events: none; filter: invert(1) hue-rotate(185deg) brightness(0.78) contrast(1.15) saturate(0.35); }
 .dm__map img, .cm__map img, .cm-card__tiles img { position: absolute; width: 256px; height: 256px; max-width: none; }
 .dm::after, .cm::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(5, 9, 14, 0.55)); }
-.dm__credit, .cm__credit { position: absolute; bottom: 4px; right: 8px; z-index: 4; margin: 0; font-size: 0.66rem; color: rgba(255, 255, 255, 0.6); }
-.dm__credit a, .cm__credit a { color: inherit; }
 
 /* ---------- distances ---------- */
 .dm { height: clamp(420px, 66vh, 640px); }
-.dm--far { height: clamp(360px, 56vh, 520px); }
-.dm__mark--spot { pointer-events: none; display: block; }
-.dm__mark--spot .dm__dot { display: block; }
-.dm__mark--spot .dm__name { position: absolute; right: 100%; top: 50%; translate: -8px -50%; }
-.dm__dot { width: 14px; height: 14px; border-radius: 50%; background: var(--c); border: 2px solid #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 35%, transparent); }
-.dm__arcs { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; overflow: visible; }
-.dm__arc path { fill: none; stroke-linecap: round; }
-.dm__trail { stroke: rgba(255, 255, 255, 0.14); stroke-width: 2; }
-.dm__dash { stroke: rgba(255, 255, 255, 0.45); stroke-width: 2; stroke-dasharray: 2 9; animation: dm-march 1.4s linear infinite; }
-.dm__arc text { font: 1.05rem var(--f-label); letter-spacing: 0.06em; fill: rgba(255, 255, 255, 0.55); paint-order: stroke; stroke: #0b1118; stroke-width: 4px; }
-.dm__arc.is-on .dm__trail { stroke: color-mix(in srgb, var(--coral) 45%, transparent); stroke-width: 6; }
-.dm__arc.is-on .dm__dash { stroke: #fdc830; stroke-width: 2.6; stroke-dasharray: 6 8; }
-.dm__arc.is-on text { fill: #fdc830; font-size: 1.25rem; }
-.dm__plane { fill: #fff; filter: drop-shadow(0 0 6px #fdc830); }
 @keyframes dm-march { to { stroke-dashoffset: -22; } }
-.dm__marks { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.dm__mark { position: absolute; translate: -50% -50%; pointer-events: auto; appearance: none; background: none; border: 0; padding: 0; cursor: pointer; display: grid; justify-items: center; gap: 4px; color: #fff; font: inherit; }
-.dm__face { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: var(--c); border: 3px solid #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 40%, transparent), 0 6px 18px rgba(0, 0, 0, 0.5); transition: transform 0.25s var(--ease-pop), box-shadow 0.25s; }
-.dm__face .dm__img, .dm__face img { width: 100%; height: 100%; object-fit: cover; }
-.dm__emoji { color: #fff; display: grid; place-items: center; }
-.dm__name { display: grid; justify-items: center; line-height: 1.2; text-shadow: 0 1px 3px #000; white-space: nowrap; }
-.dm__name b { font-size: 0.85rem; }
-.dm__name small { font-size: 0.68rem; opacity: 0.75; }
-.dm__mark.is-picked .dm__face { transform: scale(1.15); box-shadow: 0 0 0 4px #fdc830, 0 0 26px rgba(253, 200, 48, 0.7); }
-.dm__mark:focus-visible { outline: none; }
-.dm__mark:focus-visible .dm__face { box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--blue); }
-.dm__read { position: absolute; top: 14px; inset-inline: 14px; z-index: 4; text-align: center; color: #fff; pointer-events: none; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7); }
-.dm__read p { margin: 0; }
-.dm__pair { font-weight: 800; font-size: 0.95rem; opacity: 0.85; }
-.dm__km { font: clamp(2.6rem, 9vw, 4.2rem)/1 var(--f-label); letter-spacing: 0.04em; color: #fdc830; }
-.dm__feel { font: 1.25rem/1.3 var(--f-hand); color: #ffd1dc; }
-.dm-hint { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; }
 .dm-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
 .dm-msg { text-align: center; }
 .dm-list { list-style: none; padding: 0; margin: 18px auto 0; max-width: 640px; display: grid; gap: 10px; }
@@ -54,26 +21,11 @@
 
 /* ---------- city maps ---------- */
 .cm { height: clamp(380px, 62vh, 600px); }
-.cm__pins { position: absolute; inset: 0; z-index: 3; }
 .cm__pin { position: absolute; width: 22px; height: 22px; translate: -50% -50%; appearance: none; border: 0; padding: 0; cursor: pointer; border-radius: 50%; background: radial-gradient(circle, #fffbe6 0 26%, rgba(253, 200, 48, 0.9) 34%, rgba(253, 200, 48, 0.25) 58%, transparent 72%); }
 .cm__pin::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; border: 1.5px solid rgba(253, 200, 48, 0.55); animation: cm-ring 2.8s ease-out infinite; animation-delay: var(--d, 0s); }
 .cm__pin.is-on, .cm__pin:hover { background: radial-gradient(circle, #fff 0 30%, #fdc830 40%, rgba(253, 200, 48, 0.35) 62%, transparent 74%); scale: 1.3; }
 .cm__pin:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 @keyframes cm-ring { 0% { scale: 0.4; opacity: 0.9; } 100% { scale: 1.6; opacity: 0; } }
-.cm__title { position: absolute; top: 14px; inset-inline-start: 18px; z-index: 4; color: #fff; display: grid; line-height: 1; pointer-events: none; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7); }
-.cm__title b { font: clamp(2.2rem, 8vw, 3.8rem)/1 var(--f-label); letter-spacing: 0.08em; text-transform: uppercase; }
-:lang(ar) .cm__title b { font-family: var(--f-script); letter-spacing: 0; line-height: 1.3; }
-.cm__title small { font-size: 0.78rem; letter-spacing: 0.12em; opacity: 0.7; margin-top: 4px; font-weight: 700; }
-[dir='rtl'] .cm__title { inset-inline-start: auto; right: 18px; text-align: right; }
-.cm__empty { position: absolute; inset: auto 0 34px; z-index: 4; text-align: center; color: rgba(255, 255, 255, 0.8); font: 1.3rem var(--f-hand); margin: 0; padding-inline: 16px; }
-.cm__tip { position: absolute; z-index: 5; translate: -50% calc(-100% - 18px); min-width: 140px; max-width: 240px; padding: 8px 12px; display: grid; gap: 2px; text-align: center; background: #fffbe6; color: #2d2a26; border: 1.5px solid #2d2a26; border-radius: var(--sketch-sm, 12px); box-shadow: 3px 3px 0 0 rgba(253, 200, 48, 0.9); pointer-events: none; }
-.cm__tip small { color: #6b6457; font-size: 0.75rem; }
-.cm__tip span { font-size: 0.85rem; }
-.cm-spots { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.cm-spots li { display: flex; align-items: center; gap: 6px; }
-.cm-spots button[data-i] { appearance: none; font: inherit; color: var(--text); cursor: pointer; display: grid; text-align: start; padding: 6px 12px; background: var(--card); border: 1.5px solid var(--ink, var(--line)); border-radius: var(--sketch-sm, 12px); }
-.cm-spots button[data-i]::before { content: '✦ '; color: #e39b2d; }
-.cm-spots small { color: var(--muted); font-size: 0.75rem; }
 .cm-howto { font-size: 0.85rem; color: var(--muted); margin: -6px 0 14px; }
 
 /* ---------- city maps: framed street-map posters ----------
@@ -86,17 +38,8 @@
 .cm { height: clamp(440px, 72vh, 680px); background: #050505; border: 10px solid #111; border-radius: 2px; outline: 1.5px solid #37353f; outline-offset: 0; box-shadow: 0 18px 40px rgba(0, 0, 0, .28); }
 .cm::before { content: ''; position: absolute; inset: 10px; z-index: 2; border: 1.5px solid rgba(255, 255, 255, .85); pointer-events: none; }
 .cm::after { background: linear-gradient(transparent 58%, rgba(5, 5, 5, .92) 82%, #050505); }
-.cm__title { inset: auto 0 34px; top: auto; display: grid; justify-items: center; gap: 2px; text-align: center; text-shadow: none; }
-[dir='rtl'] .cm__title { left: 0; right: 0; inset-inline-start: 0; text-align: center; }
-.cm__title b { font: 400 clamp(2.6rem, 9vw, 4.6rem)/1 var(--f-label); letter-spacing: .14em; text-transform: uppercase; }
-:lang(ar) .cm__title b { font: 400 clamp(2.6rem, 9vw, 4.6rem)/1 var(--f-label); letter-spacing: .14em; }
-.cm__title i { font: 700 1.25rem/1.4 'Aref Ruqaa', var(--f-body); font-style: normal; opacity: .9; }
-.cm__title small { margin-top: 2px; font: 400 .95rem var(--f-label); letter-spacing: .22em; text-transform: uppercase; opacity: .75; }
-.cm__credit { right: 18px; bottom: 14px; }
-.cm__empty { bottom: 150px; }
 
 /* the wall of posters */
-.cm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 30px 22px; padding: 6px 4px 10px; }
 .cm-card { display: grid; gap: 10px; justify-items: center; padding: 0; background: none; border: 0; box-shadow: none; text-align: center; color: var(--text); transition: transform .2s; }
 .cm-card:hover { transform: translateY(-4px) rotate(calc((var(--k) % 2 * 2 - 1) * .6deg)); box-shadow: none; }
 .cm-card.is-on { box-shadow: none; }
@@ -110,19 +53,9 @@
 .cm-poster__en { font: 400 clamp(1.3rem, 4vw, 1.7rem)/1 var(--f-label); letter-spacing: .16em; text-transform: uppercase; }
 .cm-poster__ar { font: 700 .82rem/1.5 'Aref Ruqaa', var(--f-body); opacity: .85; }
 .cm-poster__sub { font: 400 .62rem/1.4 var(--f-body); font-weight: 700; letter-spacing: .24em; text-transform: uppercase; opacity: .7; }
-.cm-poster__xy { position: absolute; bottom: 12px; inset-inline-end: 16px; font: 400 .6rem var(--f-label); letter-spacing: .12em; opacity: .6; direction: ltr; }
 /* noir: white streets on black, from edge to edge of the print, the name under them (the first poster's style) */
-.cm-card--noir .cm-poster__xy { display: none; }
 /* circle: the city in a circle on a white print, black streets */
-.cm-card--circle .cm-poster { color: #111; background: #fbfbf8; box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 7.5px #111, 0 14px 28px rgba(0, 0, 0, .25); }
-.cm-card--circle .cm-card__map { flex: none; width: 78%; height: auto; aspect-ratio: 1; margin: 10px 0 12px; border-radius: 50%; background: #fbfbf8; }
-.cm-card--circle .cm-card__tiles { filter: grayscale(1) brightness(1.47) contrast(8) invert(1); }
-.cm-card--circle .cm-card__dots i { background: #d9534f; box-shadow: 0 0 0 2px rgba(217, 83, 79, .35); }
 /* cream: cream streets in a circle on charcoal, the name over a thin rule, the coordinates in the corner */
-.cm-card--cream .cm-poster { color: #efe6d2; background: #2a2622; }
-.cm-card--cream .cm-card__map { flex: none; width: 78%; height: auto; aspect-ratio: 1; margin: 10px 0 12px; border-radius: 50%; background: #2a2622; }
-.cm-card--cream .cm-card__tiles { filter: grayscale(1) brightness(1.47) contrast(8) sepia(.7); opacity: .86; }
-.cm-card--cream .cm-poster__en { padding-bottom: 4px; border-bottom: 1.5px solid currentColor; letter-spacing: .1em; }
 
 /* ---------- goals: one white sheet with everything we want cut out and scattered over it; whatever we get is crossed
    out with a red marker (the X draws itself), with the day under it. «شطبنا كام» on top with a marker line ---------- */
@@ -227,43 +160,13 @@
 .ftree { margin: 8px 0 48px; }
 .ft__scroll { overflow-x: auto; padding: 8px 4px 16px; scrollbar-width: thin; }
 .ft { position: relative; width: max-content; min-width: 100%; padding: 26px 14px 30px; background: var(--card); border: 1.5px solid var(--ink, var(--line)); border-radius: var(--sketch, var(--radius)); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 var(--hl-lime, var(--blush)); }
-.ft__lines { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 0; }
-.ft__lines path { fill: none; stroke: var(--ink, var(--blue-ink)); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.45; }
-.ft__lines path.ft__wed { stroke: var(--coral); opacity: 0.9; stroke-width: 1.8; }
-.ft__rows { position: relative; z-index: 1; display: grid; gap: 54px; }
-.ft__row { display: flex; justify-content: space-around; align-items: flex-start; gap: 18px; }
-.ft__row--mid { justify-content: center; gap: 18px; }
-.ft__couple { display: flex; gap: 14px; align-items: flex-start; }
-.ft__sibs { display: flex; gap: 8px; flex: 1; align-items: flex-start; justify-content: flex-end; }
-.ft__sibs[data-g='her-sibs'] { justify-content: flex-start; }
 /* the card: an arch, like the pen's */
-.ft__node { position: relative; display: grid; justify-items: center; gap: 2px; width: 104px; padding: 8px 8px 10px; text-align: center; border: 1px solid color-mix(in srgb, var(--ink, #37353f) 22%, transparent); border-radius: 999em 999em 10px 10px; background: color-mix(in srgb, var(--card) 88%, var(--c)); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); cursor: pointer; transition: transform 0.3s var(--ease-pop, ease), box-shadow 0.3s; font: inherit; color: var(--text); }
-.ft__node:hover, .ft__node:focus-visible { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16); }
 .ft__pic { position: relative; isolation: isolate; width: 92px; height: 104px; margin-bottom: 6px; display: grid; place-items: center; color: var(--c); }
 .ft__pic::before { content: ''; position: absolute; inset: 6px; z-index: -1; border-radius: 50%; background: var(--c); opacity: 0.55; filter: blur(22px); }
 .ft__pic > img, .ft__pic > .ft__face { width: 100%; height: 100%; border-radius: 999em 999em 6px 6px; border: 1px solid color-mix(in srgb, var(--ink, #37353f) 25%, transparent); object-fit: cover; }
 .ft__face { display: grid; place-items: center; background: color-mix(in srgb, var(--c) 18%, var(--card)); }
-.ft__init { font: 2rem var(--f-label); color: var(--c); }
-:lang(ar) .ft__init { font: 800 1.6rem var(--f-body); }
-.ft__node b { font-size: 0.86rem; line-height: 1.25; letter-spacing: 0.02em; }
-.ft__node small { color: var(--muted); font-size: 0.72rem; line-height: 1.2; }
-.ft__node--us { width: 124px; }
-.ft__node--us .ft__pic { width: 100px; height: 112px; }
-.ft__node--sm { width: 88px; }
-.ft__node--sm .ft__pic { width: 68px; height: 78px; }
-.ft__node--kid .ft__pic { width: 96px; height: 108px; }
 /* gone: greyed, like the pen's «incognito» */
-.ft__node.is-gone .ft__pic > img, .ft__node.is-gone .ft__face { filter: grayscale(1) brightness(0.85); }
-.ft__node.is-gone .ft__pic::before { background: #777; }
-.ft__node.is-gone b { font-style: italic; }
 /* a spot waiting for a name */
-.ft__node.is-empty { background: transparent; border-style: dashed; box-shadow: none; }
-.ft__node.is-empty .ft__face { background: transparent; border-style: dashed; }
-.ft__node.is-empty .ft__pic::before { opacity: 0.18; }
-.ft__node.is-empty .ft__init { opacity: 0.55; }
-.ft__node.is-empty b { color: var(--muted); font-weight: 700; }
-.ft__node.is-empty:disabled { cursor: default; transform: none; }
-.ft__heart { align-self: center; margin-top: -40px; color: var(--coral); font-size: 1.6rem; animation: beat 1.4s ease-in-out infinite; }
 .ft__add { margin: 22px auto 0; }
 /* the person's card */
 .ft-card { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: 16px; background: rgba(10, 8, 12, 0.6); backdrop-filter: blur(5px); animation: ft-fade 0.3s; }
@@ -284,8 +187,6 @@
 @media (prefers-reduced-motion: reduce) { .dm__dash, .cm__pin::after, .ft__heart, .ft-card, .ft-card__box { animation: none; } }
 
 /* ---------- our food: a folded paper menu that opens in 3D (after the Codrops 3D Restaurant Menu) ---------- */
-.fm-places { margin-bottom: 28px; }
-.fm-places .chip.is-on { background: var(--c); border-color: var(--c); color: #fff; }
 .fm-stage { padding: 10px 0 30px; }
 .fm-mine { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 16px; text-align: center; margin: 0; }
 /* a place whose menu is still to be written: a note in the middle of the unfolded flyer */
@@ -351,7 +252,6 @@
 .fm-eye { flex: none; align-self: center; color: var(--fm); opacity: 0.75; }
 .fm__logo.has-pic { overflow: hidden; background: #fff; }
 .fm__logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-.fm__site { display: inline-block; margin-top: 10px; font-weight: 800; font-size: 0.85rem; color: var(--fm); }
 .fm__site::after, .fm__go::after { content: ' →'; }
 [dir='rtl'] .fm__site::after, [dir='rtl'] .fm__go::after { content: ' ←'; }
 .fm__card-top { display: grid; gap: 6px; justify-items: center; width: 100%; }
@@ -496,17 +396,14 @@
 /* each place's logo — on the chalkboard, on its chip and on the menu's cover; its first letter in its colour until it's in */
 .fm-board__logo, .fm-chip-logo { flex: none; display: inline-grid; place-items: center; border-radius: 50%; overflow: hidden; font: 700 1rem/1 var(--f-body); color: #fff; background: var(--c, #8a5a2b); }
 .fm-board__logo { width: 30px; height: 30px; align-self: center; box-shadow: 0 0 0 2px rgba(241, 239, 230, .7); }
-.fm-chip-logo { width: 24px; height: 24px; margin-inline-end: 7px; font-size: .8rem; box-shadow: 0 0 0 1.5px var(--ink, #333); }
 .fm-board__logo.has-pic, .fm-chip-logo.has-pic { background: #fff; }
 .fm-board__logo img, .fm-chip-logo img { width: 100%; height: 100%; object-fit: cover; }
-.fm-places .chip { display: inline-flex; align-items: center; }
 .fm-board__list button { align-items: center; }
 .fm-board__list i { translate: 0 5px; }
 .fm-logo-btn { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
 
 /* ---------- «رحلاتنا» (journeys.js), after Codrops' «Storytelling Map» ---------- */
 /* the band: each trip a postage stamp stuck on the page */
-.jr-band { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(16px, 3vw, 34px); width: min(1100px, 100% - 2 * var(--gutter)); margin: clamp(18px, 3vw, 36px) auto clamp(22px, 3vw, 40px); }
 .jr-stamp { position: relative; display: block; width: clamp(130px, 17vw, 170px); padding: 9px; color: #2b2b33; text-decoration: none; background: #fffdf6; rotate: var(--r); filter: drop-shadow(3px 4px 0 rgba(30, 20, 10, 0.18)); transition: rotate 0.3s, translate 0.3s;
 	-webkit-mask: radial-gradient(circle 5px at 5px 5px, transparent 98%, #000) -5px -5px / 14px 14px; mask: radial-gradient(circle 5px at 5px 5px, transparent 98%, #000) -5px -5px / 14px 14px; }
 .jr-stamp:hover { rotate: 0deg; translate: 0 -5px; }
@@ -519,10 +416,6 @@
 
 /* each trip */
 .jr { scroll-margin-top: 70px; }
-.jr__head { text-align: center; margin-bottom: 26px; }
-.jr__kick { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 3px 14px; font: 400 1.05rem/1.4 var(--f-label); letter-spacing: 0.08em; color: #fff; background: var(--jc); border-radius: 999px; }
-:lang(ar) .jr__kick { font: 800 0.85rem/1.6 var(--f-body); letter-spacing: 0; }
-.jr__open { display: inline-block; margin-top: 4px; font-weight: 800; color: var(--jc); }
 .jr__story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(20px, 4vw, 54px); align-items: start; }
 /* the map: a taped vintage map that stays put while the stops scroll by */
 .jr__mapcol { position: sticky; top: 84px; height: calc(100vh - 110px); min-height: 360px; max-height: 760px; }
@@ -1228,8 +1121,6 @@
 
 /* ---------- «خرايط مدننا» (cities.js), the top: the cities with the most spots hung on the wall as framed black street
    posters, each on a picture wire, beside how many cities, spots and trips ---------- */
-.cmh { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px); align-items: center; }
-.cmh-wall { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 2vw, 22px); align-items: start; padding-top: 30px; }
 .cmh-frame { position: relative; display: block; width: 100%; padding: 0; color: inherit; background: none; border: 0; cursor: pointer; rotate: var(--r, 0deg); translate: 0 var(--dy, 0px); transition: rotate .3s, translate .3s; }
 .cmh-frame:hover, .cmh-frame:focus-visible { rotate: 0deg; translate: 0 calc(var(--dy, 0px) - 6px); outline: none; }
 .cmh-frame:focus-visible .cm-poster { outline: 3px solid #fdc830; outline-offset: 3px; }
@@ -1241,16 +1132,6 @@
 .cmh-frame .cm-poster__en { font-size: clamp(.95rem, 1.6vw, 1.3rem); letter-spacing: .12em; }
 .cmh-frame .cm-poster__ar { font-size: .72rem; }
 .cmh-frame .cm-poster__sub { font-size: .52rem; }
-.cmh-frame .cm-poster__xy { display: none; }
-.cmh-body { display: grid; gap: 12px; justify-items: start; }
-.cmh-k { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 2px 12px; font-weight: 800; font-size: .85rem; color: #2b2b33; background: #fdc830; border: 1.5px solid var(--ink, #37353f); border-radius: 999px; }
-.cmh-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 0; }
-.cmh-count b { font: 400 clamp(3rem, 7vw, 4.4rem)/1 var(--f-label); color: var(--text); }
-.cmh-count span { font: 700 clamp(1.3rem, 2.6vw, 1.7rem)/1.2 var(--f-hand); color: var(--text); }
-.cmh-facts { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-weight: 700; color: var(--muted); }
-.cmh-facts li { display: flex; align-items: center; gap: 8px; }
-.cmh-facts svg { flex: none; color: var(--coral-deep, #d9534f); }
-.cmh-facts b { color: var(--text); }
 @media (max-width: 860px) {
 	.cmh { grid-template-columns: 1fr; }
 	.cmh-body { justify-items: center; text-align: center; }
@@ -1264,21 +1145,6 @@
 /* ---------- «أماكننا» (places.js), the cards: each place's photo clear in a white frame, its date on a tab, its name,
    where with a pin and the line about it — no blur over the photo ---------- */
 .gh-wall .pol[role="button"] { cursor: pointer; }
-.pl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 30px 22px; }
-.pl-card { display: grid; grid-template-rows: auto 1fr; overflow: hidden; color: var(--text); background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, #fdc830 70%, transparent); transition: translate .25s, rotate .25s; }
-.pl-card:nth-child(3n + 2) { box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--coral) 50%, transparent); }
-.pl-card:nth-child(3n) { box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--blue) 38%, transparent); }
-.pl-card:hover { translate: 0 -4px; rotate: calc((var(--k) % 2 * 2 - 1) * .5deg); }
-.pl-card__ph { position: relative; margin: 10px 10px 0; aspect-ratio: 4 / 3; overflow: hidden; background: #e9e4da; border-radius: 4px; }
-.pl-card__ph img { display: block; width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; transition: scale .5s; }
-.pl-card:hover .pl-card__ph img { scale: 1.04; }
-.pl-card__ph--none { display: grid; place-items: center; color: var(--coral); background: repeating-linear-gradient(45deg, #f3eee6 0 8px, #fbf8f2 8px 16px); }
-.pl-card__body { display: grid; gap: 5px; align-content: start; padding: 12px 16px 16px; }
-.pl-card__date { justify-self: start; margin: 0; padding: 1px 9px; font-weight: 800; font-size: .78rem; color: #2b2b33; background: #fdc830; border-radius: var(--sketch-sm, 8px); }
-.pl-card h3 { margin: 0; font-size: 1.12rem; line-height: 1.4; }
-.pl-card__where { display: flex; align-items: center; gap: 5px; margin: 0; font-size: .86rem; font-weight: 700; color: var(--blue); }
-.pl-card__where svg { flex: none; color: var(--coral); }
-.pl-card__line { margin: 2px 0 0; font-size: .88rem; line-height: 1.6; color: var(--muted); }
 
 /* ---------- «أيام فارقة» (chapters.js): the top is the road the big days lie on — a round photo for each, placed by
    its date, its year and name under it; then a row for each day, zig-zag, its photo big in a frame ---------- */
@@ -1333,16 +1199,6 @@
 }
 
 /* one big day: its photos stacked as polaroids beside its date, drawing, name and line */
-.bd-one { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(22px, 5vw, 60px); align-items: center; }
-.bd-one__stack { position: relative; aspect-ratio: 1 / .95; }
-.bd-one__pol { position: absolute; inset: 6% 10% 10% 6%; margin: 0; padding: 10px 10px 36px; background: #fbf8f1; box-shadow: 0 10px 26px rgba(30, 20, 10, .25), 0 1px 2px rgba(30, 20, 10, .2); rotate: calc(-4deg + var(--n) * 5deg); translate: calc(var(--n) * 6%) calc(var(--n) * 3%); z-index: calc(3 - var(--n)); }
-.bd-one__pol img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.bd-one__none { position: absolute; inset: 0; display: grid; place-items: center; color: var(--coral-deep); }
-.bd-one__body { display: grid; gap: 10px; justify-items: start; }
-.bd-one__ic { display: grid; place-items: center; width: 62px; height: 62px; color: #fff; background: var(--coral); border: 2px solid var(--ink, #37353f); border-radius: 50%; box-shadow: 0 4px 0 0 rgba(55, 53, 63, .3); }
-.bd-one__t { margin: 0; font: 400 clamp(2.4rem, 6vw, 3.6rem)/1.1 var(--f-script); color: var(--blue); text-shadow: 3px 3px 0 var(--blush, #fde2e4); }
-.bd-one__sub { margin: 0; font-size: 1.08rem; line-height: 1.7; color: var(--muted); }
-.bd-one__ago { margin: 0; font: 1.4rem var(--f-hand); color: var(--coral-deep); }
 @media (max-width: 720px) {
 	.bd-one { grid-template-columns: 1fr; }
 	.bd-one__stack { width: min(100%, 360px); justify-self: center; }
@@ -1351,27 +1207,7 @@
 
 /* ---------- «رحلاتنا» (journeys.js), the index: the trips as postage stamps beside the numbers, then a card for each
    trip; and one trip (journey.js): its stamp and photos beside its date, line and stops ---------- */
-.ji { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px); align-items: center; }
-.ji__stamps { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px 18px; padding: 16px 0; }
 @media (max-width: 760px) { .ji { grid-template-columns: 1fr; } .ji .gh-body { justify-items: center; text-align: center; } .ji .gh-count { justify-content: center; } }
-
-.ji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 30px 24px; }
-.ji-card { display: grid; grid-template-rows: auto 1fr; overflow: hidden; color: var(--text); text-decoration: none; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-top: 7px solid var(--jc); border-radius: var(--sketch-sm, 12px); box-shadow: calc(var(--bujo-x, 1) * 5px) 5px 0 0 color-mix(in srgb, var(--jc) 35%, transparent); transition: translate .25s; }
-.ji-card:hover { translate: 0 -4px; }
-.ji-card__strip { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; height: 150px; padding: 8px 8px 0; }
-.ji-card__strip > span { display: block; overflow: hidden; border-radius: 4px; background: #e9e4da; }
-.ji-card__strip img { display: block; width: 100%; height: 100%; object-fit: cover; transition: scale .5s; }
-.ji-card:hover .ji-card__strip img { scale: 1.05; }
-.ji-card__none { display: grid !important; place-items: center; color: var(--jc); }
-.ji-card__body { position: relative; display: grid; gap: 6px; align-content: start; padding: 16px 18px 18px; }
-.ji-card__ic { position: absolute; top: -24px; inset-inline-end: 16px; display: grid; place-items: center; width: 46px; height: 46px; color: #fff; background: var(--jc); border: 2px solid var(--ink, #37353f); border-radius: 50%; }
-.ji-card time { font-weight: 800; font-size: .8rem; color: var(--muted); }
-.ji-card b { font: 400 1.9rem/1.15 var(--f-script); color: var(--jc); }
-:lang(ar) .ji-card b { font: 400 1.7rem/1.35 var(--f-script); }
-.ji-card__sub { font-size: .92rem; line-height: 1.6; color: var(--muted); }
-.ji-card__stops { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.ji-card__stops i { padding: 1px 9px; font-style: normal; font-size: .76rem; font-weight: 700; color: var(--text); background: color-mix(in srgb, var(--jc) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--jc) 35%, transparent); border-radius: 999px; }
-.ji-card__go { margin-top: 6px; font-weight: 800; color: var(--blue); }
 
 .jt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(22px, 5vw, 56px); align-items: center; }
 .jt__media { position: relative; aspect-ratio: 1 / .9; }
@@ -1735,7 +1571,6 @@
 .at-list__tx { display: grid; min-width: 0; }
 .at-list__tx b { overflow: hidden; font-size: .9rem; white-space: nowrap; text-overflow: ellipsis; }
 .at-list__tx small { overflow: hidden; font-size: .72rem; color: var(--muted); white-space: nowrap; text-overflow: ellipsis; }
-.at-links { margin-top: 22px; }
 @media (max-width: 820px) {
 	.at-hero { grid-template-columns: minmax(0, 1fr); }
 	.at-hero__body { justify-items: center; text-align: center; }
@@ -1771,7 +1606,6 @@
    names in ink; in the dark, white streets on black with gold spots, as before (خرايط مدننا, and the atlas's posters) ---------- */
 .cm { background: #f4efe3; border-color: #fffdf6; outline-color: #37353f; }
 .cm__map, .cm-card--noir .cm-card__tiles, .at-card__tiles, .at-map__tiles { filter: grayscale(1) brightness(1.47) contrast(8) invert(1); mix-blend-mode: multiply; opacity: .85; }
-.cm__title { color: #1c1f33; }
 .cm__credit, .at-map__credit { color: rgba(28, 31, 51, .55); }
 .cm__pin { background: radial-gradient(circle, #fff 0 24%, #d9534f 32%, rgba(217, 83, 79, .35) 58%, transparent 72%); }
 .cm__pin::after { border-color: rgba(217, 83, 79, .5); }
@@ -2134,3 +1968,6 @@ button.nt-tix__one:hover { translate: 0 -2px; }
 .jx-tabs { margin-top: 6px; }
 .jx-pane[hidden] { display: none; }
 #jx-pane-next .nt-sec { padding-top: 0; }
+
+/* phones: the years equaliser of «أغانينا» scrolls inside itself instead of widening the page */
+@media (max-width: 700px) { .mu-eq { justify-content: flex-start; overflow-x: auto; overflow-y: hidden; padding-inline: 4px; scrollbar-width: none; } .mu-eq::-webkit-scrollbar { display: none; } .mu-eq__bar { flex: 0 0 26px; } }

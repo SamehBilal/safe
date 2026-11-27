@@ -124,7 +124,10 @@ const snap = (x, p, cls = '') => `<a class="hm-snap ${cls}" href="moment.html?id
 export default {
 	title: { ar: 'الرئيسية', en: 'Home' },
 	async load() {
-		const [journal, draw, trips, music, movies, firsts] = await Promise.all(['journal', 'draw', 'trips', 'music', 'movies', 'firsts'].map((k) => live.load(k).catch(() => ({ items: [] }))));
+		const [journal, draw, trips, music, movies, firsts, nexttrip, spots] = await Promise.all(['journal', 'draw', 'trips', 'music', 'movies', 'firsts', 'nexttrip', 'spots'].map((k) => live.load(k).catch(() => ({ items: [] }))));
+		// the trip we're going on next, for «جاي قريب»
+		const today = live.today();
+		this.trip = (nexttrip.items || []).filter((x) => !x.done && x.date && x.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0] || null;
 		this.firsts = (firsts.items || []).filter((x) => x.kid);
 		this.feed = [
 			...(journal.items || []).map((x) => ({ at: x.at, by: x.by, e: x.mood || 'pen', what: verb(x.by, 'كتب صفحة في الدفتر', 'كتبت صفحة في الدفتر', 'wrote in the journal'), text: x.title || x.text, href: `journal.html#${x.id}` })),
@@ -133,6 +136,8 @@ export default {
 			...(trips.items || []).flatMap((x) => (x.memories || []).map((m) => ({ at: m.at, by: m.by, e: 'camera', what: verb(m.by, 'ضاف ذكرى لرحلة', 'ضافت ذكرى لرحلة', 'added a trip memory'), text: m.text || (GOV[x.gov] ? L(GOV[x.gov].ar, GOV[x.gov].en) : ''), href: `trip.html?id=${x.id}` }))),
 			...(music.items || []).map((x) => ({ at: x.at, by: x.by, e: 'music', what: verb(x.by, 'ضاف أغنية', 'ضافت أغنية', 'added a song'), text: [x.title, x.artist].filter(Boolean).join(' — '), href: `music.html#${x.id}` })),
 			...(movies.items || []).map((x) => ({ at: x.at, by: x.by, e: 'popcorn', what: L('اتفرجنا على', 'we watched'), text: x.title, href: `movies.html#${x.id}` })),
+			...(nexttrip.items || []).map((x) => ({ at: x.at, by: x.by, e: 'suitcase', what: verb(x.by, 'حجز رحلة', 'حجزت رحلة', 'booked a trip'), text: x.where, href: 'journeys.html#next' })),
+			...(spots.items || []).map((x) => ({ at: x.at, by: x.by, e: 'pin', what: verb(x.by, 'نوّر مكان على أطلسنا', 'نوّرت مكان على أطلسنا', 'lit up a spot in our atlas'), text: x.title, href: `atlas.html${x.gov ? `#${x.gov}` : ''}` })),
 			...this.firsts.map((x) => ({ at: x.at, by: x.by, e: 'star', what: verb(x.by, 'سجّل أول مرة', 'سجّلت أول مرة', 'logged a first'), text: x.what, href: 'firsts.html' }))
 		].filter((x) => x.at).sort((a, b) => b.at - a.at).slice(0, 60)
 			// the same thing done by the same one on the same day folds into one line: «ضاف ٦ أغاني: …»
@@ -151,9 +156,11 @@ export default {
 		const withPhoto = tl.filter((x) => photosOf(x).length);
 		const today = tl.filter((x) => !x.when && isToday(x.date));
 		const latest = tl.filter((x) => String(x.date) <= now).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 5);
-		const occ = occasions(s);
+		// the next trip joins the birthdays and the anniversary
+		const trip = this.trip ? (() => { const days = Math.round((new Date(`${this.trip.date}T00:00:00`) - new Date(`${now}T00:00:00`)) / 864e5); return { kind: 'trip', emoji: 'suitcase', days, title: L(`رحلتنا لـ${this.trip.where}`, `Our trip to ${this.trip.where}`), sub: L('رحلتنا الجاية ✈', 'Our next trip ✈') }; })() : null;
+		const occ = [...occasions(s), ...(trip ? [trip] : [])].sort((a, b) => a.days - b.days);
 		const next = occ[0];
-		const occHref = (o) => (o.kind === 'birthday' ? `birthday.html?id=${o.id}` : o.kind === 'anniversary' ? 'anniversaries.html' : 'story.html');
+		const occHref = (o) => (o.kind === 'birthday' ? `birthday.html?id=${o.id}` : o.kind === 'anniversary' ? 'anniversaries.html' : o.kind === 'trip' ? 'journeys.html#next' : 'story.html');
 		const name = (w) => T(w === 'him' ? s.him : s.her);
 		const feed = this.feed || [];
 
@@ -243,6 +250,7 @@ export default {
 					<button class="hm-yrs__btn" type="button" data-step="1" aria-label="${L('السنة اللي بعدها', 'Next year')}">›</button>
 				</div>
 			</div>
+			<p class="center reveal" style="margin-top:18px"><a class="btn btn--sm btn--ghost" href="years.html">${doodle('calendar', 16)} ${L('كل سنة بأرقامها وصورها', 'Every year, its numbers and photos')}</a></p>
 		</div></section>
 
 		${weekYears.length ? `<section class="sec"><div class="wrap">
