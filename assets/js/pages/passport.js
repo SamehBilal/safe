@@ -1,11 +1,8 @@
-import { L, T, esc, num, fmtDate, pageHead, related, $, $$, REDUCE } from '../shell.js';
+import { L, T, esc, num, fmtDate, $, $$, REDUCE } from '../shell.js';
 import { doodle } from '../doodles.js';
-import * as live from '../live.js';
-import { loadTrips } from './trips.js';
-import { citiesOf } from './atlas.js';
 import { GOVERNORATES } from '../egypt.js';
 
-/* Our passport: a little book we flip through. The first page is ours (our names, the day it was issued: the day we
+/* Our passport, the atlas's third tab: a little book we flip through. The first page is ours (our names, the day it was issued: the day we
    married); then every city we've been to is an entry stamp — the shape of its governorate, the city's name, the
    day we first went and how many places — in the order we first went; the empty pages wait for the governorates
    we haven't been to yet. The cities come from the atlas (assets/js/pages/atlas.js), so a new place shows up here too. */
@@ -33,37 +30,31 @@ function stamp(c, k) {
 }
 const empty = (g) => `<figure class="pp-stamp pp-stamp--empty"><svg class="pp-stamp__gov" viewBox="0 0 1000 880" aria-hidden="true"><path d="${g.d}"/></svg><figcaption><i dir="rtl">${esc(g.ar)}</i><small>${L('لسه', 'Not yet')}</small></figcaption></figure>`;
 
-export default {
-	title: { ar: 'جواز سفرنا', en: 'Our passport' },
-	render(s) {
-		return `${pageHead(L('جواز سفرنا', 'Our passport'), L('كل مدينة رحناها ختم في جوازنا', 'Every city we’ve been to, a stamp in our passport'), [{ href: 'passport.html', ar: 'جواز سفرنا', en: 'Our passport' }])}
-		<section class="sec"><div class="wrap">
-			<div class="pp" id="pp">
-				<button class="pp-cover" type="button" id="pp-cover" aria-label="${L('افتح الجواز', 'Open the passport')}">
-					<span class="pp-cover__k">${L('جمهورية حبنا', 'THE REPUBLIC OF US')}</span>
-					<span class="pp-cover__seal" aria-hidden="true">${doodle('heart', 54)}</span>
-					<span class="pp-cover__t">${L('جواز سفر', 'PASSPORT')}</span>
-					<span class="pp-cover__n">${esc(T(s.him))} ♥ ${esc(T(s.her))}</span>
-					<span class="pp-cover__chip" aria-hidden="true"></span>
-					<span class="pp-cover__open">${L('دوس عشان تفتحه', 'Tap to open')}</span>
-				</button>
-				<div class="pp-book" id="pp-book" hidden>
-					<div class="pp-spread" id="pp-spread"></div>
-					<div class="pp-nav">
-						<button class="btn btn--sm btn--ghost" type="button" id="pp-prev">${L('→ اللي قبلها', '← Back')}</button>
-						<span id="pp-at"></span>
-						<button class="btn btn--sm" type="button" id="pp-next">${L('اللي بعدها ←', 'Next →')}</button>
-					</div>
-					<p class="center"><button class="link" type="button" id="pp-close">${L('اقفل الجواز', 'Close the passport')}</button></p>
-				</div>
+/** the closed passport and the book it opens into */
+export const passportHTML = (s) => `	<div class="pp" id="pp">
+		<button class="pp-cover" type="button" id="pp-cover" aria-label="${L('افتح الجواز', 'Open the passport')}">
+			<span class="pp-cover__k">${L('جمهورية حبنا', 'THE REPUBLIC OF US')}</span>
+			<span class="pp-cover__seal" aria-hidden="true">${doodle('heart', 54)}</span>
+			<span class="pp-cover__t">${L('جواز سفر', 'PASSPORT')}</span>
+			<span class="pp-cover__n">${esc(T(s.him))} ♥ ${esc(T(s.her))}</span>
+			<span class="pp-cover__chip" aria-hidden="true"></span>
+			<span class="pp-cover__open">${L('دوس عشان تفتحه', 'Tap to open')}</span>
+		</button>
+		<div class="pp-book" id="pp-book" hidden>
+			<div class="pp-spread" id="pp-spread"></div>
+			<div class="pp-nav">
+				<button class="btn btn--sm btn--ghost" type="button" id="pp-prev">${L('→ اللي قبلها', '← Back')}</button>
+				<span id="pp-at"></span>
+				<button class="btn btn--sm" type="button" id="pp-next">${L('اللي بعدها ←', 'Next →')}</button>
 			</div>
-		</div></section>
-		${related(['atlas', 'anniversaries', 'journeys'])}`;
-	},
+			<p class="center"><button class="link" type="button" id="pp-close">${L('اقفل الجواز', 'Close the passport')}</button></p>
+		</div>
+	</div>
+`;
 
-	async after(main, s) {
-		const [trips, spots] = await Promise.all([loadTrips(s).catch(() => []), live.load('spots').catch(() => ({ items: [] }))]);
-		const list = citiesOf(s, trips, spots.items || []).sort((a, b) => (firstDate(a) || '9').localeCompare(firstDate(b) || '9'));
+/** fills the book from the atlas's cities (citiesOf in atlas.js) */
+export function passportAfter(main, s, cities) {
+		const list = [...cities].sort((a, b) => (firstDate(a) || '9').localeCompare(firstDate(b) || '9'));
 		const been = new Set(list.map((c) => c.gov));
 		const notYet = GOVERNORATES.filter((g) => !been.has(g.id));
 
@@ -105,5 +96,4 @@ export default {
 		$('#pp-prev', main).addEventListener('click', () => { if (at > 0) { at--; paint(); } });
 		$('#pp-next', main).addEventListener('click', () => { if (at < spreads.length - 1) { at++; paint(); } });
 		book.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') $(document.dir === 'rtl' ? '#pp-next' : '#pp-prev', main).click(); if (e.key === 'ArrowRight') $(document.dir === 'rtl' ? '#pp-prev' : '#pp-next', main).click(); });
-	}
-};
+}

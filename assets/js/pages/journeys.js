@@ -1,6 +1,7 @@
 import { L, T, esc, img, num, pageHead, related, App, $, $$, hydrate, longDate, yearsAgo } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { fit, where } from '../tilemap.js';
+import nexttrip from './nexttrip.js';
 
 /* «رحلاتنا»: every trip we've taken, each with a page of its own (journey.html?id=…) that tells it stop by stop on a map.
    The top, in the same hand as a trip's page: one taped map with every trip's road drawn on it in its own colour, one
@@ -44,6 +45,7 @@ export default {
 			</div>
 		</div></div></section>
 		${pageHead(L('رحلاتنا', 'Our trips'), L('كل رحلة طريق على الخريطة: محطة ورا محطة، بالصور', 'Every trip a road on the map: stop after stop, with the photos'), [{ href: 'journeys.html', ar: 'رحلاتنا', en: 'Our trips' }], { band: '' })}
+		<div class="nt-in" id="nt">${nexttrip.section(s, `<div class="nt-head"><div class="lp-band lp-band--nexttrip" id="lp-band" aria-hidden="true"></div><div><p class="gh-k">${doodle('suitcase', 16)} ${L('اللي جاي', 'What’s next')}</p><h2 class="nt-h">${L('رحلتنا الجاية', 'Our next trip')}</h2><p class="muted">${L('رايحين فين، فاضل كام يوم، وناخد إيه معانا', 'Where we’re going, how many days left, and what to pack')}</p></div></div>`)}</div>
 		<section class="sec"><div class="wrap"><div class="jx-list">${js.map((j, i) => {
 			const photos = [...new Set(j.stops.flatMap((st) => st.photos || []))];
 			const pick = photos.length <= 3 ? photos : [photos[0], photos[Math.floor(photos.length / 2)], photos.at(-1)];
@@ -68,6 +70,8 @@ export default {
 	},
 
 	after(main, s) {
+		// our next trip, its own shared list inside its section
+		nexttrip.after(main, s, $('#nt', main));
 		// an old link to a trip on this page (journeys.html#j-…) opens the trip's own page
 		const m = /^#j-([\w-]+)$/.exec(location.hash);
 		if (m) { location.replace(`journey.html?id=${encodeURIComponent(m[1])}`); return; }

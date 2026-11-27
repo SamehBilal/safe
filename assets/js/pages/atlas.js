@@ -5,6 +5,7 @@ import { GOV, govName, loadTrips, mapSVG } from './trips.js';
 import { fit, where, here, nearestGov, CAPITALS, km } from '../tilemap.js';
 import { setupNote } from './journal.js';
 import { placesSection, placesPins, placeAreas } from './places.js';
+import { passportHTML, passportAfter } from './passport.js';
 
 /* «أطلسنا» — an example of «أماكننا» and «خرايط مدننا» on one page (both pages stay as they are).
    The top: Egypt with every governorate we've been to coloured in — point at one for its name and how many places,
@@ -148,6 +149,7 @@ export default {
 			<div class="at-tabs" role="tablist" aria-label="${L('أطلسنا', 'Our atlas')}">
 				<button class="at-tab is-on" type="button" role="tab" aria-selected="true" aria-controls="at-pane-cities" data-tab="cities">${doodle('house', 18)} ${L('المدن', 'Cities')}</button>
 				<button class="at-tab" type="button" role="tab" aria-selected="false" aria-controls="at-pane-places" data-tab="places">${doodle('pin', 18)} ${L('الأماكن', 'Places')}</button>
+				<button class="at-tab" type="button" role="tab" aria-selected="false" aria-controls="at-pane-passport" data-tab="passport">${doodle('suitcase', 18)} ${L('جواز سفرنا', 'Our passport')}</button>
 			</div>
 			<div class="at-pane" id="at-pane-cities" role="tabpanel">
 			<div class="at-strip" id="at-row" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
@@ -174,6 +176,7 @@ export default {
 				${mapBlock('at-pcity', true)}
 				${placesSection(s)}
 			</div>
+			<div class="at-pane" id="at-pane-passport" role="tabpanel" hidden>${passportHTML(s)}</div>
 		</div></section>
 		${related(['journeys', 'anniversaries', 'distances'])}`;
 	},
@@ -270,6 +273,7 @@ export default {
 			$$('.at-tab', main).forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
 			$('#at-pane-cities', main).hidden = name !== 'cities';
 			$('#at-pane-places', main).hidden = name !== 'places';
+			$('#at-pane-passport', main).hidden = name !== 'passport';
 			if (name === 'places') {
 				for (const el of $$('#at-pane-places .reveal', main)) el.classList.add('is-in');
 				if (!places.cur) showPlaces(areas[0]?.k);
@@ -315,6 +319,7 @@ export default {
 
 		const fromHash = decodeURIComponent(location.hash.slice(1));
 		show(list.some((c) => c.id === fromHash) ? fromHash : list.find((c) => c.gov === fromHash)?.id || list[0]?.id);
-		if (fromHash === 'places') tab('places');
+		if (fromHash === 'places' || fromHash === 'passport') tab(fromHash);
+		passportAfter(main, s, list);
 	}
 };
