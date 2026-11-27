@@ -44,5 +44,5 @@ export default listPage({
 	},
 	card: () => '',
 	empty: false,
-	related: ['story', 'family', 'places']
+	related: ['story', 'family', 'atlas']
 });

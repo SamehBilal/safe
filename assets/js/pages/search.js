@@ -10,7 +10,7 @@ import { doodle } from '../doodles.js';
 
 const HIDDEN = new Set(['secret', 'giftideas', 'capsule']);
 // which page shows each list (when it isn't the page of the same name)
-const PAGE_OF = { where: 'distances', spots: 'cities', tree: 'family', trips: 'anniversaries', bucket: 'adventures', recipes: 'food', soundtrack: 'music' };
+const PAGE_OF = { where: 'distances', spots: 'atlas', tree: 'family', trips: 'anniversaries', bucket: 'adventures', recipes: 'food', soundtrack: 'music' };
 const RECENT = 'us.search.recent';
 const MIN = 2;
 
@@ -63,7 +63,7 @@ async function build(s) {
 	// the story
 	for (const x of s.timeline || []) add('story', x, t(x.title), t(x.text), `moment.html?id=${encodeURIComponent(x.id)}`);
 	for (const x of s.chapters || []) add('chapters', x, t(x.title), t(x.sub), `chapter.html?id=${encodeURIComponent(x.id)}`);
-	for (const x of s.places || []) add('places', x, t(x.title), t(x.where), 'places.html');
+	for (const x of s.places || []) add('places', x, t(x.title), t(x.where), 'atlas.html#places');
 	for (const x of s.notes || []) add('notes', x, t(x.text), t(x.by === 'him' ? s.him : s.her), 'notes.html');
 	// letters wait to be opened: only who wrote them and their titles are searched, never what's inside
 	for (const x of s.letters || []) add('letters', { title: x.title, from: x.from, to: x.to }, t(x.title), '', 'letters.html');

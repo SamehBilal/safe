@@ -124,7 +124,7 @@ function dayHTML(s, x) {
 			<div class="mo-place__txt">
 				<small>${L(`رحنا ${num(ps.length)} أماكن يومها`, `${ps.length} places that day`)}</small>
 				<ol class="mo-stops">${ps.map((q, i) => `<li><i aria-hidden="true">${num(i + 1)}</i><span><b dir="auto">${T(q.title)}</b>${q.where ? `<span dir="auto">${T(q.where)}</span>` : ''}</span><a class="btn btn--sm btn--ghost" href="${esc(gmapsOf(q))}" target="_blank" rel="noopener noreferrer" aria-label="${esc(L(`افتح ${App.t(q.title)} في خرايط جوجل`, `Open ${App.t(q.title)} in Google Maps`))}">${doodle('pin', 16)} ${L('خرايط جوجل', 'Google Maps')}</a></li>`).join('')}</ol>
-				<span class="mo-place__btns"><a class="btn btn--sm" href="places.html">${L('على خريطة أماكننا', 'On our map')}</a></span>
+				<span class="mo-place__btns"><a class="btn btn--sm" href="atlas.html#places">${L('على أطلسنا', 'In our atlas')}</a></span>
 			</div>
 		</div>` : '';
 	const placeCard = p ? `<div class="mo-place">
@@ -134,7 +134,7 @@ function dayHTML(s, x) {
 				<b dir="auto">${T(p.title)}</b>
 				${p.where ? `<span dir="auto">${T(p.where)}</span>` : ''}
 				${here.length ? `<em>${esc(L(`رحناه ${here.length + 1 === 2 ? 'مرتين' : `${num(here.length + 1)} مرات`}`, `We've been ${here.length + 1} times`))}: ${here.slice(0, 3).map((o) => `<a href="moment.html?id=${encodeURIComponent(o.id)}">${T(o.title)}</a>`).join(L('، ', ', '))}</em>` : ''}
-				<span class="mo-place__btns"><a class="btn btn--sm" href="${esc(gmaps)}" target="_blank" rel="noopener noreferrer">${doodle('pin', 18)} ${L('افتحه في خرايط جوجل', 'Open in Google Maps')}</a><a class="btn btn--sm btn--ghost" href="places.html">${L('على خريطة أماكننا', 'On our map')}</a></span>
+				<span class="mo-place__btns"><a class="btn btn--sm" href="${esc(gmaps)}" target="_blank" rel="noopener noreferrer">${doodle('pin', 18)} ${L('افتحه في خرايط جوجل', 'Open in Google Maps')}</a><a class="btn btn--sm btn--ghost" href="atlas.html#places">${L('على أطلسنا', 'In our atlas')}</a></span>
 			</div>
 		</div>` : routeCard;
 

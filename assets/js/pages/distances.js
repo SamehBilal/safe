@@ -142,7 +142,7 @@ export default {
 			<p class="dm-note">${doodle('lock', 18)} ${Y('مكانك بيفضل على الموبايل ده بس، لحد ما تبعت الجديد من الإعدادات — ساعتها الموبايل التاني يشوفه. بنحفظ آخر مكان بس.', 'مكانك بيفضل على الموبايل ده بس، لحد ما تبعتي الجديد من الإعدادات — ساعتها الموبايل التاني يشوفه. بنحفظ آخر مكان بس.', 'Your spot stays on this phone until you send what’s new from Settings — then the other phone sees it. Only the last spot is kept.')}</p>
 		</div></section>
 		${far ? `<section class="sec sec--top dt-panel" id="dt-far" role="tabpanel" hidden><div class="wrap">${farthestMap(s)}</div></section>` : ''}
-		${related(['family', 'anniversaries', 'places'])}`;
+		${related(['family', 'anniversaries', 'atlas'])}`;
 	},
 
 	async after(main, s) {

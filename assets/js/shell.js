@@ -550,9 +550,7 @@ export const PAGES = [
 	{ href: 'beforeus.html', id: 'beforeus', ic: 'route', ar: 'قبل ما نتقابل', en: 'Before us', dar: 'حياتنا الاتنين جنب بعض لحد ٢٠٠٩', den: 'Our two lives side by side until 2009', group: 'story' },
 	{ href: 'journal.html', id: 'journal', ic: 'pen', ar: 'دفترنا', en: 'Our journal', dar: 'بنكتب حكايتنا سوا، يوم بيوم', den: 'We write our story together, day by day', group: 'story' },
 	{ href: 'anniversaries.html', id: 'anniversaries', ic: 'ring', ar: 'عيد جوازنا', en: 'Our anniversaries', dar: 'رحلة كل سنة على الخريطة، وكل سنة جواز عملنا فيها إيه', den: 'A trip every year on the map, and how we marked each one', group: 'story' },
-	{ href: 'places.html', id: 'places', ic: 'pin', ar: 'أماكننا', en: 'Our places', dar: 'أماكن فيها حتة مننا', den: 'Places that hold a piece of us', group: 'story' },
-	{ href: 'atlas.html', id: 'atlas', ic: 'pin', ar: 'أطلسنا (تجربة)', en: 'Our atlas (try-out)', dar: 'المدن والأماكن في صفحة واحدة', den: 'Our cities and places on one page', group: 'story' },
-	{ href: 'cities.html', id: 'cities', ic: 'city', ar: 'خرايط مدننا', en: 'Our city maps', dar: 'كل مدينة رحناها، وأماكننا منورة فيها', den: 'Every city we’ve been to, our spots lit up', group: 'story' },
+	{ href: 'atlas.html', id: 'atlas', ic: 'pin', ar: 'أطلسنا', en: 'Our atlas', dar: 'كل مدينة رحناها، وكل مكان فيها بصوره', den: 'Every city we’ve been to, and every place in it with its photos', group: 'story' },
 	{ href: 'journeys.html', id: 'journeys', ic: 'map', ar: 'رحلاتنا', en: 'Our trips', dar: 'كل رحلة طريق على الخريطة، محطة ورا محطة', den: 'Every trip a road on the map, stop by stop', group: 'story' },
 	{ href: 'minute.html', id: 'minute', ic: 'film', ar: 'الحكاية في دقيقة', en: 'Our story in a minute', dar: 'كل ذكرى بصورة، ورا بعض', den: 'Every memory, one photo after another', group: 'story' },
 	{ href: 'gallery.html', id: 'gallery', ic: 'image', ar: 'ألبوم الصور', en: 'Photo album', dar: 'إحنا بالصور، سنة بسنة', den: 'Us in pictures, year by year', group: 'memories' },
@@ -1101,7 +1099,7 @@ export async function fillWidgets(root) {
 
 /* Everything we can add, by chapter, for the «+» beside the search: each opens its page with the form open (#add). */
 const ADD = [
-	['journal', 'اكتب صفحة في الدفتر', 'Write a journal page'], ['ourfirsts', 'أول مرة لينا', 'A first of ours'], ['beforeus', 'محطة قبل ما نتقابل', 'A stop before us'], ['anniversaries', 'عيد جواز', 'An anniversary'], ['cities', 'مكان على خريطة مدننا', 'A spot on our city maps'],
+	['journal', 'اكتب صفحة في الدفتر', 'Write a journal page'], ['ourfirsts', 'أول مرة لينا', 'A first of ours'], ['beforeus', 'محطة قبل ما نتقابل', 'A stop before us'], ['anniversaries', 'عيد جواز', 'An anniversary'], ['atlas', 'مكان على أطلسنا', 'A spot in our atlas'],
 	['tickets', 'تذكرة أو فاتورة', 'A ticket or receipt'], ['chats', 'اسكرينشوت محادثة', 'A chat screenshot'], ['posts', 'بوست', 'A post'],
 	['movies', 'فيلم أو مسلسل', 'A film or series'], ['music', 'أغنية', 'A song'], ['books', 'كتاب', 'A book'], ['food', 'أكلة أو مطعم', 'A meal or restaurant'], ['games', 'لعبة', 'A game'], ['offline', 'سهرة من غير موبايل', 'An offline night'], ['adventures', 'حلم أو مغامرة', 'A dream or adventure'],
 	['firsts', 'أول مرة للولاد', 'A first for the kids'], ['growth', 'قياس طول ووزن', 'A height and weight'], ['sayings', 'كلمة للقاموس', 'A word for the dictionary'], ['favorites', 'بيحب إيه دلوقتي', 'What they love now'], ['drawings', 'رسمة على التلاجة', 'A drawing for the fridge'], ['school', 'مادة أو درجة', 'A subject or grade'], ['clubs', 'نشاط', 'An activity'], ['health', 'حاجة في دفتر الصحة', 'A health entry'], ['yearly', 'صورة السنة', 'This year’s photo'], ['capsule', 'حاجة للكبسولة', 'Something for the capsule'],
@@ -1463,7 +1461,7 @@ async function morphSearch(btn) {
 			...(years.length ? [{ q: years[Math.floor(Math.random() * years.length)], kind: 'date' }] : []),
 			...ideas.map((q) => ({ q }))
 		]);
-		fill(1, ['story', 'gallery', 'places', 'cities', 'remember', 'calendar'].map((id) => PAGES.find((p) => p.id === id)).filter(Boolean).map((p) => ({ title: L(p.ar, p.en), sub: L(p.dar || '', p.den || ''), href: p.href, ic: p.ic })), '');
+		fill(1, ['story', 'gallery', 'atlas', 'remember', 'calendar'].map((id) => PAGES.find((p) => p.id === id)).filter(Boolean).map((p) => ({ title: L(p.ar, p.en), sub: L(p.dar || '', p.den || ''), href: p.href, ic: p.ic })), '');
 		fill(2, moments.slice(-5).reverse().map((x) => ({ title: App.t(x.title), date: x.date, href: `moment.html?id=${encodeURIComponent(x.id)}`, ic: 'book' })), '');
 		// on this day: the moments of today's date in other years, else the ones closest to it
 		const today = moments.filter((x) => x.date.slice(4, 10) === md);
@@ -1771,7 +1769,7 @@ function owl() {
    pages the ordinary way. */
 // every page of ours — written by tools/heads.mjs (which tools/build.mjs runs) from the pages themselves, so a new page
 // joins by itself; a page left out of here would reload and stop the song
-const PAGE_IDS = new Set(['adventures', 'anniversaries', 'atlas', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'cities', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'places', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'widgets', 'wishes', 'yearly']);
+const PAGE_IDS = new Set(['adventures', 'anniversaries', 'atlas', 'beforeus', 'birthday', 'books', 'calendar', 'capsule', 'chapter', 'chapters', 'chats', 'chores', 'clubs', 'debts', 'distances', 'draw', 'drawings', 'duties', 'expenses', 'family', 'favorites', 'firsts', 'fixes', 'food', 'gallery', 'games', 'gifts', 'goals', 'growth', 'guestbook', 'health', 'hosting', 'home', 'journal', 'journey', 'journeys', 'letters', 'meals', 'member', 'minute', 'moment', 'movies', 'music', 'nokta', 'notes', 'numbers', 'offline', 'onthisday', 'ourfirsts', 'papers', 'people', 'posts', 'ramadan', 'remember', 'routine', 'sayings', 'school', 'search', 'secret', 'settings', 'shopping', 'story', 'tickets', 'trip', 'warranty', 'widgets', 'wishes', 'yearly']);
 /* the stylesheet a page has besides the shared ones (its <head>, written by tools/heads.mjs), put in when it's reached this way */
 const OWN_CSS = { adventures: 'more', anniversaries: 'more', beforeus: 'more', chats: 'more', clubs: 'more', debts: 'more', drawings: 'more', duties: 'more', expenses: 'more', family: 'more', favorites: 'more', fixes: 'more', food: 'more', gifts: 'more', growth: 'more', guestbook: 'more', health: 'more', hosting: 'more', home: 'home', letters: 'letters', meals: 'more', minute: 'more', moment: 'more', music: 'discshelf', nokta: 'more', offline: 'more', onthisday: 'more', ourfirsts: 'more', papers: 'more', people: 'more', remember: 'more', routine: 'more', sayings: 'more', school: 'more', secret: 'secret', shopping: 'more', tickets: 'more', warranty: 'more' };
 function ownCSS(id) {

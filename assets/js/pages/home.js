@@ -83,7 +83,7 @@ function yearStage(main, years) {
 
 /* the house, one card per menu: its first pages, and how many more */
 const GROUPS = [
-	{ id: 'story', ar: 'حكايتنا', en: 'Our story', ic: 'book', top: ['story', 'chapters', 'places', 'minute'] },
+	{ id: 'story', ar: 'حكايتنا', en: 'Our story', ic: 'book', top: ['story', 'chapters', 'atlas', 'minute'] },
 	{ id: 'memories', ar: 'ذكرياتنا', en: 'Memories', ic: 'image', top: ['gallery', 'onthisday', 'notes', 'letters'] },
 	{ id: 'nights', ar: 'ليالينا', en: 'Our nights', ic: 'moon', top: ['draw', 'music', 'movies', 'adventures'] },
 	{ id: 'kids', ar: 'ولادنا', en: 'Our kids', ic: 'baby', top: ['firsts', 'growth', 'sayings', 'school'] },

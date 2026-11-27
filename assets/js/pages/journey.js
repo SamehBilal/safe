@@ -45,7 +45,7 @@ export default {
 				<ol class="jr__stops">${j.stops.map((st, i) => stop(j, st, i)).join('')}</ol>
 			</div>
 		</div></section>`).join('')}
-		${related(['journeys', 'places', 'cities'])}`;
+		${related(['journeys', 'atlas'])}`;
 	},
 
 	after(main, s) {

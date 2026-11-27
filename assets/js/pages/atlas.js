@@ -1,8 +1,9 @@
-import { L, T, esc, img, fmtDate, pageHead, related, App, $, $$, num, REDUCE, hydrate } from '../shell.js';
+import { L, Y, T, esc, img, fmtDate, pageHead, related, App, $, $$, num, REDUCE, hydrate } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOV, govName, loadTrips, mapSVG } from './trips.js';
-import { fit, where, nearestGov, CAPITALS, km } from '../tilemap.js';
+import { fit, where, here, nearestGov, CAPITALS, km } from '../tilemap.js';
+import { setupNote } from './journal.js';
 import { placesSection, placesPins, placeAreas } from './places.js';
 
 /* «أطلسنا» — an example of «أماكننا» and «خرايط مدننا» on one page (both pages stay as they are).
@@ -51,6 +52,7 @@ const centreOf = (c) => (CAPITALS[c.id] ? { lat: CAPITALS[c.id][0], lng: CAPITAL
 
 /* the big map with the list of its places beside it: under «المدن» the city as a poster with a light for every place,
    under «الأماكن» the real map with a pin for every place */
+
 const mapBlock = (id, real) => `<div class="at-city" id="${id}">
 	<div class="at-map${real ? ' at-map--real' : ' at-map--frame'}" style="direction:ltr">
 		<div class="at-map__tiles" aria-hidden="true"></div>
@@ -131,7 +133,7 @@ export default {
 		return `<section class="sec sec--top at-top"><div class="wrap"><div class="at-hero">
 			<div class="at-egypt">${mapSVG('eg--atlas')}<div class="at-egypt__tip" id="at-tip" hidden></div></div>
 			<div class="at-hero__body">
-				<p class="gh-k">${doodle('pin', 16)} ${L('تجربة: المدن والأماكن في صفحة واحدة', 'A try-out: our cities and places on one page')}</p>
+				<p class="gh-k">${doodle('pin', 16)} ${L('المدن والأماكن في صفحة واحدة', 'Our cities and places on one page')}</p>
 				<h1 class="at-t">${L('أطلسنا', 'Our atlas')}</h1>
 				<ul class="at-facts" id="at-facts"><li><b>…</b></li></ul>
 				<p class="at-hint">${doodle('pin', 14)} ${L('دوس على أي محافظة ملونة تفتح مدينتها', 'Tap a coloured governorate to open its city')}</p>
@@ -150,15 +152,30 @@ export default {
 			<div class="at-pane" id="at-pane-cities" role="tabpanel">
 			<div class="at-strip" id="at-row" role="tablist" aria-label="${L('مدننا', 'Our cities')}"></div>
 			${mapBlock('at-city', false)}
+			${live.canWrite() ? '' : `<div class="narrow" style="margin:28px auto 0">${setupNote()}</div>`}
+			<details class="composer reveal narrow" style="margin:28px auto 0"${live.canWrite() ? '' : ' hidden'}>
+				<summary><span>${doodle('pin', 22)}</span> ${Y('نوّر مكان', 'نوّري مكان', 'Light up a spot')}</summary>
+				<form id="cm-form" autocomplete="off">
+					<label class="f"><span>${L('اسم المكان', 'The spot')}</span><input name="title" dir="auto" maxlength="80" required placeholder="${L('قلعة قايتباي', 'Qaitbay Citadel')}"></label>
+					<div class="f-row">
+						<label class="f"><span>${L('المحافظة', 'Governorate')}</span><select name="gov">${Object.keys(CAPITALS).sort((a, b) => govName(a).localeCompare(govName(b))).map((g) => `<option value="${g}">${esc(govName(g))}</option>`).join('')}</select></label>
+						<label class="f"><span>${L('رحناه إمتى؟', 'When?')}</span><input name="date" type="date"></label>
+					</div>
+					<label class="f"><span>${L('المكان على الخريطة', 'Where on the map')}</span><input name="at" dir="ltr" required placeholder="31.2140, 29.8856" inputmode="decimal"></label>
+					<p class="cm-howto">${Y('من جوجل ماب: دوسة طويلة (أو كليك يمين) على المكان، وانسخ أول سطر. أو:', 'من جوجل ماب: دوسة طويلة (أو كليك يمين) على المكان، وانسخي أول سطر. أو:', 'From Google Maps: long-press (or right-click) the spot and copy the first line. Or:')} <button class="link" type="button" id="cm-here">${doodle('pin', 16)} ${L('أنا هناك دلوقتي', 'I’m there now')}</button></p>
+					<label class="f"><span>${L('كلمة عنه (اختياري)', 'A word about it (optional)')}</span><input name="note" dir="auto" maxlength="140"></label>
+					<p class="form-msg" id="cm-msg" role="status"></p>
+					<div class="f-actions"><button type="submit" class="btn btn--coral">${Y('نوّره ✦', 'نوّريه ✦', 'Light it up ✦')}</button></div>
+				</form>
+			</details>
 			</div>
 			<div class="at-pane" id="at-pane-places" role="tabpanel" hidden>
 				<div class="at-areas" id="at-chips">${placesPins(s)}</div>
 				${mapBlock('at-pcity', true)}
 				${placesSection(s)}
 			</div>
-			<p class="center at-links"><a class="btn btn--sm btn--ghost" href="places.html">${doodle('pin', 16)} ${L('أماكننا', 'Our places')}</a> <a class="btn btn--sm btn--ghost" href="cities.html">${doodle('house', 16)} ${L('خرايط مدننا', 'Our city maps')}</a></p>
 		</div></section>
-		${related(['places', 'cities', 'journeys'])}`;
+		${related(['journeys', 'anniversaries', 'distances'])}`;
 	},
 
 	async after(main, s) {
@@ -271,7 +288,33 @@ export default {
 			places.mapEl.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'center' });
 			setTimeout(() => places.open(c.places.findIndex((p) => p.id === go.dataset.pid)), REDUCE ? 0 : 500);
 		});
+		const form = $('#cm-form', main);
+		if (form) {
+			const msg = $('#cm-msg', main);
+			$('#cm-here', main).onclick = async () => {
+				msg.textContent = Y('بندور عليك…', 'بندور عليكي…', 'Finding you…');
+				try { const p = await here(); form.at.value = `${p.lat}, ${p.lng}`; form.gov.value = govOf(p); msg.textContent = ''; }
+				catch (err) { msg.textContent = err.message === 'denied' ? Y('اسمح للموقع بالـ Location من إعدادات المتصفح', 'اسمحي للموقع بالـ Location من إعدادات المتصفح', 'Allow Location for this site in the browser settings') : L('معرفناش نلاقي المكان', 'Couldn’t find the spot'); }
+			};
+			form.onsubmit = async (e) => {
+				e.preventDefault();
+				const at = where(form.at.value);
+				if (!at) { msg.textContent = L('المكان لازم يبقى رقمين زي 31.2140, 29.8856', 'The spot should be two numbers like 31.2140, 29.8856'); return; }
+				const x = { id: live.newId(), title: form.title.value.trim(), gov: form.gov.value, at: `${at.lat}, ${at.lng}`, date: form.date.value || undefined, note: form.note.value.trim() || undefined, by: live.me() };
+				if (!x.title) return;
+				try {
+					await live.save('spots', (d) => { (d.items = d.items || []).push(x); });
+					form.reset();
+					msg.textContent = L('اتنوّر ✦', 'Lit up ✦');
+					// the atlas draws its cities once, so it opens again on the new spot's city
+					location.hash = x.gov;
+					location.reload();
+				} catch (err) { msg.textContent = live.why(err); }
+			};
+		}
+
 		const fromHash = decodeURIComponent(location.hash.slice(1));
-		show(list.some((c) => c.id === fromHash) ? fromHash : list[0]?.id);
+		show(list.some((c) => c.id === fromHash) ? fromHash : list.find((c) => c.gov === fromHash)?.id || list[0]?.id);
+		if (fromHash === 'places') tab('places');
 	}
 };

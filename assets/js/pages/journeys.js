@@ -64,7 +64,7 @@ export default {
 				</div>
 			</article>`;
 		}).join('')}</div></div></section>
-		${related(['places', 'cities', 'anniversaries'])}`;
+		${related(['atlas', 'anniversaries'])}`;
 	},
 
 	after(main, s) {

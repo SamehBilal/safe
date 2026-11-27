@@ -57,7 +57,7 @@ function questions(s) {
 	if (places.length >= 3) kinds.push(shuffle(places).slice(0, 4).map((p) => ({
 		photo: pick(photosOf(p)), q: L('الصورة دي فين؟', 'Where is this?'),
 		opts: shuffle([p, ...shuffle(places.filter((o) => o !== p)).slice(0, 3)]).map((o) => ({ label: T(o.title), ok: o === p })),
-		after: `${T(p.title)}${p.place ? ` — ${T(p.place)}` : ''} · <a href="places.html">${L('أماكننا', 'Our places')}</a>`
+		after: `${T(p.title)}${p.place ? ` — ${T(p.place)}` : ''} · <a href="atlas.html#places">${L('أطلسنا', 'Our atlas')}</a>`
 	})));
 	// which month a photo is from
 	const month = (m) => new Date(2024, m, 15).toLocaleDateString(App.lang === 'ar' ? 'ar-EG' : 'en-GB', { month: 'long' });

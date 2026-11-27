@@ -33,7 +33,7 @@ async function gather(s) {
 	for (const x of posts) add(x.date, ['بوستاتنا', 'Our posts'], 'phone', cut(x.text, 70) || L('بوست', 'A post'), '', { sketch: x.img, href: `posts.html#${encodeURIComponent(x.id)}` });
 	for (const x of s.letters || []) add(x.date, ['جواباتنا', 'Letters'], 'letter', x.title, '', { href: `letters.html#${encodeURIComponent(x.id)}` });
 	for (const x of s.notes || []) add(x.date, ['رسايل حب', 'Love notes'], 'heart', cut(tx(x.orig && x.text?.[x.orig] ? x.text[x.orig] : x.text), 70), '', { href: 'notes.html' });
-	for (const x of s.places || []) if (!inStory.has(x.id)) add(x.date, ['أماكننا', 'Our places'], 'pin', x.title, x.place || x.where, { photo: x.photo, href: 'places.html' });
+	for (const x of s.places || []) if (!inStory.has(x.id)) add(x.date, ['أطلسنا', 'Our atlas'], 'pin', x.title, x.place || x.where, { photo: x.photo, href: 'atlas.html#places' });
 	for (const x of s.gallery || []) add(x.date, ['ألبوم الصور', 'Photo album'], 'camera', x.caption || x.album, '', { photo: x.photo, href: 'gallery.html' });
 	return out;
 }

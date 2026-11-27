@@ -55,6 +55,6 @@ export default {
 		<section class="sec"><div class="wrap">
 			<div class="bd-rows">${list.map((c, k) => dayRow(c, k, list.length)).join('')}</div>
 		</div></section>
-		${related(['story', 'places', 'family'])}`;
+		${related(['story', 'atlas', 'family'])}`;
 	}
 };

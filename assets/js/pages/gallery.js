@@ -107,7 +107,7 @@ export default {
 			<ul class="tp" id="tp" aria-label="${L('كوم الصور', 'Piles of photos')}" data-show="${SHOW}">${ps.map((p, k) => p.items.slice(-SHOW).map((it, j) => itemHTML(p, k, p.items.length - Math.min(SHOW, p.items.length) + j, n++)).join('')).join('')}</ul>
 			${ps.length ? '' : `<p class="empty">${Y('حط صور في private/media وضيفها في gallery', 'حطي صور في private/media وضيفيها في gallery', 'Add photos to private/media and list them under gallery')}</p>`}
 		</div></section>
-		${related(['notes', 'places', 'chapters'])}`;
+		${related(['notes', 'atlas', 'chapters'])}`;
 	},
 	leave() { bye?.(); bye = null; },
 	after(main, s) {
