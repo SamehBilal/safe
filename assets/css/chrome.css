@@ -306,3 +306,15 @@
 .ms-col .ms-list a:hover { border-style: solid; border-color: var(--ink); box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 0 var(--coral); }
 .ms-none { padding: 6px 4px; }
 @media (prefers-reduced-motion: reduce) { .ms-sug { transition: none; } }
+
+/* the brand never runs under the buttons: clipped with «…» at worst, and our initials when the names don't fit */
+.brand { overflow: hidden; }
+.brand-names, .brand-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brand-short { display: none; font: 400 1.55rem/1.2 var(--f-script); color: var(--blue); white-space: nowrap; }
+.brand-short i { font-style: normal; color: var(--coral); }
+.brand--short .brand-names { display: none; }
+.brand--short .brand-short { display: block; }
+.brand--short .brand-sub { display: none; }
+.brand--short .brand-short { font-size: 1.75rem; line-height: 1; }
+.brand--nosub .brand-sub { display: none; }
+.brand--measure .brand-names, .brand--measure .brand-sub { text-overflow: clip; }

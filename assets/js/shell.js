@@ -1479,7 +1479,7 @@ function renderChrome() {
 		<a class="skip" href="#main">${Y('روح للمحتوى', 'روحي للمحتوى', 'Skip to content')}</a>
 		<div class="hd-wrap">
 			<button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="${L('القائمة', 'Menu')}"><span class="stack" aria-hidden="true"><i></i><i></i><i></i></span></button>
-			<a class="brand" href="index.html"><span class="brand-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span><span class="brand-sub">${L('حكاية حب', 'A love story')} · ${(s.met || '2009').slice(0, 4)}</span></a>
+			<a class="brand" href="index.html" aria-label="${esc(`${T(s.him)} ♥ ${T(s.her)}`)}"><span class="brand-names">${T(s.him)} <i>♥</i> ${T(s.her)}</span><span class="brand-short" aria-hidden="true">${[...T(s.him)][0] || ''} <i>♥</i> ${[...T(s.her)][0] || ''}</span><span class="brand-sub">${L('حكاية حب', 'A love story')} · ${(s.met || '2009').slice(0, 4)}</span></a>
 			<nav class="pnav" id="site-nav" aria-label="${L('الفهرس', 'Contents')}" data-title="${L('الفهرس', 'Contents')}">${pnavHTML(here, s)}</nav>
 			${megaHTML(s)}
 			<div class="tools">${addHTML()}<a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
@@ -1492,6 +1492,26 @@ function renderChrome() {
 	};
 	header._menu = setMenu;
 	fillWidgets($('.mnav', header));
+	// the names beside the buttons: when they don't fit (a narrow phone, English's wider letters, the install button
+	// joining the row), the brand turns into our initials «S ♥ E» instead of running under the buttons
+	const brand = $('.brand', header), names = $('.brand-names', brand);
+	const sub = $('.brand-sub', brand);
+	// the text's own width (scrollWidth reports the clipped width for a right-to-left line ending in «…»)
+	const wide = (el) => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
+	// (measured with the «…» off: the browser shortens the text it measures otherwise)
+	const fitBrand = () => {
+		brand.classList.remove('brand--short', 'brand--nosub');
+		brand.classList.add('brand--measure');
+		const room = brand.getBoundingClientRect().width + 0.1, n = wide(names), u = wide(sub); // to the fraction of a pixel: the «…» does
+		brand.classList.remove('brand--measure');
+		if (n > room) brand.classList.add('brand--short');
+		else if (u > room) brand.classList.add('brand--nosub'); // the names fit, the line under them doesn't
+	};
+	fitBrand();
+	const ro = new ResizeObserver(fitBrand);
+	ro.observe($('.hd-wrap', header));
+	ro.observe($('.tools', header)); // the install button joins the row later
+	document.fonts?.ready.then(fitBrand);
 	$('.menu-btn', header).onclick = () => setMenu(!header.classList.contains('menu-open'));
 	$('.pnav', header).onclick = (ev) => { if (ev.target.closest('a')) setMenu(false); };
 	// a chapter opened in the phone's menu: its widgets that pick at random pick again, and the live ones fill in
