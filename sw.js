@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-3277819f95';
+var VERSION = 'us-4ebc545c33';
 var SHELL = [
 	'./',
 	'adventures.html',
