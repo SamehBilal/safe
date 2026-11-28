@@ -1509,9 +1509,16 @@ function renderChrome() {
 			}
 			pn.style.clipPath = `path("M0 0 H${W} V${Math.max(0, y).toFixed(1)} Q${W / 2} ${(y + 2 * b).toFixed(1)} 0 ${Math.max(0, y).toFixed(1)} Z")`;
 			if (t < 1) elasticRaf = requestAnimationFrame(frame);
-			else { pn.style.clipPath = ''; pn.classList.remove('is-elastic'); }
+			else {
+				// straight to where it ends: shut, with no fade after the curtain is already up (that flashed the whole menu)
+				pn.style.transition = 'none';
+				pn.classList.remove('is-elastic');
+				pn.style.clipPath = '';
+				void pn.offsetWidth;
+				pn.style.transition = '';
+			}
 		};
-		elasticRaf = requestAnimationFrame(frame);
+		frame(t0); // its first shape right away, so the whole menu never shows for a frame before the curve
 	};
 	const setMenu = (on) => {
 		const was = header.classList.contains('menu-open');
