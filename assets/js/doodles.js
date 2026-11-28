@@ -104,7 +104,7 @@ const PATHS = {
 const EMOJI = {
 	'🎂': 'cake', '💍': 'ring', '💬': 'chat', '✍️': 'pen', '✍': 'pen', '🎉': 'party', '✨': 'sparkle', '✏️': 'pencil', '✏': 'pencil', '🧳': 'suitcase',
 	'🎵': 'music', '🎶': 'music', '🍿': 'popcorn', '☀️': 'sun', '🌙': 'moon', '🧡': 'heart', '❤️': 'heart', '❤': 'heart', '♥': 'heart', '💕': 'heart',
-	'📸': 'camera', '📷': 'camera', '🎲': 'dice', '👗': 'dress', '🍽️': 'dinner', '🍽': 'dinner', '🛵': 'scooter', '🎬': 'clapper', '📺': 'tv', '🔒': 'lock', '🔐': 'lock',
+	'📸': 'camera', '📷': 'camera', '🎲': 'dice', '👗': 'dress', '🍽️': 'dinner', '🍽': 'dinner', '🛵': 'scooter', '🎬': 'clapper', '📺': 'tv', '🏠': 'house', '🔒': 'lock', '🔐': 'lock',
 	'🧽': 'eraser', '🗑️': 'trash', '✈️': 'plane', '🔄': 'refresh', '🔀': 'shuffle', '📌': 'pin', '⚙️': 'gear', '💌': 'letter', '🤝': 'handshake',
 	'🗓️': 'calendar', '⭐': 'star', '👋': 'wave', '👀': 'eyes', '🙈': 'shy', '🎁': 'gift', '📞': 'phone', '🌧️': 'rain', '☕': 'coffee', '🚆': 'train', '🚌': 'bus', '🎟️': 'ticket', '🎟': 'ticket', '🎤': 'music', '🧾': 'scroll', '📍': 'pin', '📮': 'mailbox', '🧲': 'magnet', '🔧': 'wrench', '🛠️': 'wrench', '💧': 'drop', '🚶': 'walk',
 	'👫': 'couple', '👨‍👩‍👧‍👦': 'family', '📖': 'book', '📜': 'scroll', '👰': 'bride', '👶': 'baby', '🍼': 'bottle', '🦁': 'lion', '🦖': 'dino', '🐣': 'chick',
