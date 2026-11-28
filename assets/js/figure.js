@@ -79,7 +79,47 @@ const LOOKS = {
 		const pts = [...along(88, 212, 366, 360, 15, 14), ...Array.from({ length: 7 }, (_, i) => [154 + (i % 2 ? 1 : -1), 384 + i * 9])];
 		return pts.map(([x, y]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.8" fill="#fffaf0" stroke="#b9ab95" stroke-width="1"/>`).join(''); } },
 	'butterfly-anklet': { over: () => `${chain('M78 766 C86 780 100 780 108 766', 2.6)}${butterfly(92, 778, 0.8)}${butterfly(101, 774, 0.6)}` },
-	'coin-anklet': { over: () => `${chain('M162 776 C170 790 180 790 188 776', 2.6)}${coins(along(164, 186, 784, 784, 5, 3), 2.8)}` }
+	'coin-anklet': { over: () => `${chain('M162 776 C170 790 180 790 188 776', 2.6)}${coins(along(164, 186, 784, 784, 5, 3), 2.8)}` },
+	/* a black bodystocking of big oval holes from the bust to the ankles, on two thin straps; her arms stay bare */
+	'fishnet-body': { cover: 1, wear: () => `<defs><pattern id="sx-fishnet" width="22" height="28" patternUnits="userSpaceOnUse"><rect width="22" height="28" fill="#111"/><ellipse cx="11" cy="14" rx="8.4" ry="11.6" fill="${SKIN}"/></pattern></defs>
+		<rect x="0" y="232" width="${W}" height="560" fill="url(#sx-fishnet)" mask="url(#sx-her)"/>
+		<path d="${BRA}" fill="url(#sx-fishnet)" stroke="#111" stroke-width="3"/>
+		<path d="${STRAPS}" stroke="#111" stroke-width="2.4" fill="none"/>` },
+	/* the nurse: a white halter mini-dress trimmed in red with a red-cross apron, open at the waist, white stockings on
+	   garters, a red choker and the cap with its cross */
+	nurse: { cover: 1, wear: () => {
+		const red = '#c62828', line = '#c9c2b8';
+		return `<path d="M118 170 L100 236 M172 170 L206 240" stroke="#fff" stroke-width="5"/>
+		<rect x="0" y="536" width="${W}" height="262" fill="#ffffff" opacity=".72" mask="url(#sx-her)"/>
+		<rect x="0" y="532" width="${W}" height="14" fill="#ffffff" mask="url(#sx-her)"/>
+		<path d="M104 468 L106 538 M126 470 L126 538 M184 470 L184 538 M206 466 L204 538" stroke="#fff" stroke-width="2.4"/>
+		<path d="M86 236 C110 226 140 240 156 262 C170 240 196 226 214 240 C216 262 208 278 202 290 C198 300 196 310 198 318 C210 360 220 420 226 468 L84 468 C90 420 100 360 100 318 C100 310 98 300 96 290 C88 278 82 262 86 236 Z" fill="#ffffff" stroke="${line}" stroke-width="1.6"/>
+		<ellipse cx="104" cy="326" rx="9" ry="20" fill="${SKIN}"/><ellipse cx="198" cy="326" rx="9" ry="20" fill="${SKIN}"/>
+		<path d="M86 238 C110 228 140 242 156 264 C170 242 196 228 214 242" fill="none" stroke="${red}" stroke-width="4"/>
+		<path d="M226 468${ruffle(226, 84, 468, 10, 9)}" fill="none" stroke="${red}" stroke-width="3"/>
+		<path d="M118 396 L194 396 L198 452 C176 462 136 462 114 452 Z" fill="#fff" stroke="${red}" stroke-width="3"/>
+		<path d="M150 410 L162 410 L162 418 L170 418 L170 430 L162 430 L162 438 L150 438 L150 430 L142 430 L142 418 L150 418 Z" fill="${red}"/>
+		<path d="M132 156 C144 166 160 166 172 154" fill="none" stroke="${red}" stroke-width="6" stroke-linecap="round"/>`; },
+		head: () => '<path d="M122 46 L190 46 L182 20 L130 20 Z" fill="#fff" stroke="#c9c2b8" stroke-width="1.6"/><path d="M152 25 L160 25 L160 30 L165 30 L165 37 L160 37 L160 42 L152 42 L152 37 L147 37 L147 30 L152 30 Z" fill="#c62828"/>' },
+	/* the French maid: a black satin body with white lace cups, a frilled white apron and its bow, a frilly headband */
+	maid: { cover: 1, wear: () => {
+		const k = '#1b1b1f', lace = '#f4efe8';
+		return `<path d="${SUIT}" fill="${k}"/>
+		<path d="${BRA}" fill="${lace}" stroke="#bdb3a6" stroke-width="1.6"/>
+		<path d="M90 248 C110 266 134 266 148 256 M164 256 C178 266 198 266 210 250" fill="none" stroke="#bdb3a6" stroke-dasharray="2 3"/>
+		<path d="${STRAPS}" stroke="${k}" stroke-width="4" fill="none"/>
+		<path d="M100 318 C130 330 170 330 198 318 L199 332 C170 344 130 344 100 332 Z" fill="${lace}"/>
+		<path d="M110 334 L196 334 L208 450${ruffle(208, 98, 450, 9, 9)} Z" fill="#ffffff" stroke="#bdb3a6" stroke-width="1.4"/>
+		<path d="M150 334 L132 318 L132 350 Z M150 334 L168 318 L168 350 Z" fill="${lace}" stroke="#bdb3a6" stroke-width="1"/>`; },
+		head: () => `<path d="M114 52 C128 28 178 28 192 54" fill="none" stroke="#f4efe8" stroke-width="8" stroke-linecap="round"/><path d="M118 44${ruffle(118, 188, 44, 7, -8)}" fill="none" stroke="#bdb3a6" stroke-width="1.2"/>` }
+};
+
+/* every piece that can be drawn, by the part it goes on: a wish names one of these as its `look` to be drawn on the figure */
+export const DRAWN = {
+	her: { body: [['gold-chains', 'طقم السلاسل', 'Gold chains'], ['dance', 'بدلة رقص', 'Belly-dance set'], ['ruffle-dress', 'فستان أحمر بكشكشة', 'Red ruffle dress'], ['bride', 'طقم عروسة أبيض', 'White bride set'], ['lace-body', 'بودي دانتيل', 'Lace body'], ['harness', 'طقم جلد', 'Leather harness'], ['fishnet-body', 'بودي ستوكينج شبك', 'Fishnet bodystocking'], ['nurse', 'بدلة ممرضة', 'Nurse costume'], ['maid', 'بدلة خدامة', 'French maid']],
+		leg: [['thigh-chain', 'سلسلة فخد', 'Thigh chain']], ankle: [['butterfly-anklet', 'خلخال فراشات', 'Butterfly anklet'], ['coin-anklet', 'خلخال عملات', 'Coin anklet']],
+		wrist: [['cuffs', 'قيود', 'Cuffs']], hand: [['cymbals', 'صاجات', 'Finger cymbals']], under: [['pearl-thong', 'بانتي لولي', 'Pearl thong']] },
+	him: { body: [['silk-pajama', 'بيجامة ساتان', 'Satin pyjamas'], ['silk-robe', 'روب حرير', 'Silk robe'], ['white-shirt', 'قميص أبيض', 'White shirt']], under: [['red-boxers', 'بوكسر أحمر', 'Red boxers']], neck: [['bow-tie', 'بابيون', 'Bow tie']], wrist: [['watch', 'ساعة', 'Watch']] }
 };
 
 /* ---- him: the trapezoid man from the men's body-types chart (cut out, the red trapezoid painted out, his black briefs

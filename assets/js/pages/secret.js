@@ -2,7 +2,7 @@ import { L, Y, t, esc, App, $, $$, qs, longDate, REDUCE, getKey, pageHead } from
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { deriveKek, importMaster, open, fromB64 } from '../core.js';
-import { figureSVG, anchor } from '../figure.js';
+import { figureSVG, anchor, DRAWN } from '../figure.js';
 import { shrinkPhoto as shrinkImage } from './trips.js';
 
 /* Our room: the page behind a PIN, in «ليالينا» (and a faint lock at the foot of Settings).
@@ -512,7 +512,10 @@ async function room(main, s, data, lock) {
 							<label class="f f--grow"><span>${L('لينك المحل (اختياري)', 'Shop link (optional)')}</span><input name="link" type="url" dir="ltr" maxlength="400" placeholder="https://"></label>
 							<label class="f"><span>${L('السعر (اختياري)', 'Price (optional)')}</span><input name="price" dir="auto" maxlength="20"></label>
 						</div>
-						<label class="f"><span>${L('صورتها', 'Its picture')}</span><input name="photo" type="file" accept="image/*"></label>
+						<div class="f-row">
+							<label class="f f--grow"><span>${L('صورتها', 'Its picture')}</span><input name="photo" type="file" accept="image/*"></label>
+							${(DRAWN[wearer]?.[pid] || []).length ? `<label class="f"><span>${L('تتلبس على الرسمة كـ', 'Drawn on the figure as')}</span><select name="look"><option value="">${L('مش مرسومة', 'Not drawn')}</option>${DRAWN[wearer][pid].map(([v, ar, en]) => `<option value="${v}">${esc(L(ar, en))}</option>`).join('')}</select></label>` : ''}
+						</div>
 						<p class="form-msg" id="sx-wish-msg" role="status"></p>
 						<div class="f-actions"><button type="submit" class="btn btn--coral">${L('ضيفها للي نفسنا فيه ♥', 'Add it to our wishes ♥')}</button></div>
 					</form>
@@ -527,7 +530,7 @@ async function room(main, s, data, lock) {
 				try {
 					msg.textContent = L('بنحفظ…', 'Saving…');
 					const ph = f.photo.files[0] ? await live.putSketch(await shrinkImage(f.photo.files[0], 900)) : undefined;
-					const x = { id: live.newId(), who: wearer, part: pid, text: f.text.value.trim(), link: f.link.value.trim() || undefined, price: f.price.value.trim() || undefined, photo: ph, by: live.me(), at: Date.now() };
+					const x = { id: live.newId(), who: wearer, part: pid, text: f.text.value.trim(), link: f.link.value.trim() || undefined, price: f.price.value.trim() || undefined, photo: ph, look: f.look?.value || undefined, by: live.me(), at: Date.now() };
 					mine = await live.save('secret', (d) => { (d.wish = d.wish || []).push(x); });
 					dressed[pid] = x.id;
 					open = '';
