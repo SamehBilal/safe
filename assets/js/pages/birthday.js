@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import { sky } from '../bdsky.js';
 import { fly } from '../airmsg.js';
 import { pastBirthdays, wallHTML, tickerHTML, startTicker, gameHTML, balloonGame, filmstrip } from '../bdmore.js';
+import { hang } from '../lights.js';
 
 /* Birthdays: each of us, with how long until the next one and the age we're turning. The cake below is for
    whoever is next (or whose day it is today, or whoever you tap): blow out the candles, get confetti.
@@ -123,6 +124,8 @@ export default {
 			: ['HAPPY', 'BIRTHDAY', ...(p ? [name.toUpperCase()] : [])];
 		const box = $('#bd-sky', main);
 		const stopSky = box ? sky(box, lines) : () => {};
+		/* in the week of a birthday, a string of little lights goes up across the sky, and comes down after (lights.js) */
+		if (box && p && p.days <= 7) hang(box, { top: 0 });
 		/* a little plane crosses the sky towing the countdown (or, on the day, the wish), as Ma5a's «air message» did for a sister */
 		const wish = p ? L(`كل سنة و${name} ${p.member.female ? 'طيبة' : 'طيب'}`, `Happy birthday, ${name}`) : '';
 		const planes = [];

@@ -1,10 +1,11 @@
-import { L, Y, esc, pageHead, related, App, $, $$, num, REDUCE, sleep, hydrate } from '../shell.js';
+import { L, Y, esc, pageHead, related, App, $, $$, num, REDUCE, sleep, hydrate, occasions } from '../shell.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOVERNORATES } from '../egypt.js';
 import { setupNote } from './journal.js';
 import { hangWall } from '../hang.js';
 import { loadTrips, coverOf, coverHTML, mapSVG, paintMap, govName, anniversary, marriedYear, shrinkPhoto, nextAnniversary } from './trips.js';
+import { hang } from '../lights.js';
 
 /* Our anniversaries, all on one page (it used to be two: «رحلات عيد جوازنا» and «عيد جوازنا»).
    Band: two rings rolling together, and the years married. Then the anniversary trips — every year a new governorate,
@@ -109,6 +110,8 @@ export default {
 	},
 
 	async after(main, s) {
+		/* in the week of our anniversary, a string of little lights goes up over the page, and comes down after (lights.js) */
+		if (occasions(s).some((o) => o.kind === 'anniversary' && o.days <= 7)) hang($('.ph', main), { top: 0 });
 		const svg = $('.eg', main);
 		const side = $('#tr-side', main);
 		const list = $('#tr-list', main);

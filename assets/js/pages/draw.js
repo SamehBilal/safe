@@ -5,6 +5,7 @@ import { openSketch } from '../sketch.js';
 import { setupNote } from './journal.js';
 import { initOf } from '../defaults.js';
 import { shrinkPhoto } from './trips.js';
+import { hang } from '../lights.js';
 
 /* Tonight's draw, all on one page: a tab for every kind of night (outfit, dinner out, delivery, a film, a game, something
    sweet, a day out, something with the boys). The tab picks the wheel, our list for it and the nights we've logged; the
@@ -97,6 +98,8 @@ export default {
 	},
 
 	async after(main, s) {
+		/* a string of little warm lights over tonight's sky, for an evening in (lights.js) */
+		hang($('.ph', main), { top: 0 });
 		let k = DRAW_KINDS.find((x) => x.id === qs('k')) || DRAW_KINDS[0];
 		let data = await live.load('draw', init);
 		const fill = () => { data.lists = { ...init().lists, ...(data.lists || {}) }; data.history = data.history || []; };

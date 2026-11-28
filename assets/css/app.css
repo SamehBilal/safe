@@ -898,3 +898,22 @@ a.am-flag { pointer-events: auto; cursor: pointer; }
 @keyframes am-prop { from { transform: scaleY(1); } 50% { transform: scaleY(0.15); } to { transform: scaleY(1); } }
 @keyframes am-wave { from { transform: skewY(-1.6deg) scaleY(0.97); } to { transform: skewY(1.4deg) scaleY(1.02); } }
 @media (prefers-reduced-motion: reduce) { .am-bob, .am-prop, .am-flag { animation: none; } }
+
+/* ---------- a string of little lights (lights.js) ---------- */
+.lt { position: absolute; inset-inline: 0; height: var(--h); pointer-events: none; z-index: 4; }
+.lt-wire { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.lt-wire path { fill: none; stroke: var(--ink, #37353f); stroke-width: 1.4; vector-effect: non-scaling-stroke; stroke-linecap: round; opacity: .8; }
+.lt-b { position: absolute; left: var(--x); top: var(--y); width: 10px; height: 19px; margin-left: -5px; transform-origin: 50% 0; rotate: var(--r); }
+/* the socket on the wire, then the bulb with its glow */
+.lt-b::before { content: ""; position: absolute; top: 0; left: 2px; width: 6px; height: 5px; border-radius: 1px; background: var(--ink, #37353f); }
+.lt-b::after { content: ""; position: absolute; top: 4px; left: 0; width: 10px; height: 15px; border-radius: 45% 45% 50% 50% / 40% 40% 60% 60%; background: radial-gradient(circle at 50% 38%, #fffdf2 0 20%, var(--c) 62%, color-mix(in srgb, var(--c) 70%, #e0a030)); box-shadow: 0 0 0 1px rgba(55, 53, 63, .4), 0 0 8px 2px var(--c), 0 0 20px 5px color-mix(in srgb, var(--c) 50%, transparent); animation: lt-glow var(--t) ease-in-out var(--d) infinite; }
+.lt-b.is-wink::after { animation-name: lt-wink; }
+.lt.is-still .lt-b::after { animation: none; }
+@keyframes lt-glow { 0%, 100% { opacity: 1; filter: brightness(1.08); } 45% { opacity: var(--lo); filter: brightness(.85); box-shadow: 0 0 0 1px rgba(55, 53, 63, .4), 0 0 3px 0 var(--c); } }
+@keyframes lt-wink { 0%, 70%, 100% { opacity: 1; } 76%, 84% { opacity: .18; box-shadow: none; } 90% { opacity: .85; } }
+@media (prefers-reduced-motion: reduce) { .lt-b::after { animation: none; } }
+/* in the dark, a string hangs under the top bar on every page (not where the page has its own) */
+.lt--hd { display: none; top: 100% !important; }
+:root[data-theme="dark"] .lt--hd { display: block; }
+:root body:has(main .lt) .lt--hd { display: none; }
+.ph:has(> .lt) { padding-top: 30px; }

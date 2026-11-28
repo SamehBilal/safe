@@ -2,6 +2,7 @@ import { L, Y, T, esc, pageHead, related, App, $, $$, num, mediaURL } from '../s
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
+import { hang } from '../lights.js';
 
 /* What we've watched together, laid out like Olivia Ng's «Netflix Binge: Top Stats» (codepen.io/oliviale): one
    poster card per film or series, dropped in scattered spots that overlap a little rather than in rows, with the
@@ -117,6 +118,8 @@ export default {
 	},
 
 	async after(main, s) {
+		/* a string of little warm lights over the page, the lights on for movie night (lights.js) */
+		hang($('.ph', main), { top: 0 });
 		const board = $('#mv-board', main);
 		let data = await live.load('movies');
 		const name = (w) => T(w === 'him' ? s.him : s.her);

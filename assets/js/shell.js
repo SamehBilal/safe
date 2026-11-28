@@ -9,6 +9,7 @@ import { nightScene } from './scene.js';
 import { doodle, doodleDefs } from './doodles.js';
 import { initPWA, pwaChrome } from './pwa.js';
 import * as radio from './radio.js';
+import { lightsHTML } from './lights.js';
 
 const KEY = 'us.key';
 const LANG = 'us.lang';
@@ -1484,6 +1485,8 @@ function renderChrome() {
 			${megaHTML(s)}
 			<div class="tools">${addHTML()}<a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
+	// in the dark, a string of little warm lights hangs under the top bar (lights.js; hidden by CSS in the light, and on a page with its own)
+	header.insertAdjacentHTML('beforeend', lightsHTML(innerWidth, { cls: 'lt--hd', sag: 14 }));
 	/* the phone menu drops like an elastic curtain: its bottom edge is a curve whose middle leads as it falls, then
 	   overshoots, springs back and settles; closing pulls it up with the middle trailing behind. Drawn as a path on the
 	   panel's clip, so what's inside stays live; with «reduce motion» it simply fades as before. */

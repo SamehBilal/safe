@@ -4,6 +4,7 @@ import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { shrinkPhoto } from './trips.js';
 import { today, daysTo, holyDays, ramadanDay, hijri, inDays } from '../occ.js';
+import { hang, eidToday } from '../lights.js';
 
 /* Ramadan and the two Eids: above the title, fanoos lanterns swing on their strings under a crescent moon, with how
    long until the next one (or which day of Ramadan it is). Then the countdowns, this year's traditions to tick off,
@@ -92,6 +93,8 @@ export default {
 	},
 
 	async after(main, s) {
+		/* little lights along the lanterns' own wire, like a balcony in Ramadan — in colour on the days of Eid (lights.js) */
+		hang($('#rm-band', main), { swags: 1, sag: 10.7, top: 3.3, wire: false, colors: eidToday() ? 'eid' : 'warm' });
 		const kids = (s.family?.members || []).filter((m) => m.kid);
 		const kidName = (id) => (id === 'other' ? L('حد تاني', 'Someone else') : App.t(kids.find((k) => k.id === id)?.name || ''));
 		const year = hijri(today()).y;           // traditions and Eid money go by the Hijri year
