@@ -1,6 +1,8 @@
 import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, REDUCE, hydrate, icon } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { fold } from './search.js';
+import * as live from '../live.js';
+import { BOXES, loadPicks, pickPhotos, markFavs, shuffled } from '../picks.js';
 
 /* Our photos in piles, after Codrops' «Adaptive Thumbnail Pile Effect» (Stapel, demo 3: a wide gutter, a little delay
    between photos and a random tilt). Every album, and every place on the map, is a pile of its photos with the top
@@ -79,6 +81,7 @@ function hero(ps) {
 			<div class="gh-btns">
 				<button class="btn btn--sm" type="button" id="gh-open">${doodle('dice', 18)} ${L('افتح كومة عشوائية', 'Open a random pile')}</button>
 				<button class="btn btn--sm btn--ghost" type="button" id="gh-more">${doodle('shuffle', 18)} ${L('صور تانية', 'Other photos')}</button>
+				${live.canWrite() ? `<button class="btn btn--sm btn--ghost" type="button" id="gh-pick">${doodle('heart', 18)} ${L('نقّي صورنا', 'Pick our photos')}</button>` : ''}
 			</div>
 		</div>
 	</div>`;
@@ -99,12 +102,14 @@ export default {
 				<button class="tp-back" type="button" id="tp-back" hidden aria-label="${L('رجوع للكوم', 'Back to the piles')}">${App.arrow === '←' ? '→' : '←'}</button>
 				<h2 class="tp-bar__h">${L('صورنا', 'Our photos')}</h2>
 				<p class="tp-bar__name" id="tp-name" aria-live="polite"></p>
+				${live.canWrite() ? `<button class="btn btn--sm btn--ghost" type="button" id="tp-pick" hidden>${doodle('heart', 18)} ${L('نقّي الكومة دي', 'Pick from this pile')}</button>` : ''}
 				<div class="tp-find" id="tp-find" role="search">
 					${filters(ps)}
 					<label class="tp-find__field">${icon('search', 18)}<input id="tp-q" type="search" autocomplete="off" spellcheck="false" dir="auto" placeholder="${esc(Y('دوّر في الألبومات…', 'دوّري في الألبومات…', 'Search the albums…'))}" aria-label="${esc(L('دوّر في الألبومات', 'Search the albums'))}"><span class="tp-find__n" id="tp-n" aria-live="polite"></span></label>
 				</div>
 			</div>
 			<ul class="tp" id="tp" aria-label="${L('كوم الصور', 'Piles of photos')}" data-show="${SHOW}">${ps.map((p, k) => p.items.slice(-SHOW).map((it, j) => itemHTML(p, k, p.items.length - Math.min(SHOW, p.items.length) + j, n++)).join('')).join('')}</ul>
+			<section class="pk" id="pk" hidden aria-labelledby="pk-h"><h2 class="sec__title" id="pk-h">${L('اللي نقّيناه', 'What we picked')}</h2><div class="pk-tabs" id="pk-tabs" role="tablist"></div><ul class="pk-grid" id="pk-grid"></ul></section>
 			${ps.length ? '' : `<p class="empty">${Y('حط صور في private/media وضيفها في gallery', 'حطي صور في private/media وضيفيها في gallery', 'Add photos to private/media and list them under gallery')}</p>`}
 		</div></section>
 		${related(['notes', 'atlas', 'chapters'])}`;
@@ -293,6 +298,37 @@ export default {
 		wallEl?.addEventListener('keydown', (e) => { const f = e.target.closest('[data-pile]'); if (f && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openFromTop(+f.dataset.pile); } }, on);
 		$('#gh-more', main)?.addEventListener('click', () => { wallEl.innerHTML = wall(ps); hydrate(wallEl); }, on);
 		$('#gh-open', main)?.addEventListener('click', () => { const pool = shown.length ? shown : ps.map((_, k) => k); openFromTop(pool[Math.floor(Math.random() * pool.length)]); }, on);
+
+		/* «نقّي صورنا»: the open pile (or twenty photos not picked yet, from anywhere) in the photo sorter; the favourites
+		   wear a heart on the piles, and what we picked is under the piles, a tab per box */
+		let picks = new Map(), pkTab = 'fav';
+		const pickBtn = $('#tp-pick', main), pk = $('#pk', main);
+		const where = new Map();
+		for (const p of ps) for (const it of p.items) if (!where.has(it.photo)) where.set(it.photo, it.caption || p.name);
+		const drawPicks = () => {
+			markFavs(grid, picks, '.tp__item');
+			const tabs = BOXES.filter((b) => b.id !== 'skip').map((b) => [b, [...picks].filter(([, x]) => x === b.id).map(([ph]) => ph)]);
+			pk.hidden = !tabs.some(([, l]) => l.length);
+			if (pk.hidden) return;
+			if (!tabs.find(([b, l]) => b.id === pkTab && l.length)) pkTab = tabs.find(([, l]) => l.length)[0].id;
+			$('#pk-tabs', main).innerHTML = tabs.filter(([, l]) => l.length).map(([b, l]) => `<button class="chip${b.id === pkTab ? ' is-on' : ''}" type="button" role="tab" aria-selected="${b.id === pkTab}" data-pk="${b.id}"><span style="color:${b.c}">${doodle(b.ic, 18)}</span>${L(b.ar, b.en)} <b>${l.length.toLocaleString(App.lang === 'ar' ? 'ar-EG' : 'en')}</b></button>`).join('');
+			const list = tabs.find(([b]) => b.id === pkTab)[1];
+			const g = $('#pk-grid', main);
+			g.innerHTML = list.map((ph, i) => `<li data-media-box style="--r:${((i * 37) % 9) - 4}deg">${img(ph, where.get(ph) || '', 'zoom')}${where.get(ph) ? `<small>${esc(where.get(ph))}</small>` : ''}</li>`).join('');
+			hydrate(g, true);
+		};
+		$('#pk-tabs', main).addEventListener('click', (e) => { const b = e.target.closest('[data-pk]'); if (b) { pkTab = b.dataset.pk; drawPicks(); } }, on);
+		const afterPick = (m) => { picks = m; drawPicks(); };
+		pickBtn?.addEventListener('click', () => { if (open >= 0) pickPhotos(ps[open].name, ps[open].items, afterPick); }, on);
+		$('#gh-pick', main)?.addEventListener('click', () => {
+			const all = ps.flatMap((p) => p.items.map((it) => ({ photo: it.photo, caption: it.caption || p.name })));
+			const fresh = all.filter((it) => !picks.has(it.photo));
+			pickPhotos(L('نقّي صورنا', 'Pick our photos'), shuffled(fresh.length ? fresh : all).slice(0, 20), afterPick);
+		}, on);
+		const mo = new MutationObserver(() => { if (pickBtn) pickBtn.hidden = open < 0; if (open >= 0) markFavs(grid, picks, '.tp__item'); });
+		mo.observe(back, { attributes: true, attributeFilter: ['hidden'] });
+		ac.signal.addEventListener('abort', () => mo.disconnect());
+		loadPicks().then(afterPick);
 
 		let w = grid.clientWidth;
 		const ro = new ResizeObserver(() => { if (Math.abs(grid.clientWidth - w) > 2) { w = grid.clientWidth; place(false); } });

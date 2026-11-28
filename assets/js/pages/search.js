@@ -8,7 +8,7 @@ import { doodle } from '../doodles.js';
    and each one opens its page scrolled to the right spot (#find=…, see findOnPage in shell.js).
    Left out on purpose: «أوضتنا» (behind its own PIN), the secret gift ideas, and the time-capsule letters. */
 
-const HIDDEN = new Set(['secret', 'giftideas', 'capsule']);
+const HIDDEN = new Set(['secret', 'giftideas', 'capsule', 'picks']);
 // which page shows each list (when it isn't the page of the same name)
 const PAGE_OF = { where: 'distances', spots: 'atlas', nexttrip: 'journeys', tree: 'family', trips: 'anniversaries', bucket: 'adventures', recipes: 'food', soundtrack: 'music' };
 const RECENT = 'us.search.recent';

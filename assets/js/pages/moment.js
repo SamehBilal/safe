@@ -2,6 +2,8 @@ import { L, Y, T, esc, img, fmtDate, longDate, yearsAgo, related, qs, App, links
 import { where, fit } from '../tilemap.js';
 import { doodle } from '../doodles.js';
 import { farthestMap, drawFarthest } from './distances.js';
+import * as live from '../live.js';
+import { loadPicks, pickPhotos, markFavs } from '../picks.js';
 
 /* One date on «حكايتنا».
    It opens like Codrops' «Polaroid Stack to Grid» (tympanus.net/codrops/?p=26096): the title on its own screen and the
@@ -201,6 +203,7 @@ export default {
 					const r = rnd(n, 1) * 14 - 7, dx = rnd(n, 2) * 14 - 7, dy = rnd(n, 3) * 14 - 7;
 					return `<figure class="snap" data-media-box style="--r:${r.toFixed(1)}deg;--dx:${dx.toFixed(1)}px;--dy:${dy.toFixed(1)}px;--i:${n % 18}">${img(p.photo, App.t(p.caption), 'zoom')}<figcaption>${p.caption ? T(p.caption) : esc(capOf(x, n))}</figcaption></figure>`;
 				}).join('')}</div>
+				${photos.length > 1 && live.canWrite() ? `<p class="pk-sort"><button class="btn btn--sm btn--ghost" type="button" id="mo-pick">${doodle('heart', 18)} ${Y('نقّي صور اليوم ده', 'نقّي صور اليوم ده', 'Pick this day’s photos')}</button></p>` : ''}
 			</section>` : ''}
 			<div class="wrap narrow">
 				${linksOut(x)}
@@ -226,6 +229,12 @@ export default {
 		const x = (s.timeline || []).find((m) => m.id === qs('id'));
 		if (isFar(s, x)) drawFarthest(main, s);
 		drawPlace(main);
+		/* our favourites of the day wear a heart; «نقّي صور اليوم ده» opens them in the photo sorter */
+		const wall = $('#mo-wall', main);
+		if (wall) {
+			loadPicks().then((m) => markFavs(wall, m, '.snap'));
+			$('#mo-pick', main)?.addEventListener('click', () => pickPhotos(App.t(x.title), photosOf(x).map((p) => ({ photo: p.photo, caption: p.caption ? App.t(p.caption) : '' })), (m) => markFavs(wall, m, '.snap')));
+		}
 		/* a program that can run: the button opens a console under the code and runs it there */
 		$('#mo-run', main)?.addEventListener('click', async (e) => {
 			e.currentTarget.hidden = true;

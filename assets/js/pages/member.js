@@ -1,4 +1,5 @@
 import { L, T, esc, img, age, longDate, parseDate, daysBetween, num, fmtDate, pageHead, related, qs, App, $, hydrate } from '../shell.js';
+import { whoGame, canWho } from '../photogames.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { relative } from '../tree.js';
@@ -107,6 +108,7 @@ export default {
 			${m.text ? `<p class="lede reveal">${T(m.text)}</p>` : ''}
 			${App.t(m.story || '').split(/\n{2,}/).filter(Boolean).map((p) => `<p class="prose reveal">${esc(p)}</p>`).join('')}
 			${chapter ? `<a class="otd reveal" href="chapter.html?id=${esc(chapter.id)}"><span class="otd__ic">${doodle(chapter.icon, 28)}</span><span><small>${L('حكاية اليوم ده', 'The story of that day')}</small><b>${T(chapter.title)}</b></span><span aria-hidden="true">${App.arrow}</span></a>` : ''}
+			${m.kid && m === members.find((x) => x.kid) && canWho(s) ? `<button class="otd reveal mb-play" type="button" id="mb-who"><span class="otd__ic">${doodle('lion', 28)}</span><span><small>${L('لعبته', 'His game')}</small><b>${L('صور مين؟ — العب', 'Who’s in the photo? — play')}</b></span><span aria-hidden="true">${App.arrow}</span></button>` : ''}
 			${list.length ? `<h2 class="sec__title mb-h">${she ? L('أيامها في حكايتنا', 'Her days in our story') : L('أيامه في حكايتنا', 'His days in our story')}</h2>
 				<div class="mb-days" id="mb-days">${list.map(day).join('')}</div>${list.length > SHOW ? `<p class="mb-more-wrap">${more(list.length, 'days')}</p>` : ''}` : ''}
 		</div>
@@ -120,6 +122,7 @@ export default {
 	},
 
 	async after(main, s) {
+		$('#mb-who', main)?.addEventListener('click', () => whoGame(s));
 		/* «شوف الكل»: the rest of the days or the photos */
 		main.addEventListener('click', (e) => {
 			const b = e.target.closest('[data-more]');

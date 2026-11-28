@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { loadTrips, govName } from './trips.js';
 import { citiesOf } from './atlas.js';
+import { yearGame, canYear } from '../photogames.js';
 
 /* Year by year: our story one year at a time.
    The top: «نهر السنين» — every year a bar as tall as how full it was, with what changed our life marked over it (the
@@ -32,6 +33,7 @@ export default {
 				<h1 class="yt-t">${L('سنة بسنة', 'Year by year')}</h1>
 				<p class="yt-sub">${L('حكايتنا سنة ورا سنة: اللي حصل، اللي اتغير، وصور كل سنة', 'Our story one year at a time: what happened, what changed, and each year’s photos')}</p>
 				<ul class="yt-facts" id="yt-facts"></ul>
+				${canYear(s) ? `<p class="yt-play"><button class="btn btn--sm" type="button" id="yt-game">${doodle('dice', 18)} ${L('أي سنة؟ — لعبة الصور', 'Which year? — the photo game')}</button></p>` : ''}
 			</div>
 			<div class="yt-river" id="yt-river" role="tablist" aria-label="${L('السنين', 'The years')}"><p class="empty">${L('بنجمّع السنين…', 'Gathering the years…')}</p></div>
 			<p class="yt-hint">${doodle('pin', 14)} ${L('كل عمود سنة، وطوله قد إيه كانت مليانة — دوس على أي سنة', 'Each bar is a year, as tall as it was full — tap any year')}</p>
@@ -41,6 +43,7 @@ export default {
 	},
 
 	async after(main, s) {
+		$('#yt-game', main)?.addEventListener('click', () => yearGame(s));
 		const none = { items: [] };
 		const [trips, spots, ourfirsts, firsts, journal, yearly, anniv] = await Promise.all([
 			loadTrips(s).catch(() => []), live.load('spots').catch(() => none), live.load('ourfirsts').catch(() => none),

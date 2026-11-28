@@ -3,6 +3,7 @@ import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { shrinkPhoto } from './trips.js';
+import { yearGame, whoGame, canYear, canWho } from '../photogames.js';
 
 /* Our games: every game night — cards, dominoes, backgammon, PlayStation — who won, the score that matters (who's ahead
    this year), and photos of the night; and the video games we played together, each with its box and photos of us
@@ -78,10 +79,20 @@ export default {
 				<div class="games__grid" id="gm-played-grid"></div>
 			</div>
 		</div></section>
+		${canYear(s) || canWho(s) ? `<section class="sec" aria-labelledby="pg-h"><div class="wrap">
+			<h2 class="sec__title" id="pg-h">${L('ألعاب بصورنا', 'Games with our photos')}</h2>
+			<p class="sec__sub">${L('صورة في النص وأربع صناديق حواليها: اسحبها، ارميها، أو دوس السهم', 'A photo in the middle and four boxes round it: drag it, flick it, or press the arrow')}</p>
+			<div class="pg">
+				${canYear(s) ? `<button class="pg__card" type="button" id="pg-year" style="--c:#0e6990"><span class="pg__ic">${doodle('calendar', 34)}</span><b>${L('أي سنة؟', 'Which year?')}</b><small>${L('عشر صور من حكايتنا — كل واحدة من أنهي سنة؟', 'Ten photos from our story — which year is each from?')}</small></button>` : ''}
+				${canWho(s) ? `<button class="pg__card" type="button" id="pg-who" style="--c:#e39b2d"><span class="pg__ic">${doodle('lion', 34)}</span><b>${L('صور مين؟', 'Who’s in the photo?')}</b><small>${L(`لعبة ${App.t(kids[0]?.name || { ar: 'فهد', en: 'Fahd' })}: فهد، ماما، بابا وماما، ولا كلنا؟`, `${App.t(kids[0]?.name || { ar: 'فهد', en: 'Fahd' })}’s game: him, Mama, Mama and Baba, or all of us?`)}</small></button>` : ''}
+			</div>
+		</div></section>` : ''}
 		${related(['draw', 'movies', 'chores'])}`;
 	},
 
 	async after(main, s) {
+		$('#pg-year', main)?.addEventListener('click', () => yearGame(s));
+		$('#pg-who', main)?.addEventListener('click', () => whoGame(s));
 		const kids = (s.family?.members || []).filter((m) => m.kid);
 		const nameOf = (id) => (id === 'him' ? App.t(s.him) : id === 'her' ? App.t(s.her) : id === 'draw' ? L('تعادل', 'Draw') : App.t(kids.find((k) => k.id === id)?.name || ''));
 		const players = ['him', 'her', ...kids.map((k) => k.id)];

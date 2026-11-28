@@ -1775,6 +1775,7 @@
 .yt-t { margin: 0; font: 400 clamp(2.8rem, 9vw, 5rem)/1.05 var(--f-display, var(--f-label)); color: var(--blue-ink, #0e6990); text-shadow: 3px 3px 0 var(--hl-pink, #fde3e0); }
 .yt-sub { margin: 0; max-width: 560px; color: var(--muted); }
 .yt-facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+.yt-play { margin: 14px 0 0; display: flex; justify-content: center; }
 .yt-facts li { display: grid; justify-items: center; min-width: 104px; padding: 10px 14px; background: var(--card); border: 1.5px solid var(--ink, #37353f); border-radius: 12px; box-shadow: calc(var(--bujo-x, 1) * 3px) 3px 0 var(--ink, #37353f); animation: yr-in .45s ease-out both; animation-delay: calc(var(--i) * 80ms); }
 .yt-facts b { font: 400 1.9rem/1 var(--f-label); color: var(--coral-deep, #d9534f); }
 .yt-facts span { font-size: .78rem; font-weight: 700; color: var(--muted); }
