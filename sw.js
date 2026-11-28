@@ -6,7 +6,7 @@
    VERSION is rewritten by tools/build.mjs on every build. */
 'use strict';
 
-var VERSION = 'us-44df02a910';
+var VERSION = 'us-5e7dbdb98e';
 var SHELL = [
 	'./',
 	'adventures.html',
@@ -45,6 +45,7 @@ var SHELL = [
 	'health.html',
 	'hosting.html',
 	'index.html',
+	'journal-test.html',
 	'journal.html',
 	'journey.html',
 	'journeys.html',
@@ -52,10 +53,12 @@ var SHELL = [
 	'meals.html',
 	'member.html',
 	'minute.html',
+	'moment-test.html',
 	'moment.html',
 	'movies.html',
 	'music.html',
 	'nokta.html',
+	'notes-test.html',
 	'notes.html',
 	'numbers.html',
 	'offline.html',
