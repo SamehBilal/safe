@@ -61,6 +61,8 @@ export function fly(host, text, opt = {}) {
 			const ms = Math.min(18000, Math.max(7000, (Math.abs(to - from) / 110) * 1000));
 			anim = train.animate([{ transform: `translateX(${from}px)` }, { transform: `translateX(${to}px)` }], { duration: ms, easing: 'linear', fill: 'both' });
 		}
+		// hidden until it's off to the side (or fading in), so it never shows where it waits before the first pass
+		train.style.visibility = 'visible';
 		anim.onfinish = () => {
 			if (--left > 0) timer = setTimeout(pass, opt.gap ?? 2500);
 			else stop();

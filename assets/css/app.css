@@ -876,8 +876,9 @@ button.otd { width: 100%; font: inherit; text-align: start; cursor: pointer; }
 }
 
 /* ---------- the plane with the banner (airmsg.js) ---------- */
-.am { inset-inline: 0; height: 74px; overflow: hidden; pointer-events: none; }
-.am-train { position: absolute; top: 0; left: 0; will-change: transform; }
+/* the lane clips only sideways (where the plane comes in and leaves), with room above and below for the bob and the flutter */
+.am { inset-inline: 0; height: 120px; margin-top: -24px; overflow: hidden; overflow: clip visible; pointer-events: none; }
+.am-train { position: absolute; top: 24px; left: 0; will-change: transform; visibility: hidden; }
 .am-bob { display: flex; flex-direction: row-reverse; align-items: center; animation: am-bob 2.6s ease-in-out infinite; }
 .am--rtl .am-bob { flex-direction: row; }
 .am-plane { width: 92px; height: 46px; flex: none; transform: scaleX(-1); filter: drop-shadow(2px 3px 0 rgba(55, 53, 63, .18)); }
@@ -895,5 +896,5 @@ button.otd { width: 100%; font: inherit; text-align: start; cursor: pointer; }
 a.am-flag { pointer-events: auto; cursor: pointer; }
 @keyframes am-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 7px; } }
 @keyframes am-prop { from { transform: scaleY(1); } 50% { transform: scaleY(0.15); } to { transform: scaleY(1); } }
-@keyframes am-wave { from { transform: skewY(-2.5deg) scaleY(0.97); } to { transform: skewY(2deg) scaleY(1.02); } }
+@keyframes am-wave { from { transform: skewY(-1.6deg) scaleY(0.97); } to { transform: skewY(1.4deg) scaleY(1.02); } }
 @media (prefers-reduced-motion: reduce) { .am-bob, .am-prop, .am-flag { animation: none; } }
