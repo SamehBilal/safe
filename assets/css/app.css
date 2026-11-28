@@ -874,3 +874,26 @@ button.otd { width: 100%; font: inherit; text-align: start; cursor: pointer; }
 	.srt-pile { height: max(150px, min(100cqh - 2 * (var(--bw) * 0.84 + 46px) - 12px, (100cqw - 48px) * 1.325, 560px)); }
 	.srt-guide { display: none; }
 }
+
+/* ---------- the plane with the banner (airmsg.js) ---------- */
+.am { inset-inline: 0; height: 74px; overflow: hidden; pointer-events: none; }
+.am-train { position: absolute; top: 0; left: 0; will-change: transform; }
+.am-bob { display: flex; flex-direction: row-reverse; align-items: center; animation: am-bob 2.6s ease-in-out infinite; }
+.am--rtl .am-bob { flex-direction: row; }
+.am-plane { width: 92px; height: 46px; flex: none; transform: scaleX(-1); filter: drop-shadow(2px 3px 0 rgba(55, 53, 63, .18)); }
+.am--rtl .am-plane { transform: none; }
+.am-prop { transform-box: fill-box; transform-origin: center; animation: am-prop 0.12s linear infinite; }
+.am-rope { width: 44px; height: 18px; flex: none; margin-top: 4px; transform: scaleX(-1); }
+.am--rtl .am-rope { transform: none; }
+.am-flag { --notch: 14px; display: block; flex: none; margin-top: 6px; color: #2b2b33; text-decoration: none; transform-origin: 0 50%; animation: am-wave 1.4s ease-in-out infinite alternate;
+	filter: drop-shadow(1.3px 0 0 var(--ink)) drop-shadow(-1.3px 0 0 var(--ink)) drop-shadow(0 1.3px 0 var(--ink)) drop-shadow(0 -1.3px 0 var(--ink)) drop-shadow(3px 3px 0 var(--hl-pink, #f9a3a8)); }
+.am:not(.am--rtl) .am-flag { transform-origin: 100% 50%; }
+.am-cloth { display: flex; align-items: center; gap: 6px; max-width: min(74vw, 560px); padding: 7px calc(var(--notch) + 12px) 5px 16px; font: 700 clamp(18px, 2.4vw, 24px)/1.15 var(--f-hand); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: #fffdf8 repeating-linear-gradient(90deg, transparent 0 22px, rgba(14, 105, 144, .07) 22px 23px); clip-path: polygon(0 0, 100% 0, calc(100% - var(--notch)) 50%, 100% 100%, 0 100%); }
+.am:not(.am--rtl) .am-cloth { padding: 7px 16px 5px calc(var(--notch) + 12px); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, var(--notch) 50%); }
+.am-cloth svg { flex: none; color: #e0565b; }
+.am-cloth b { overflow: hidden; text-overflow: ellipsis; font: inherit; }
+a.am-flag { pointer-events: auto; cursor: pointer; }
+@keyframes am-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 7px; } }
+@keyframes am-prop { from { transform: scaleY(1); } 50% { transform: scaleY(0.15); } to { transform: scaleY(1); } }
+@keyframes am-wave { from { transform: skewY(-2.5deg) scaleY(0.97); } to { transform: skewY(2deg) scaleY(1.02); } }
+@media (prefers-reduced-motion: reduce) { .am-bob, .am-prop, .am-flag { animation: none; } }

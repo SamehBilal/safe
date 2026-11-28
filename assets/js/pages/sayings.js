@@ -2,6 +2,7 @@ import { L, esc, num } from '../shell.js';
 import { listPage, shorten } from '../listpage.js';
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
+import { fly } from '../airmsg.js';
 
 /* What the boys said, as «قاموس الولاد» — the boys' own dictionary: every word they made up or got wrong is an entry,
    in alphabetical order under its letter like a real dictionary — the word in big, whose it is and how old he was,
@@ -17,6 +18,7 @@ let turn = 0;
 /* the pronunciation button: his voice, with a speaker that sounds while it plays */
 const say = (x, cls = '') => `<span class="sy-say ${cls}" data-voice-box><button class="sy-say__btn" type="button" data-say aria-label="${L('اسمعه وهو بيقولها', 'Hear him say it')}">${doodle('speaker', 18)}<span>${L('اسمعه', 'Listen')}</span><i class="sy-say__waves" aria-hidden="true"><b></b><b></b><b></b></i></button><audio data-voice="${esc(x.voice)}" data-type="${esc(x.voiceType || '')}" preload="none"></audio></span>`;
 let playing = null;
+const flown = new WeakSet();
 
 export default listPage({
 	id: 'sayings', kind: 'sayings', icon: 'book',
@@ -79,6 +81,14 @@ export default listPage({
 			page.classList.add('is-in');
 		};
 		show();
+		/* once a visit, a little plane crosses the top towing one of their words and what it meant (airmsg.js) */
+		const head = root.closest('main')?.querySelector('.ph') || document.querySelector('.ph');
+		const said = items.filter((x) => x.said && x.means);
+		if (head && said.length && !flown.has(head)) {
+			flown.add(head);
+			const x = said[Math.floor(Math.random() * said.length)];
+			fly(head, `${x.kid ? `${c.kidName(x.kid)}: ` : ''}«${shorten(x.said, 22)}» ${L('يعني', 'means')} ${shorten(x.means, 22)}`, { ic: 'laugh', delay: 1800, top: 4, c: colorOf(c, x.kid) });
+		}
 		if (pool.length > 1) turn = setInterval(() => { if (!document.hidden) show(); }, 5000);
 	},
 	click: (e) => {

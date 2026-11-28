@@ -4,6 +4,7 @@ import * as live from '../live.js';
 import { setupNote } from './journal.js';
 import { GOVERNORATES } from '../egypt.js';
 import { fit, CAPITALS } from '../tilemap.js';
+import { fly } from '../airmsg.js';
 
 /* «رحلتنا الجاية», a section of «رحلاتنا» (journeys.js puts section() where it wants it and calls after()).
    The trip we're going on next is a boarding pass: from home to there, the days, the nights, who's coming, a countdown
@@ -230,6 +231,22 @@ export default {
 			};
 		}
 		paint();
+		/* when the pass first comes into view, a little plane crosses above it towing how long is left (airmsg.js) */
+		const io = new IntersectionObserver((en) => {
+			if (!en.some((x) => x.isIntersecting)) return;
+			io.disconnect();
+			const top = upcoming(items()).find((x) => x.id === cur);
+			if (!top) return;
+			// the whole days left, as the pass's own countdown says them
+			const n = Math.max(0, Math.floor((startOf(top.date) - Date.now()) / DAY)), g = govOf(top.gov), where = top.where || (g ? L(g.ar, g.en) : '');
+			const line = startOf(top.date) > Date.now() ? (n ? L(`باقي ${n === 1 ? 'يوم' : n === 2 ? 'يومين' : `${num(n)} ${daysWord(n)}`} على ${where}`, `${n} ${daysWord(n)} to ${where}`) : L(`بكرة على ${where}!`, `${where} tomorrow!`)) : L(`يلا بينا على ${where}!`, `Off to ${where}!`);
+			// across the top edge of the boarding pass (in root, which isn't drawn again when the board is)
+			root.style.position = 'relative';
+			const pass = $('.nt-pass', board);
+			const y = pass ? pass.getBoundingClientRect().top - root.getBoundingClientRect().top - 52 : 0;
+			fly(root, line, { ic: 'suitcase', delay: 700, top: Math.max(0, y), c: '#5aa9d6' });
+		}, { rootMargin: '0px 0px -30% 0px' });
+		io.observe(board);
 		return { repaint: paint };
 	}
 };

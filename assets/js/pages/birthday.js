@@ -1,6 +1,7 @@
 import { L, Y, T, esc, img, num, pageHead, related, App, $, $$, rand, REDUCE, qs, occasions, longDate, age } from '../shell.js';
 import { doodle } from '../doodles.js';
 import { sky } from '../bdsky.js';
+import { fly } from '../airmsg.js';
 import { pastBirthdays, wallHTML, tickerHTML, startTicker, gameHTML, balloonGame, filmstrip } from '../bdmore.js';
 
 /* Birthdays: each of us, with how long until the next one and the age we're turning. The cake below is for
@@ -122,6 +123,10 @@ export default {
 			: ['HAPPY', 'BIRTHDAY', ...(p ? [name.toUpperCase()] : [])];
 		const box = $('#bd-sky', main);
 		const stopSky = box ? sky(box, lines) : () => {};
+		/* a little plane crosses the sky towing the countdown (or, on the day, the wish), as Ma5a's «air message» did for a sister */
+		const wish = p ? L(`كل سنة و${name} ${p.member.female ? 'طيبة' : 'طيب'}`, `Happy birthday, ${name}`) : '';
+		const planes = [];
+		if (box && p) planes.push(fly(box, p.days === 0 ? wish : L(`فاضل ${p.days === 1 ? 'يوم' : p.days === 2 ? 'يومين' : `${num(p.days)} ${p.days <= 10 ? 'أيام' : 'يوم'}`} على عيد ميلاد ${name}`, `${p.days} day${p.days === 1 ? '' : 's'} to ${name}’s birthday`), { ic: p.days === 0 ? 'cake' : 'gift', delay: 2200, times: 2, gap: 6000, c: p.member.color || '#f2726f' }));
 
 		/* each card's party: the hat pops on, then the balloon, then the greeting (as the pen's timeline goes) */
 		const cards = $$('.bd-card', main);
@@ -182,7 +187,7 @@ export default {
 		const stopTicker = p ? startTicker(main, p.member, this.s) : () => {};
 		const stopGame = balloonGame(main, this.shots || []);
 		filmstrip(main);
-		this.leave = () => { stopSky(); ro.disconnect(); io.disconnect(); stopTicker(); stopGame(); };
+		this.leave = () => { stopSky(); planes.forEach((f) => f()); ro.disconnect(); io.disconnect(); stopTicker(); stopGame(); };
 
 		const candles = $$('.candle', main);
 		const blow = (c) => {
@@ -199,6 +204,7 @@ export default {
 			$('#bday-hint', main).innerHTML = doodle('party', 44);
 			$('#bday-msg', main).hidden = false;
 			confetti();
+			planes.push(fly($('.bday', main), wish, { ic: 'heart', top: 0, delay: 900, c: p.member.color || '#f2726f' }));
 		}
 	}
 };

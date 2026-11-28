@@ -2,12 +2,29 @@ import { App, L, Y, T, t, esc, img, isVideo, num, parseDate, yearsBetween, daysB
 import { doodle } from '../doodles.js';
 import * as live from '../live.js';
 import { GOVERNORATES } from '../egypt.js';
+import { fly } from '../airmsg.js';
 const GOV = Object.fromEntries(GOVERNORATES.map((g) => [g.id, g]));
 
 /* Home: our life at a glance, top to bottom —
    the title with a handful of our photos scattered around it; today (on this day, the next occasion, quick ways to add);
    a memory pulled at random; the years of us, each with its photo; the newest moments; what either of us added lately
    and what's coming; the boys' corner; us in numbers; and the house, one card per menu. */
+/* A love note we haven't seen fly yet comes by air: a little plane crosses the top of the home page towing its first
+   words (airmsg.js), once on each phone, and the banner opens the notes. The newest one from the other of us when we
+   know who's reading, else just the newest. */
+const hashOf = (x) => { let h = 0; for (const ch of String(x)) h = (h * 31 + ch.codePointAt(0)) | 0; return (h >>> 0).toString(36); };
+function noteByAir(main, s) {
+	const notes = s?.notes || [], me = live.me();
+	const n = [...notes].reverse().find((x) => !me || x.by !== me) || notes.at(-1);
+	if (!n) return;
+	const raw = n.orig && n.text?.[n.orig] ? n.text[n.orig] : t(n.text);
+	// the first few words, without the emoji (the banner is handwriting)
+	const words = String(raw || '').replace(/\p{Extended_Pictographic}|‍|️/gu, '').replace(/[.…—,،]+/g, ' ').split(/\s+/).filter(Boolean);
+	if (!words.length) return;
+	const line = words.slice(0, 5).join(' ') + (words.length > 5 ? '…' : '');
+	const from = App.t(n.by === 'her' ? s.her : s.him);
+	fly($('.hm-hero', main), `${L(`من ${from}:`, `From ${from}:`)} ${line}`, { ic: 'letter', href: 'notes.html', once: `note-${hashOf(raw)}`, delay: 1500, top: 10, c: n.by === 'her' ? '#f2726f' : '#5aa9d6' });
+}
 // Arabic verbs follow who did it: كتب (him) / كتبت (her)
 const verb = (by, him, her, en) => L(by === 'her' ? her : him, en);
 const ago = (ms) => {
@@ -383,6 +400,7 @@ export default {
 	after(main) {
 		live.hydrateSketches(main);
 		yearStage(main, this.years || []);
+		noteByAir(main, App.story);
 		const box = $('#hm-rand', main);
 		const pool = this.withPhoto || [];
 		if (!box || !pool.length) return;
