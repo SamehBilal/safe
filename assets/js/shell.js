@@ -1484,11 +1484,42 @@ function renderChrome() {
 			${megaHTML(s)}
 			<div class="tools">${addHTML()}<a class="icon-btn search-btn" href="search.html"${here === 'search.html' ? ' aria-current="page"' : ''} aria-label="${L('دوّر', 'Search')}" title="${L('دوّر', 'Search')} (/)">${icon('search', 20)}</a>${themeBtn()}${langBtn()}</div>
 		</div>`;
+	/* the phone menu drops like an elastic curtain: its bottom edge is a curve whose middle leads as it falls, then
+	   overshoots, springs back and settles; closing pulls it up with the middle trailing behind. Drawn as a path on the
+	   panel's clip, so what's inside stays live; with «reduce motion» it simply fades as before. */
+	const pn = $('.pnav', header);
+	let elasticRaf = 0;
+	const elastic = (open) => {
+		cancelAnimationFrame(elasticRaf);
+		if (REDUCE || !CSS.supports?.('clip-path', 'path("M0 0")')) { pn.classList.remove('is-elastic'); pn.style.clipPath = ''; return; }
+		const W = pn.clientWidth || innerWidth, H = pn.clientHeight || innerHeight, dur = open ? 900 : 420, t0 = performance.now();
+		pn.classList.add('is-elastic');
+		const frame = (now) => {
+			const t = Math.min(1, (now - t0) / dur);
+			let y, b;
+			if (open) {
+				const p = Math.min(1, t / 0.45), fall = 1 - (1 - p) ** 3;
+				y = H * fall;
+				// the middle leads while it falls, then the edge wobbles like a pulled sheet and comes to rest
+				b = p < 1 ? H * 0.22 * Math.sin(Math.PI * p) : -H * 0.07 * Math.exp(-6 * (t - 0.45)) * Math.sin(14 * (t - 0.45));
+			} else {
+				const e = t * t * (3 - 2 * t);
+				y = H * (1 - e);
+				b = H * 0.18 * Math.sin(Math.PI * t);
+			}
+			pn.style.clipPath = `path("M0 0 H${W} V${Math.max(0, y).toFixed(1)} Q${W / 2} ${(y + 2 * b).toFixed(1)} 0 ${Math.max(0, y).toFixed(1)} Z")`;
+			if (t < 1) elasticRaf = requestAnimationFrame(frame);
+			else { pn.style.clipPath = ''; pn.classList.remove('is-elastic'); }
+		};
+		elasticRaf = requestAnimationFrame(frame);
+	};
 	const setMenu = (on) => {
+		const was = header.classList.contains('menu-open');
 		header.classList.toggle('menu-open', on);
 		$('.menu-btn', header).setAttribute('aria-expanded', String(on));
 		document.body.classList.toggle('menu-lock', on);
-		if (on) { hydrate($('.pnav', header)); fillWidgets($('.pnav', header)); }
+		if (on) { hydrate(pn); fillWidgets(pn); }
+		if (was !== on && getComputedStyle(pn).display !== 'none') elastic(on);
 	};
 	header._menu = setMenu;
 	fillWidgets($('.mnav', header));

@@ -318,3 +318,6 @@
 .brand--short .brand-short { font-size: 1.75rem; line-height: 1; }
 .brand--nosub .brand-sub { display: none; }
 .brand--measure .brand-names, .brand--measure .brand-sub { text-overflow: clip; }
+
+/* the phone menu while its elastic curtain moves: shown and still, the curve does the moving (shell.js) */
+.pnav.is-elastic { opacity: 1; visibility: visible; transform: none; transition: none; }
